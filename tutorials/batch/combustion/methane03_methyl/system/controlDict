@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  methane03_methyl / controlDict
+  + the methyl step: CH3 -> CH3O -> CH2O.
+\*---------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "+ the methyl step: CH3 -> CH3O -> CH2O (Petersen, Davidson & Hanson 1999, mixture 2, 1244 K, 114.4 atm)";
+verbosity     3;
+
+startTime       0.0;
+endTime         1.2e-3;      // s
+deltaT          2.0e-6;      // s (the integrator is adaptive; this is the write grid)
+writeInterval   2.0e-6;      // s -- 600 state directories

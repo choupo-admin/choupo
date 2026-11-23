@@ -159,7 +159,7 @@ export const CITES = {
   overSpecified: { file: STATE_IO, symbol: "readStreamState",
     contains: "OVER-SPECIFIED -- declares T = " },
   dictComment: { file: DICT,
-    contains: "src_[pos_+1] == '/'" },
+    contains: "if (c == '/' && p + 1 < n && s[p+1] == '/')" },
   dictSubDict: { file: DICT,
     contains: "parseEntries(*sub, /*topLevel=*/false);" },
   unitLookup: { file: DICT,

@@ -180,7 +180,7 @@ describe("the lesson", () => {
     expect(all).toContain("Wegstein");
     expect(all).toContain("Comm. ACM 1(6), 9-13");
     expect(all).toMatch(/Flowsheet\.cpp:\d+/);
-    expect(all).toMatch(/Wegstein\.cpp:49-92/);
+    expect(all).toMatch(/Wegstein\.cpp:51-96/);
   });
 
   it("the steps name the same defaults the math module holds", () => {

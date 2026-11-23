@@ -459,6 +459,11 @@ void ThermoPackage::applySolution(const std::string& solvent,
     // missing data is an ERROR, never a silent Raoult fallback.
     solventName_    = solvent;
     declaredSolutes_ = solutes;
+    //  A Henry solvent is declared: read the Henry registry NOW (it is deferred
+    //  by loadFrom), so a malformed record refuses here, at start-up, for every
+    //  case that uses Henry -- never inside a later catch (a Newton step, a
+    //  sweep pass).  A case with no solvent never reads the 486 files.
+    if (!solvent.empty() || !solutes.empty()) HenrysLawRegistry::ensureLoaded();
     if (!declaredSolutes_.empty())
     {
         if (solventName_.empty())

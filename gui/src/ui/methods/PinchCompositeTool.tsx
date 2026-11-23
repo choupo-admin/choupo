@@ -407,6 +407,9 @@ function CompositeSvg({ hot: hotK, cold: coldK, offset: offsetK, qh: qhK, qc: qc
       {qc !== undefined && qc > 0 && bracket(0, qc, `Q_C,min ${u.Q(qcK!, 1)} ${u.qLabel} (cold utility)`, COLD, 0)}
       {qrec !== undefined && qrec > 0 && bracket(offset, hotEnd, `Q_recovery,max ${u.Q(qrecK!, 1)} ${u.qLabel}`, GCC, 1)}
       {qh !== undefined && qh > 0 && bracket(hotEnd, hotEnd + qh, `Q_H,min ${u.Q(qhK!, 1)} ${u.qLabel} (hot utility)`, HOT, 0)}
+      {/* a backing panel: the cold curve ran through this text (C266 item 6) */}
+      <rect x={X0 + 3} y={Y0 + 3} width={184} height={36} rx={3}
+        fill="var(--mantine-color-body)" fillOpacity={0.92} data-legend-backing="" />
       <text x={X0 + 8} y={Y0 + 14} fontSize={11} fill={HOT}>hot composite (sources)</text>
       <text x={X0 + 8} y={Y0 + 28} fontSize={11} fill={COLD}>cold composite (sinks, slid)</text>
     </svg>

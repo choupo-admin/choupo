@@ -87,8 +87,10 @@ void RowlinsonBondi::announceRangeOnce(scalar T_K) const
     //  refusal it precedes is worse than no caveat: the refusal is the honest
     //  message and it speaks for itself.
     if (Tr >= 1.0) return;
-    if (announced_) return;
-    announced_ = true;
+    if (announced_.done()) return;
+    deferred::note(&announced_, [this, Tr, T_K]
+    {
+    if (!announced_.claim()) return;
     std::ostringstream os;
     os << "RowlinsonBondi liquid Cp evaluated at Tr = " << Tr
        << " (T = " << T_K << " K), OUTSIDE the correlation's declared window ("
@@ -101,6 +103,7 @@ void RowlinsonBondi::announceRangeOnce(scalar T_K) const
              " curve by construction rather than by evidence.");
     AdvisoryLog::instance().add("validity", "warning", owner_, os.str());
     std::cout << "[cp] component '" << owner_ << "': " << os.str() << "\n";
+    });
 }
 
 

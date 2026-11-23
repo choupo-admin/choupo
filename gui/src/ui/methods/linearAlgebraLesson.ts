@@ -166,9 +166,9 @@ export const LA_STEPS: readonly LessonStep[] = [
       + "n\u00b2; for n = 1000 that is " + e1(W1000.factor) + " against "
       + e1(W1000.solve) + ", a factor of " + Math.round(W1000.factor / W1000.solve)
       + ". Choupo's stiff integrator uses exactly this: it factors its "
-      + "iteration matrix once per step (src/solver/ODE/Rosenbrock23.cpp:765) "
+      + "iteration matrix once per step (src/solver/ODE/Rosenbrock23.cpp:838) "
       + "and back-solves it for several right-hand sides "
-      + "(src/solver/ODE/Rosenbrock23.cpp:855). The engine's Newton uses the "
+      + "(src/solver/ODE/Rosenbrock23.cpp:988). The engine's Newton uses the "
       + "same two routines through gaussSolve (src/solver/NewtonND.cpp:461), "
       + "and its multipliers are stored where the zeros would be "
       + "(src/solver/LU.cpp:110-111).",

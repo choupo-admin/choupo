@@ -142,6 +142,12 @@ struct OdeUnit
     //  or the packed rows reach kSparseAutoRows (C474: the key used to be
     //  read by the sweep of one unit only, silently dropped for several).
     int                                      linearKey = 2;
+    //  (declared after linearKey, still LAST)
+    //  Optional: the unit's singular terms for the audit
+    //  (ODEAnalyticJacobian::auditExclusions), in the unit's own rows; the
+    //  sweep shifts each by the unit's offset.
+    std::function<std::vector<ODEAnalyticJacobian::Exclusion>(const sVector& y,
+                                                                const sVector& sc)> auditExclusions = nullptr;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -200,6 +206,10 @@ struct AdaptiveSettings
     //  "Rodas4".  choupoBatch sets it from the vessels' `solver { integrator }`
     //  (C474: it used to be Rosenbrock23 whatever the case declared).
     std::string integrator = "Rosenbrock23";
+    //  `solver { denseOutput hermite; }` (C473 h): the driver writes the rows
+    //  between steps from the cubic Hermite of the step's ends and slopes
+    //  instead of the integrator's own dense output; denseAt() then declines.
+    bool        denseHermite = false;
 };
 
 //  THE ONE READER of `maxSteps` (DEV.md 4c C178), shared by choupoBatch and
@@ -267,6 +277,10 @@ public:
         for (std::size_t u = 0; u < units.size(); ++u)
             off[u + 1] = off[u] + units[u].pack().size();
         const std::size_t N = off.back();
+        dense_.reset();
+        denseOff_ = off;
+        denseAtol_.clear();
+        denseMask_.clear();
 
         sVector y(N);
         // A unit's species rows sit anywhere in Y (the layout is per-unit, not a
@@ -325,6 +339,8 @@ public:
         //  step shrinks.  Nothing downstream clips (the integrator sets a round-off below zero within atol to zero, itself) -- a negative masked row
         //  reaching a unit's commit is a defect the unit refuses by name.
         ctrl.positiveRows = positiveRowMask(units, off);
+        denseAtol_ = atol;
+        denseMask_ = ctrl.positiveRows;
         if (onStep) ctrl.onAccept = onStep;
         //  The analytic Jacobian, block-diagonal over the units, when EVERY
         //  unit supplies one (ODEAnalyticJacobian; the audit record lives in
@@ -384,6 +400,28 @@ public:
                                                        : std::max(std::abs(yg[i]), atolFloor);
                 }
                 return sc;
+            };
+            analytic_.auditExclusions = [&units, off, N](const sVector& yg, const sVector& sg)
+            {
+                std::vector<ODEAnalyticJacobian::Exclusion> all;
+                for (std::size_t u = 0; u < units.size(); ++u)
+                {
+                    if (!units[u].auditExclusions) continue;
+                    const std::size_t lo = off[u], hi = off[u + 1];
+                    const auto ex = units[u].auditExclusions(
+                        sVector(yg.begin() + lo, yg.begin() + hi),
+                        sVector(sg.begin() + lo, sg.begin() + hi));
+                    for (const auto& e : ex)
+                    {
+                        ODEAnalyticJacobian::Exclusion g;
+                        g.col = lo + e.col;
+                        g.dJa.assign(N, 0.0); g.dJd.assign(N, 0.0);
+                        for (std::size_t i = 0; i < e.dJa.size(); ++i)
+                        { g.dJa[lo + i] = e.dJa[i]; g.dJd[lo + i] = e.dJd[i]; }
+                        all.push_back(std::move(g));
+                    }
+                }
+                return all;
             };
             analytic_.sparse = false;
             if (units.size() == 1 && units[0].sparse && units[0].pattern
@@ -487,6 +525,13 @@ public:
         // State-aware ledger hook: commit the ACCEPTED state into the units
         // FIRST, so the ledger's snapshots read the accepted state, then let
         // the ledger integrate over the step just taken.
+        //  The integrator's own dense output of the step just accepted (C473
+        //  h), kept for denseAt() while the caller's callback runs; only built
+        //  when a caller of this advance() asked for the accepted-state hook.
+        if (onAcceptedState && wantDense_)
+            ctrl.onDense = [this](std::shared_ptr<const ODEDenseOutput> d)
+            { dense_ = std::move(d); denseY0_.clear(); dense_->eval(0.0, denseY0_);
+              denseF0_ = dense_->startSlope(); };
         if (onAcceptedState)
             ctrl.onAcceptState =
                 [&](scalar tEnd, scalar hTaken, const sVector& yg)
@@ -525,6 +570,7 @@ public:
         analytic_.jacobian = nullptr;
         analytic_.rowLabel = nullptr;
         analytic_.auditScale = nullptr;
+        analytic_.auditExclusions = nullptr;
         analytic_.sparseJacobian = nullptr;
 
         // --- a FAILED interval is refused, never handed back as a step ----
@@ -551,6 +597,47 @@ public:
     }
 
     scalar carriedStep() const { return hCarry_; }
+
+    //- The caller will read denseAt() (choupoBatch's free-stepping write grid):
+    //  only then does the integrator build a dense object per accepted step.
+    //  Default false, so a driver that only wants the accepted-state hook (the
+    //  dynamic driver's ledger) pays nothing.
+    void wantDense(bool b) { wantDense_ = b; }
+
+    //- DENSE OUTPUT of the step the accepted-state callback is being called
+    //  for (C473 h): the integrator's own interpolant at the fraction theta of
+    //  that step (0 = its start, 1 = its end), split per unit in the order of
+    //  the units passed to advance().  false when the integrator has none
+    //  (RK4, EulerSI): the caller then keeps its own interpolation.  Const and
+    //  private to THIS stepper, so each vessel's stepper serves its own thread.
+    bool denseAt(scalar theta, std::vector<sVector>& perUnit) const
+    {
+        if (!dense_ || settings_.denseHermite) return false;
+        sVector yg;
+        dense_->eval(theta, yg);
+        //  A polynomial may come out a round-off below zero on a trace species
+        //  (a radical not yet formed).  Within the row's own absolute tolerance
+        //  that is the same number as zero -- the integrators' own rule for an
+        //  accepted state -- so it is set to zero, EXCEPT in a row that was empty
+        //  at the start of the step: that is the integrators' rule too (an empty
+        //  row still being consumed is not clipped, the positivity refusal stays
+        //  by name), and such a value is left for the caller's whole-vector
+        //  fallback, as is anything more negative than atol.
+        for (std::size_t i = 0; i < yg.size() && i < denseMask_.size(); ++i)
+            if (denseMask_[i] && yg[i] < 0.0)
+            {
+                const scalar a = denseAtol_.empty() ? 1.0e-12
+                    : (i < denseAtol_.size() ? denseAtol_[i] : denseAtol_.back());
+                //  the integrators' own predicate: not an empty row still consumed
+                const bool consumed = i < denseY0_.size() && !(denseY0_[i] > 0.0)
+                                      && i < denseF0_.size() && denseF0_[i] < 0.0;
+                if (yg[i] > -a && !consumed) yg[i] = 0.0;
+            }
+        perUnit.assign(denseOff_.size() - 1, sVector());
+        for (std::size_t u = 0; u + 1 < denseOff_.size(); ++u)
+            perUnit[u].assign(yg.begin() + denseOff_[u], yg.begin() + denseOff_[u + 1]);
+        return true;
+    }
 
     ~AdaptiveTimeStepper()
     {
@@ -631,9 +718,16 @@ private:
     AdaptiveSettings                 settings_;
     std::unique_ptr<ODEIntegrator>   integ_;
     scalar                           hCarry_ = 0.0;
+    std::shared_ptr<const ODEDenseOutput> dense_;    // the last accepted step's own interpolant
+    sVector                          denseY0_;       // the state at the start of that step
+    sVector                          denseF0_;       // and its slope f(t, y)
+    sVector                          denseAtol_;     // the per-row atol of that step
+    std::vector<bool>                denseMask_;     // its positivity mask
+    std::vector<std::size_t>         denseOff_;      // the unit offsets of that step's packed state
     ODEAnalyticJacobian              analytic_;
     ODEStats                         total_;             // summed over the intervals (diagnostic)
     bool                             statsOn_ = false;
+    bool                             wantDense_ = false;
     long long nsF_ = 0, nsJ_ = 0, nsIntegrate_ = 0; long nF_ = 0, nJ_ = 0;   // diagnostics
     std::shared_ptr<SparsePattern>   multiPattern_;      // block-diagonal, kept across intervals
     std::vector<std::shared_ptr<const SparsePattern>> multiSources_;

@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Formaldehyde  (HCHO / methanal, CAS 50-00-0)
+
+  Largest-volume C1 oxygenate after methanol; intermediate in partial
+  oxidation of CH3OH and in the cool-flame chemistry of CH4 combustion.
+  Polymerises readily in the condensed phase; sold commercially as the
+  37 wt% aqueous "formalin" solution.
+  Sources: individual literature values -- primary re-citation pending
+  (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        HCHO;
+formula     CH2O;
+CAS         50-00-0;
+
+MW          30.026;            // kg/kmol
+Tc          408.00;             // K
+Pc          65.90;              // bar
+omega       0.282;              // [-]
+Tb          254.05;             // K
+HvapTb      23300;              // J/mol
+Vliq        3.50e-5;            // m^3/mol
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 21190;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // CURATION FIT (2026-08-23): least-squares Antoine to the Wagner-ORIGINAL (3-6 form) curve of McGarry 1983
+    // of McGarry 1983 over 230-300 K, max dev 0.05% (via the MIT-licensed
+    // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
+    // (Vitor))
+    coefficients  (4.46075   1028.741   -23.0);
+    Trange        (230  300);
+}
+
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0405-PROF.txt bundled in usnistgov/COSMOSAC; CAS 50-00-0";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    HCHO;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    -108580.000;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 131, entry HCHO,formaldehy
+    s_298      218.764;     // J/(mol·K) -- third-law absolute; Table B1, p. 21
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 131, entry HCHO,formaldehy, a1..a7 as printed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.173916343e+05 1.873628846e+03 -6.890288570e+00 2.641561665e-02 -2.186389299e-05 1.005693006e-08 -2.023476949e-12 );
+    high     ( 1.700825405e+06 -7.620853840e+03 1.472447547e+01 -1.649111754e-03 3.292144720e-07 -3.495049770e-11 1.526135000e-15 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 131, entry HCHO,formaldehy, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 21 prints -108.58 kJ/mol; the report's own sources: Hf:TRC(6/78) w-5300. Gurvich,1991 pt1 p62 pt2 p47.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 21, entry HCHO,formaldehy";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 218.764";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 131, entry HCHO,formaldehy, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+

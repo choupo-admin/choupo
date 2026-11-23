@@ -21,15 +21,16 @@
   charge, the H2 and OH mole fractions, endTime and the instant of the
   rate-of-production report; this file is the experiment at its defaults.
 
-  THE JACOBIAN.  `jacobian finiteDifference;` is declared on purpose.  The
-  engine audits its analytic Jacobian against a finite difference and refuses
-  a run where they differ by more than 1e-4 of the column's scale; at the
-  first Jacobian of a vessel holding H2O2 alone (every radical at zero, the
-  start of kinetics02_h2o2_falloff) it measured d(n_HO2)/d(n_HO2) = -0.9618
-  against -0.9665 and refused.  Both kinetics cases therefore integrate on the
-  finite-difference Jacobian, which every Rosenbrock step is allowed to use.
-  The disagreement is reported to the engine owner as an open item, not worked
-  around in the engine.
+  THE JACOBIAN is the analytic one (the default; audited against a finite
+  difference on a doubling schedule).  Until 2026-11-22 this case declared
+  the finite-difference Jacobian: at the first Jacobian of a vessel holding H2O2
+  alone, every radical at zero, the audit read d(n_HO2)/d(n_HO2) = -0.9618
+  against -0.9665 and refused.  The analytic derivative was right; the audit's
+  REFERENCE was biased -- a forward two-point difference of a rate quadratic
+  in a species at zero (2 HO2, 2 OH) is off by k h, and with the audit's step
+  larger than the trace parent itself the bias was O(1).  The audit now takes
+  the second-order one-sided difference there (C468, Theory Guide
+  sec:batch-analytic-jacobian).
 \*---------------------------------------------------------------------------*/
 
 units
@@ -53,7 +54,6 @@ units
         solver
         {
             integrator  Rosenbrock23;       // L-stable stiff method
-            jacobian    finiteDifference;   // see THE JACOBIAN in this file's header
             verbosity   3;
         }
 

@@ -151,8 +151,7 @@ SABOTAGE-VERIFIED 2026-11-21, arm (g) (by hand, rebuilt, restored, rebuilt):
     Rosenbrock step with a wrong factor is still accepted by its error estimate.
 
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
-check_elementary_rates); a power-law order below one at zero concentration (the reactor
-differences such a reaction instead; no witness has one); the heat-capacity slope dC_p/dT
+check_elementary_rates); a power-law order below one near zero (within 300 audit steps of zero): that ONE reaction's share of the column is taken out of the analytic Jacobian and of the reference, the rest audited (C468; a share is exact, but an expression/LHHW law declares no orders and is not covered; order 1.5 at zero passes at 4.5e-5 of the engine's 1e-4, the one-sided difference's truncation); the heat-capacity slope dC_p/dT
 (a central difference of the record's law: the record offers no derivative); wall time (machine-
 dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
 unit with an analytic Jacobian and one without (it falls back to the difference by
@@ -168,6 +167,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
+
+# Every directory walk in this gate is over its own scratch probe copies
+# (gatekit.probe_copy); it reads no tree root a case plan could miss.
+SCAN_ROOTS = ()
 
 FD = "tutorials/batch/combustion/ignition01_h2o2"
 JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
@@ -702,12 +705,158 @@ def main():
     #  (h3) THE REAL DEFECT: a run of several vessels read `linearSolver` in no vessel (the sweep
     #  factored sparse for ONE vessel only) -- nox02's 17 gasConstantP vessels, 357 packed rows,
     #  on `auto`, now factor W on the block-diagonal pattern, each vessel's rank-one part kept.
+    #  Since C473 g the 17 vessels are INDEPENDENT and each is integrated on its own step, so the
+    #  union path is the one `solver { vessels coupled; }` keeps: the arm asks for it.
     with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+        fs = c / "system" / "flowsheetDict"
+        fs.write_text(re.sub(r"solver(\s*)\{", r"solver\1{ vessels coupled;", fs.read_text()))
         rc, out = gatekit.run(batch, c)
         if rc != 0 or not re.search(r"factored SPARSE on the vessel pattern .*: 357 rows", out):
-            failures.append(f"(h3) nox02 (17 vessels, `linearSolver auto`) did not factor W sparse on the "
+            failures.append(f"(h3) nox02 (17 vessels, `vessels coupled; linearSolver auto`) did not factor W sparse on the "
                             f"union of the vessels' patterns (exit {rc})")
-    notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels")
+        if "17 vessels integrated TOGETHER" not in out:
+            failures.append("(h3) `vessels coupled;` was not announced as the single-step sweep")
+    #  (h4) THE REAL DEFECT: seventeen independent vessels were stepped together, the stiffest one
+    #  setting every step.  The default now integrates each on its own, announced, each factoring
+    #  its own block sparse.
+    with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+        fs = c / "system" / "flowsheetDict"
+        fs.write_text(fs.read_text().replace("linearSolver auto;", "linearSolver sparse;"))
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "17 independent vessels integrated separately (each its own step)" not in out \
+                or not re.search(r"factored SPARSE on the vessel pattern: 21 rows", out):
+            failures.append(f"(h4) nox02 did not integrate its 17 independent vessels separately, each "
+                            f"factoring its own 21-row block sparse (exit {rc})")
+    notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels (coupled) and per vessel (independent)")
+    #  (h5) THE REAL DEFECTS the review of the per-vessel integration found: (i) a vessel that gave up
+    #  lost the whole run's output (the error left its thread and nothing was written); (ii) the
+    #  one-time "outside its window" notices of the Cp laws came out in the order the threads reached
+    #  them.  The probes run at 1 and 4 threads and the answers must be the same bytes.
+    def run_threads(extra_control, edit_unit, n):
+        with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+            fs = c / "system" / "flowsheetDict"
+            fs.write_text(re.sub(r"solver(\s*)\{", r"solver\1{ threads %d;" % n, fs.read_text()))
+            if extra_control:
+                cd = c / "system" / "controlDict"
+                cd.write_text(extra_control(cd.read_text()))
+            if edit_unit:
+                edit_unit(c)
+            rc, out = gatekit.run(batch, c)
+            csvp = c / "trajectory.csv"
+            dirs = sorted(d.name for d in c.iterdir() if d.is_dir() and d.name[:1].isdigit())
+            return rc, out.replace(str(c), "CASE").replace("threads %d;" % n, ""), \
+                (csvp.read_text() if csvp.exists() else ""), dirs
+    cut = lambda t: re.sub(r"(deltaT0\s)", "maxSteps 300;\n    \\1",
+                           re.sub(r"\nwriteInterval\s+[^;]+;", "\nwriteInterval 1e-3;", t), count=1)
+    r1, r4 = run_threads(cut, None, 1), run_threads(cut, None, 4)
+    if r1[0] == 0 or "T1500" not in r1[1] or len(r1[2].splitlines()) < 3:
+        failures.append("(h5) nox02 with maxSteps 300: the failing vessel did not stop the run by name"
+                        " after the trajectory and the <t>/ directories reached the last time every vessel passed")
+    if r1[1:] != r4[1:]:
+        failures.append("(h5) nox02 with maxSteps 300: the failure's output differs between 1 and 4 threads")
+
+    def hot(c):
+        for name, T in (("T1450", "7000"), ("T1500", "7500")):
+            f = c / "0" / "internalStates" / name
+            f.write_text(re.sub(r"(\n\s*T\s+)[0-9.]+ K;", r"\g<1>" + T + " K;", f.read_text(), count=1))
+    short = lambda t: re.sub(r"\nendTime\s+[^;]+;", "\nendTime 1e-4;", re.sub(r"\nwriteInterval\s+[^;]+;", "\nwriteInterval 1e-5;", t))
+    c1, c4 = run_threads(short, hot, 1), run_threads(short, hot, 4)
+    if c1[0] != 0 or "OUTSIDE its published interval" not in c1[1] or c1[1:] != c4[1:]:
+        failures.append("(h5) two vessels crossing a heat-capacity window: standard output and error differ"
+                        " between 1 and 4 threads (or the notice is missing)")
+
+
+    # ---- (i) C468: the audit at zero, and a power below one at zero ------------------------
+    #  THE REAL DEFECT (i1) CATCHES (C468 defect 2).  kinetics02_h2o2_falloff, a trace of
+    #  H2O2 with every radical at EXACTLY zero, was refused: d(n_OH)/d(n_OH) -0.206 analytic
+    #  against -0.439 difference (the first report: HO2/HO2 -0.9618 against -0.9665).  The
+    #  analytic derivative was right; the audit's reference was not: a column of a species at
+    #  zero was a two-point FORWARD difference, biased by k h for every rate quadratic in it
+    #  (2 OH, 2 HO2), and the audit's step exceeded the trace parent's own amount.  Both
+    #  kinetics cases declared `jacobian finiteDifference;` to hide it; they now run the
+    #  default.  Sabotage (by hand, rebuilt, restored): the one-sided formula put back to
+    #  (f(h) - f0)/h with h = sqrt(eps) s -- (i1) refuses kinetics02 by name.
+    #  The three-point step also showed the reference's own ROUNDING: an all-zero analytic
+    #  column (a zeroth-order rate, check_positivity_mask (c)) read -7.6e-13 against a matrix
+    #  scale of 1e-12 and was refused; the audit now takes 8 eps^(2/3) |f0_r| / s_r off each
+    #  entry's disagreement (the difference's rounding), and that gate holds it.
+    #  THE REAL DEFECT (i2) CATCHES (C468 defect 1).  A rate of order 1/2 on a species at
+    #  c = 0 (batch34_fractional_order_at_zero: B absent at t = 0): d(c^0.5)/dc is infinite,
+    #  the reaction was differenced at the Jacobian's own step, the audit differenced at its
+    #  own, and the run was refused on every path (-2.678 against -2.671).  The fix takes out
+    #  EXACTLY the singular term: reaction j's share of column k, from the analytic column
+    #  and from the reference (BatchReactor::odeAuditExclusions; the SAME stencil), and audits
+    #  the remainder -- so a second reaction reading the same trace species at order 2 is
+    #  still audited.  Both paths (fixed step and the adaptive sweep, per-unit hook mapped by
+    #  offset), a factory law (A_rev: the law names its fractional orders) and order 1.5 are
+    #  variants of the fixture.  SABOTAGE-VERIFIED 2026-11-22 (by hand, rebuilt, restored):
+    #  the exclusion returned empty -- (i2) refuses fixed/adaptive base, 25.9 against 66.99
+    #  (the one-sided difference at the small step), and A_rev, 51.8 against 66.99; the
+    #  one-sided formula put back to two points -- (i1) refuses kinetics01 and kinetics02
+    #  (and (g2), (h3), so shipped analytic-Jacobian cases were one unlucky charge from the
+    #  same refusal).
+    for case in ("tutorials/batch/combustion/kinetics01_oh_decay",
+                 "tutorials/batch/combustion/kinetics02_h2o2_falloff"):
+        with gatekit.probe_copy(case, strip=STRIP) as c:
+            if re.search(r"jacobian\s+finiteDifference", (c / "system/flowsheetDict").read_text()):
+                failures.append(f"(i1) {Path(case).name} still declares `jacobian finiteDifference;`")
+            rc, out = gatekit.run(batch, c)
+            a = audits(out) if rc == 0 else []
+            if rc != 0 or not a or "the default" not in out:
+                failures.append(f"(i1) {Path(case).name} on the DEFAULT analytic Jacobian exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:500])
+            elif max(x[5] for x in a) > GATE_TOL:
+                failures.append(f"(i1) {Path(case).name}: an audit differs by {max(x[5] for x in a):.3e} (> {GATE_TOL:g})")
+            else:
+                notes.append(f"{Path(case).name} analytic, {len(a)} audits <= {max(x[5] for x in a):.0e}")
+    FRAC = "tutorials/batch/reactor/batch34_fractional_order_at_zero"
+    ADAPT = ("\ntimeStepping adaptive;\ntimeSteppingControl { rtol 1e-6; atol 1e-9; deltaT0 1e-3;"
+             " deltaTmax 25; maxGrowth 2.0; }\n")
+
+    def frac_variant(c, kind, adaptive):
+        rx = c / "constant/reactions"
+        if kind == "A_rev":      # a factory law (explicit reverse leg): its orders live in the law
+            rx.write_text(rx.read_text().replace("A      2.0e-3;", "A      2.0e-3; A_rev 1e-9; Ea_rev 0;"))
+        elif kind == "order 1.5":
+            rx.write_text(rx.read_text().replace("order 0.5;", "order 1.5;"))
+        if adaptive:
+            cd = c / "system/controlDict"
+            cd.write_text(cd.read_text() + ADAPT)
+
+    got = {}
+    for tag, integ, jac, kind, adaptive in (
+            ("analytic", "Rosenbrock23", "analytic", "", False), ("rodas", "Rodas4", "analytic", "", False),
+            ("fd", "Rosenbrock23", "finiteDifference", "", False),
+            ("adaptive", "Rosenbrock23", "analytic", "", True),
+            ("A_rev", "Rosenbrock23", "analytic", "A_rev", False),
+            ("A_rev adaptive", "Rosenbrock23", "analytic", "A_rev", True),
+            ("order 1.5", "Rosenbrock23", "analytic", "order 1.5", False),
+            ("order 1.5 adaptive", "Rosenbrock23", "analytic", "order 1.5", True)):
+        with gatekit.probe_copy(FRAC, strip=STRIP) as c:
+            set_solver(c, jac, integrator=integ)
+            frac_variant(c, kind, adaptive)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(i2) fractional-order fixture [{tag}] exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:500])
+                continue
+            a = audits(out)
+            if not a and jac == "analytic":
+                failures.append(f"(i2) fractional-order fixture [{tag}] printed no audit -- the analytic Jacobian was not used")
+            #  order 1.5 at zero is the reference's own truncation (c^1.5 is not a quadratic):
+            #  measured 4.5e-5, inside the engine's 1e-4 that the exit code already holds
+            if a and kind != "order 1.5" and max(x[5] for x in a) > GATE_TOL:
+                failures.append(f"(i2) fractional-order fixture [{tag}]: an audit differs by {max(x[5] for x in a):.3e}")
+            got[tag] = (kpis(out), a)
+    if "analytic" in got and "fd" in got:
+        w, where, missing = kpi_diff(got["fd"][0], got["analytic"][0], rel=1e-4)
+        if missing or w > 1e-4:
+            failures.append(f"(i2) fractional-order fixture: analytic and finite-difference KPIs differ by {w:.2e} ({where})")
+    if "rodas" in got and "analytic" in got:
+        w, where, _ = kpi_diff(got["rodas"][0], got["analytic"][0], rel=1e-4)
+        if w > 1e-4:
+            failures.append(f"(i2) fractional-order fixture: Rodas4 and Rosenbrock23 differ by {w:.2e} ({where})")
+    notes.append(f"batch34: order 1/2 at c = 0, fixed and adaptive, a factory law (A_rev) and order 1.5 audited ({len(got)} runs)")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

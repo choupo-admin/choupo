@@ -92,14 +92,17 @@ const scalar* NASA9Cp::coeffsFor(scalar T) const
 void NASA9Cp::noteRange(scalar T) const
 {
     if (T >= Tlow_ && T <= Thigh_) return;
-    if (announcedOutside_) return;
-    announcedOutside_ = true;
-    const std::string who = owner_.empty() ? "NASA9" : "component '" + owner_ + "'";
-    AdvisoryLog::instance().add(
-        "validity", "warning", who,
-        "ideal-gas Cp (NASA9) evaluated at T = " + std::to_string(T)
-        + " K, OUTSIDE its published interval (" + std::to_string(Tlow_) + " "
-        + std::to_string(Thigh_) + ") -- extrapolated, still returned");
+    if (announcedOutside_.done()) return;
+    deferred::note(&announcedOutside_, [this, T]
+    {
+        if (!announcedOutside_.claim()) return;
+        const std::string who = owner_.empty() ? "NASA9" : "component '" + owner_ + "'";
+        AdvisoryLog::instance().add(
+            "validity", "warning", who,
+            "ideal-gas Cp (NASA9) evaluated at T = " + std::to_string(T)
+            + " K, OUTSIDE its published interval (" + std::to_string(Tlow_) + " "
+            + std::to_string(Thigh_) + ") -- extrapolated, still returned");
+    });
 }
 
 scalar NASA9Cp::Cp(scalar T) const

@@ -283,3 +283,19 @@ describe("canvas: the duty stub", () => {
     expect(stub()).toContain("Q = +2.5 MW");
   });
 });
+
+describe("Run summary strip: a failed run says why (C266)", () => {
+  const log = "Time integration\n[stderr] [batchReactor] WARNING: clipped\n[stderr] \n[stderr] ERROR: NASA9Cp: H asked at T <= 0 K\n[worker] run_case returned rc=2\n";
+  it("names the engine's last ERROR line on the strip", () => {
+    mock.state = { runResult: { status: "error", log, streams: [] } as never, runStatus: "error",
+                   displayPrefs: { ...DEFAULT_PREFS }, setActiveWorkspace: () => undefined };
+    const t = text(wrap(createElement(RunSummaryStrip)));
+    expect(t).toContain("Engine: ERROR: NASA9Cp: H asked at T &lt;= 0 K");   // SSR text is HTML-escaped
+  });
+  it("says nothing it cannot back when the log has no ERROR line", () => {
+    mock.state = { runResult: { status: "error", log: "nothing\n", streams: [] } as never, runStatus: "error",
+                   displayPrefs: { ...DEFAULT_PREFS }, setActiveWorkspace: () => undefined };
+    const t = text(wrap(createElement(RunSummaryStrip)));
+    expect(t).not.toContain("Engine:");
+  });
+});

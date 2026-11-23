@@ -19,7 +19,7 @@ unsteady/unsteady01_startup_transient unsteady/unsteady06_reactor_fill_and_react
 steady/reactors/cstr01_first_order steady/reactors/cstr07_lhhw_methylAcetate steady/reactors/aceticAcid01_gibbsReactor
 steady/reactors/ammoniaReactor02_equilibrium steady/reactors/cstr04_adiabatic
 steady/distillation/column05_reactive_methylacetate steady/flowsheets/process03_recycle""".split()
-DROP = re.compile(r'(\d{4}-\d\d-\d\dT|\bwall\b|elapsed|\bCPU\b|\bcpu\b|[0-9.]+ ?ms\b|seconds|\[ode-stats\]|timestamp|Date:|date )', re.I)
+DROP = re.compile(r'(\d{4}-\d\d-\d\dT|\bwall\b|elapsed|\bCPU\b|\bcpu\b|[0-9.]+ ?ms\b|seconds|\[ode-stats\]|\(commit [0-9a-f]+\)|timestamp|Date:|date )', re.I)
 out = os.path.join(ROOT, 'build/scratch/bc')
 BIN = {'choupoSolve': 'choupoSolve', 'choupoBatch': 'choupoBatch', 'choupoCtrl': 'choupoCtrl',
        'choupoSemiContinuous': 'choupoSemiContinuous', 'choupoProps': 'choupoProps'}
@@ -31,6 +31,7 @@ def norm(b, label=''):
     except UnicodeDecodeError:
         return b
     t = t.replace('/bc/' + label + '/', '/bc/L/')       # the label is in every printed path
+    t = re.sub(r'(commit[ "\':]*)[0-9a-f]{7,12}', r'\1H', t)   # the engine's own commit stamp (banner, citation block)
     return ''.join(l for l in t.splitlines(True) if not DROP.search(l)).encode()
 
 
@@ -53,7 +54,7 @@ def one(args):
         subprocess.run(['rm', '-rf', d])
         shutil.copytree(src, d, ignore=shutil.ignore_patterns('expected'), symlinks=True)
         app = re.search(r'^application\s+(\w+);', open(d + '/system/controlDict').read(), re.M).group(1)
-        p = subprocess.run([os.path.join(ROOT, 'build/linux64Gcc', BIN[app]), d], capture_output=True, cwd=d,
+        p = subprocess.run([os.path.join(os.environ.get('BC_BIN', os.path.join(ROOT, 'build/linux64Gcc')), BIN[app]), d], capture_output=True, cwd=d,
                            env=dict(os.environ, CHOUPO_HOME=ROOT), timeout=1800)
         rows.append((name + '/<stdout>', hashlib.sha256(norm(p.stdout, label)).hexdigest()))
         rows.append((name + '/<stderr>', hashlib.sha256(norm(p.stderr, label)).hexdigest()))

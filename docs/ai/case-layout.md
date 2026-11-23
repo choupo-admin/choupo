@@ -281,7 +281,7 @@ timeSteppingControl
     deltaT0     1.0e-3;            // s   initial (LOW) step — it grows from here
     deltaTmax   10.0;             // s   cap on the step (the spiritual maxCo).  ABSENT on a run of
                                    // batchReactors = no cap: the step is set by the error and
-                                   // writeInterval rows come from dense output (cubic Hermite,
+                                   // writeInterval rows come from dense output (the integrator's own: Rodas4/Rosenbrock23 stage polynomials, seulex's extrapolated polynomial; cubic Hermite for RK4/EulerSI,
                                    // Theory Guide sec:batch-dense-output); any other run keeps
                                    // writeInterval as the cap
     maxGrowth   2.0;              // per-accepted-step growth limit

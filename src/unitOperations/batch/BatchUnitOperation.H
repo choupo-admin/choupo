@@ -51,6 +51,7 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitAcceptance.H"   // what a vessel accepts (C188)
+#include "solver/ODE/ODEIntegrator.H"          // ODEAnalyticJacobian::Exclusion (C468)
 
 #include <functional>
 #include <map>
@@ -174,6 +175,12 @@ public:
     // difference step sqrt(eps) * s_i, and its row scaling).  Empty =>
     // the integrator's scale max(|y_i|, atol).
     virtual sVector odeJacobianScale(const sVector& /*y*/) const { return {}; }
+    // The singular terms of that Jacobian at y, for its audit (C468; see
+    // ODEAnalyticJacobian::auditExclusions): a reaction's share of the column of
+    // a species it reads at an order in (0,1) near zero, in the analytic
+    // Jacobian and in the reference.  Empty: none.
+    virtual std::vector<solver::ODEAnalyticJacobian::Exclusion>
+        odeAuditExclusions(const sVector& /*y*/, const sVector& /*sc*/) const { return {}; }
     // OPT-IN sparse form of that Jacobian (solver/SparseLU, Theory Guide
     // sec:sparse-lu): the pattern, declared once, and the values on it.
     // odeSparseLinear() true asks the stiff integrator to factor W on it.
@@ -185,6 +192,18 @@ public:
     // Rosenbrock23 | Rodas4; }`); "" when it declared none (or an explicit
     // method), which leaves the adaptive sweep on Rosenbrock23.
     virtual std::string odeStiffIntegratorDeclared() const { return ""; }
+    // `solver { threads N; }` (0 = absent): the threads the adaptive driver may
+    // spread INDEPENDENT vessels over (and a sensitivity block its integrations).
+    virtual std::size_t odeThreadsDeclared() const { return 0; }
+    // `solver { vessels coupled; }`: the case asks for the vessels of the run to
+    // be integrated TOGETHER, on one step, even when they are independent.
+    virtual bool odeVesselsCoupledDeclared() const { return false; }
+    // `solver { denseOutput hermite; }` (C473 h): write the rows between steps from the
+    // driver's cubic Hermite, not the integrator's own dense output.
+    virtual bool odeDenseHermiteDeclared() const { return false; }
+    // Was the `vessels` key declared at all (either word)?  A declared key that the run
+    // cannot honour is announced.
+    virtual bool odeVesselsKeyDeclared() const { return false; }
     virtual std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const
     { return nullptr; }
     virtual void odeJacobianSparse(const sVector& /*y*/, const sVector& /*f0*/,

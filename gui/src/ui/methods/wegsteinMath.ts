@@ -29,10 +29,11 @@
   PLANE B, THE TRANSPARENT ONE, IS THE RECURSION ITSELF, and it is here
   because THE ENGINE DOES NOT PUBLISH IT.  `Wegstein::lastQ()` exists and is
   commented "for logging" (src/solver/Wegstein.H:98-99); nothing in the
-  recycle loop prints it, and the iteration table's own `γ-info` column
+  recycle loop prints it (it prints only HOW OFTEN the clamp cut q, per
+  tear, since C22), and the iteration table's own `γ-info` column
   carries the energy-tear relative change instead
   (src/unitOperations/flowsheet/Flowsheet.cpp:3536, filled at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3677-3678).  So there is no run,
+  src/unitOperations/flowsheet/Flowsheet.cpp:3683-3684).  So there is no run,
   in this tree, from which a student can read the per-variable secant slope
   `s_i` or the coefficient `q_i` that it produces — and those two numbers ARE
   the method.  The page therefore drives the recursion over a DECLARED toy
@@ -41,9 +42,9 @@
 
   WHAT MAKES THE TOY LEGITIMATE RATHER THAN A SECOND HOME.  `wegsteinStep`
   below is a transcription of `Wegstein::step`
-  (src/solver/Wegstein.cpp:49-92), line for line including the two degeneracy
+  (src/solver/Wegstein.cpp:51-96), line for line including the two degeneracy
   guards and their literal epsilons (the third guard, no step toward a
-  negative pressure, Wegstein.cpp:84-88, is omitted: the toy has no pressure), and it is pinned against
+  negative pressure, Wegstein.cpp:88-92, is omitted: the toy has no pressure), and it is pinned against
   hand-computable values in tests/wegsteinMath.test.ts.  What it is applied
   TO is a two-variable linear map this module declares in full — no
   thermodynamics, no unit operation, nothing the engine could disagree with.
@@ -54,7 +55,7 @@
   THE QUESTION THIS PAGE WAS BUILT TO ANSWER, the one a student asks next: how
   does one accelerator serve a tear vector that holds a molar flow AND a
   temperature?  The answer is that it never compares them.  Wegstein here is
-  COMPONENT-WISE (src/solver/Wegstein.cpp:67-86): each entry of the vector
+  COMPONENT-WISE (src/solver/Wegstein.cpp:71-92): each entry of the vector
   gets its own secant slope and its own coefficient, and the secant
   `s_i = (g_i^k − g_i^{k−1}) / (x_i^k − x_i^{k−1})` is a ratio of two
   differences IN THE SAME UNIT, so it is dimensionless — and invariant under
@@ -75,13 +76,13 @@
   temperature in kelvin and a pressure in bar, with no per-variable scale.
   The Newton branch of the same function does NOT do this: it tears on
   component molar flows plus T and P
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3753-3762) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3795-3804) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3817-3836, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3859), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3859-3878, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3901), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3817-3821).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3859-3863).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -95,7 +96,7 @@ import type { DictOverride } from "../../case/methodRun.js";
 // ---- The transcription -----------------------------------------------------
 
 /** The two literal guards of `Wegstein::step`, with the engine's own values
- *  and the engine's own names (src/solver/Wegstein.cpp:64-65).  They are not
+ *  and the engine's own names (src/solver/Wegstein.cpp:66-67).  They are not
  *  decoration: `epsX` is why a variable that has not moved keeps `q = 0`
  *  instead of dividing by zero, and `epsS` is why a map that is locally a
  *  pure translation (`g ≈ x + c`, slope exactly 1, no fixed point in sight
@@ -133,7 +134,7 @@ export interface VariableStep {
 }
 
 /** Component-wise Wegstein, transcribed from `Wegstein::step`
- *  (src/solver/Wegstein.cpp:49-92).  `prev` is null on the first call, which
+ *  (src/solver/Wegstein.cpp:51-96).  `prev` is null on the first call, which
  *  is the engine's `ncalls_ == 0` branch (:53-62): no history, so the step IS
  *  direct substitution and every q is recorded as 0.
  *
@@ -348,7 +349,7 @@ interface DriveOptions {
 }
 
 /** WEGSTEIN — the accelerator, driven exactly as `Flowsheet`'s recycle branch
- *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3531-3704): pack,
+ *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3537-3710): pack,
  *  sweep, measure `normL2(gx, x)`, test, then accelerate and unpack.  The
  *  test comes BEFORE the acceleration, which is why a converged run's last
  *  recorded step has no coefficients: the loop broke out of it. */
@@ -437,7 +438,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows plus
  *  T and P rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3753-3762).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3795-3804).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;

@@ -1961,29 +1961,6 @@
         }
       ]
     },
-    "transfer-unit": {
-      "references": [
-        {
-          "text": "Chilton, T. H.; Colburn, A. P. (1935). Distillation and Absorption in Packed Columns: A Convenient Design and Correlation Method. Ind. Eng. Chem. 27(3), 255–260.",
-          "doi": "10.1021/ie50303a004",
-          "note": "Where the height of a transfer unit was introduced; the paper itself is not on file, so no equation of it is quoted.",
-          "verified": {
-            "method": "crossref",
-            "evidence": "api.crossref.org/works?query.bibliographic=Chilton+Colburn+1935: authors, title, container, volume, pages and year matched (C222, 2026-11-22); also listed as a reference of Treybal 3rd ed., 'Ind. Eng. Chem., 27, 255 (1935)'",
-            "date": "2026-11-22"
-          }
-        },
-        {
-          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
-          "note": "Eq. (8.24)-(8.25) and the sentence on H_tG being more constant than G or F_G a; Eq. (8.37) H_tOG; Eq. (8.50) N_tOG for a dilute absorber.",
-          "verified": {
-            "method": "pdf",
-            "evidence": "~/Choupo-Literature/Books/treybal-mass-transfer-operations-3ed.pdf read at Eqs. 8.24, 8.25, 8.37 and 8.50 (C222, 2026-11-22); Open Library ISBN 9780070651760 matched the title, edition, publisher and year (C259 separations/heat/control audit)",
-            "date": "2026-11-22"
-          }
-        }
-      ]
-    },
     "campaign-plan": {
       "references": [
         {
@@ -2467,30 +2444,6 @@
             "method": "official",
             "evidence": "data.nist.gov/rmm/records?@id=ark:/88434/mds2-2422: title, DOI, version 1.2.6, licence field and the file name read (C334)",
             "date": "2026-11-12"
-          }
-        }
-      ]
-    },
-    "sentence-to-decision": {
-      "references": [
-        {
-          "text": "Soujanya, J.; Satyavathi, B.; Vittal Prasad, T. E. (2010). Experimental (vapour + liquid) equilibrium data of (methanol + water), (water + glycerol) and (methanol + glycerol) systems at atmospheric and sub-atmospheric pressures. The Journal of Chemical Thermodynamics 42(5), 621–624.",
-          "doi": "10.1016/j.jct.2009.11.020",
-          "note": "The measured series the pair is fitted to (six isobars).",
-          "verified": {
-            "method": "crossref",
-            "evidence": "api.crossref.org/works/10.1016/j.jct.2009.11.020: authors, title, container, volume, issue, pages and year matched (C127)",
-            "date": "2026-11-22"
-          }
-        },
-        {
-          "text": "Yang, C.; Ma, S.; Yin, X. (2011). Organic Salt Effect of Tetramethylammonium Bicarbonate on the Vapor–Liquid Equilibrium of the Methanol–Water System. Journal of Chemical & Engineering Data 56(10), 3747–3751.",
-          "doi": "10.1021/je200341c",
-          "note": "The measured series the pair is held out against (one isobar at 101.32 kPa).",
-          "verified": {
-            "method": "crossref",
-            "evidence": "api.crossref.org/works/10.1021/je200341c: authors, title, container, volume, issue, pages and year matched (C127)",
-            "date": "2026-11-22"
           }
         }
       ]
@@ -3198,15 +3151,6 @@
             "evidence": "api.crossref.org/works/10.1021/ie50187a044: author Murphree, title, container, volume 17, issue 7, pages 747-750, year 1925 matched (equilibrium-or-rate-based commission)",
             "date": "2026-11-13"
           }
-        },
-        {
-          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
-          "note": "Section 7.6, Rate-Based Method for Packed Distillation Columns, printed p. 217: lambda = mV/L (Eq. 7-80), the local slope m = dy/dx (7-81), H_OG = H_G + lambda H_L (7-86) and HETP = H_OG ln(lambda)/(lambda - 1) (7-87), with Example 7.7 (lambda = 0.76, H_OG = 1.52 ft, HETP = 1.74 ft).",
-          "verified": {
-            "method": "pdf",
-            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; Eqs. 7-80 to 7-87 and Example 7.7 read in the text layer on PDF p. 241 (printed page = PDF page - 24); Example 7.7's first row recomputed: ln(0.76)/(0.76 - 1) x 1.52 = 1.74 (C395, where HETP fails)",
-            "date": "2026-11-22"
-          }
         }
       ]
     },
@@ -3620,6 +3564,171 @@
           "verified": {
             "method": "crossref",
             "evidence": "api.crossref.org/works/10.1039/TF9221700598: author, container, volume, pages and year matched; the same citation is reference [1] of Gilbert, Luther and Troe 1983 in the project's literature folder",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
+    "stiff-chemistry": {
+      "references": [
+        {
+          "text": "Hairer, E.; Wanner, G. (1996). Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems, 2nd ed. Springer Series in Computational Mathematics 14.",
+          "doi": "10.1007/978-3-642-05221-7",
+          "note": "The source of Rodas4 (Table 7.2), of the extrapolation method seulex (Section IV.9) and of the dense output the page names.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-3-642-05221-7: title, authors Hairer and Wanner, series and year 1996 matched (the DOI is of the online edition of the same book)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Hindmarsh, A. C.; Brown, P. N.; Grant, K. E.; Lee, S. L.; Serban, R.; Shumaker, D. E.; Woodward, C. S. (2005). SUNDIALS: Suite of nonlinear and differential/algebraic equation solvers. ACM Trans. Math. Softw. 31(3), 363-396.",
+          "doi": "10.1145/1089014.1089020",
+          "note": "The suite that contains CVODES, the variable-order BDF integrator Cantera uses.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1145/1089014.1089020: authors, title and subtitle, container, volume, issue, pages and year matched",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Amestoy, P. R.; Davis, T. A.; Duff, I. S. (1996). An approximate minimum degree ordering algorithm. SIAM J. Matrix Anal. Appl. 17(4), 886-905.",
+          "doi": "10.1137/S0895479894278952",
+          "note": "The family of orderings that keeps the fill of a sparse LU small; Choupo's sparse LU orders by minimum degree.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/S0895479894278952: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Miller, J. A.; Bowman, C. T. (1989). Mechanism and modeling of nitrogen chemistry in combustion. Prog. Energy Combust. Sci. 15(4), 287–338.",
+          "doi": "10.1016/0360-1285(89)90017-8",
+          "note": "The printed mechanism behind the two NOx cases the page uses (nox02 and nox03).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0360-1285(89)90017-8: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Goodwin, D. G.; Moffat, H. K.; Schoegl, I.; Speth, R. L.; Weber, B. W. (2025). Cantera: An Object-oriented Software Toolkit for Chemical Kinetics, Thermodynamics, and Transport Processes. Version 3.2.0.",
+          "doi": "10.5281/zenodo.17620923",
+          "note": "The reference solver the timings are compared with, cited as its CITATION.cff asks.",
+          "verified": {
+            "method": "official",
+            "evidence": "raw.githubusercontent.com/Cantera/cantera/main/CITATION.cff fetched 2026-11-22: authors, title, version 3.2.0, doi 10.5281/zenodo.17620923; api.datacite.org resolved the DOI to the same title, year 2025, version 3.2.0",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Weller, H. G.; Tabor, G.; Jasak, H.; Fureby, C. (1998). A tensorial approach to computational continuum mechanics using object-oriented techniques. Comput. Phys. 12(6), 620-631.",
+          "doi": "10.1063/1.168744",
+          "note": "The paper to cite for OpenFOAM, whose chemistry solvers the page compares.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.168744: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
+    "methane-assembly": {
+      "references": [
+        {
+          "text": "Miller, J. A.; Bowman, C. T. (1989). Mechanism and modeling of nitrogen chemistry in combustion. Prog. Energy Combust. Sci. 15(4), 287–338.",
+          "doi": "10.1016/0360-1285(89)90017-8",
+          "note": "The source of every carbon record of the page: Appendix A, pages 331 and 332 (the C1 chain and the ethane route), each record carrying its reaction number and page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0360-1285(89)90017-8: authors, title, container, volume, issue, pages and year matched; Appendix A was read from the page images in docs/reviews/2026-11-22-miller-bowman/ (two readings, every row with its page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Petersen, E. L.; Davidson, D. F.; Hanson, R. K. (1999). Ignition Delay Times of Ram Accelerator CH4/O2/Diluent Mixtures. J. Propulsion and Power 15(1), 82–91.",
+          "doi": "10.2514/2.5394",
+          "note": "The measurement: Table 1 (the mixtures, page 84) and Table 2 (the measured delays, page 86), and the definition of the ignition delay of page 83.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.2514/2.5394: authors, container, volume, issue, pages and year matched (the title matches with subscripts lost in the registry); Tables 1 and 2 were read from the page images in docs/reviews/2026-11-21-aramcomech-validation/ (petersen1999_table2.tsv)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Ó Conaire, M.; Curran, H. J.; Simmie, J. M.; Pitz, W. J.; Westbrook, C. K. (2004). A comprehensive modeling study of hydrogen oxidation. Int. J. Chem. Kinet. 36(11), 603–622.",
+          "doi": "10.1002/kin.20036",
+          "note": "The mechanism the cell runs: its Table I is the case's constant/reactions, with the Troe fall-off lines of H + O2 and of H2O2.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/kin.20036: authors, title, container, volume, pages and year matched; the PDF in ~/Choupo-Literature/Articles/Reactors-Kinetics/oconaire2004-hydrogen-oxidation-mechanism.pdf carries the same title, authors and DOI on its first page",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Metcalfe, W. K.; Burke, S. M.; Ahmed, S. S.; Curran, H. J. (2013). A Hierarchical and Comparative Kinetic Modeling Study of C1–C2 Hydrocarbon and Oxygenated Fuels. Int. J. Chem. Kinet. 45(10), 638–675.",
+          "doi": "10.1002/kin.20802",
+          "note": "The large modern mechanism (AramcoMech 1.3) the comparison table runs at the same points, in the same engine.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/kin.20802: authors, title, container, volume, issue, pages and year matched; the mechanism files of this paper were run by the review docs/reviews/2026-11-21-aramcomech-validation/",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Baulch, D. L.; Bowman, C. T.; Cobos, C. J.; Cox, R. A.; Just, Th.; Kerr, J. A.; Pilling, M. J.; Stocker, D.; Troe, J.; Tsang, W.; Walker, R. W.; Warnatz, J. (2005). Evaluated Kinetic Data for Combustion Modeling: Supplement II. J. Phys. Chem. Ref. Data 34(3), 757–1397.",
+          "doi": "10.1063/1.1748524",
+          "note": "The evaluated source the page names as the next step for the constants: its hydrogen and oxygen data sheets are read in docs/reviews/2026-11-21-kinetics-seed/; its carbon data sheets are not yet transcribed.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.1748524: title, container, volume, issue, pages and year matched, and the authors listed (Baulch, Bowman, Cobos, Cox, Just, Kerr ... Warnatz); the hydrogen and oxygen sheets were read for docs/reviews/2026-11-21-kinetics-seed/",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
+    "transfer-unit": {
+      "references": [
+        {
+          "text": "Chilton, T. H.; Colburn, A. P. (1935). Distillation and Absorption in Packed Columns: A Convenient Design and Correlation Method. Ind. Eng. Chem. 27(3), 255–260.",
+          "doi": "10.1021/ie50303a004",
+          "note": "Where the height of a transfer unit was introduced; the paper itself is not on file, so no equation of it is quoted.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works?query.bibliographic=Chilton+Colburn+1935: authors, title, container, volume, pages and year matched (C222, 2026-11-22); also listed as a reference of Treybal 3rd ed., 'Ind. Eng. Chem., 27, 255 (1935)'",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Eq. (8.24)-(8.25) and the sentence on H_tG being more constant than G or F_G a; Eq. (8.37) H_tOG; Eq. (8.50) N_tOG for a dilute absorber.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/treybal-mass-transfer-operations-3ed.pdf read at Eqs. 8.24, 8.25, 8.37 and 8.50 (C222, 2026-11-22); Open Library ISBN 9780070651760 matched the title, edition, publisher and year (C259 separations/heat/control audit)",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
+    "sentence-to-decision": {
+      "references": [
+        {
+          "text": "Soujanya, J.; Satyavathi, B.; Vittal Prasad, T. E. (2010). Experimental (vapour + liquid) equilibrium data of (methanol + water), (water + glycerol) and (methanol + glycerol) systems at atmospheric and sub-atmospheric pressures. The Journal of Chemical Thermodynamics 42(5), 621–624.",
+          "doi": "10.1016/j.jct.2009.11.020",
+          "note": "The measured series the pair is fitted to (six isobars).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2009.11.020: authors, title, container, volume, issue, pages and year matched (C127)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Yang, C.; Ma, S.; Yin, X. (2011). Organic Salt Effect of Tetramethylammonium Bicarbonate on the Vapor–Liquid Equilibrium of the Methanol–Water System. Journal of Chemical & Engineering Data 56(10), 3747–3751.",
+          "doi": "10.1021/je200341c",
+          "note": "The measured series the pair is held out against (one isobar at 101.32 kPa).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je200341c: authors, title, container, volume, issue, pages and year matched (C127)",
             "date": "2026-11-22"
           }
         }

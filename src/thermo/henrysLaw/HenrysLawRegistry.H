@@ -31,8 +31,10 @@ Class
 Description
     Singleton lookup for HenrysLaw records, keyed by the ordered pair
     (solute, solvent).  Files matching
-    `data/standards/parameters/Henry/<solute>-<solvent>.dat` are loaded once
-    at start-up by the application's main().
+    `data/standards/parameters/Henry/<solute>-<solvent>.dat` are registered at
+    start-up by the application's main() (loadFrom) and READ, the whole
+    directory, on the first has() / byPair() / availableNames(): a run that
+    asks for no Henry constant parses none (2026-11-22).
 
     Same shape as MembraneRegistry / MaterialRegistry.
 \*---------------------------------------------------------------------------*/
@@ -50,6 +52,12 @@ class HenrysLawRegistry
 {
 public:
     static void loadFrom(const std::string& dataRoot);
+
+    // Read the registry now if loadFrom() deferred it.  ThermoPackage calls it
+    // when a Henry solvent is declared, so a malformed record refuses at
+    // start-up, where it always did, and not inside some later catch.  A load
+    // that failed rethrows the same exception without re-reading the files.
+    static void ensureLoaded();
 
     // True iff a HenrysLaw entry exists for (solute, solvent).
     static bool has(const std::string& solute, const std::string& solvent);

@@ -62,7 +62,8 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
-  | "database-to-parameters" | "sentence-to-decision" | "open-molecular-tools"
+  | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry"
+  | "sentence-to-decision"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -84,7 +85,7 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis" | "how-do-we-know-k" | "transfer-unit" | "loop-placement";
+  | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -269,6 +270,7 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "reaction-enthalpy", why: "The heat of reaction, and how it moves with temperature." },
       { tool: "reactor-ladder", why: "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers." },
       { tool: "how-do-we-know-k", why: "Where the rate constant of that last rung comes from: a decay, a straight line, an Arrhenius plot and a fall-off." },
+      { tool: "methane-assembly", why: "Many rate constants at once: assemble methane combustion from the reaction library, rung by rung, against a shock-tube measurement." },
       { tool: "limiting-reactant", why: "Feed ratios and the limiting reactant once a recycle closes the loop." },
       { tool: "levenspiel", why: "Sizing: the PFR integral against the CSTR rectangle for the same conversion." },
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
@@ -554,6 +556,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "how to run a first example with no installation, where it meets a "
       + "Choupo record, and one thesis idea.",
     theory: "ch:cosmosac",
+  },
+  {
+    //  WHY CHEMISTRY IS STIFF AND HOW A SOLVER GOES FAST (2026-11-22, the
+    //  proposal Vitor approved): the day's measured work on combustion and NOx
+    //  kinetics told as a lesson.  A NOTES page; every table is a RECORDED
+    //  run (the work counters need an environment variable a browser cannot
+    //  set), and the page says so.
+    id: "stiff-chemistry", blurb: "Why combustion chemistry needs a stiff solver, and what makes one fast.",
+    label: "Why is chemistry stiff, and how do solvers go fast?",
+    discipline: "Flowsheeting & numerics",
+    kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "Why a combustion or NOx case needs a stiff solver: time scales "
+      + "from nanoseconds to milliseconds and the Jacobian's eigenvalues, why "
+      + "explicit RK4 and semi-implicit Euler fail on the shipped ignition "
+      + "cases, three Jacobians (finite differences, Choupo's audited analytic "
+      + "one, OpenFOAM's approximate fall-off), what an implicit step's LU "
+      + "does and when sparse beats dense, Rosenbrock23, Rodas4, seulex and "
+      + "CVODES by their counts, the cost of one evaluation, many reactors, "
+      + "dense output, and the day's journey from far slower than Cantera as "
+      + "a lesson in method.",
+    theory: "ch:stiff-ode",
   },
   {
     //  THE PROPERTY-DATA LESSON that used to sit inside the temperature
@@ -1307,6 +1331,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the engine announced, and the last panel shows where the method breaks: a "
       + "small excess and the secondary reactions the engine's own rates of "
       + "production name.",
+    theory: "ch:gas-kinetics",
+  },
+  //  COMMISSIONED 2026-11-22 (DEV.md 4c C458, remainder; scope approved 2026-11-22): the
+  //  student ASSEMBLES methane combustion from the reaction library and watches the
+  //  mechanism grow.  A CONSTRUCTION with seven shipped cases run in the browser
+  //  (tutorials/batch/combustion/methane01..07: one Petersen, Davidson and Hanson 1999
+  //  point, the same vessel, only the reaction sets differ) and a recorded table of 31
+  //  points (docs/reviews/2026-11-22-methane-lesson/).
+  {
+    id: "methane-assembly", blurb: "Assemble methane combustion from the reaction library, against a shock tube.",
+    label: "Assemble methane combustion",
+    discipline: "Reaction engineering", kind: "construction", status: "live",
+    origins: ["engine", "reference", "assumption"],
+    teaches: "How a mechanism is assembled and what each piece buys: the hydrogen and oxygen "
+      + "core from the reaction library, then the carbon chain (the attack on methane, the "
+      + "methyl step, formaldehyde to carbon monoxide, carbon monoxide to carbon dioxide, "
+      + "and the ethane route), each rung a shipped case whose ignition delay the engine "
+      + "prints against one shock-tube measurement.  The sensitivity of the delay to every "
+      + "rate constant shows that two methyl reactions decide it, which is why a small "
+      + "hand-assembled set follows a large mechanism, and the recorded comparison at 31 "
+      + "points shows where the assembled set, like the mechanism it was taken from, is too "
+      + "slow.  The constants are one published mechanism's, not evaluated data.",
     theory: "ch:gas-kinetics",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se

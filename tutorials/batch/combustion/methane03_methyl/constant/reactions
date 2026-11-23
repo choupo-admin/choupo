@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  methane03_methyl / reactions -- READ FROM THE KINETICS LIBRARY (data/standards/kinetics/).
+  + the methyl step: CH3 -> CH3O -> CH2O.
+  The H2/O2 core is O Conaire et al. 2004 (Int. J. Chem. Kinet. 36, 603, Table I); the carbon chain is
+  Miller & Bowman 1989 (Prog. Energy Combust. Sci. 15, 287, Appendix A, pp. 331-332), every record with its
+  page.  They are ONE mechanism's values, not evaluated constants (Baulch et al. 2005, Tsang & Hampson 1986
+  are the evaluated sources and are not yet transcribed in this tree).  Reverse rates from equilibrium.
+\*-----------------------------------------------------------------------------*/
+
+provenance
+{
+    status  "CURATED -- reaction sets of the kinetics library: OConaire2004, MB1989_attack, MB1989_methyl";
+    review  { state transcribed; reviewer "session 2026-11-22 (library records held to the page tables by check_kinetics_library)"; }
+    kinetics_source  "data/standards/kinetics/ sets OConaire2004, MB1989_attack, MB1989_methyl";
+    thermo_source    "case-local NASA-9 (NASA/TP-2002-211556) for the stable species; the NASA table for the radicals";
+}
+
+reactionSets ( OConaire2004 MB1989_attack MB1989_methyl );

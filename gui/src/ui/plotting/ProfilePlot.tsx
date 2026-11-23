@@ -46,7 +46,7 @@ import { Chip, Group, SegmentedControl, Stack, Text } from "@mantine/core";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
 import {
-  groupProfileSeries, initiallyDrawn, panelDomains,
+  groupProfileSeries, initiallyDrawn, panelDomains, profileXAxisTitle,
   type ProfileGroup,
 } from "../../case/profileSeries.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
@@ -260,7 +260,7 @@ function ProfileBody({ profile: active }: { profile: UnitProfile }) {
               },
               xaxis: {
                 ...darkLayout.xaxis,
-                title: { text: active.xAxis },
+                title: { text: profileXAxisTitle(active.xAxis, x) },
                 anchor: lastY,
                 ...(logX ? { type: "log" as const } : {}),
               },

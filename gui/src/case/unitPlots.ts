@@ -94,6 +94,31 @@ export const UNIT_PLOT_LABEL: Record<UnitPlotKey, string> = {
   convergence: "Convergence",
 };
 
+/** The tree with the units that published nothing taken out (C266 item 3: eight
+ *  grey "nothing published" rows buried the plots on the reference plant).  The
+ *  empty ones come back as ONE flat list, qualified names, for a single
+ *  collapsed line; a sector whose units are all empty disappears from the
+ *  tree.  Nothing is dropped: every node is in exactly one of the two outputs. */
+export function splitEmptyUnits(tree: ReadonlyArray<UnitTreeEntry>): {
+  tree: UnitTreeEntry[]; empty: UnitNode[];
+} {
+  const out: UnitTreeEntry[] = [];
+  const empty: UnitNode[] = [];
+  for (const e of tree) {
+    if (e.kind === "unit") {
+      if (e.node.plots.length === 0) empty.push(e.node);
+      else out.push(e);
+    } else {
+      const keep = e.group.units.filter((n) => n.plots.length > 0);
+      for (const n of e.group.units) {
+        if (n.plots.length === 0) empty.push({ ...n, label: n.unit });
+      }
+      if (keep.length > 0) out.push({ kind: "sector", group: { ...e.group, units: keep } });
+    }
+  }
+  return { tree: out, empty };
+}
+
 export function unitPlotTree(input: UnitPlotInput): UnitTreeEntry[] {
   const profiled = new Set((input.profiles ?? []).map((p) => p.unit));
   const traced = new Set((input.convergence ?? []).map((c) => c.label));

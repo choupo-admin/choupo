@@ -57,6 +57,8 @@ import { IconArrowsMaximize, IconDownload } from "@tabler/icons-react";
 import Plotly from "plotly.js-basic-dist-min";
 
 import { Plot, PLOT_CONFIG, darkLayout } from "./plotly.js";
+import { axisRange, axisTitle, viewAxesExtras } from "./viewAxes.js";
+export { axisRange, axisTitle };
 import {
   csvHeader, formatCell, plotSeries, tableRows,
   type PostItem, type PostPlot, type PostReference, type PostRowsTable, type PostSeriesTable,
@@ -84,19 +86,6 @@ export function seriesMode(style: string, role: string): "lines" | "markers" | "
   if (style === "markers") return "markers";
   if (style === "linesMarkers") return "lines+markers";
   return role === "experiment" ? "markers" : role === "computed" ? "lines" : "lines+markers";
-}
-
-/** The range a case declared for an axis (C271), in Plotly's terms: a log axis is
- *  ranged in decades.  Only where BOTH ends are declared; else Plotly autoranges. */
-export function axisRange(a: { scale: "linear" | "log"; min?: number; max?: number }): { range?: [number, number] } {
-  if (a.min === undefined || a.max === undefined) return {};
-  return a.scale === "log" && a.min > 0 && a.max > 0
-    ? { range: [Math.log10(a.min), Math.log10(a.max)] }
-    : { range: [a.min, a.max] };
-}
-
-export function axisTitle(a: { label: string; unit: string }): string {
-  return a.unit && a.unit !== "-" ? `${a.label} [${a.unit}]` : a.label;
 }
 
 function download(name: string, text: string) {
@@ -150,6 +139,7 @@ function PlotFigure({ item, csv, references, onEnlarge, height }: {
     const filled = s.role === "experiment" || mode === "markers";
     const t: any = {
       type: "scatter", mode, name: s.label, x: p.x, y: p.y,
+      ...(s.axis === "right" ? { yaxis: "y2" } : {}),
       line: { color: colour, width: s.role === "computed" ? 2.2 : 1.6, dash },
       marker: { color: filled ? colour : "rgba(0,0,0,0)", size: filled ? 7 : 6,
                 symbol: s.role === "reference" ? "square-open" : filled ? "circle" : "circle-open",
@@ -183,6 +173,7 @@ function PlotFigure({ item, csv, references, onEnlarge, height }: {
     legend: { ...darkLayout.legend, orientation: "h", x: 0, y: -0.3, yanchor: "top", font: { size: 11 } },
     showlegend: traces.length > 1,
   };
+  Object.assign(layout, viewAxesExtras(item, darkLayout.yaxis));
   if (item.type === "residuals")
     layout.shapes = [{ type: "line", xref: "paper", x0: 0, x1: 1, y0: 0, y1: 0,
                        line: { color: "#868e96", width: 1, dash: "dot" } }];

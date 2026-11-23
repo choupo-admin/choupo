@@ -210,9 +210,13 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
       layout={{
 ...darkLayout,
         title: { text: title ?? "Trajectory", font: {...darkLayout.font, size: 14 } },
-        xaxis: {...darkLayout.xaxis, title: { text: "t [s]" } },
+        //  automargin: the right axis's ticks and the "t [s]" title were cut by
+        //  the panel edge (C266 item 5); Plotly grows the margin to fit them.
+        margin: { ...(darkLayout.margin ?? {}), r: hasRight ? 60 : (darkLayout.margin?.r ?? 20), b: 56 },
+        xaxis: {...darkLayout.xaxis, title: { text: "t [s]", standoff: 8 }, automargin: true },
         yaxis: {
 ...darkLayout.yaxis,
+          automargin: true,
           title: { text: leftTitle ?? "moles [kmol]" },
         },
         yaxis2: hasRight
@@ -223,6 +227,7 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
               },
               overlaying: "y",
               side: "right",
+              automargin: true,
               gridcolor: "rgba(255,255,255,0.04)",
               zerolinecolor: "rgba(255,255,255,0.10)",
               tickfont: { color: "rgba(255,255,255,0.75)" },

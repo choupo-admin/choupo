@@ -1,0 +1,528 @@
+{
+ "source": "data/standards/kinetics/ (make_points.py)",
+ "stages": [
+  {
+   "id": "core",
+   "label": "the H2/O2 core",
+   "sets": [
+    "OConaire2004"
+   ],
+   "reactions": [
+    {
+     "label": "R1_H_O2_O_OH",
+     "equation": "H + O2 = O + OH",
+     "page": 607,
+     "record": "H+O2=O+OH",
+     "reaction": "1"
+    },
+    {
+     "label": "R2_O_H2_H_OH",
+     "equation": "O + H2 = H + OH",
+     "page": 607,
+     "record": "H+OH=H2+O",
+     "reaction": "2"
+    },
+    {
+     "label": "R3_OH_H2_H_H2O",
+     "equation": "OH + H2 = H + H2O",
+     "page": 607,
+     "record": "H+water=H2+OH",
+     "reaction": "3"
+    },
+    {
+     "label": "R4_O_H2O_2OH",
+     "equation": "O + H2O = OH + OH",
+     "page": 607,
+     "record": "O+water=OH+OH",
+     "reaction": "4"
+    },
+    {
+     "label": "R5_H2_M_2H_M",
+     "equation": "H2 + M = H + H + M",
+     "page": 607,
+     "record": "H+H+M=H2+M",
+     "reaction": "5"
+    },
+    {
+     "label": "R6_2O_M_O2_M",
+     "equation": "O + O + M = O2 + M",
+     "page": 607,
+     "record": "O+O+M=O2+M",
+     "reaction": "6"
+    },
+    {
+     "label": "R7_O_H_M_OH_M",
+     "equation": "O + H + M = OH + M",
+     "page": 607,
+     "record": "H+O+M=OH+M",
+     "reaction": "7"
+    },
+    {
+     "label": "R8_H_OH_M_H2O_M",
+     "equation": "H + OH + M = H2O + M",
+     "page": 607,
+     "record": "H+OH+M=water+M",
+     "reaction": "8"
+    },
+    {
+     "label": "R9_H_O2_M_HO2",
+     "equation": "H + O2 + M = HO2 + M (low-pressure limit k0)",
+     "page": 607,
+     "record": "H+O2(+M)=HO2(+M)",
+     "reaction": "9"
+    },
+    {
+     "label": "R10_HO2_H_H2_O2",
+     "equation": "HO2 + H = H2 + O2",
+     "page": 607,
+     "record": "H+HO2=H2+O2",
+     "reaction": "10"
+    },
+    {
+     "label": "R11_HO2_H_2OH",
+     "equation": "HO2 + H = OH + OH",
+     "page": 607,
+     "record": "H+HO2=OH+OH",
+     "reaction": "11"
+    },
+    {
+     "label": "R12_HO2_O_OH_O2",
+     "equation": "HO2 + O = OH + O2",
+     "page": 607,
+     "record": "HO2+O=O2+OH",
+     "reaction": "12"
+    },
+    {
+     "label": "R13_HO2_OH_H2O_O2",
+     "equation": "HO2 + OH = H2O + O2",
+     "page": 607,
+     "record": "HO2+OH=O2+water",
+     "reaction": "13"
+    },
+    {
+     "label": "R14a_2HO2_H2O2_O2",
+     "equation": "HO2 + HO2 = H2O2 + O2 (term 1 of sum, fn h)",
+     "page": 607,
+     "record": "H2O2+O2=HO2+HO2@1",
+     "reaction": "14"
+    },
+    {
+     "label": "R14b_2HO2_H2O2_O2",
+     "equation": "HO2 + HO2 = H2O2 + O2 (term 1 of sum, fn h)",
+     "page": 607,
+     "record": "H2O2+O2=HO2+HO2@2",
+     "reaction": "14"
+    },
+    {
+     "label": "R15_H2O2_M_2OH",
+     "equation": "H2O2 + M = OH + OH + M (low-pressure limit k0)",
+     "page": 607,
+     "record": "H2O2(+M)=OH+OH(+M)",
+     "reaction": "15"
+    },
+    {
+     "label": "R16_H2O2_H_H2O_OH",
+     "equation": "H2O2 + H = H2O + OH",
+     "page": 607,
+     "record": "H+H2O2=OH+water",
+     "reaction": "16"
+    },
+    {
+     "label": "R17_H2O2_H_H2_HO2",
+     "equation": "H2O2 + H = H2 + HO2",
+     "page": 607,
+     "record": "H+H2O2=H2+HO2",
+     "reaction": "17"
+    },
+    {
+     "label": "R18_H2O2_O_OH_HO2",
+     "equation": "H2O2 + O = OH + HO2",
+     "page": 607,
+     "record": "H2O2+O=HO2+OH",
+     "reaction": "18"
+    },
+    {
+     "label": "R19a_H2O2_OH_H2O_HO2",
+     "equation": "H2O2 + OH = H2O + HO2 (term 1 of sum, fn h)",
+     "page": 607,
+     "record": "H2O2+OH=HO2+water@1",
+     "reaction": "19"
+    },
+    {
+     "label": "R19b_H2O2_OH_H2O_HO2",
+     "equation": "H2O2 + OH = H2O + HO2 (term 1 of sum, fn h)",
+     "page": 607,
+     "record": "H2O2+OH=HO2+water@2",
+     "reaction": "19"
+    }
+   ]
+  },
+  {
+   "id": "attack",
+   "label": "CH4 is attacked",
+   "sets": [
+    "MB1989_attack"
+   ],
+   "reactions": [
+    {
+     "label": "A3",
+     "equation": "CH4 + O2 = CH3 + HO2",
+     "page": 331,
+     "record": "CH3+HO2=CH4+O2",
+     "reaction": "3"
+    },
+    {
+     "label": "A4",
+     "equation": "CH4 + H = CH3 + H2",
+     "page": 331,
+     "record": "CH3+H2=CH4+H",
+     "reaction": "4"
+    },
+    {
+     "label": "A5",
+     "equation": "CH4 + OH = CH3 + H2O",
+     "page": 331,
+     "record": "CH3+water=CH4+OH",
+     "reaction": "5"
+    },
+    {
+     "label": "A5a",
+     "equation": "CH4 + O = CH3 + OH",
+     "page": 331,
+     "record": "CH3+OH=CH4+O",
+     "reaction": "5a"
+    },
+    {
+     "label": "A6",
+     "equation": "CH4 + HO2 = CH3 + H2O2",
+     "page": 331,
+     "record": "CH3+H2O2=CH4+HO2",
+     "reaction": "6"
+    }
+   ]
+  },
+  {
+   "id": "methyl",
+   "label": "CH3 is consumed",
+   "sets": [
+    "MB1989_methyl"
+   ],
+   "reactions": [
+    {
+     "label": "A2",
+     "equation": "CH3 + H(+M) = CH4(+M)",
+     "page": 331,
+     "record": "CH3+H(+M)=CH4(+M)",
+     "reaction": "2"
+    },
+    {
+     "label": "A7",
+     "equation": "CH3 + HO2 = CH3O + OH",
+     "page": 331,
+     "record": "CH3+HO2=CH3O+OH",
+     "reaction": "7"
+    },
+    {
+     "label": "A8",
+     "equation": "CH3 + O2 = CH3O + O",
+     "page": 331,
+     "record": "CH3+O2=CH3O+O",
+     "reaction": "8"
+    },
+    {
+     "label": "A9",
+     "equation": "CH3 + O = CH2O + H",
+     "page": 331,
+     "record": "CH3+O=H+HCHO",
+     "reaction": "9"
+    },
+    {
+     "label": "A11",
+     "equation": "CH3O + H = CH3 + OH",
+     "page": 331,
+     "record": "CH3+OH=CH3O+H",
+     "reaction": "11"
+    },
+    {
+     "label": "A12",
+     "equation": "CH3 + OH = CH2 + H2O",
+     "page": 331,
+     "record": "CH2+water=CH3+OH",
+     "reaction": "12"
+    },
+    {
+     "label": "A13",
+     "equation": "CH3 + H = CH2 + H2",
+     "page": 331,
+     "record": "CH2+H2=CH3+H",
+     "reaction": "13"
+    },
+    {
+     "label": "A14",
+     "equation": "CH3O + M = CH2O + H + M",
+     "page": 331,
+     "record": "CH3O+M=H+HCHO+M",
+     "reaction": "14"
+    },
+    {
+     "label": "A16",
+     "equation": "CH3O + H = CH2O + H2",
+     "page": 331,
+     "record": "CH3O+H=H2+HCHO",
+     "reaction": "16"
+    },
+    {
+     "label": "A18",
+     "equation": "CH3O + OH = CH2O + H2O",
+     "page": 331,
+     "record": "CH3O+OH=HCHO+water",
+     "reaction": "18"
+    },
+    {
+     "label": "A20",
+     "equation": "CH3O + O = CH2O + OH",
+     "page": 331,
+     "record": "CH3O+O=HCHO+OH",
+     "reaction": "20"
+    },
+    {
+     "label": "A22",
+     "equation": "CH3O + O2 = CH2O + HO2",
+     "page": 331,
+     "record": "CH3O+O2=HCHO+HO2",
+     "reaction": "22"
+    }
+   ]
+  },
+  {
+   "id": "formyl",
+   "label": "CH2O, HCO and CH2 go to CO",
+   "sets": [
+    "MB1989_formyl"
+   ],
+   "reactions": [
+    {
+     "label": "A26",
+     "equation": "CH2 + OH = CH2O + H",
+     "page": 331,
+     "record": "CH2+OH=H+HCHO",
+     "reaction": "26"
+    },
+    {
+     "label": "A42",
+     "equation": "CH2 + CO2 = CH2O + CO",
+     "page": 332,
+     "record": "CH2+CO2=CO+HCHO",
+     "reaction": "42"
+    },
+    {
+     "label": "A44",
+     "equation": "CH2 + O = CO + H2",
+     "page": 332,
+     "record": "CH2+O=CO+H2",
+     "reaction": "44"
+    },
+    {
+     "label": "A46",
+     "equation": "CH2 + O2 = CH2O + O",
+     "page": 332,
+     "record": "CH2+O2=HCHO+O",
+     "reaction": "46"
+    },
+    {
+     "label": "A47",
+     "equation": "CH2 + O2 = CO2 + H2",
+     "page": 332,
+     "record": "CH2+O2=CO2+H2",
+     "reaction": "47"
+    },
+    {
+     "label": "A48",
+     "equation": "CH2 + O2 = CO + H2O",
+     "page": 332,
+     "record": "CH2+O2=CO+water",
+     "reaction": "48"
+    },
+    {
+     "label": "A49",
+     "equation": "CH2 + O2 = CO + OH + H",
+     "page": 332,
+     "record": "CH2+O2=CO+H+OH",
+     "reaction": "49"
+    },
+    {
+     "label": "A50",
+     "equation": "CH2 + O2 = HCO + OH",
+     "page": 332,
+     "record": "CH2+O2=HCO+OH",
+     "reaction": "50"
+    },
+    {
+     "label": "A51",
+     "equation": "CH2O + OH = HCO + H2O",
+     "page": 332,
+     "record": "HCHO+OH=HCO+water",
+     "reaction": "51"
+    },
+    {
+     "label": "A52",
+     "equation": "CH2O + H = HCO + H2",
+     "page": 332,
+     "record": "H+HCHO=H2+HCO",
+     "reaction": "52"
+    },
+    {
+     "label": "A53",
+     "equation": "CH2O + M = HCO + H + M",
+     "page": 332,
+     "record": "H+HCO+M=HCHO+M",
+     "reaction": "53"
+    },
+    {
+     "label": "A54",
+     "equation": "CH2O + O = HCO + OH",
+     "page": 332,
+     "record": "HCHO+O=HCO+OH",
+     "reaction": "54"
+    },
+    {
+     "label": "A55",
+     "equation": "HCO + OH = H2O + CO",
+     "page": 332,
+     "record": "CO+water=HCO+OH",
+     "reaction": "55"
+    },
+    {
+     "label": "A56",
+     "equation": "HCO + M = H + CO + M",
+     "page": 332,
+     "record": "CO+H+M=HCO+M",
+     "reaction": "56"
+    },
+    {
+     "label": "A57",
+     "equation": "HCO + H = CO + H2",
+     "page": 332,
+     "record": "CO+H2=H+HCO",
+     "reaction": "57"
+    },
+    {
+     "label": "A58",
+     "equation": "HCO + O = CO + OH",
+     "page": 332,
+     "record": "CO+OH=HCO+O",
+     "reaction": "58"
+    },
+    {
+     "label": "A59",
+     "equation": "HCO + O = CO2 + H",
+     "page": 332,
+     "record": "CO2+H=HCO+O",
+     "reaction": "59"
+    },
+    {
+     "label": "A60",
+     "equation": "HCO + O2 = HO2 + CO",
+     "page": 332,
+     "record": "CO+HO2=HCO+O2",
+     "reaction": "60"
+    }
+   ]
+  },
+  {
+   "id": "carbonMonoxide",
+   "label": "CO goes to CO2",
+   "sets": [
+    "MB1989_carbonMonoxide"
+   ],
+   "reactions": [
+    {
+     "label": "A61",
+     "equation": "CO + O + M = CO2 + M",
+     "page": 332,
+     "record": "CO+O+M=CO2+M",
+     "reaction": "61"
+    },
+    {
+     "label": "A62",
+     "equation": "CO + OH = CO2 + H",
+     "page": 332,
+     "record": "CO+OH=CO2+H",
+     "reaction": "62"
+    },
+    {
+     "label": "A63",
+     "equation": "CO + O2 = CO2 + O",
+     "page": 332,
+     "record": "CO+O2=CO2+O",
+     "reaction": "63"
+    },
+    {
+     "label": "A64",
+     "equation": "HO2 + CO = CO2 + OH",
+     "page": 332,
+     "record": "CO+HO2=CO2+OH",
+     "reaction": "64"
+    }
+   ]
+  },
+  {
+   "id": "ethane",
+   "label": "two CH3 make ethane",
+   "sets": [
+    "MB1989_ethane"
+   ],
+   "reactions": [
+    {
+     "label": "A1",
+     "equation": "2CH3(+M) = C2H6(+M)",
+     "page": 331,
+     "record": "CH3+CH3(+M)=ethane(+M)",
+     "reaction": "1"
+    },
+    {
+     "label": "A65",
+     "equation": "C2H6 + CH3 = C2H5 + CH4",
+     "page": 332,
+     "record": "C2H5+CH4=CH3+ethane",
+     "reaction": "65"
+    },
+    {
+     "label": "A66",
+     "equation": "C2H6 + H = C2H5 + H2",
+     "page": 332,
+     "record": "C2H5+H2=H+ethane",
+     "reaction": "66"
+    },
+    {
+     "label": "A67",
+     "equation": "C2H6 + O = C2H5 + OH",
+     "page": 332,
+     "record": "C2H5+OH=O+ethane",
+     "reaction": "67"
+    },
+    {
+     "label": "A68",
+     "equation": "C2H6 + OH = C2H5 + H2O",
+     "page": 332,
+     "record": "C2H5+water=OH+ethane",
+     "reaction": "68"
+    },
+    {
+     "label": "A74",
+     "equation": "C2H5 + H = 2CH3",
+     "page": 332,
+     "record": "C2H5+H=CH3+CH3",
+     "reaction": "74"
+    },
+    {
+     "label": "A75",
+     "equation": "C2H5 + O2 = C2H4 + HO2",
+     "page": 332,
+     "record": "C2H5+O2=HO2+ethylene",
+     "reaction": "75"
+    }
+   ]
+  }
+ ]
+}

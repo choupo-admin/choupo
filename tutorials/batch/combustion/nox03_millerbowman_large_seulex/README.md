@@ -10,12 +10,14 @@ Hairer & Wanner (1996, IV.9) that OpenFOAM's chemistry uses by default, instead 
 step) and ~640 factorisations of W (one per extrapolation column, because W = I - h_j J changes with the
 sub-step h_j = H/n_j).  The final state (the post-ignition equilibrium) agrees with the Rosenbrock23 case.
 
-**A limit to read before trusting the trajectory.**  Between its steps the driver interpolates with a CUBIC
-HERMITE polynomial (dense output).  seulex takes steps much larger than Rodas4 and the interpolant, not the
-method, then limits the accuracy of the rows written inside the induction period (t = 1 and 2 ms: up to
-1e-4 relative in a species at rtol 1e-8, up to 2e-1 at 1e-10, against 2.6e-5 for Rodas4).  At the step ENDS the method is as
-accurate as Rodas4 (4e-5 at rtol 1e-8, 4e-7 at 1e-10; Cantera comparison in docs/reviews/2026-11-22-seulex).  Tight
-`deltaTmax` hides this; it is not done here on purpose.
+**Between the steps.**  The rows written between two steps come from seulex's OWN dense output, the
+polynomial through the sub-steps of the step (Hairer & Wanner IV.9, Theory Guide *Dense output: the extrapolated
+polynomial*), not from the driver's cubic Hermite as before 2026-11-22 (which put the rows inside the induction
+period 4e-2 of a column maximum away from a tight reference).  Grid error against a tight reference, 1 ms
+grid: 2.4e-4 at rtol 1e-8 and 2.2e-4 at 1e-10 with `linearSolver dense`, 6.8e-5 and 4.1e-5 with `sparse`
+(the step ends themselves: 9e-5, the floor `atol` sets on the trace columns); the dense and sparse runs, which
+take the identical steps, differ by 2.4e-4 on the grid (they differed by 1.8e-2).  The polynomial's own error
+is not fed back into the step size (that would take 695 steps instead of 95).
 
 
 # nox03_millerbowman_large -- 235 reactions from a journal table, one batch vessel

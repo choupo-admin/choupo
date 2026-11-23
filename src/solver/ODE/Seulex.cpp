@@ -63,6 +63,190 @@ constexpr scalar kFac4  = 0.9;     // order increase when W(k) < W(k-1) * fac4
 //  The convergence monitor's threshold THET = min(1e-4, rtol) (seulex.f
 //  WORK(3)); ODEControls::jacobianRedo overrides it.
 
+//  ---- the dense output of the extrapolated step (C473 h) ----------------
+//  Hairer & Wanner II, IV.9 (after Hairer & Ostermann, "Dense output for
+//  extrapolation methods", Numer. Math. 58 (1990) 419-439): the polynomial is
+//  built from the SAME sub-steps the step took.  Column j has the sub-step
+//  values Y_{j,l} at t0 + l H/n_j, l = 0 .. n_j (Y_{j,0} = y0, Y_{j,n_j} =
+//  T_{j,1}).  A finite difference of order mu of these values,
+//      (n_j)^mu Delta^mu Y_{j,l0} = H^mu y^(mu)(t0 + l0 h_j) + O(H^(mu+1)),
+//  has an EXPANSION IN POWERS OF h_j = H/n_j -- the same expansion the
+//  extrapolation of the solution uses -- so the Aitken-Neville recursion of
+//  the tableau,
+//      D_{j,l} = D_{j,l-1} + (D_{j,l-1} - D_{j-1,l-1}) / (n_j/n_{j-l+1} - 1),
+//  applied to the columns that have enough sub-steps, gives the scaled
+//  derivative D_mu ~ H^mu y^(mu) at an END of the step.  Two ends are used:
+//    * the RIGHT end, backward differences Delta^mu Y_{j,n_j} (D^R_mu), where
+//      the sub-steps have tracked the slow manifold;
+//    * the LEFT end, forward differences from the sub-step l0 = 1 (D^L_mu),
+//      skipping the first sub-step because the accepted state y0 sits off the
+//      manifold by the step's tolerance and a fast component decays from that
+//      offset in it (taken at l0 = 0 the offset is multiplied by n_j^mu).
+//  The polynomial of degree mL + mR + 1 in s,
+//      p(s) = y0 + sum_{mu=1..mL} (D^L_mu / mu!) s^mu
+//             + s^(mL+1) sum_{k=0..mR} q_k (s-1)^k,
+//  has p(0) = y0 and p^(mu)(0) = D^L_mu / H^mu, and the q_k are fixed by
+//  p(1) = y1 = T_{kc,kc} and p^(mu)(1) = D^R_mu / H^mu, mu = 1..mR: Hermite
+//  data at both ends, taken from sub-steps instead of f(y).  mL = mR = 4
+//  (kMaxDeriv, and at most kc - 1).  Higher differences multiply the stiff
+//  Euler lag of the sub-steps by n_j^mu, so the order is a measured
+//  compromise (nox03, grid error against a tight reference at rtol 1e-8 /
+//  1e-10: mu <= 1: 1.6e-3 / 3.4e-3; 2: 2.3e-4 / 1.4e-3; 4: 2.4e-4 / 2.2e-4;
+//  6: 2.4e-4 / 1.3e-3; one-sided at the start, mu <= 10: 1.5e-1).  Nothing is
+//  multiplied by lambda h, and every coefficient is a combination of sub-step
+//  VALUES of the same iteration, so a linear invariant of the system is
+//  carried by every sub-step, hence by every difference and by p.
+//  The interpolant's own error is NOT fed back into the step size: doing so
+//  (tried: tolerance 10 on the scaled |p_m - p_(m-1)| at s = 1/2) took 695
+//  accepted steps for nox03 against 95, the cost of Rodas4, and moved every
+//  step end.
+constexpr int kMaxDeriv = 4;       // the highest derivative order at each end
+
+class SeulexDense final : public ODEDenseOutput
+{
+public:
+    //  head[j] = Y_{j,0..min(n_j, kMaxDeriv + 1)}, tail[j] = the LAST
+    //  min(n_j, kMaxDeriv) + 1 sub-step values of column j (tail[j].back() =
+    //  Y_{j,n_j}), j = 1 .. kc.
+    SeulexDense(scalar t0, scalar h, const sVector& y0, const sVector& y1,
+                const std::vector<std::vector<sVector>>& head,
+                const std::vector<std::vector<sVector>>& tail, int kc)
+    {
+        tStart_ = t0; h_ = h;
+        n_ = y0.size();
+        const std::size_t n = n_;
+        //  the left Taylor coefficients a_[mu] = D^L_mu / mu! (mu = 1..mL)
+        const int mL = leftOrder(kc), mR = rightOrder(kc);
+        mL_ = mL; mR_ = mR;
+        y0_ = y0;
+        aL_.assign(mL + 1, sVector(n, 0.0));
+        scalar fact = 1.0;
+        for (int mu = 1; mu <= mL; ++mu)
+        {
+            fact *= mu;
+            const sVector D = extrapolatedDifference(head, kc, mu, /*left*/ true);
+            for (std::size_t i = 0; i < n; ++i) aL_[mu][i] = D[i] / fact;
+        }
+        //  the right Taylor coefficients b_[mu] = D^R_mu / mu!, b_[0] = y1
+        std::vector<sVector> bR(mR + 1, sVector(n, 0.0));
+        bR[0] = y1;
+        fact = 1.0;
+        for (int mu = 1; mu <= mR; ++mu)
+        {
+            fact *= mu;
+            const sVector D = extrapolatedDifference(tail, kc, mu, /*left*/ false);
+            for (std::size_t i = 0; i < n; ++i) bR[mu][i] = D[i] / fact;
+        }
+        //  r(s) = Taylor_R(s) - T_L(s) in u = s - 1, to degree mR: the left
+        //  polynomial T_L(s) = y0 + sum a_mu s^mu re-expanded about s = 1
+        //  (s = 1 + u: s^mu = sum_k C(mu,k) u^k), r_k = b_k - [T_L]_k.
+        std::vector<sVector> r(mR + 1, sVector(n, 0.0));
+        for (int k = 0; k <= mR; ++k)
+        {
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                scalar tl = (k == 0) ? y0[i] : 0.0;
+                for (int mu = std::max(k, 1); mu <= mL; ++mu)
+                    tl += binom(mu, k) * aL_[mu][i];
+                r[k][i] = bR[k][i] - tl;
+            }
+        }
+        //  q(u) = r(u) / (1+u)^(mL+1) truncated at u^mR: coefficients of
+        //  (1+u)^(-(mL+1)) are C(-(mL+1), i) = (-1)^i C(mL+i, i).
+        q_.assign(mR + 1, sVector(n, 0.0));
+        for (int k = 0; k <= mR; ++k)
+            for (int i = 0; i <= k; ++i)
+            {
+                const scalar w = ((i % 2) ? -1.0 : 1.0) * binom(mL + i, i);
+                for (std::size_t c = 0; c < n; ++c) q_[k][c] += w * r[k - i][c];
+            }
+    }
+    void eval(scalar s, sVector& y) const override
+    {
+        y.resize(n_);
+        const scalar u = s - 1.0;
+        const scalar sp = std::pow(s, mL_ + 1);
+        for (std::size_t i = 0; i < n_; ++i)
+        {
+            scalar pl = 0.0;                                   // sum_{mu>=1} a_mu s^(mu-1)
+            for (int mu = mL_; mu >= 1; --mu) pl = pl * s + aL_[mu][i];
+            scalar pq = 0.0;                                   // sum_k q_k u^k
+            for (int k = mR_; k >= 0; --k) pq = pq * u + q_[k][i];
+            y[i] = y0_[i] + s * pl + sp * pq;
+        }
+    }
+private:
+    static scalar binom(int a, int k)
+    {
+        scalar b = 1.0;
+        for (int l = 0; l < k; ++l) b = b * (a - l) / (l + 1);
+        return b;
+    }
+    //  The highest order available at an end: mu <= kMaxDeriv and at most the
+    //  order of the step (kc), and the columns with enough sub-steps must exist.
+    //  A left-end order mu is used only where at least TWO columns support it
+    //  (n_j >= mu + 1 for j = kc - 1 and kc): from one column the difference is
+    //  a raw one-sided Euler quotient, never extrapolated, and on a non-stiff
+    //  step it is 10-90x worse than the cubic Hermite it replaces (review of
+    //  2026-11-22: Prothero-Robinson at lambda = -1, kc = 2).  With none the
+    //  polynomial is the right-end data and y0 alone, which is what Hairer's
+    //  seulex.f (CONTEX) does for every step: derivatives at the right end
+    //  from the last sub-steps, plus y0 and y1.
+    static int leftOrder(int kc)
+    {
+        int m = 0;
+        while (m < std::min(kc - 1, kMaxDeriv) && kc >= 2 && kSeq[kc - 1] >= m + 2) ++m;
+        return m;
+    }
+    static int rightOrder(int kc) { return std::min(kc - 1, kMaxDeriv); }
+    //  D_mu ~ H^mu y^(mu) at the left (forward differences from sub-step 1) or
+    //  right (backward from the last) end, extrapolated over the columns j >=
+    //  jmin that have n_j >= mu + (left ? 1 : 0) sub-steps.
+    sVector extrapolatedDifference(const std::vector<std::vector<sVector>>& win,
+                                   int kc, int mu, bool left) const
+    {
+        const std::size_t n = n_;
+        const int need = mu + (left ? 1 : 0);
+        int jmin = 1;
+        while (jmin < kc && kSeq[jmin] < need) ++jmin;
+        std::vector<sVector> prev(kc + 1), cur(kc + 1);
+        for (int j = jmin; j <= kc; ++j)
+        {
+            sVector d(n, 0.0);
+            scalar bn = 1.0;                                   // C(mu, l)
+            const std::size_t last = win[j].size() - 1;
+            for (int l = 0; l <= mu; ++l)
+            {
+                const std::size_t at = left ? std::size_t(1 + l) : last - l;
+                const scalar sgn = left ? (((mu - l) % 2) ? -1.0 : 1.0) : ((l % 2) ? -1.0 : 1.0);
+                for (std::size_t i = 0; i < n; ++i) d[i] += sgn * bn * win[j][at][i];
+                bn = bn * (mu - l) / (l + 1);
+            }
+            scalar scale = 1.0;
+            for (int e = 0; e < mu; ++e) scale *= kSeq[j];
+            for (std::size_t i = 0; i < n; ++i) d[i] *= scale;
+            prev[j] = std::move(d);
+        }
+        for (int l = 2; l <= kc - jmin + 1; ++l)
+        {
+            for (int j = jmin + l - 1; j <= kc; ++j)
+            {
+                const scalar ratio = scalar(kSeq[j]) / scalar(kSeq[j - l + 1]);
+                sVector d(n);
+                for (std::size_t i = 0; i < n; ++i)
+                    d[i] = prev[j][i] + (prev[j][i] - prev[j - 1][i]) / (ratio - 1.0);
+                cur[j] = std::move(d);
+            }
+            for (int j = jmin + l - 1; j <= kc; ++j) prev[j] = std::move(cur[j]);
+        }
+        return prev[kc];
+    }
+    std::size_t n_ = 0;
+    int mL_ = 0, mR_ = 0;
+    sVector y0_;
+    std::vector<sVector> aL_, q_;
+};
+
 scalar atolFor(const ODEControls& c, std::size_t i)
 {
     if (c.atol.empty()) return 1.0e-12;
@@ -178,7 +362,7 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
                 const auto Jref = detail::auditDifference(f, t, y, f0, sc, ctrl, evals);
                 A->auditEvals += evals;
                 A->nextAudit *= 2;
-                detail::auditAnalytic(SJ.dense(P), Jref, t, y, sc, *A);   // may refuse
+                detail::auditAnalytic(SJ.dense(P), Jref, t, y, sc, *A, &f0);   // may refuse
             }
             const bool r1 = !SJ.u.empty() && !SJ.v.empty();
             const std::vector<std::size_t> blk =
@@ -220,7 +404,7 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
                     const auto Jref = detail::auditDifference(f, t, y, f0, sc, ctrl, evals);
                     A->auditEvals += evals;
                     A->nextAudit *= 2;
-                    detail::auditAnalytic(Jd, Jref, t, y, sc, *A);        // may refuse
+                    detail::auditAnalytic(Jd, Jref, t, y, sc, *A, &f0);        // may refuse
                 }
             }
             else
@@ -376,6 +560,9 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
         return std::sqrt(s);
     };
 
+    //  The first sub-step values of every column of the attempt in progress,
+    //  kept only for the dense output (ctrl.onDense): sub[j][l] = Y_{j,l}.
+    std::vector<std::vector<sVector>> sub(kMaxColumns + 2), subHead(kMaxColumns + 2);
     scalar h0step = h;                       // the step of the attempt in progress
     //  ---- column j of the table: n_j linearly-implicit Euler sub-steps, the
     //  extrapolation, the error and the step it allows.  Sets atov when the
@@ -389,6 +576,8 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
         if (!factorW(hj)) return;
         sVector yy = y, fy = f0, fy1;
         bool haveFy1 = false;
+        std::vector<sVector> subJ, headJ;
+        if (ctrl.onDense) headJ.push_back(y);                         // Y_{j,0}
         for (int m = 0; m < nj; ++m)
         {
             const scalar tm = t + m * hj;
@@ -420,9 +609,23 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
                 if (theta > 1.0) return;
             }
             for (std::size_t i = 0; i < n; ++i) yy[i] += delta[i];
+            if (ctrl.onDense)
+            {
+                if (int(headJ.size()) <= kMaxDeriv + 1) headJ.push_back(yy);
+                subJ.push_back(yy);                                  // keep the LAST window
+                if (int(subJ.size()) > kMaxDeriv + 1) subJ.erase(subJ.begin());
+            }
         }
         if (!allFinite(yy)) return;
         T[j][1] = yy;
+        if (ctrl.onDense)
+        {
+            //  a short column: the tail window reaches back to Y_{j,0}
+            if (int(subJ.size()) < nj + 1 && int(subJ.size()) < kMaxDeriv + 1)
+                subJ.insert(subJ.begin(), y);
+            sub[j] = std::move(subJ);
+            subHead[j] = std::move(headJ);
+        }
         //  extrapolation in h: T_{j,l} from T_{j,l-1} and T_{j-1,l-1}
         for (int l = 2; l <= j; ++l)
         {
@@ -592,6 +795,13 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
         }
 
         // ---- accept: new state, then the next ORDER and STEP -------------------
+        std::shared_ptr<const ODEDenseOutput> dense;
+        if (ctrl.onDense)
+        {
+            auto sd = std::make_shared<SeulexDense>(t, hTry, y, ynew, subHead, sub, kcv);
+            sd->setStartSlope(f0);
+            dense = sd;
+        }
         y = ynew; t += hTry; ++st.accepted;
         f0Valid = false;
         calJac = false;
@@ -638,6 +848,7 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
         //  A step SHORTENED to land on t1 says little about the step the
         //  controller wanted: bound the next interval's start by it.
         hNext = (hTry < hWanted) ? std::min(hMax, std::min(hWanted, h)) : h;
+        if (dense) ctrl.onDense(dense);
         if (ctrl.onAccept) ctrl.onAccept(t, hTry);
         if (ctrl.onAcceptState) ctrl.onAcceptState(t, hTry, y);
     }

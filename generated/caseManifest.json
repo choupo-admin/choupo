@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1930,
+  "cases": 1938,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21512,6 +21512,104 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/combustion/methane01_h2o2_core": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane02_ch4_attack": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane03_methyl": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane04_formyl": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane05_c1_chain": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane06_assembled": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/methane07_sensitivity": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/nox01_zeldovich_postflame": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -22024,6 +22122,20 @@
    "hasGolden": true
   },
   "tutorials/batch/reactor/batch33_fast_intermediate_reduced": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch34_fractional_order_at_zero": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchReactor"
@@ -31018,6 +31130,13 @@
     "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/kinetics01_oh_decay",
     "tutorials/batch/combustion/kinetics02_h2o2_falloff",
+    "tutorials/batch/combustion/methane01_h2o2_core",
+    "tutorials/batch/combustion/methane02_ch4_attack",
+    "tutorials/batch/combustion/methane03_methyl",
+    "tutorials/batch/combustion/methane04_formyl",
+    "tutorials/batch/combustion/methane05_c1_chain",
+    "tutorials/batch/combustion/methane06_assembled",
+    "tutorials/batch/combustion/methane07_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/combustion/nox02_millerbowman_denox",
     "tutorials/batch/combustion/nox03_millerbowman_large",
@@ -31049,6 +31168,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -33028,6 +33148,13 @@
     "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/kinetics01_oh_decay",
     "tutorials/batch/combustion/kinetics02_h2o2_falloff",
+    "tutorials/batch/combustion/methane01_h2o2_core",
+    "tutorials/batch/combustion/methane02_ch4_attack",
+    "tutorials/batch/combustion/methane03_methyl",
+    "tutorials/batch/combustion/methane04_formyl",
+    "tutorials/batch/combustion/methane05_c1_chain",
+    "tutorials/batch/combustion/methane06_assembled",
+    "tutorials/batch/combustion/methane07_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/combustion/nox02_millerbowman_denox",
     "tutorials/batch/combustion/nox03_millerbowman_large",
@@ -33048,6 +33175,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -35999,6 +36127,13 @@
     "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/kinetics01_oh_decay",
     "tutorials/batch/combustion/kinetics02_h2o2_falloff",
+    "tutorials/batch/combustion/methane01_h2o2_core",
+    "tutorials/batch/combustion/methane02_ch4_attack",
+    "tutorials/batch/combustion/methane03_methyl",
+    "tutorials/batch/combustion/methane04_formyl",
+    "tutorials/batch/combustion/methane05_c1_chain",
+    "tutorials/batch/combustion/methane06_assembled",
+    "tutorials/batch/combustion/methane07_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/combustion/nox02_millerbowman_denox",
     "tutorials/batch/combustion/nox03_millerbowman_large",
@@ -36031,6 +36166,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",

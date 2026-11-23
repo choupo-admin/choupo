@@ -166,6 +166,13 @@ DOMAINS = [
      "slider spans 0.1 to 10, the page's own choice", False),
     (M + "OverpressureTool.tsx", "Kd", 0.0, 1.0, "a discharge coefficient lies in (0, 1]", False),
     (M + "OverpressureTool.tsx", "Kb", 0.0, 1.0, "a back-pressure correction factor lies in (0, 1]", False),
+    (M + "StiffChemistryTool.tsx", "logLam", 3.0, 10.0,
+     "log10 of the fastest rate in 1/s: radicals settle in about 1e-9 s and NOx chemistry in about 1e-3 s "
+     "(Theory Guide ch:stiff-ode), so 1e3 to 1e10 /s spans the chemistry the page is about; the page is "
+     "arithmetic on stability functions and runs no engine case", False),
+    (M + "StiffChemistryTool.tsx", "logH", -10.0, -2.0,
+     "log10 of the step in s: from below the radical time scale to above the 3 ms window of nox03 "
+     "(endTime 3e-2 s there, writeInterval 1e-3 s); the arithmetic is defined for every step", False),
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),

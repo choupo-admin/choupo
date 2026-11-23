@@ -421,7 +421,7 @@ describe("one-flux-many-units: the lesson", () => {
       "RateBasedSegment.cpp:886": "profile_.columns[\"HOG\"].push_back(HOGk);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
-      "ThermoPackage.cpp:1322": "K[i] = hl.H(T) / P;",
+      "ThermoPackage.cpp:1327": "K[i] = hl.H(T) / P;",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

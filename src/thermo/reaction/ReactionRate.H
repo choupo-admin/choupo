@@ -115,6 +115,11 @@ struct RateState
     //  by netRateGradient (d ln Kc / dT = sum nu h / (R T^2) - sum nu / T);
     //  null = the law computes it itself.
     const sVector* enthalpy = nullptr;
+    //  C468: per species, the smallest concentration a Jacobian resolves.  A
+    //  law's netRateGradient evaluates a power in (0, 1) at max(c, cFloor), a
+    //  finite slope where d(c^p)/dc is infinite.  Null: the law returns false
+    //  there and the caller differences the reaction.
+    const sVector* cFloor = nullptr;
 };
 
 //- The analytic derivatives of one law's net rate (netRateGradient).  `dc` is
@@ -194,6 +199,12 @@ public:
     virtual bool hasAnalyticGradient() const { return false; }
     virtual bool netRateGradient(const ThermoPackage& thermo, const RateState& s,
                                  RateGradient& g) const;
+    //- The species the law reads at an order in (0, 1), forward or reverse
+    //  (thermo indices): where its derivative is infinite at zero.  The
+    //  Jacobian audit takes that reaction's share of those columns out of both
+    //  sides (C468).  A law with no power-law part says none (LHHW's and an
+    //  expression's are not declared as orders).
+    virtual void fractionalOrderSpecies(std::vector<std::size_t>& species) const { species.clear(); }
     //- false: the law may read every species (no pattern can be claimed).
     virtual bool rateDependencies(std::vector<std::size_t>& /*species*/) const
     { return false; }

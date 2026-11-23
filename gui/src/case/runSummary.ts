@@ -108,6 +108,23 @@ export function runSummary(r: RunResult): RunSummary {
   };
 }
 
+/** THE ENGINE'S OWN REASON, from a failed run's log: the LAST line the engine
+ *  marked `ERROR:` (the C++ prints it just before it exits), trimmed of the
+ *  `[stderr]` prefix the worker adds.  Null when the log carries none -- the
+ *  caller then points at the Log and says nothing it cannot back.  C266: a
+ *  failed run answered "the Log has the engine's message" and made the
+ *  student go and find it. */
+export function engineFailureLine(log: string | undefined): string | null {
+  if (!log) return null;
+  const lines = log.split("\n");
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const m = /^\s*(?:\[stderr\]\s*)?(ERROR:.*\S)\s*$/.exec(lines[i] ?? "");
+    const hit = m?.[1];
+    if (hit) return hit.length > 240 ? `${hit.slice(0, 237)}...` : hit;
+  }
+  return null;
+}
+
 /** The one sentence a screen reader hears when a run ends (role=status). */
 export function runSummarySentence(s: RunSummary | null, phase: "idle" | "running" | "done" | "error"): string {
   if (phase === "running") return "Running…";

@@ -34,8 +34,10 @@ License
 #include "Units.H"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -173,7 +175,7 @@ private:
         return false;
     }
 
-    bool isWordChar(char c) const
+    static bool isWordCharSlow(char c)
     {
         return std::isalnum(static_cast<unsigned char>(c))
             || c == '_' || c == '.' || c == '-' || c == '+'
@@ -183,44 +185,96 @@ private:
             || c == '=';              // for UNIFAC subgroup names (CH2=CH, C=C, …); dicts use no '=' operator
     }
 
+    //  The class of every byte, computed once from the rule above (no
+    //  behaviour change: a lookup instead of a call per character).
+    static const std::array<bool, 256>& wordTable()
+    {
+        static const std::array<bool, 256> t = []
+        {
+            std::array<bool, 256> a{};
+            for (int i = 0; i < 256; ++i)
+                a[i] = isWordCharSlow(static_cast<char>(i));
+            return a;
+        }();
+        return t;
+    }
+
+    bool isWordChar(char c) const
+    {
+        return wordTable()[static_cast<unsigned char>(c)];
+    }
+
+    //  A word is a run of word characters (none of which is a newline), so the
+    //  column advances by its length and the text is copied once.
     std::string readToken()
     {
-        std::string out;
-        while (pos_ < src_.size())
+        const auto& w = wordTable();
+        const std::size_t start = pos_;
+        const std::size_t n     = src_.size();
+        while (pos_ < n && w[static_cast<unsigned char>(src_[pos_])]) ++pos_;
+        col_ += static_cast<int>(pos_ - start);
+        return src_.substr(start, pos_ - start);
+    }
+
+    //  Whitespace and both comment forms, on local copies of the cursor (the
+    //  banner of every record is a block comment; advancing it one member-call
+    //  at a time was a measurable part of start-up).  The line/column
+    //  bookkeeping, and the way an unterminated block comment leaves its last
+    //  character to the tokenizer, are exactly those of the one-character-at-
+    //  a-time version.
+    static const std::array<bool, 256>& spaceTable()
+    {
+        static const std::array<bool, 256> t = []
         {
-            char c = src_[pos_];
-            if (isWordChar(c) || c == 'e' || c == 'E')
-            {
-                out += c;
-                advance();
-            }
-            else break;
-        }
-        return out;
+            std::array<bool, 256> a{};
+            for (int i = 0; i < 256; ++i)
+                a[i] = std::isspace(i) != 0;
+            return a;
+        }();
+        return t;
     }
 
     void skipWhitespaceAndComments()
     {
-        while (pos_ < src_.size())
+        const auto&       sp = spaceTable();
+        const char* const s  = src_.data();
+        const std::size_t n  = src_.size();
+        std::size_t       p  = pos_;
+        int               ln = line_;
+        int               cl = col_;
+        while (p < n)
         {
-            char c = src_[pos_];
-            if (std::isspace(static_cast<unsigned char>(c))) { advance(); continue; }
-            if (c == '/' && pos_ + 1 < src_.size() && src_[pos_+1] == '/')
+            const char c = s[p];
+            if (sp[static_cast<unsigned char>(c)])
             {
-                while (pos_ < src_.size() && src_[pos_] != '\n') advance();
+                if (c == '\n') { ++ln; cl = 1; } else { ++cl; }
+                ++p;
                 continue;
             }
-            if (c == '/' && pos_ + 1 < src_.size() && src_[pos_+1] == '*')
+            if (c == '/' && p + 1 < n && s[p+1] == '/')
             {
-                advance(); advance();
-                while (pos_ + 1 < src_.size()
-                       && !(src_[pos_] == '*' && src_[pos_+1] == '/'))
-                    advance();
-                if (pos_ + 1 < src_.size()) { advance(); advance(); }
+                //  to the end of the line (the newline itself is whitespace)
+                const void* nl = std::memchr(s + p, '\n', n - p);
+                const std::size_t e = nl ? static_cast<std::size_t>(
+                                               static_cast<const char*>(nl) - s) : n;
+                cl += static_cast<int>(e - p);
+                p = e;
+                continue;
+            }
+            if (c == '/' && p + 1 < n && s[p+1] == '*')
+            {
+                p += 2; cl += 2;
+                while (p + 1 < n && !(s[p] == '*' && s[p+1] == '/'))
+                {
+                    if (s[p] == '\n') { ++ln; cl = 1; } else { ++cl; }
+                    ++p;
+                }
+                if (p + 1 < n) { p += 2; cl += 2; }
                 continue;
             }
             break;
         }
+        pos_ = p; line_ = ln; col_ = cl;
     }
 };
 
@@ -555,7 +609,8 @@ private:
 
 void Dictionary::insert(const std::string& key, EntryValue value)
 {
-    auto it = entries_.find(key);
+    //  ONE lookup for both the duplicate test and the store.
+    auto [it, fresh] = entries_.try_emplace(key);
     //  A KEY DECLARED TWICE IN ONE FILE is refused, at the only place that
     //  can see it.  This map is last-wins by design -- `setScalarAtPath`
     //  updates values through here on every sweep and optimisation pass --
@@ -575,13 +630,13 @@ void Dictionary::insert(const std::string& key, EntryValue value)
     //  of overwriting.  The corpus was swept before this went in: zero
     //  duplicates in 60 cases including the sectored plant, so nothing
     //  authored is being outlawed retroactively.
-    if (it != entries_.end() && parseTime_)
+    if (!fresh && parseTime_)
         throw std::runtime_error("dictionary: key '" + key + "' is declared"
             " TWICE in the same block.  Only the last would survive -- the"
             " file's order would decide the answer, and nothing downstream"
             " could see that it had.  Remove one, or merge them.");
-    if (it == entries_.end()) order_.push_back(key);
-    entries_[key] = std::move(value);
+    if (fresh) order_.push_back(key);
+    it->second = std::move(value);
     // NOTE: we deliberately do NOT clear entryDims_[key] here.
     // setScalarAtPath uses this overload to update values during
     // sweep/optim passes; the dimensions established at parse time
@@ -1114,8 +1169,11 @@ DictPtr Dictionary::fromFile(const std::string& path)
     if (!f)
         throw std::runtime_error("Cannot open dictionary file: " + path);
     readlog::note(path);     // C413: the run's observed reads, noted in ONE place
-    std::ostringstream ss; ss << f.rdbuf();
-    return fromString(ss.str(), path);
+    std::string text;
+    char buf[65536];
+    while (f.read(buf, sizeof buf) || f.gcount() > 0)
+        text.append(buf, static_cast<std::size_t>(f.gcount()));
+    return fromString(text, path);
 }
 
 // Recursively walk through every sub-dict and list-of-dicts entry,

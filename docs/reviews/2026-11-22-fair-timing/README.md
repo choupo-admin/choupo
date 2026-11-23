@@ -196,3 +196,40 @@ numeric-only refactor, is the lever); (2) the rhs still costs 97 k Ir per call i
 cost that no memo can hit), so the real saving is in evaluating g(T) and K_c(T) from fitted tables or from the
 NASA-9 pieces once per T with shared exp/pow (exp + pow are 7.5 % of the run in libm); (3) start-up, 34 % of the
 process (above).
+
+## nox02 with each vessel on its own step (2026-11-22, branch `pervessel`, C473 g)
+
+The 17 vessels of nox02 are independent, so `choupoBatch` now integrates each on its own step and spreads them over
+`solver { threads N; }` (Theory Guide `sec:batch-vessels-separate`).  Table (a) again, integration only, WALL of the
+vessels' integration (`[ode-stats] ... wall[ms]: vesselsIntegrate`), best of 3, 4 cores, load about 3;
+`fairtiming.py nox02 INTEGRATOR RTOL 3 THREADS [coupled]`.  Cantera: its 17 reactors in sequence.
+
+| integrator | rtol | coupled (before) | 1 thread | 2 threads | 4 threads | Cantera |
+|---|---|---|---|---|---|---|
+| Rodas4 | 1e-8 | 1.181 (35.9x) | 0.202 (5.8x) | 0.122 (3.9x) | 0.101 (3.2x) | 0.033 |
+| Rodas4 | 1e-10 | 4.713 (64.5x) | 1.489 (22.6x) | 0.800 (12.2x) | 0.663 (10.6x) | 0.066 |
+| seulex | 1e-8 | 0.630 (20.1x) | 0.102 (3.3x) | 0.058 (1.7x) | 0.036 (1.1x) | 0.031 |
+| seulex | 1e-10 | 0.898 (14.5x) | 0.213 (3.8x) | 0.120 (1.7x) | 0.085 (1.7x) | 0.056 |
+
+End to end, seulex 1e-8: `choupoBatch` 0.128 s on 4 threads against 0.239 s for `python3 -I` (0.53).  Most of the
+gain is the separate steps (1 thread: 5.8x on Rodas4 1e-8); the threads add 1.7x on 2 and 2.0x on 4 (the hot vessels
+dominate: 2490 steps for the 1500 K vessel against 31 for 900 K).  The files of nox02 are byte-identical at 1, 2 and 4
+threads.  Accuracy against Cantera at rtol 1e-12 (species above x = 1e-6): Rodas4 1e-8 3.5e-4 (coupled 1.7e-4),
+seulex 1e-8 3.0e-3 (4.0e-3): the cold vessels no longer ride the hot vessels' small steps, so they are less accurate
+at equal rtol, as the Cantera reactors are.
+
+### Retaken with the case's own tolerances (fix round, rtol 1e-6, atol 1e-19 kmol; load average 5-6 from other sessions, so the 4-thread figure is noisy)
+
+`FAIR_ATOL=1e-19 fairtiming.py nox02 INTEGRATOR 1e-6 3 THREADS`.  Accuracy is the script's figure against Cantera at
+rtol 1e-12 (species above x = 1e-6, all write times); Cantera at the same rtol: 1.8e-5.
+
+| integrator | coupled | 1 thread | 2 threads | 4 threads | Cantera | Choupo accuracy |
+|---|---|---|---|---|---|---|
+| Rodas4 | 1.322 s (37.1x) | 0.282 (8.8x) | 0.214 (5.1x) | 0.251 (7.8x, load) | 0.032-0.042 | 3.5e-6 coupled, 1.3e-6 per vessel |
+| seulex | - | 0.119 (3.6x) | 0.089 (2.8x) | 0.080 (2.6x) | 0.030-0.033 | 7.2e-3 (seulex at rtol 1e-6 is the known loose case) |
+
+The accuracy sentence of the first section stands for rtol 1e-8 with the script's own atol (1e-15): per vessel is less
+accurate than coupled there (Rodas4 3.5e-4 against 1.7e-4).  What decides it on the shipped case is `atol`: against Cantera
+at rtol 1e-10 (`compare_cantera.py denox`, worst over every species and write time) the shipped case is 1.7e-3 coupled
+(atol 1e-17), 2.0e-3 per vessel at atol 1e-17 and 5.7e-4 per vessel at atol 1e-19, which is the case now.  A species that
+starts at zero is error-controlled only above `atol`.

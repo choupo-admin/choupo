@@ -77,8 +77,14 @@ FLASH16 = os.path.join(ROOT, "tutorials", "steady", "flash",
                        "flash16_calcite_precipitation")
 FLASH01 = os.path.join(ROOT, "tutorials", "steady", "flash",
                        "flash01_benzene_toluene")
-UNSEALED = os.path.join(ROOT, "tutorials", "steady", "crystallisation",
-                        "overlay02_nacl_calorimetric")
+#  A case that USES a Henry constant (CO2-water): the Henry registry loads on
+#  first use (2026-11-22, start-up slice), so a Henry refusal fires only in a
+#  run that asks for one.  Catalogue integrity -- every Henry file parses, no
+#  two claim one pair -- is held HERE (the unmutated control below loads the
+#  whole catalogue directory through the real registry; sweep (e) reads the
+#  identities) rather than by every run.
+HENRYCASE = os.path.join(ROOT, "tutorials", "steady", "flash",
+                         "flash08_co2_water_package")
 HENRY = os.path.join(STD, "parameters", "Henry", "Ar-water.dat")
 
 fails = []
@@ -114,7 +120,7 @@ def run_mutated(case, mutate):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def refuses(label, case, mutate, expect):
+def refuses(label, case, mutate, expect, said="refused, naming both files"):
     rc, out = run_mutated(case, mutate)
     if rc == 0:
         fail("%s: the case RAN (exit 0) -- the collision was absorbed "
@@ -125,7 +131,7 @@ def refuses(label, case, mutate, expect):
              "refusal proves that refusal, not this one.  Tail:\n%s"
              % (label, rc, expect, out[-600:]))
     else:
-        ok("%s: refused, naming both files" % label)
+        ok("%s: %s" % (label, said))
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +144,7 @@ def dup_henry(dst):
         shutil.copy(HENRY, os.path.join(d, name))
 
 
-refuses("(a) two Henry files declaring one pair", FLASH01, dup_henry,
+refuses("(a) two Henry files declaring one pair", HENRYCASE, dup_henry,
         "both declare the Henry pair 'Ar-water'")
 
 # ---------------------------------------------------------------------------
@@ -156,7 +162,7 @@ refuses("(b) two records forming the species CO3", FLASH16, dup_formation,
 # ---------------------------------------------------------------------------
 #  (c) the control -- unmutated, both still run
 # ---------------------------------------------------------------------------
-for case in (FLASH01, FLASH16):
+for case in (FLASH01, FLASH16, HENRYCASE):
     rc, out = run_mutated(case, lambda d: None)
     if rc != 0:
         fail("(c) %s no longer runs unmutated (exit %d) -- the guard refuses "
@@ -169,12 +175,15 @@ for case in (FLASH01, FLASH16):
 #  (d) the deliberate tier override is ANNOUNCED, never silent
 # ---------------------------------------------------------------------------
 def local_henry(dst):
+    #  An UNSEALED run: every Henry-using tutorial references the catalogue by a
+    #  manifest, and a manifest makes the announcement a `[sealed]` mirror note.
+    os.remove(os.path.join(dst, "constant", "propertyManifest"))
     d = os.path.join(dst, "constant", "parameters", "Henry")
     os.makedirs(d, exist_ok=True)
     shutil.copy(HENRY, os.path.join(d, "argon-in-water.dat"))
 
 
-rc, out = run_mutated(UNSEALED, local_henry)
+rc, out = run_mutated(HENRYCASE, local_henry)
 if rc != 0:
     fail("(d) the unsealed override case does not run (exit %d) -- a case-"
          "local record REPLACING a catalogue one is legal, not a refusal.  "
@@ -185,6 +194,21 @@ elif "[override] Henry pair 'Ar-water'" not in out:
          "takes for a case-local component)")
 else:
     ok("(d) the tier override runs and announces itself")
+
+# ---------------------------------------------------------------------------
+#  (h) a MALFORMED Henry file is refused by a run that uses Henry (the
+#      registry parses the whole directory on first use).  Negative: the same
+#      case with one unparseable local record.  The control is (c) above.
+# ---------------------------------------------------------------------------
+def broken_henry(dst):
+    d = os.path.join(dst, "constant", "parameters", "Henry")
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, "broken-water.dat"), "w") as f:
+        f.write("recordType henryLaw;\nsolute broken;\nsolvent water\n{ ;\n")
+
+
+refuses("(h) a malformed Henry file", HENRYCASE, broken_henry,
+        "broken-water.dat", said="refused, naming the unparseable file")
 
 # ---------------------------------------------------------------------------
 #  (e) the catalogue itself, swept statically
