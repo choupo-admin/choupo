@@ -105,7 +105,7 @@ export function RunSummaryStrip() {
   const runResult: RunResult | null | undefined = useStore((s) => s.runResult);
   const runStatus = useStore((s) => s.runStatus);
   const duty = useStore((s) => s.displayPrefs.duty);
-  const flowsheet = useStore((st) => st.caseFiles.flowsheet);
+  const flowsheet = useStore((st) => st.caseFiles?.flowsheet);
   const s = runResult && runResult.status === "done" ? runSummary(runResult) : null;
   const phase = runStatus === "running" ? "running" : runStatus === "error" ? "error" : s ? "done" : "idle";
   const sentence = runSummarySentence(s, phase);
