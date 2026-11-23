@@ -1930,6 +1930,11 @@
       "exit": 0,
       "claim": "check_bed_correlations: OK -- the six correlations and the series equal an independent transcription to 1e-9, Edwards & Richardson's bed-basis Dax is eps D_L and Gunn's limit shares its basis, every anchor holds, the gas windows are inside and the two liquid correlations are flagged outside, a declared Dax and kLDF win (the front is batch13's to 1e-9), a missing Dax and k are filled by the chosen estimates and said so, and four misuses refuse by name.  NOT CHECKED: that any correlation predicts a real bed (no packed-bed dispersion data in the corpus), Gunn's basis reading (the paper says 'usual connotations'), a liquid bed.",
       "seconds": 8.1
+    },
+    "check_dynamic_views": {
+      "exit": 0,
+      "claim": "check_dynamic_views: OK -- 27 time-integrated cases declare views; 40 views, 117 series, every series carries points inside its declared axis windows; a window beyond the run's end is seen; 2 case(s) with an outerDict draw nothing by design (ctrl16_williams_otto_optimal, ctrl20_bode_cstr); NOT CHECKED: that a figure answers its question or that a note's numbers equal the run's",
+      "seconds": 20.7
     }
   }
 }
