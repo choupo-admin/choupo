@@ -42,6 +42,7 @@ import type { HandlePos, HandleSide } from "../state/layout.js";
 import type { UnitSpec } from "../case/types.js";
 import type { JsonValue } from "../dict/index.js";
 import { scalarToSI } from "../dict/scalarSI.js";
+import { parseScalarString } from "../dict/json.js";
 import { UNIT_LABEL, unitIconFor } from "./unitIcons.js";
 import { symbolOf } from "../case/unitFamily";
 import { symbolSizeFor, nodeMinHeight } from "../case/nodeDetail.js";
@@ -605,7 +606,17 @@ function summarise(op: { [k: string]: JsonValue },
         // numeric params so node params FOLLOW the units menu + sig figs, instead
         // of being dumped raw at full authored precision.
         const si = scalarToSI(v);
-        out.push({ k, v: Number.isFinite(si) ? fmtScalar(si, unitOf(k), prefs) : v });
+        //  A KEY THE SCHEMA DOES NOT DESCRIBE keeps the unit the dict DECLARED
+        //  (C481: `T_jacket 320 K` on a dynamicCSTR read "320"): shown through
+        //  the display prefs when the unit is a dimension they know, as authored
+        //  otherwise -- never a unit the dict did not state.
+        const declared = unitOf(k) === undefined ? parseScalarString(v) : null;
+        if (declared?.unit !== undefined) {
+          const viaPrefs = authoredScalarToPrefs(declared.value, declared.unit, prefs);
+          out.push({ k, v: viaPrefs ?? `${fmtNumber(declared.value)} ${declared.unit}` });
+        } else {
+          out.push({ k, v: Number.isFinite(si) ? fmtScalar(si, unitOf(k), prefs) : v });
+        }
       }
     }
     if (out.length >= 3) break;

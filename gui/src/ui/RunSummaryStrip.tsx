@@ -37,7 +37,7 @@
 import type { ReactNode } from "react";
 import { Anchor, Badge, Box, Group, Text, Tooltip } from "@mantine/core";
 
-import { engineFailureLine, runSummary, runSummarySentence, type RunSummary } from "../case/runSummary.js";
+import { declaredProductNames, engineFailureLine, runSummary, runSummarySentence, type RunSummary } from "../case/runSummary.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { useStore, type WorkspaceKey } from "../state/store.js";
 import {
@@ -64,9 +64,22 @@ function Door({ to, children }: { to: WorkspaceKey; children: ReactNode }) {
   );
 }
 
-function Products({ s }: { s: RunSummary }) {
+function Products({ s, noStreamStates, declared }: {
+  s: RunSummary; noStreamStates: boolean; declared: string[];
+}) {
   const prefs = useStore((st) => st.displayPrefs);
-  if (s.products.length === 0) return <Item label="products">none</Item>;
+  if (s.products.length === 0) {
+    //  A run that published NO stream states (a time-integrated one) has not
+    //  said "no products": it has not said anything about them (C481).
+    if (noStreamStates && declared.length > 0)
+      return (
+        <Item label="products"
+          title="This run is time-integrated: it writes its streams to the <t>/ directories and publishes no steady stream table, so no product state is drawn here.  The Trajectory plot carries the vessel's state over time.">
+          {declared.join(", ")} <i>(no steady state published)</i>
+        </Item>
+      );
+    return <Item label="products">none</Item>;
+  }
   const mass = flowBasis(prefs.flow) === "mass";
   return (
     <Group gap={10} wrap="wrap" style={{ minWidth: 0 }}>
@@ -92,6 +105,7 @@ export function RunSummaryStrip() {
   const runResult: RunResult | null | undefined = useStore((s) => s.runResult);
   const runStatus = useStore((s) => s.runStatus);
   const duty = useStore((s) => s.displayPrefs.duty);
+  const flowsheet = useStore((st) => st.caseFiles.flowsheet);
   const s = runResult && runResult.status === "done" ? runSummary(runResult) : null;
   const phase = runStatus === "running" ? "running" : runStatus === "error" ? "error" : s ? "done" : "idle";
   const sentence = runSummarySentence(s, phase);
@@ -150,7 +164,8 @@ export function RunSummaryStrip() {
             {s.modelBoundaries.total > 0 ? ` · ${s.modelBoundaries.total} model boundar${s.modelBoundaries.total === 1 ? "y" : "ies"}`
               + (s.modelBoundaries.refused > 0 ? ` (${s.modelBoundaries.refused} refused)` : "") : ""}
           </Item>
-          <Products s={s} />
+          <Products s={s} noStreamStates={(runResult?.streams.length ?? 0) === 0}
+            declared={declaredProductNames(flowsheet)} />
           <Group gap={8} wrap="nowrap" style={{ flex: "0 0 auto" }}>
             {s.declaredViews > 0 && (
               <Tooltip label="The figures and tables this case declares: the run set beside the measured data" withArrow>

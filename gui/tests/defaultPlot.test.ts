@@ -38,6 +38,9 @@ describe("defaultPlotKey", () => {
     expect(defaultPlotKey(run({ kpis: { campaign: {} }, profiles: PROFILE }), [])).toBe("campaignBalance");
     expect(defaultPlotKey(run({ csvFiles: { "balanceTrajectory.csv": "x" }, profiles: PROFILE }), []))
       .toBe("dynamicBalance");
+    //  C481: a control case carries both; it opens on the response, not the flat ledger
+    expect(defaultPlotKey(run({ csvFiles: { "balanceTrajectory.csv": "x" },
+      trajectory: { t: [0], vars: {} } }), [])).toBe("trajectory");
     expect(defaultPlotKey(run({ trajectory: { t: [0], vars: {} }, profiles: PROFILE }), [])).toBe("trajectory");
   });
   it("a declared views block lands first", () => {
