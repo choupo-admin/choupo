@@ -116,8 +116,8 @@ def main() -> int:
         edit(p / "system" / "flowsheetDict", "area     10.0 m2;",
              "area     10.0 m2;\n            passes   2;")
         rc, out, err = run(p)
-        m = re.search(r"Q = ([0-9.]+) kW,  LMTD = [0-9.]+ K   \(check:"
-                      r" U\.A\.LMTD = ([0-9.]+) kW\)", out)
+        m = re.search(r"Q = ([0-9.]+) kW,  LMTD = [0-9.]+ K\n"
+                      r"  U\.A\.LMTD = ([0-9.]+) kW from the outlet", out)
         f = re.search(r"2 tube passes: Q = U\.A\.F\.LMTD.*implied F = Q /"
                       r" \(U\.A\.LMTD\) = ([0-9.]+)\)", out)
         if rc != 0 or not m or not f:
