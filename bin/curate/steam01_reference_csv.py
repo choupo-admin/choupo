@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Build steam01's reference CSV from the case's OWN expected file (digits copied from
 IAPWS R7-97(2012) Tables 5, 15, 35, 36 by the case's author) -- nothing typed here."""
 import re, sys

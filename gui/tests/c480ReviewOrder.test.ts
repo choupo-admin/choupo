@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // C480: a props case that creates a component (psat01) opens on its figures and tables;
 // the 70 vh thermo-readiness panel comes AFTER them in the layout without studies.
 import { describe, expect, it } from "vitest";
