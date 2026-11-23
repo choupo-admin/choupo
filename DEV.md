@@ -5425,6 +5425,22 @@ accepts today, and that is a policy call.
 > not a batch run's `<t>/` directories nor trajectory.csv, so a student cannot open the vessel at
 > t = 2 ms.  Part 1 of C482 (harvest and show them read-only) moved before 2 December.
 
+> **WHERE 2026-11-23 WAS LOST, AND THE RULES (Vitor: "ve tu tambem onde e que perdeste muito tempo
+> ... e criar regras para nao haver problemas identicos no futuro").**  Measured, not recalled: (1)
+> the architect's JSON merge of lessonReferences.json kept one side's list and dropped C395's Seader
+> reference, two GUI tests red on main about three hours and one --gui re-run; (2) line-number lesson
+> citations broke at four landings (C440 postDict +7 lines, C468, C478 +11, C477), five red tests,
+> each a --gui re-run; (3) a gate run before `git add` passed an untracked file whose name held a
+> future date, red on main; (4) gui/node_modules removed before --gui, one lost suite; (5) a general's
+> header fix after its --gui hid an import (typecheck red at integration); (6) CI red since
+> 2026-11-20, unseen for three days (C484); (7) the cloud's disk filled mid --gui and it validated a
+> tree main had already overtaken.  Seven rules written in CLAUDE.md section 10 ("INTEGRATION
+> HYGIENE").  The cloud's three proposals weighed: main-first is already the evidence-reuse rule
+> (adopted with its push refusal), the 15 GB floor and immediate clean-up ADOPTED as rule 7, the
+> curate08 dossier is a defect to fix, not a rule (C483).  Durable fix behind rule 2, registered for
+> after 2 December: move the unmanaged range citations (materials, process safety) into repoint's
+> managed set.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
