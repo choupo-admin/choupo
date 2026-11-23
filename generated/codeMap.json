@@ -2584,6 +2584,9 @@
   "ThielePellet": [
    "src/propertyOps/ThielePellet.H"
   ],
+  "TimeSeriesRecord": [
+   "src/postProcessing/views/DynamicPublications.H"
+  ],
   "TimelineEvent": [
    "src/result/SimulationResult.H"
   ],

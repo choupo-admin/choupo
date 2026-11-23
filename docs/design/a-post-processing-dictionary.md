@@ -406,6 +406,19 @@ log axis cannot draw).  A series over several vessels reads two diagnostics per 
 (`unitOp vessel; table trajectory; x t; y T;` -- nox03).  A case with no `views` builds nothing and
 writes nothing: nine batch cases, outputs and stdout, are byte-identical.
 
+### The time-integrated driver publishes its units and controllers (C487 slice 1)
+
+`src/dynamicDriver/DynamicDriver.cpp`, which serves `choupoCtrl` and `choupoSemiContinuous`, reads the same
+two lists from `system/postDict` through the same `views::Reader` (parsed before the run; resolved after the
+direct pass; the result carries the `postProcessing` block).  The producers
+(`src/postProcessing/views/DynamicPublications.cpp`) are the dynamic units and the controllers, both `unit:<name>`:
+KPIs as diagnostics (units from `kpiUnitOfKey`, shared with `BatchPublications`, and from the state label) and ONE table
+`trajectory` = the write grid of `trajectory.csv` (`t` [s] + a unit's state labels; `t`, `SP`, `PV`, `MV` for a controller,
+`MV` alone for a Schedule).  A controller's PV/MV unit is read from the `measurement { cv }` / `actuator { mv }` it names.
+A case with no `views` builds nothing: every `tutorials/ctrl` and `tutorials/unsteady` case is byte-identical, outputs and stdout.
+`views` beside an `outerDict` is refused by name.  Witness: `ctrl02_disturbance_rejection` (PV against SP, MV and the feed
+disturbance).  Not done in this slice: streams of a dynamic run as producers; the survey of the other dynamic cases (slice 2).
+
 ## 8. The witnesses
 
 **The NanoFiltran paper in one case.**

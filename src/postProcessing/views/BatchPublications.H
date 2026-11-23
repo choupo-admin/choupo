@@ -59,6 +59,10 @@ struct BatchVesselRecord
     bool dropTimeZero = false;                      // log write grid: a log axis cannot draw t = 0
 };
 
+//  The unit a KPI key says (`T_final` -> K, `t_end` -> s ...), "" where it does not;
+//  shared with DynamicPublications.
+std::string kpiUnitOfKey(const std::string& key);
+
 std::vector<Publication> publicationsOfBatchRun(const std::vector<BatchVesselRecord>& vessels);
 
 } // namespace views

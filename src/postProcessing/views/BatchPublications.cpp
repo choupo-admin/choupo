@@ -27,9 +27,7 @@ Description
 namespace Choupo {
 namespace views {
 
-namespace {
-
-std::string kpiUnit(const std::string& key)
+std::string kpiUnitOfKey(const std::string& key)
 {
     if (key == "t_end" || key == "tauIgnition") return "s";
     if (key == "T_final") return "K";
@@ -39,8 +37,6 @@ std::string kpiUnit(const std::string& key)
         && key.compare(key.size() - 6, 6, "_final") == 0) return "kmol";
     return std::string();
 }
-
-} // namespace
 
 std::vector<Publication> publicationsOfBatchRun(const std::vector<BatchVesselRecord>& vessels)
 {
@@ -53,7 +49,7 @@ std::vector<Publication> publicationsOfBatchRun(const std::vector<BatchVesselRec
         for (const auto& [k, x] : v.kpis)
         {
             pub.diagnostics[k] = x;
-            pub.units[k] = kpiUnit(k);
+            pub.units[k] = kpiUnitOfKey(k);
         }
         const std::size_t nc = v.componentNames.size();
         const std::size_t nr = v.t.size();

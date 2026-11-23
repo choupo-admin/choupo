@@ -640,6 +640,26 @@ starters to compare against when answering "write me a case for X":
 | Multi-sector plant | `plant/ChemicalPlantTutorial/` |
 | User unit op (case/code/) | `userOp01_yield_reactor` |
 
+## Declared figures of a dynamic run (`choupoCtrl`, `choupoSemiContinuous`; C487)
+
+`system/postDict` with `views ( ... );` (the grammar of `docs/design/a-post-processing-dictionary.md`)
+is read by the dynamic binaries too.  The producers are the dynamic units and the controllers, `unitOp <name>;`,
+each with ONE table `trajectory` (`t` [s] + a unit's state labels, or `SP`, `PV`, `MV` of a controller; a
+`Schedule` has `MV` only) and its KPIs (`T_final`, `PV_final`, ...).  The disturbance response of a loop:
+
+```
+views ( { name response; type series; title "Does the controller hold the set point?";
+          xAxis { label "time"; unit "s"; scale linear; }
+          yAxis { label "reactor temperature"; unit "K"; scale linear; }
+          yAxis2 { label "jacket temperature"; unit "K"; scale linear; }
+          series ( { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+                   { name PV; label "reactor T"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+                   { name MV; label "jacket T"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; } ); } );
+```
+
+A case without `views` writes nothing new.  `views` beside an `outerDict` is refused by name.  Witness
+`ctrl02_disturbance_rejection` (Theory Guide `sec:dynamic-views`).
+
 ## Optional dicts are TRULY optional
 
 A minimal case has only:
