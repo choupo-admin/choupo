@@ -5409,6 +5409,38 @@ accepts today, and that is a policy call.
 > 49/0.  Column19 shows the course case's reference-simulator run beside Choupo as a labelled
 > cross-check table.  C477 stays PARTIAL for the corpus survey (after 2 December).
 
+> **C482 (Vitor, 2026-11-23, opening nox03's seulex twin: "onde esta registada a trajetoria da
+> reacao? ... sera que em cada tempo, no internalstate pode ficar registado a trajetoria resolvida
+> dos varios componentes entre dois instantes?").**  Today a batch run writes trajectory.csv on the
+> write grid and one restartable `<t>/internalStates/<unit>` per instant; the integrator's accepted
+> steps between instants are not kept (the rows between them are its dense output, C476).  RULED:
+> yes, as an option, but NOT inside internalStates, which by contract is the restartable snapshot
+> and stays one: `writeSteps true;` writes `<t>/steps/<unit>.csv`, the accepted steps in
+> (t_prev, t] (t, h, T, n_i), the real steps, no interpolation; off by default.  Wish list, after
+> 2 December.  Same question, asked next ("Estes perfis onde estao presentemente gravados?"): in the browser
+> they live only in the tab's memory (the worker's MEMFS); the case .zip carries the case files and the
+> run's proposals, not trajectory.csv nor the `<t>/` directories.  Added to C482: the .zip carries the
+> last run's outputs.  And the third ("quando corre online, os alunos nao veem os
+> resultados aqui?"): the worker harvests converged/, design/ and postProcessing/ into the Case tree,
+> not a batch run's `<t>/` directories nor trajectory.csv, so a student cannot open the vessel at
+> t = 2 ms.  Part 1 of C482 (harvest and show them read-only) moved before 2 December.
+
+> **WHERE 2026-11-23 WAS LOST, AND THE RULES (Vitor: "ve tu tambem onde e que perdeste muito tempo
+> ... e criar regras para nao haver problemas identicos no futuro").**  Measured, not recalled: (1)
+> the architect's JSON merge of lessonReferences.json kept one side's list and dropped C395's Seader
+> reference, two GUI tests red on main about three hours and one --gui re-run; (2) line-number lesson
+> citations broke at four landings (C440 postDict +7 lines, C468, C478 +11, C477), five red tests,
+> each a --gui re-run; (3) a gate run before `git add` passed an untracked file whose name held a
+> future date, red on main; (4) gui/node_modules removed before --gui, one lost suite; (5) a general's
+> header fix after its --gui hid an import (typecheck red at integration); (6) CI red since
+> 2026-11-20, unseen for three days (C484); (7) the cloud's disk filled mid --gui and it validated a
+> tree main had already overtaken.  Seven rules written in CLAUDE.md section 10 ("INTEGRATION
+> HYGIENE").  The cloud's three proposals weighed: main-first is already the evidence-reuse rule
+> (adopted with its push refusal), the 15 GB floor and immediate clean-up ADOPTED as rule 7, the
+> curate08 dossier is a defect to fix, not a rule (C483).  Durable fix behind rule 2, registered for
+> after 2 December: move the unmanaged range citations (materials, process safety) into repoint's
+> managed set.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,

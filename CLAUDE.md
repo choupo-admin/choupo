@@ -993,6 +993,35 @@ Corollaries, each paid for:
   coordinate AND to stay reachable; a ten-minute blocking wait is neither.
   Check in short calls and REFLECT in between — Vítor has said this twice,
   the second time sharply, and the second time was after it happened again.
+* **INTEGRATION HYGIENE: SEVEN WAYS A DAY WAS LOST, EACH WITH ITS RULE
+  (Vítor, 2026-11-23: "vê onde perdeste muito tempo ... e cria regras para não
+  haver problemas idênticos"; DEV.md 4c, same date).**  Each rule names the
+  defect that cost a re-run.
+    1. **A structured file in conflict (JSON, TSV) is merged by UNION and
+       checked against BOTH parents**: every key and list item of each parent
+       is in the result, or the dropped one is named.  A merge that kept one
+       side's list dropped a lesson reference; two GUI tests were red on
+       `main` for three hours.
+    2. **Before integrating a branch that edits `src/` or `tutorials/`, run
+       `repoint_lesson_citations.py`, `check_lesson_prose_citations.py` and
+       a grep of `gui/` for `<file>:<line>` of every touched file.**
+       Line-number citations broke at four landings in one day (C440, C468,
+       C478, C477), each costing a full `--gui` re-run.
+    3. **Gates run AFTER `git add`.**  A gate that walks tracked files passes
+       an untracked one: a future date in a new file's name reached `main`.
+    4. **Clean-up comes after the last validation step, never before.**
+       Removing `gui/node_modules` ahead of `--gui` cost one suite run.
+    5. **A fix committed after a validation is re-checked by the cheapest
+       check that reaches it** (typecheck for a `.ts`, the file's own tests),
+       and a brief says so.  A header added after `--gui` hid an import:
+       vitest stayed green, the typecheck went red at integration.
+    6. **After each landing, read `main`'s CI.**  Red is a backlog item the
+       same day.  CI was red from 2026-11-20 to 11-23 and nobody looked.
+    7. **No long validation starts under 15 GB free disk; a landed branch's
+       `build/`, `gui/node_modules` and `gui/public/wasm` are removed at once**
+       (the cloud's disk filled mid-`--gui` on 11-23; the laptop fell to 23 GB
+       on 11-22).  Evidence is retaken when `main` moved (above), and a push
+       is refused when `main` moved after the validation.
 
 ### Pedagogical mindset, not industrial
 
