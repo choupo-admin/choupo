@@ -215,7 +215,7 @@ items
         }
     }
     {
-        item        "Converter";        // D and H from its own sizing
+        item        "CONVERTER/shell";      // the converter shell: D and H from its own sizing (C440)
         x           40 m;
         y           15 m;
         z           0 m;

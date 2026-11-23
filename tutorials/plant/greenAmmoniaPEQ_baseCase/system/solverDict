@@ -12,7 +12,7 @@
   ENERGY recycle (HotEffluent, the converter outlet that preheats the
   converter's own feed in the FEHE).
 \*---------------------------------------------------------------------------*/
-tearStreams        ( Recycle  HotEffluent );
+tearStreams        ( Recycle  PreheatedFeed );
 recycleSolver       Newton;
-recycleTol          1e-8;
+recycleTol          1e-10;
 recycleMaxIter      200;

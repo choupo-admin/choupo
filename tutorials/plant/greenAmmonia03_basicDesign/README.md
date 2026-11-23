@@ -32,8 +32,10 @@ It is rung 3 of the green-ammonia sequence, which the common entry
 
 ## What it is derived from, and what differs
 
-It is a copy of the base case
-[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase): the same feeds,
+It was derived from the base case
+[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase), and since DEV.md 4c C440 the base case carries this
+same converter (the beds, the shell, the pinch segments) -- what remains of this stage is the cost
+estimate's lesser detail and the generated comparison below: the same feeds,
 package, compressors, feed/effluent exchanger (FEHE), coolers, separation,
 let-down, utilities and appraisal, and the same six Kern exchanger designs.
 Read the base case's README for all of that.

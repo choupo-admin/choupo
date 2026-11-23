@@ -91,7 +91,7 @@ function fmt(v: number, d: number): string {
 
 export function LimitingReactantTool(): JSX.Element {
   const nu = 3;                            // N2 + 3 H2 -> 2 NH3, A = N2
-  const [X, setX] = useState(0.350);
+  const [X, setX] = useState(0.336);
   const [logP, setLogP] = useState(-2.7);   // p = 0.2 % (all the nitrogen the loop loses)
   const [epsPpm, setEpsPpm] = useState(100);   // parts per million
   const p = purgeFromSlider(logP);

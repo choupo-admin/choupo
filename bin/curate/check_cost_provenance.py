@@ -1795,14 +1795,19 @@ def check_contingency_printed(fails):
                                      " bareModule_ / totalModule_ columns: %s"
                                      % list(r.keys()))
                         break
-                    ndp += r.get("correlation") == "declared-unit-price"
+                    #  The H2Buffer's ten vessels are the subject; the three
+                    #  catalyst charges of the converter's beds (C440, 2026-11-23)
+                    #  carry the same correlation and are held to 1.18 below
+                    #  like every row, but are not counted among the ten.
+                    ndp += (r.get("correlation") == "declared-unit-price"
+                            and str(r.get("unit", "")).startswith("H2Buffer"))
                     if abs(tm - CONTINGENCY_AND_FEE * bm) > 0.02:
                         fails.append("(w1) costs.csv %s %s: totalModule %.2f"
                                      " is not 1.18 x %.2f"
                                      % (r["unit"], r.get("equipmentTag", ""),
                                         tm, bm))
                 if ndp != 10:
-                    fails.append("(w1) costs.csv carries %d declared-unit-price"
+                    fails.append("(w1) costs.csv carries %d H2Buffer declared-unit-price"
                                  " rows, not ten" % ndp)
             eq = [l for l in out.splitlines() if l.startswith('    { "unit": ')
                   and '"cost": {' in l]

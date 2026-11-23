@@ -306,14 +306,15 @@ describe("the stages are the research record's", () => {
     //  Screening stages carry no cost: no postDict.
     expect(inTree("tutorials/steady/reactors/ammoniaReactor01_fixedConversion/system/postDict")).toBe(false);
     expect(inTree("tutorials/steady/reactors/ammoniaReactor02_equilibrium/system/postDict")).toBe(false);
-    //  The base case declares Class 4, designs six exchangers by Kern, and
-    //  its converter is a Gibbs reactor 5 K short of equilibrium.
+    //  The base case declares Class 4, designs eight exchangers by Kern (six
+    //  plus the two interbed steam boilers), and its converter is three
+    //  catalyst beds sized by their kinetics (C440).
     const pd = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict");
     expect(pd).toMatch(/^\s*estimateClass\s+4;/m);
-    expect([...pd.matchAll(/design\s*\{\s*method Kern;/g)].length).toBe(6);
-    const conv = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/Converter/system/flowsheetDict");
-    expect(conv).toMatch(/^type\s+gibbsReactor;/m);
-    expect(conv).toMatch(/temperatureApproach 5;/);
+    expect([...pd.matchAll(/design\s*\{\s*method Kern;/g)].length).toBe(8);
+    const bed = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/CONVERTER/Bed3/system/flowsheetDict");
+    expect(bed).toMatch(/^type\s+pfr;/m);
+    expect(bed).toMatch(/V_R\s+\$V_Bed3;/);
   });
 });
 

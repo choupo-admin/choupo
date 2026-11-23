@@ -16,9 +16,10 @@
   named for that phase, at the state that stream carries.  The phase is
   READ off the stream, never declared.  Declared here, every fraction an
   AUTHOR-SET ASSUMPTION:
-    Converter     the gas in the bed voids: 0.40 of the catalyst volume
-                  (a typical packed-bed voidage, not measured), at the
-                  converter outlet state (HotEffluent); the rest is catalyst.
+    Converter     NOT DECLARED since the beds are `pfr` units sized by their
+                  kinetics (C440): the pfr sizer publishes no held volume of
+                  gas, so the beds are listed as not declared rather than
+                  given one.  (The Gibbs vessel held 0.40 of its volume.)
     Separator     a liquid level of 0.25 (RawLiquid) under 0.75 of gas
                   (UnreactedGas).
     LetdownHP     half liquid (LetdownLiquid), half gas (LetdownGas).
@@ -31,7 +32,7 @@
   hold it in, and none is invented.  For scale only: the whole 25 m3
   Separator holds ~0.9 t of loop gas, against the tanks' ~25 000 t.
 
-  WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units:
+  WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units (the CONVERTER sector counts as one, its five calculations being sized below):
 
     compressors (4)   N2Boost MakeupComp1 MakeupComp2 RecycleComp
                       by SHAFT POWER, the unit's own result (pass-through).
@@ -108,14 +109,20 @@
                       Several exchangers exceed the cost correlation's
                       1000 m2 ceiling (a real plant splits such a duty over
                       several shells), and the costing pass says so.
-    converter   (1)   a catalyst VESSEL on a DECLARED space velocity.  The
-                      Gibbs reactor has no kinetics, so it has no volume of
-                      its own; V = Q_normal(inlet) / SV is a design BASIS,
-                      not a result.  The 20000 1/h (Nm3 gas / (m3 catalyst
-                      h), normal basis, on the INLET gas) is the same
-                      ASSUMED feasibility figure ammonia02 uses -- not a
-                      datum for any catalyst.  A rate law sizes the beds
-                      (ammoniaReactor04_kineticSizing); that is the groups' task 2.
+    converter   (6)   THREE catalyst BEDS sized by their KINETICS, TWO interbed
+                      waste-heat boilers and ONE pressure shell around the
+                      sector CONVERTER (DEV.md 4c C440, C66, C69).  The beds
+                      run the Dyson & Simon (1968) rate for an iron catalyst
+                      times the effectiveness factor xi of its Eq 39 (read on
+                      Table I at max(P, 150 atm)); each volume is SOLVED by
+                      system/outerDict against a stated criterion (bed 1
+                      leaves at 515 C, beds 2 and 3 5 K short of equilibrium)
+                      and the beds share ONE diameter, the smallest at which
+                      every Ergun drop is within 1 bar.  `CatalystBedSize`
+                      reads each solved volume, `ConverterShellSize` stacks
+                      the beds and the coolers into one shell at 166 bar g and
+                      prices it on the Turton vessel set.  The space-velocity
+                      basis the Gibbs converter used is retired.
     drums       (3)   Separator LetdownHP StorageFlash, DETAILED (C318): the
                       Souders-Brown allowable vapour velocity (Towler & Sinnott
                       10.9, K = 0.07 m/s, with a demister), the diameter from
@@ -193,7 +200,7 @@
       materials question, and moving an item to SS316 is one word.  Every
       item designed above 100 bar also exceeds the material records' maxP
       (100 bar), and the run warns about every one of them -- the two
-      vessels (Converter, Separator), the exchangers and the compressors
+      vessels (the converter shell, Separator), the exchangers and the compressors
       (the exchangers and compressors since DEV.md 4c C86); the item is
       still sized and priced.  For a compressor
       the material is recorded only (the correlation's F_BM 2.7 carries no
@@ -211,8 +218,9 @@
   every heat duty a unit publishes is served by the lowest-grade utility in
   constant/utilities/ that can take it across dTmin 10 K, carried by the
   unit's own process streams (the FEHE), or LISTED unserved -- never dropped.
-  The converter's ~30.6 MW is served by a DECLARED utility,
-  `utility steamGenerationHP;` on the Converter: HP steam raised in a
+  The converter's heat (~30 MW, now released in the two INTERBED coolers and
+  the third bed's own effluent) is served by a DECLARED utility,
+  `utility steamGenerationHP;` on the two interbed coolers: HP steam raised in a
   waste-heat boiler at the steamHP header's 41 bar, valued at -18 EUR/GJ --
   a CREDIT, an AUTHOR-SET ASSUMPTION stated in the case-local record
   constant/utilities/steamGenerationHP.dat (an upper bound: the steam is
@@ -308,9 +316,9 @@
   units publish as a generic `Q` (the four water coolers, the chiller,
   the three flash drums; the FEHE's two
   sides as recovered heat), as in the FEL-2 case, with the same dTmin of
-  10 K.  The Gibbs converter publishes `Q_kW` only and is NOT in the
-  population: the pass names it and its 30.3 MW, and says that the targets
-  are those of the 10 extracted segments, not of the plant.
+  10 K.  The two interbed coolers publish a generic `Q`, so the converter's heat is
+  a stream segment of this pinch (the segments are the coolers' T in and out;
+  C302: the Gibbs converter published only `Q_kW` and was outside it).
 \*---------------------------------------------------------------------------*/
 pinchPass
 {
@@ -404,7 +412,7 @@ sizing
         { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
           designRules { pressureDesign 166;
                         design { method Kern;
-                                 tubeStream HotEffluent;      // the hot effluent in the tubes
+                                 tubeStream CONVERTER.HotEffluent;   // the hot effluent in the tubes (the sector outlet, by its identity)
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern triangular;
                                  tubePasses 1;                // counter-current: the ends cross
@@ -415,16 +423,66 @@ sizing
                                  fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
                                } } }
 
-        //  ---- the converter: a catalyst vessel on a declared basis ------
-        { unitName Converter;    type vessel;  material SS316;                 // 733 K outlet
-          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
-                        spaceVelocityBasis normal;  // the basis the number is quoted on
-                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
-                        L_over_D 6;  pressureDesign 166;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; }
-          inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
-                                                  // bed voidage -- ASSUMED;
-                                                  // the rest is catalyst
+        //  ---- the two interbed coolers: waste-heat boilers, DESIGNED (Kern) --
+        //  The bed effluent in the TUBES (the high-pressure side), boiler
+        //  feedwater boiling on the shell at the steamHP header's 41 bar.
+        //  F = 1 (a boiling utility); the passes only buy gas velocity.
+        { unitName CONVERTER.InterbedCooler1; type shellTubeHX; material SS316;          // bed 1 outlet ~790 K
+          designRules { utility steamGenerationHP;  // HP steam raised -- the declared credit
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // F = 1 anyway (boiling); 1 pass keeps the gas dP down
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+        { unitName CONVERTER.InterbedCooler2; type shellTubeHX; material SS316;
+          designRules { utility steamGenerationHP;
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+
+        //  ---- the three catalyst beds: sized by their KINETICS ---------
+        //  The `pfr` sizer READS each bed's own V_R -- the DesignSpec's
+        //  answer (system/outerDict) -- sizes the shell around it, and
+        //  prices the catalyst charge from the two DECLARED numbers below,
+        //  which are AUTHOR-SET ASSUMPTIONS (see the header).
+        //  NO geometry here: each bed declares the converter's ONE
+        //  diameter (CONVERTER/Bed<N>/system/flowsheetDict `operation.
+        //  diameter $D_converter;`, the cross-section its Ergun pressure
+        //  drop is integrated on) and the sizer READS it from the unit --
+        //  one home (DEV.md 4c C66, C69).
+        { unitName CONVERTER.Bed1;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
+                        catalystPrice        15.0; } } // EUR/kg -- AUTHOR-SET ASSUMPTION
+        { unitName CONVERTER.Bed2;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+        { unitName CONVERTER.Bed3;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+
+        //  ---- THE CONVERTER: ONE pressure shell around the sector ------
+        //  AFTER every member's entry: the shell reads what its members
+        //  were sized as, and refuses a member not yet sized.  The loop's
+        //  design pressure, as every high-pressure item here.  NO `D`: the
+        //  converter's diameter is its beds' (system/flowsheetDict
+        //  `D_converter`, solved by system/outerDict).
+        { unitName CONVERTER;  type converterShell;  material SS316;
+          designRules { pressureDesign  166; } }
 
         //  ---- the three flash drums: DETAILED sizing (C318; see the header) --
         //  Souders-Brown allowable velocity (Towler & Sinnott 10.9), levels from a
@@ -517,7 +575,7 @@ economics
     streamFactor        0.90;        // 7884 h/yr on stream -- assumption
     siteFactor          0.50;
     contingencyFee      1.18;
-    N_np                11;          // 4 compressors + 6 exchangers + 1 reactor
+    N_np                15;          // 4 compressors + 8 exchangers (6 + 2 interbed boilers) + 3 beds
     estimateClass       4;           // the AUTHOR's statement of how far the project is defined (AACE's primary characteristic) -- not a consequence of the model or of the design stage illustrated
     accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
     refuseOnMissingPrice 1;
