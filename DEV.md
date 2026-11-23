@@ -5366,6 +5366,25 @@ accepts today, and that is a policy call.
 > out of domain: DryingCurveTool airY, MerkelTool airMoisture, LevenspielTool T) stay
 > with the laptop.
 
+> **C480 (from the C266 student walk, findings 1-2, 2026-11-23; given to the cloud).**  Every
+> props case sampled (psat01, steam01, psychro01, binary01, relief02, nrtl01) opens on "No figure
+> published": the psychrometric chart and the LLE map exist only as CSV; steam01 shows 61 values
+> under raw keys with no unit and without the comparison with the IAPWS tables the case exists to
+> verify; psat01 shows raw fit keys.  The C477 principle applied to choupoProps: each case answers
+> its question in one figure.
+
+> **C481 (from the C266 student walk, findings 7-9, 2026-11-23; given to the cloud).**  ctrl02
+> opens on global balances, not on the response the case asks about; its header says PRODUCTS none;
+> the dynamicCSTR card prints UA = 50 and T_jacket = 320 without units.  ed01's rectifier shows as
+> electricity GENERATED (W = +0.1 kW, -0.0 EUR/h) while it consumes, and `current = 8 -` without A.
+
+> **THE MTBE COMPARISON (C479 point 4), RULED 2026-11-23.**  The reference numbers come from
+> Vitor's own course exercise (the PEQ case MTBE_Intensified, 15 stages; C231), run in the
+> reference simulator, recorded in the C235 landing above.  They enter column19 as a declared
+> CROSS-CHECK against that course case, never as a model input (nothing in the case is read from
+> them: K_a is Izquierdo 1992, the isobutene datum Prosen 1951), labelled as such on screen, the
+> simulator unnamed.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
