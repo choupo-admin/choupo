@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1937,
+  "cases": 1938,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22135,6 +22135,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/reactor/batch34_fractional_order_at_zero": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/recipes/recipe01_react_then_distill": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -31154,6 +31168,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -33160,6 +33175,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -36150,6 +36166,7 @@
     "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
     "tutorials/batch/reactor/batch32_fast_intermediate_full",
     "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    "tutorials/batch/reactor/batch34_fractional_order_at_zero",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",

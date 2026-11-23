@@ -1107,7 +1107,7 @@ One isothermal closed vessel at constant volume (the "cell"), the whole O Conair
 
 The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, the charge, the H2 and OH mole fractions, endTime and the instant of the rate-of-production report; this file is the experiment at its defaults.
 
-THE JACOBIAN. `jacobian finiteDifference;` is declared on purpose. The engine audits its analytic Jacobian against a finite difference and refuses a run where they differ by more than 1e-4 of the column's scale; at the first Jacobian of a vessel holding H2O2 alone (every radical at zero, the start of kinetics02\_h2o2\_falloff) it measured d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. Both kinetics cases therefore integrate on the finite-difference Jacobian, which every Rosenbrock step is allowed to use. The disagreement is reported to the engine owner as an open item, not worked around in the engine.
+THE JACOBIAN is the analytic one (the default; audited against a finite difference on a doubling schedule). Until 2026-11-22 this case declared the finite-difference Jacobian: at the first Jacobian of a vessel holding H2O2 alone, every radical at zero, the audit read d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. The analytic derivative was right; the audit's REFERENCE was biased -- a forward two-point difference of a rate quadratic in a species at zero (2 HO2, 2 OH) is off by k h, and with the audit's step larger than the trace parent itself the bias was O(1). The audit now takes the second-order one-sided difference there (C468, Theory Guide sec:batch-analytic-jacobian).
 
 \end{tutnarrative}
 \tutreadme{An isothermal closed vessel (1000 K, 1 bar, 1 litre) holds an H$_2$/N$_2$ bath (H$_2$ mole fraction 0.01) and a trace of OH (1e-6) made at t = 0: the radical a flash would leave. The whole ? Conaire et al. 2004 H$_2$/O$_2$ mechanism is switched on (the constant/reactions of ignition01\_h2o2), so the OH can do everything the mechanism lets it do.}
@@ -1146,7 +1146,7 @@ the fall-off cell: a trace of H2O2 in N2 at 1000 K and 30 bar, isothermal, follo
 
 The whole O Conaire 2004 H2/O2 mechanism (19 reactions, the same constant/reactions as ignition01\_h2o2) is loaded, so everything the H2O2 and the OH it makes can do is in the model; the reaction under study is R15, H2O2 + M = 2 OH + M, a Troe fall-off. The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, P, the charge, the H2O2 and N2 mole fractions and the window; this file is the experiment at its defaults.
 
-THE JACOBIAN. `jacobian finiteDifference;` is declared on purpose. The engine audits its analytic Jacobian against a finite difference and refuses a run where they differ by more than 1e-4 of the column's scale; at the first Jacobian of a vessel holding H2O2 alone (every radical at zero, the start of kinetics02\_h2o2\_falloff) it measured d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. Both kinetics cases therefore integrate on the finite-difference Jacobian, which every Rosenbrock step is allowed to use. The disagreement is reported to the engine owner as an open item, not worked around in the engine.
+THE JACOBIAN is the analytic one (the default; audited against a finite difference on a doubling schedule). Until 2026-11-22 this case declared the finite-difference Jacobian: at the first Jacobian of a vessel holding H2O2 alone, every radical at zero, the audit read d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. The analytic derivative was right; the audit's REFERENCE was biased -- a forward two-point difference of a rate quadratic in a species at zero (2 HO2, 2 OH) is off by k h, and with the audit's step larger than the trace parent itself the bias was O(1). The audit now takes the second-order one-sided difference there (C468, Theory Guide sec:batch-analytic-jacobian).
 
 \end{tutnarrative}
 \tutreadme{An isothermal closed vessel (1000 K, 30 bar, 1 litre) holds N$_2$ and a trace of H$_2$O$_2$ (1e-10 mole fraction). The reaction H$_2$O$_2$ + M = 2 OH + M (R15 of the ? Conaire et al. 2004 mechanism) is a Troe fall-off: its first-order constant lies between the low-pressure limit k$_0$[M] and the high-pressure limit k$\infty$, and the reduced pressure P\_r = k$_0$[M]/k$\infty$ is the coordinate of the curve. At these conditions P\_r $\approx$ 0.67, near the middle.}
@@ -3013,6 +3013,42 @@ WHAT IS KEPT. One rate constant, k1, and the two stable species. k2 does not app
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
 \goldrow{kpi}{campaign}{mass\_residual\_kg}{2.22044604925e-16}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
+\goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
+\goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
+\goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
+\goldrow{kpi}{campaign}{transfers\_logged}{0}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch34\_fractional\_order\_at\_zero}{tutorials/batch/reactor/batch34\_fractional\_order\_at\_zero}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Isothermal batch reactor: A $\to$ B $\to$ C, B absent at t = 0 and consumed at order 1/2 (the analytic Jacobian at c = 0, C468)}
+\begin{tutnarrative}
+the witness of C468 defect 1:
+
+A --k1-$\to$ B --k2 c\_B\textasciicircum{}0.5-$\to$ C
+
+B is ABSENT at t = 0 and is consumed at the fractional order 1/2. The slope d(c\textasciicircum{}0.5)/dc = 0.5 c\textasciicircum{}-0.5 is infinite at c = 0, so a Newton matrix cannot hold it. Until 2026-11-22 the analytic Jacobian differenced such a reaction at its own step and the audit, differencing at ITS step, read a different number across the singularity and refused the run (d(n\_compB)/d(n\_compB) -2.678 against -2.671). The Jacobian now takes the slope at the smallest concentration it resolves, c\_floor = sqrt(eps) s / V, and the audit takes that reaction's share of the column out of the analytic Jacobian and out of its reference (the share at the singularity has no reference), auditing the rest (Theory Guide sec:batch-analytic-jacobian). The answer is the same within the error estimate: a Rosenbrock method has no Newton iteration, the Jacobian enters the step formula itself, so a different J moves the step a little, never the solution beyond the tolerance.
+
+Isothermal 350 K, constant V; mass and element closure are gated as for every batch case. k2 = 2e-3 (m3/kmol)\textasciicircum{}0.5 / s.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{1}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{1.7763568394e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{8.881784197e-16}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
 \goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
 \goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
