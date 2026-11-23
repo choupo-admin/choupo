@@ -146,6 +146,7 @@ type WorkerMessage =
   | { type: "convergedFiles"; files: { [relPath: string]: string } }
   | { type: "designFiles"; files: { [relPath: string]: string } }
   | { type: "postProcessingFiles"; files: { [relPath: string]: string } }
+  | { type: "instantTreeFiles"; files: { [relPath: string]: string }; written: number; shown: number }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } }
   | { type: "caseWrites"; files: { [relPath: string]: string } }
@@ -167,6 +168,7 @@ export class WasmAdapter implements SolverAdapter {
       let designFiles: { [relPath: string]: string } | null = null;
       let postProcessingFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
+      let instantTree: RunResult["instantTree"] | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       let caseWrites: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
@@ -266,6 +268,10 @@ export class WasmAdapter implements SolverAdapter {
         if (postProcessingFiles && Object.keys(postProcessingFiles).length > 0) {
           result.postProcessingFiles = postProcessingFiles;
         }
+        //  C482: the instant directories as FILES for the Case tree, capped.
+        if (instantTree && Object.keys(instantTree.files).length > 0) {
+          result.instantTree = instantTree;
+        }
         //  Same rule, third tree: a case whose units publish no profile must
         //  not read as a case that failed to solve.
         if (instantFiles && Object.keys(instantFiles).length > 0) {
@@ -324,6 +330,8 @@ export class WasmAdapter implements SolverAdapter {
           designFiles = msg.files;
         } else if (msg.type === "postProcessingFiles") {
           postProcessingFiles = msg.files;
+        } else if (msg.type === "instantTreeFiles") {
+          instantTree = { files: msg.files, written: msg.written, shown: msg.shown };
         } else if (msg.type === "instants") {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {

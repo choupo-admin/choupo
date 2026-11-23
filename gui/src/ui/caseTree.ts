@@ -155,7 +155,11 @@ export const RUN_OUTPUT_ROOTS: readonly string[] =
  *  -- the GUI's one copy of the engine's `InternalStateIO::ROOT`.  */
 export const INTERIOR_ROOT = "internalStates";
 
-const isInstant = (seg: string) => /^\d+(\.\d+)?$/.test(seg);   // 0.01/ 0.02/ ... transient snapshots
+//  A time-integrated run's trajectory.csv sits at the case root and is run
+//  output too (C482 part 1).
+export const RUN_OUTPUT_FILES: readonly string[] = ["trajectory.csv"];
+
+const isInstant = (seg: string) => /^(\d+(\.\d+)?|\d(\.\d+)?[eE][-+]?\d+)$/.test(seg);   // 0.01/ 0.02/ ... transient snapshots
 
 /*  IS THIS PATH SOMETHING THE RUN WROTE?  The view a path sits in decides:
  *  everything under a run-output root or a transient instant is the run's,
@@ -166,7 +170,7 @@ const isInstant = (seg: string) => /^\d+(\.\d+)?$/.test(seg);   // 0.01/ 0.02/ .
  *  student authored.  */
 export function isRunOutput(prefix: string): boolean {
   const first = prefix.split("/")[0] ?? "";
-  return first !== "0" && (RUN_OUTPUT_ROOTS.includes(first) || isInstant(first));
+  return first !== "0" && (RUN_OUTPUT_ROOTS.includes(first) || RUN_OUTPUT_FILES.includes(first) || isInstant(first));
 }
 
 /*  WHAT A READER MAY DO WITH THE FILE IN FRONT OF THEM -- one sentence per
@@ -189,7 +193,7 @@ export function kindOf(prefix: string): NodeKind {
   //  reading wins -- `isInstant` must never see it (the transient instants are
   //  `0.01/ 50/ 1000/`, and `0/` is the one a student writes).
   const view = first === "0" ? "state0"
-             : RUN_OUTPUT_ROOTS.includes(first) || isInstant(first) ? "output"
+             : RUN_OUTPUT_ROOTS.includes(first) || RUN_OUTPUT_FILES.includes(first) || isInstant(first) ? "output"
              : null;
   if (view) {
     //  Inside a state view: the interiors' own root, and everything under
@@ -234,7 +238,17 @@ export function rankNode(node: TreeNode): number {
 }
 
 export function sortedChildren(node: TreeNode): TreeNode[] {
+  //  Two instant directories are ordered by TIME, numerically (1e-06 before
+  //  0.001, 2 before 10), never by name.
+  //  (a squashed label such as "0.5/internalStates" is read by its first segment)
+  const num = (n: TreeNode) => {
+    const head = n.label.split("/")[0] ?? "";
+    return isInstant(head) ? parseFloat(head) : NaN;
+  };
+  const byTime = (a: TreeNode, b: TreeNode) =>
+    Number.isNaN(num(a)) || Number.isNaN(num(b)) ? 0 : num(a) - num(b);
   return Array.from(node.children.values())
     .sort((a, b) => rankNode(a) - rankNode(b)
+                 || byTime(a, b)
                  || a.label.localeCompare(b.label));
 }

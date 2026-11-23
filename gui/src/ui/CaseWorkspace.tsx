@@ -89,6 +89,7 @@ import { inactiveLines, unreadKeysFromLog } from "../case/inactiveKeys.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
 import { openGuide } from "../help/guideLinks.js";
 import { FileTree } from "./FileTree.js";
+import { instantAccount, mergeInstantTree } from "../case/instantTree.js";
 import { GENERATED_ZERO_HINT, isGeneratedZero } from "../case/completeZero.js";
 
 import { lessonOutline } from "../case/lesson.js";
@@ -298,9 +299,12 @@ export function CaseWorkspace() {
   //  a state directory is a RESTARTABLE SNAPSHOT, so
   //  `converged/internalStates/<SECTOR>/<unit>` (one file per unit) is part
   //  of the same view as the streams and arrives on the same channel.
+  //  C482 part 1: a time-integrated run's instant directories (capped) and
+  //  its trajectory.csv, on their own channel, same read-only merge.
+  const instantTree = useStore((s) => s.runResult?.instantTree);
   const raw = useMemo(
-    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}), ...(postOut ?? {}) }),
-    [caseFiles.rawFiles, convergedOut, designOut, postOut]);
+    () => mergeInstantTree(caseFiles.rawFiles ?? {}, [convergedOut, designOut, postOut], instantTree),
+    [caseFiles.rawFiles, convergedOut, designOut, postOut, instantTree]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
   //  0/ files the engine's own -init0 wrote (Case > Complete 0/): marked,
@@ -309,9 +313,14 @@ export function CaseWorkspace() {
   //  the only addition.
   const generated0 = useStore((s) => s.generated0);
   const generatedBadge = useMemo(
-    () => (p: string) => isGeneratedZero(p, caseFiles.rawFiles, generated0)
-      ? { text: "generated", hint: GENERATED_ZERO_HINT } : null,
-    [caseFiles.rawFiles, generated0]);
+    () => (p: string) => {
+      if (p === "trajectory.csv" && instantTree)
+        return { text: `${instantTree.shown}/${instantTree.written} instants`,
+                 hint: instantAccount(instantTree) };
+      return isGeneratedZero(p, caseFiles.rawFiles, generated0)
+        ? { text: "generated", hint: GENERATED_ZERO_HINT } : null;
+    },
+    [caseFiles.rawFiles, generated0, instantTree]);
 
   // Default: flowsheetDict / propsDict, else first file.
   const active =
