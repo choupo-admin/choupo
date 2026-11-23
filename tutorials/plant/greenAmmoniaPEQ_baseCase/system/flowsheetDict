@@ -140,14 +140,18 @@ variables
     V_Bed2            23.847749 m3;
     V_Bed3            33.298906 m3;
     D_converter        2.254694 m;      // the CONVERTER's one diameter, read by every bed
-    NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
-    NH3_t_day          { compute "NH3_t_h * 24"; }
-    W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
-    W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
-    H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
-    y_NH3_converter    { compute "CONVERTER.Bed3.y_NH3_out"; }
-    V_catalyst_m3      { compute "CONVERTER.Bed1.V_R + CONVERTER.Bed2.V_R + CONVERTER.Bed3.V_R"; }
-    Q_steam_kW         { compute "-(CONVERTER.InterbedCooler1.Q_kW + CONVERTER.InterbedCooler2.Q_kW)"; }
-    Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
-    purge_kmol_h       { compute "Purge.F * 3600"; }
+    //  Every `compute` is evaluated in SI and shown in the declared `unit`
+    //  (units::fromSI): the expressions below are therefore the SI quantity, and
+    //  the Variables tab and values.csv label each one.  kW-named KPIs are
+    //  published in kW, hence the 1000; a stream's F is kmol/s.
+    NH3_t_h            { compute "ProductNH3.F * 17.0305";  unit t/h; }
+    NH3_t_day          { compute "ProductNH3.F * 17.0305";  unit t/day; }
+    W_compression_kW   { compute "(N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW) * 1000";  unit kW; }
+    W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h";  unit kWh/t; }   // W per kg/s of NH3 = J/kg
+    H2_specific_kg_t   { compute "H2Feed.F * 2.01588 / (ProductNH3.F * 17.0305)";  unit kg/t; }   // kg H2 per kg NH3
+    y_NH3_converter    { compute "CONVERTER.Bed3.y_NH3_out";  unit -; }
+    V_catalyst_m3      { compute "CONVERTER.Bed1.V_R + CONVERTER.Bed2.V_R + CONVERTER.Bed3.V_R";  unit m3; }
+    Q_steam_kW         { compute "-(CONVERTER.InterbedCooler1.Q_kW + CONVERTER.InterbedCooler2.Q_kW) * 1000";  unit kW; }
+    Q_refrigeration_kW { compute "-Chiller.Q_kW * 1000";  unit kW; }
+    purge_kmol_h       { compute "Purge.F";  unit kmol/h; }
 }

@@ -14,7 +14,16 @@
 /* C266 item 8: the Variables tab shows a unit column only from a unit the case
    published; nothing is guessed. */
 import { describe, expect, it } from "vitest";
-import { variableUnit } from "../src/ui/VariablesWorkspace.js";
+import { variableUnit, solvedDisplay } from "../src/ui/VariablesWorkspace.js";
+
+describe("solvedDisplay", () => {
+  it("shows a computed entry in its declared unit, as the engine does", () => {
+    expect(solvedDisplay({ role: "computed", unit: "t/h", solved: 1000 / 3600 })).toBeCloseTo(1, 12);
+    expect(solvedDisplay({ role: "computed", unit: "kW", solved: 5000 })).toBe(5);
+    expect(solvedDisplay({ role: "computed", unit: undefined, solved: 7 })).toBe(7);
+    expect(solvedDisplay({ role: "constant", unit: "kW", solved: 7 })).toBe(7);
+  });
+});
 
 describe("variableUnit", () => {
   it("takes a computed entry's declared unit", () => {
