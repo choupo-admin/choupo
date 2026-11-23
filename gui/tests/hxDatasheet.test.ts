@@ -82,7 +82,7 @@ describe("the engine's Kern sheet is READABLE and carries its design", () => {
     const d = findKernDesign(files("FEHE"), "FEHE")!;
     expect(d).not.toBeNull();
     expect(d.x.tube.role).toBe("hot");
-    expect(d.x.tube.inlet).toBe("HotEffluent");
+    expect(d.x.tube.inlet).toBe("CONVERTER.HotEffluent");   // the sector outlet by its identity (C440 postDict)
     expect(d.x.shell.role).toBe("cold");
     expect(d.x.declared).toContain("tubeOD");
     expect(d.x.declared).toContain("shellsInSeries");
