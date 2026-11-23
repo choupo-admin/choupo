@@ -44,8 +44,12 @@
       at ~275 K at 1 bar (Psat(320 K) ~4.3 bar), so a 1 bar loop would
       flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of
       (T,P,z) (Duhem), not a silent liquid default.  At 5 bar the bubble
-      point clears ~326 K, so the warm reactor (~327 K) and the recycled
+      point clears ~326 K, so the warm reactor (~325 K) and the recycled
       distillate stay liquid, as the flowsheet intends.
+    * The vapour is a REAL gas (SRK, declared in constant/thermoPhysPropDict):
+      at 5 bar the pentanes' pure-vapour fugacity coefficient is ~0.84, so an
+      ideal vapour would misplace the column's K values, duties and
+      temperatures (column-vapour audit C239, 2026-11-07).
     * The reaction uses a LOW activation energy on purpose --- a high-Ea
       rate would make the per-pass conversion collapse against the recycle
       temperature and destabilise the loop.  Low Ea decouples conversion

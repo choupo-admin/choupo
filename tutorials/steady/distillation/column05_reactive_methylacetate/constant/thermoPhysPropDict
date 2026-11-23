@@ -14,9 +14,17 @@
   mixture is strongly non-ideal (two azeotropes involving methyl acetate),
   so a predictive UNIFAC liquid is essential --- Raoult would misplace the
   product split.  UNIFAC is group-contribution: NO binary pair records, the
-  gamma comes from each component's functional groups.  The vapour stays
-  ideal: acetic-acid dimerisation is a known, deliberately unmodelled
-  simplification (see the inline notes).
+  gamma comes from each component's functional groups.  The vapour is an
+  ideal gas that PRICES THE ACETIC-ACID DIMERISATION: association is a
+  property of the vapour model, not a case option, so nothing here asks for
+  it -- the aceticAcid record's `vapourDimerisation` (Chao & Zwolinski 1978,
+  catalogue chemistry/aceticAcid-dissolution.dat, DEV.md 4c C201) makes the
+  acid's vapour the equilibrium monomer + dimer mixture; the run announces
+  it ("vapour association aceticAcid ...").  At 1.02 bar the other three
+  species are near-ideal (audit C239, 2026-11-07: pure-vapour phi 0.96 for
+  the dominant ones), so no cubic equation of state is declared: SRK would
+  count the dimer twice, and an EoS vapour keeps its EoS and refuses the
+  association (ThermoPackage::vapourAssociationPriced).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -36,6 +44,6 @@ equilibrium
 
     vapour
     {
-        fugacityModel idealGas;           // acetic-acid dimerisation not modelled
+        fugacityModel idealGas;           // + the record's acetic-acid dimerisation (announced)
     }
 }
