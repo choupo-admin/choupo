@@ -155,6 +155,13 @@ public:
     void noteTimeAdvanced(scalar t) override;
     void setRunWindow(scalar t0, scalar t1) override;
     std::map<std::string, scalar> kpis() const override;
+
+    //  Route integrals (see BatchUnitOperation.H).
+    bool hasRouteIntegral() const override { return !routeNames_.empty(); }
+    int  routeSpecies() const override { return routeSpecies_; }
+    std::vector<scalar> routeRates(const sVector& packed) const override;
+    void setRouteCumulative(const std::vector<scalar>& cum) override { routeCum_ = cum; }
+    std::vector<std::pair<std::string, scalar>> trajectoryExtras() const override;
     void notifyStateWillChange() override;
     void notifyStateChanged() override;
     std::vector<SimulationResult::EnergyRecord>
@@ -251,6 +258,11 @@ private:
     // are already volumetric.  Declared, printed, never assumed.
     scalar                      catalystLoading_ = 0.0;
     std::vector<ReactionSpec>   reactions_;
+    //  `routeIntegral { species NO; routes { thermal ( A232 ... ); ... } }`
+    int                      routeSpecies_ = -1;
+    std::vector<std::string> routeNames_;          // the declared routes, then "other"
+    std::vector<std::size_t> routeOf_;             // per reaction: its route (routeNames_.size()-1 = other)
+    std::vector<scalar>      routeCum_;            // running totals [kmol], set by the driver
     Mode                        mode_       = Mode::Isothermal;
     Energy                      energy_     = Energy::LiquidDH;
     scalar                      T_setpoint_ = 0;

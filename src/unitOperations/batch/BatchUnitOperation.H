@@ -238,6 +238,18 @@ public:
     virtual std::vector<std::pair<std::string, scalar>> trajectoryExtras() const
     { return {}; }
 
+    //  ROUTE INTEGRALS (C477, Theory Guide sec:route-integrals).  A vessel that
+    //  declares `routeIntegral { ... }` sums the net production of one species
+    //  over DECLARED sets of reactions (the routes).  The driver integrates the
+    //  rates in time (Simpson on the integrator's dense output) and hands the
+    //  running totals back with setRouteCumulative; they are the vessel's
+    //  trajectory columns.  routeRates is kmol/s of the species per route, the
+    //  last entry the reactions in no route.
+    virtual bool hasRouteIntegral() const { return false; }
+    virtual int  routeSpecies() const { return -1; }
+    virtual std::vector<scalar> routeRates(const sVector& /*packed*/) const { return {}; }
+    virtual void setRouteCumulative(const std::vector<scalar>& /*cum*/) {}
+
     // Extra FINAL KPIs beyond the generic (t_end, T/P/moles_final) set the
     // batch driver pins for every vessel.  A unit whose verdict is not just
     // its final inventory (the rectifier's instantaneous x_D, R, D) returns

@@ -1640,6 +1640,10 @@ if (flowsheetDict->found("cycle"))
     nextWrite = advanceWrite(nextWrite);
     for (std::size_t u = 0; u < units.size(); ++u)
         if (units[u]->type() == "batchReactor") ign[u].feed(t, units[u]->state().T);
+    std::vector<scalar> routeN0(units.size(), 0.0);       // the route species' inventory at start
+    for (std::size_t u = 0; u < units.size(); ++u)
+        if (units[u]->hasRouteIntegral())
+            routeN0[u] = units[u]->state().n[static_cast<std::size_t>(units[u]->routeSpecies())];
 
     // Continuous discharge routing: hand each unit's per-step sheddings
     // (e.g. a still's condensed vapour) to its `dischargeTo` receiver, so a
@@ -1685,6 +1689,10 @@ if (flowsheetDict->found("cycle"))
 
     if (!adaptive)
     {
+        for (const auto& u : units)
+            if (u->hasRouteIntegral())
+                throw std::runtime_error("choupoBatch: `routeIntegral` needs `timeStepping"
+                    " adaptive;` (it integrates the rates on the integrator's dense output)");
         // ---- FIXED-STEP RK4 (today's path --- byte-identical) ---------
         while (t < endTime - 1.0e-12 && !cssStopped)
         {
@@ -1819,6 +1827,23 @@ if (flowsheetDict->found("cycle"))
             }
         const bool perVessel = freeStep && nOdeVessels >= 2 && events.empty()
                                && !vesselsCoupledDeclared;
+        //  ROUTE INTEGRALS (C477): the dense-output quadrature lives in the coupled
+        //  free-stepping callback below, so a vessel that declares them needs
+        //  that path -- refused by name where it does not hold.
+        std::vector<std::vector<scalar>> routeA(units.size());   // running totals at the last accepted step end
+        bool anyRoute = false;
+        for (std::size_t u = 0; u < units.size(); ++u)
+            if (units[u]->hasRouteIntegral())
+            {
+                anyRoute = true;
+                routeA[u].assign(units[u]->trajectoryExtras().size() - 1, 0.0);
+            }
+        if (anyRoute && (!freeStep || perVessel))
+            throw std::runtime_error("choupoBatch: `routeIntegral` needs the free-stepping"
+                " adaptive path with the vessel integrated on its own (every unit a"
+                " batchReactor, no recipe event, condition, cycle or discharge, one"
+                " vessel): the route totals are integrated on the integrator's dense"
+                " output, which the write-grid-bounded and the per-vessel paths do not give");
         std::size_t coupledInterp = 0, coupledStraight = 0;   // rows (per vessel) of the coupled sweep, and the straight-line ones
         std::vector<std::unique_ptr<solver::AdaptiveTimeStepper>> vesselSteppers;
         if (perVessel)
@@ -2272,6 +2297,35 @@ if (flowsheetDict->found("cycle"))
                     for (std::size_t u = 0; u < odeUnits.size(); ++u)
                         if (units[odeToUnit[u]]->type() == "batchReactor")
                             ign[odeToUnit[u]].feed(tEnd, yNew[u].back());
+                    //  Route integrals: Simpson (4 intervals) on the dense output over
+                    //  [tPrev, tPrev + sEnd h], the rates at the packed states of vessel u.
+                    auto routeStepIntegral = [&](std::size_t u, scalar sEnd) -> std::vector<scalar>
+                    {
+                        BatchUnitOperation* up = units[odeToUnit[u]].get();
+                        std::vector<std::vector<scalar>> r;
+                        for (int k = 0; k <= 4; ++k)
+                        {
+                            const scalar sk = sEnd * k / 4.0;
+                            sVector y;
+                            if (k == 0) y = yPrev[u];
+                            else if (k == 4 && sEnd >= 1.0 - 1.0e-12) y = yNew[u];
+                            else
+                            {
+                                std::vector<sVector> own;
+                                if (!stepper.denseAt(sk, own))
+                                    throw std::runtime_error("choupoBatch: `routeIntegral` needs the"
+                                        " integrator's dense output (Rosenbrock23, Rodas4 or seulex),"
+                                        " and this vessel's integrator gives none");
+                                y = own[u];
+                            }
+                            r.push_back(up->routeRates(y));
+                        }
+                        std::vector<scalar> I(r[0].size(), 0.0);
+                        for (std::size_t q = 0; q < I.size(); ++q)
+                            I[q] = hTaken * sEnd / 12.0
+                                 * (r[0][q] + 4.0 * r[1][q] + 2.0 * r[2][q] + 4.0 * r[3][q] + r[4][q]);
+                        return I;
+                    };
                     bool interpolated = false;
                     while (nextWrite < tNext - tol && nextWrite <= tEnd + tol)
                     {
@@ -2330,6 +2384,13 @@ if (flowsheetDict->found("cycle"))
                                 }
                             }
                             odeUnits[u].commit(yw);
+                            if (anyRoute && units[odeToUnit[u]]->hasRouteIntegral())
+                            {
+                                auto part = routeStepIntegral(u, s);
+                                for (std::size_t q = 0; q < part.size(); ++q)
+                                    part[q] += routeA[odeToUnit[u]][q];
+                                units[odeToUnit[u]]->setRouteCumulative(part);
+                            }
                         }
                         interpolated = interpolated || !exact;
                         routeDischarges(tw);
@@ -2341,6 +2402,16 @@ if (flowsheetDict->found("cycle"))
                     if (interpolated)
                         for (std::size_t u = 0; u < odeUnits.size(); ++u)
                             odeUnits[u].commit(yNew[u]);
+                    //  the route totals at the accepted step end
+                    if (anyRoute)
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                            if (units[odeToUnit[u]]->hasRouteIntegral())
+                            {
+                                const auto full = routeStepIntegral(u, 1.0);
+                                for (std::size_t q = 0; q < full.size(); ++q)
+                                    routeA[odeToUnit[u]][q] += full[q];
+                                units[odeToUnit[u]]->setRouteCumulative(routeA[odeToUnit[u]]);
+                            }
                     // The accepted state ends this step and starts the next.
                     yPrev = yNew;
                     if (!fNew.empty()) { fPrev = fNew; fPrevValid = true; }
@@ -2497,6 +2568,25 @@ if (flowsheetDict->found("cycle"))
                 {
                     k["tauIgnition"] = ign[ui].tBest;     // C477: the dense-output delay [s]
                     result.kpiUnits[unit->name()]["tauIgnition"] = "s";
+                }
+                if (unit->hasRouteIntegral())
+                {
+                    //  the closure of the quadrature: what the routes (and `other`) add up to
+                    //  against what the vessel's inventory of the species actually gained
+                    const auto ex = unit->trajectoryExtras();
+                    const std::size_t sp = static_cast<std::size_t>(unit->routeSpecies());
+                    const scalar formed = ex.back().second;
+                    const scalar dn = st.n[sp] - routeN0[ui];
+                    k["cum" + thermo.comp(sp).name() + "_closure_kmol"] = formed - dn;
+                    std::cout << "\n  [routes] " << unit->name() << ": net " << thermo.comp(sp).name()
+                              << " formed by route [kmol]:";
+                    for (std::size_t q = 0; q + 1 < ex.size(); ++q)
+                        std::cout << "  " << ex[q].first.substr(ex[q].first.find('_') + 1) << " "
+                                  << std::scientific << std::setprecision(4) << ex[q].second;
+                    std::cout << "\n           closure: sum of routes " << std::scientific
+                              << std::setprecision(6) << formed << " against the inventory's own change "
+                              << dn << " kmol (difference " << formed - dn
+                              << ", the quadrature error)\n";
                 }
             }
             for (const auto& ev : unit->statusEvents())

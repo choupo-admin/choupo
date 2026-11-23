@@ -628,6 +628,75 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     }
 
     // -----------------------------------------------------------------
+    //  Optional route integrals (opt-in; absent = nothing runs).
+    //      routeIntegral { species NO;
+    //                      routes { thermal ( A232 A233 A234 ); N2O ( A207 ); } }
+    //  The net production of ONE species summed over declared sets of reactions,
+    //  integrated in time by the driver.  Each label must be a reaction of this
+    //  vessel that has the species in its stoichiometry, and sits in one route
+    //  only; the reactions in no route are the last column, `other`, so the
+    //  routes and `other` always add up to the species' net production.
+    // -----------------------------------------------------------------
+    routeSpecies_ = -1;
+    routeNames_.clear();
+    routeOf_.clear();
+    routeCum_.clear();
+    if (unitDict->found("routeIntegral"))
+    {
+        const std::string who = "BatchReactor '" + name_ + "': routeIntegral";
+        auto ri = unitDict->subDict("routeIntegral");
+        for (const auto& k : ri->keys())
+            if (k != "species" && k != "routes")
+                throw std::runtime_error(who + ": unknown key '" + k
+                    + "' (the block reads `species <name>;` and `routes { <route> ( reactions ); ... }`)");
+        if (!ri->found("species") || !ri->found("routes"))
+            throw std::runtime_error(who + ": needs `species <name>;` and `routes { ... }`");
+        const std::string sp = ri->lookupWord("species");
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).name() == sp) routeSpecies_ = static_cast<int>(i);
+        if (routeSpecies_ < 0)
+            throw std::runtime_error(who + ": species '" + sp + "' is not a component of this case");
+        auto rd = ri->subDict("routes");
+        const auto rkeys = rd->keys();
+        if (rkeys.empty())
+            throw std::runtime_error(who + ": `routes { }` is empty -- declare at least one route");
+        routeOf_.assign(reactions_.size(), rkeys.size());      // default: `other`
+        std::vector<bool> taken(reactions_.size(), false);
+        for (std::size_t q = 0; q < rkeys.size(); ++q)
+        {
+            if (rkeys[q] == "other" || rkeys[q] == "total")
+                throw std::runtime_error(who + ": '" + rkeys[q] + "' is a name the engine writes"
+                    " itself (the reactions in no route); name the route otherwise");
+            routeNames_.push_back(rkeys[q]);
+            const auto labels = rd->lookupWordList(rkeys[q]);
+            if (labels.empty())
+                throw std::runtime_error(who + ": route '" + rkeys[q] + "' lists no reaction");
+            for (const auto& lab : labels)
+            {
+                std::size_t jfound = reactions_.size();
+                for (std::size_t j = 0; j < reactions_.size(); ++j)
+                    if (reactions_[j].name == lab) jfound = j;
+                if (jfound == reactions_.size())
+                    throw std::runtime_error(who + ": route '" + rkeys[q] + "' names reaction '"
+                        + lab + "', which is not one of this vessel's reactions");
+                if (taken[jfound])
+                    throw std::runtime_error(who + ": reaction '" + lab + "' is in two routes;"
+                        " a reaction's production belongs to one");
+                bool has = false;
+                for (std::size_t s = 0; s < reactions_[jfound].comps.size(); ++s)
+                    has = has || static_cast<int>(reactions_[jfound].comps[s]) == routeSpecies_;
+                if (!has)
+                    throw std::runtime_error(who + ": reaction '" + lab + "' (route '" + rkeys[q]
+                        + "') has no " + sp + " in its stoichiometry, so it makes none");
+                taken[jfound] = true;
+                routeOf_[jfound] = q;
+            }
+        }
+        routeNames_.push_back("other");
+        routeCum_.assign(routeNames_.size(), 0.0);
+    }
+
+    // -----------------------------------------------------------------
     //  Optional ignition-delay sensitivity (opt-in; absent = nothing runs).
     //      sensitivity { response tauIgnition; factor 1.1; reactions all;
     //                    top 10; rise 400; }
@@ -888,9 +957,27 @@ void BatchReactor::runSensitivity_(scalar tMax)
           << ',' << r.Tend << ',' << sensTend0_ << '\n';
 }
 
+std::vector<std::pair<std::string, scalar>> BatchReactor::trajectoryExtras() const
+{
+    std::vector<std::pair<std::string, scalar>> ex;
+    if (routeNames_.empty()) return ex;
+    const std::string sp = thermo_->comp(static_cast<std::size_t>(routeSpecies_)).name();
+    scalar tot = 0.0;
+    for (std::size_t q = 0; q < routeNames_.size(); ++q)
+    {
+        const scalar v = q < routeCum_.size() ? routeCum_[q] : 0.0;
+        ex.emplace_back("cum" + sp + "_" + routeNames_[q], v);
+        tot += v;
+    }
+    ex.emplace_back("cum" + sp + "_total", tot);
+    return ex;
+}
+
 std::map<std::string, scalar> BatchReactor::kpis() const
 {
     std::map<std::string, scalar> k;
+    for (const auto& [name, v] : trajectoryExtras())
+        k[name + "_final"] = v;                      // route integrals, when declared
     if (!sensOn_) return k;
     k["sens_tau0"] = sensTau0_;
     for (std::size_t i = 0; i < sensResults_.size() && i < sensTop_; ++i)
@@ -1570,6 +1657,37 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     // else: dydt[n] stays 0 (isothermal)
 
     return dydt;
+}
+
+//  The net production of the route species by each route [kmol/s], at the packed
+//  state: nu_species * r_j * V summed over the route's reactions.  The same rate
+//  law call as derivatives_ (so the routes add up to dn/dt of the species).
+std::vector<scalar> BatchReactor::routeRates(const sVector& packed) const
+{
+    std::vector<scalar> out(routeNames_.size(), 0.0);
+    if (routeNames_.empty()) return out;
+    const std::size_t n = packed.size() - 1;
+    const scalar T = (mode_ == Mode::Isothermal) ? T_setpoint_ : packed[n];
+    scalar V = state_.V;
+    if (energy_ == Energy::GasConstantP)
+    {
+        scalar nT = 0.0;
+        for (std::size_t i = 0; i < n; ++i) nT += packed[i];
+        V = constPVolume_(nT, T);
+    }
+    const sVector& gT = gibbsAt_(T);
+    const KinCtx& ctx = kinCtx_(T, packed, V);
+    const sVector& n_vec = ctx.nvec;
+    for (std::size_t jr = 0; jr < reactions_.size(); ++jr)
+    {
+        const auto& rxn = reactions_[jr];
+        scalar nuSp = 0.0;
+        for (std::size_t s = 0; s < rxn.comps.size(); ++s)
+            if (static_cast<int>(rxn.comps[s]) == routeSpecies_) nuSp += rxn.nu[s];
+        if (nuSp == 0.0) continue;
+        out[routeOf_[jr]] += nuSp * rateOfReaction_(rxn, T, n_vec, V, &gT, &ctx) * V;
+    }
+    return out;
 }
 
 //  h_i(T) = h_pure_ig(T) and Cp_i(T) = cpIdealGas().Cp(T) for EVERY species, the two sums
