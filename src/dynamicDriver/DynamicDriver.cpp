@@ -138,6 +138,10 @@ Description
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include "postProcessing/views/BatchPublications.H"   // kpiUnitOfKey, shared with choupoBatch
+#include "postProcessing/views/DynamicPublications.H"   // the views a time-integrated run publishes (C487)
+#include "postProcessing/views/Views.H"
+
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -633,6 +637,32 @@ try
             " `recordType thermophysicalPropertySystem;` (the ONE case"
             " grammar).");
 
+    //  THE CASE'S DECLARED VIEWS (C487), read as choupoBatch reads them (C477):
+    //  the `references` and `views` of system/postDict through views::Reader,
+    //  PARSED HERE so that a typo costs no run, resolved after the run against
+    //  what the units and controllers published (DynamicPublications.H).  A
+    //  case that declares none builds nothing, keeps nothing and writes
+    //  nothing.  Under an outerDict the passes are the driver's, not a run to
+    //  draw: views there are refused by name, never silently dropped.
+    std::unique_ptr<views::Reader> viewReader;
+    {
+        DictPtr postDictV;
+        if (fs::exists("system/postDict"))
+            postDictV = Dictionary::fromFile("system/postDict");
+        if (postDictV && (postDictV->found("views") || postDictV->found("references")))
+        {
+            if (fs::exists("system/outerDict"))
+                throw std::runtime_error(cfg.binaryName + ": system/postDict"
+                    " declares `views`, and system/outerDict makes the run a"
+                    " series of passes of an outer driver; views of a driven"
+                    " campaign are not read in this release.  Remove one of"
+                    " the two, or draw the views from the direct run.");
+            viewReader = std::make_unique<views::Reader>(
+                postDictV, std::vector<std::string>{}, "postDict", true);
+            views::clearStale();
+        }
+    }
+
     // =====================================================================
     //  THE CAMPAIGN AS A PURE FUNCTOR (the choupoSolve `simulate` posture):
     //  given a flowsheet dict, build the package, the units and the
@@ -969,6 +999,7 @@ try
     // ---- Build controllers -------------------------------------------
     std::vector<std::unique_ptr<Controller>> controllers;
     std::vector<std::string>                  ctrlNames;
+    std::vector<std::string>                  ctrlPvUnits, ctrlMvUnits;   // views only
     if (fsDict->found("controllers"))
     {
         auto ctrlList = fsDict->lookupDictList("controllers");
@@ -999,6 +1030,19 @@ try
             auto c = Controller::New(ctype);
             c->setName(cname);
             c->initialise(cDict, findUnit);
+            //  the unit of what it measures and drives, from the labels the
+            //  case names (declared views only)
+            {
+                auto labelOf = [&](const char* blk, const char* key)
+                {
+                    if (!cDict->found(blk)) return std::string();
+                    auto b = cDict->subDict(blk);
+                    return b->found(key)
+                        ? views::stateLabelUnit(b->lookupWord(key)) : std::string();
+                };
+                ctrlPvUnits.push_back(labelOf("measurement", "cv"));
+                ctrlMvUnits.push_back(labelOf("actuator", "mv"));
+            }
             ctrlNames.push_back(cname);
             controllers.push_back(std::move(c));
         }
@@ -1212,8 +1256,61 @@ try
     }
     csv << "\n";
 
+    //  The write grid kept in memory ONLY when views are declared and this is
+    //  the direct pass (`writeOutputs`), one record per unit and controller.
+    std::vector<views::TimeSeriesRecord> viewHistory;
+    if (viewReader && writeOutputs)
+    {
+        for (const auto& u : units)
+        {
+            views::TimeSeriesRecord rec;
+            rec.name = u->name();
+            rec.type = u->type();
+            rec.columns = u->stateLabels();
+            for (const auto& l : rec.columns)
+                rec.columnUnits.push_back(views::stateLabelUnit(l));
+            viewHistory.push_back(std::move(rec));
+        }
+        for (std::size_t ci = 0; ci < controllers.size(); ++ci)
+        {
+            views::TimeSeriesRecord rec;
+            rec.name = controllers[ci]->name();
+            rec.type = controllers[ci]->type();
+            if (controllers[ci]->hasPV())
+            {
+                rec.columns = { "SP", "PV", "MV" };
+                rec.columnUnits = { ctrlPvUnits[ci], ctrlPvUnits[ci], ctrlMvUnits[ci] };
+            }
+            else
+            {
+                rec.columns = { "MV" };
+                rec.columnUnits = { ctrlMvUnits[ci] };
+            }
+            viewHistory.push_back(std::move(rec));
+        }
+    }
+
     auto writeSnapshot = [&](scalar t)
     {
+        if (!viewHistory.empty())
+        {
+            std::size_t h = 0;
+            for (const auto& u : units)
+            {
+                auto& rec = viewHistory[h++];
+                rec.t.push_back(t);
+                rec.rows.push_back(u->stateVector());
+            }
+            for (const auto& c : controllers)
+            {
+                auto& rec = viewHistory[h++];
+                rec.t.push_back(t);
+                if (c->hasPV())
+                    rec.rows.push_back({ c->setpoint(), c->lastCV(), c->lastMV() });
+                else
+                    rec.rows.push_back({ c->lastMV() });
+            }
+        }
         csv << std::scientific << std::setprecision(8) << t;
         for (const auto& u : units)
             for (auto v : u->stateVector())
@@ -2221,6 +2318,37 @@ try
         //  this pass returns in `result.advisories` is THIS pass's.
         //  `writeOutputs` is exactly the direct-path flag (every outer
         //  evaluation passes false), so the direct path is untouched.
+        //  THE DECLARED VIEWS are resolved against what the units and
+        //  controllers published, and carried on the result as its
+        //  `postProcessing` block (the choupoBatch contract, C477).
+        if (!viewHistory.empty())
+        {
+            std::size_t h = 0;
+            for (const auto& u : units)
+            {
+                auto& rec = viewHistory[h++];
+                rec.kpis = result.kpis[u->name()];
+                for (const auto& [key, x] : rec.kpis)
+                {
+                    (void)x;
+                    std::string un = views::kpiUnitOfKey(key);   // t_end, T_final, n_<c>_final
+                    if (un.empty() && key.size() > 6
+                        && key.compare(key.size() - 6, 6, "_final") == 0)
+                        un = views::stateLabelUnit(key.substr(0, key.size() - 6));
+                    rec.kpiUnits[key] = un;
+                }
+            }
+            for (std::size_t ci = 0; ci < controllers.size(); ++ci)
+            {
+                auto& rec = viewHistory[h++];
+                rec.kpis = result.kpis[controllers[ci]->name()];
+                rec.kpiUnits["SP_final"] = ctrlPvUnits[ci];
+                rec.kpiUnits["PV_final"] = ctrlPvUnits[ci];
+                rec.kpiUnits["MV_final"] = ctrlMvUnits[ci];
+            }
+            result.postProcessingBlock = viewReader->evaluate(
+                views::publicationsOfTimeSeries(viewHistory), verbosity);
+        }
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
         if (writeOutputs)
