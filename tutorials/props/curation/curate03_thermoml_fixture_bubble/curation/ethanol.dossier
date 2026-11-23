@@ -30,10 +30,10 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  13.2929007828;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -4999.98538201;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  3.9027486928;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  -456.284983822;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  13;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -5000;   // +/- 7600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  4;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  0;   // +/- 14000 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,7 +76,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0518717443424;
+        aadHeldOutPct     0.051872;
         acceptanceMaxAADPct 0.5;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "PLUMBING tolerance for a synthetic structural fixture -- the numbers are invented, so this band bounds the extract/partition/regress path and states nothing about experimental accuracy";
     }

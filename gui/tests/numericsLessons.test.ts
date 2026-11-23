@@ -543,8 +543,8 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/propertyOps/FitParameters.cpp", 245, "tCrit95(int dof)"],
     ["src/propertyOps/FitParameters.cpp", 1246, "const bool identifiable ="],
     ["src/propertyOps/FitParameters.cpp", 1582, "curationVerdict"],
-    ["src/propertyOps/CurationDossier.cpp", 59, "notClaimed"],
-    ["src/propertyOps/CurationDossier.cpp", 72, "notValidated"],
+    ["src/propertyOps/CurationDossier.cpp", 61, "notClaimed"],
+    ["src/propertyOps/CurationDossier.cpp", 74, "notValidated"],
     ["src/propertyOps/PropertyOperation.H", 118, "curation() const"],
   ];
 

@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ij  149.762768585;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ji  68.0559978072;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ij  150;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ji  68;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0274764440669;
+        aadHeldOutPct     0.027476;
         acceptanceMaxAADPct 0.14;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.41 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (ethanol -0.003 K, acetone +0.041 K; measured with no pair involved), as a percentage of the held-out mean T (337.79 K) = 0.1335 %, rounded UP to two significant figures";
     }
@@ -88,8 +88,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ij  149.762819618;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ji  68.055948657;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ij  150;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-ethanol.b_ji  68;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -132,7 +132,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0274764533128;
+        aadHeldOutPct     0.027476;
         acceptanceMaxAADPct 0.14;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.41 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (ethanol -0.003 K, acetone +0.041 K; measured with no pair involved), as a percentage of the held-out mean T (337.79 K) = 0.1335 %, rounded UP to two significant figures";
     }
