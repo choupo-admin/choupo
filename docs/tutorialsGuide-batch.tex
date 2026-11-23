@@ -1526,7 +1526,7 @@ THE JACOBIAN is the analytic one (the default; audited against a finite differen
 \end{tutscheme}
 \tutwhat{Miller \& Bowman 1989 Appendix A (235 reactions, 51 species): lean CH4/air + 100 ppm NO, adiabatic constant volume, 1300 K, 1 atm}
 \begin{tutnarrative}
-/$\ast$---------------------------------------------------------------------------$\ast$ nox03\_millerbowman\_large / flowsheetDict -- one adiabatic constant-volume vessel with the 235-reaction Appendix A mechanism.
+/$\ast$---------------------------------------------------------------------------$\ast$ nox03\_millerbowman\_large / flowsheetDict -- one adiabatic constant-volume vessel with the 235-reaction Appendix A mechanism. The same two declared figures as nox03 (system/postDict), on the seulex integrator's own dense output.
 
 \end{tutnarrative}
 \tutreadme{What it shows. The case nox03\_millerbowman\_large (read its README for the mechanism, the vessel and the comparison with Cantera) integrated with seulex, the extrapolated linearly-implicit Euler method of Hairer \& Wanner (1996, IV.9) that OpenFOAM's chemistry uses by default, instead of Rosenbrock23. Only the integrator word differs. Theory Guide, section $\ast$Extrapolating the linearly-implicit Euler method$\ast$.}
