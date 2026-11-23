@@ -70,7 +70,7 @@ def themes():
     return t
 
 
-THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
+THEME_ORDER = ["Para 2 de dezembro", "Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
 
@@ -117,15 +117,16 @@ def main():
         ico = {"S": "🟢", "M": "🟡", "L": "🔴"}
         def mdrow(r):
             return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} |"
-        nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
+        dec = [r for r in open_ if r["rank"] != "0" and th.get(r["item"]) == "Para 2 de dezembro"]
+        nxt10 = dec if dec else [r for r in open_ if r["rank"] != "0"][:10]
         md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
               f"\n### ▶ A andar agora ({len(now)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in now) + "\n"
-              f"\n### A seguir ({len(nxt10)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
-              "\n### O resto, por tema\n\n")
+              f"\n### {'Para 2 de dezembro' if dec else 'A seguir'} ({len(nxt10)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
+              f"\n### {'Lista de desejos (depois de 2 de dezembro), por tema' if dec else 'O resto, por tema'}\n\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
-        for t in THEME_ORDER:
+        for t in [x for x in THEME_ORDER if x != "Para 2 de dezembro"]:
             lst = [r for r in rest if th.get(r["item"], "Outros") == t]
             if lst:
                 md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] for r in lst) + "\n"
