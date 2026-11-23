@@ -122,9 +122,9 @@ kpi     rectifier              W_losses         0                1e-4
 kpi     rectifier              W_shaft          75.4734168082    1e-4
 kpi     rectifier              W_shaft_kW       0.0754734168082  1e-4
 kpi     rectifier              eta_generator    1                1e-4
-utility rectifier              power.electricity_(generated).duty_kW 0.0754734168082  1e-4
-utility rectifier              power.electricity_(generated).T -1               1e-4
-utility rectifier              power.electricity_(generated).kg_s 0                1e-4
-utility rectifier              power.electricity_(generated).eur_h -0.00755337955417 1e-4
 source  edStack                liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume],referenceEquation.IAPWS95 exact
 source  edStack                liquidViscosity  Vogel/GrunbergNissan exact
+utility rectifier              power.electricity.duty_kW 0.0754734168082  1e-4
+utility rectifier              power.electricity.T -1               1e-4
+utility rectifier              power.electricity.kg_s 0                1e-4
+utility rectifier              power.electricity.eur_h 0.00755337955417 1e-4

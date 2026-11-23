@@ -31,5 +31,6 @@ propertyManifest
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "species/HTart.dat"  "78afb765aaa00d5902c7fd1a4aa280aa2779dfa362c6e48fd34cb10b86e4818b";
         "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
+        "utilities/electricity.dat"  "a9370d7fd9c469a44e3c7abae696d68bdf305eeb8cb3db0292acc391bf45c36d";
     }
 }

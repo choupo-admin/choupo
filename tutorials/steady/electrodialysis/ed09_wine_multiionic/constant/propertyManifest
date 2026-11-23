@@ -39,5 +39,6 @@ propertyManifest
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
         "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
         "species/Tart.dat"  "cfe40acd421b4051eab9c8e0c90a22df12ee5152443444d9f72323a806ea437e";
+        "utilities/electricity.dat"  "a9370d7fd9c469a44e3c7abae696d68bdf305eeb8cb3db0292acc391bf45c36d";
     }
 }
