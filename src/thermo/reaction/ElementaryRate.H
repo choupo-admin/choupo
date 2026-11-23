@@ -111,6 +111,7 @@ public:
     bool netRateGradient(const ThermoPackage& thermo, const RateState& s,
                          RateGradient& g) const override;
     bool rateDependencies(std::vector<std::size_t>& species) const override;
+    void fractionalOrderSpecies(std::vector<std::size_t>& species) const override;
     bool readsPressure() const override { return form_ == Form::plog; }
 
 private:

@@ -1765,6 +1765,9 @@ if (flowsheetDict->found("cycle"))
                             { return up->odeJacobian(y, f0, typ); };
                         odeUnits.back().jacobianScale =
                             [up](const sVector& y) { return up->odeJacobianScale(y); };
+                        odeUnits.back().auditExclusions =
+                            [up](const sVector& y, const sVector& sc)
+                            { return up->odeAuditExclusions(y, sc); };
                         //  ... and its sparse form, used when it is the
                         //  sweep's only unit (`linearSolver sparse | auto`).
                         odeUnits.back().sparse = up->odeSparseLinear();

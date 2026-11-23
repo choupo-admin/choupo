@@ -250,6 +250,16 @@ struct ODEAnalyticJacobian
     //  Optional: the size s_i of each row for the audit (its difference step
     //  and its row scaling).  Empty => max(|y_i|, typ_i).
     std::function<sVector(const sVector& y)>  auditScale;
+    //  Optional (C468): the SINGULAR TERMS of the Jacobian at this state -- the
+    //  share of one reaction in the column of a species it reads at an order in
+    //  (0,1) within a few hundred audit steps of zero, where d(c^p)/dc is
+    //  infinite and no difference can hold the analytic slope.  dJa is that
+    //  share of the analytic column, dJd the SAME share of the audit's
+    //  reference (the model differences its own contribution with
+    //  auditColumn); both are taken out and the remainder is audited at the
+    //  normal tolerance.  Full-length columns of the vector the audit sees.
+    struct Exclusion { std::size_t col = 0; sVector dJa, dJd; };
+    std::function<std::vector<Exclusion>(const sVector& y, const sVector& sc)> auditExclusions;
 
     //  OPT-IN SPARSE FORM (Theory Guide, sec:sparse-lu).  With `sparse` true,
     //  a `pattern` and a `sparseJacobian`, the integrator asks for J on the
@@ -279,6 +289,7 @@ struct ODEAnalyticJacobian
         scalar      worst    = 0.0;  // max_j d_j
         std::size_t row = 0, col = 0;// where the worst column peaks
         scalar      analytic = 0.0, fd = 0.0;   // J_row,col both ways
+        long        excluded = 0;               // singular terms taken out of the comparison
     };
     std::vector<Audit> audits;
     long   jacobians   = 0;          // analytic Jacobians built

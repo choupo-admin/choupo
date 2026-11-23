@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch34_fractional_order_at_zero -- the witness of C468 defect 1:
+
+      A  --k1-->  B  --k2 c_B^0.5-->  C
+
+  B is ABSENT at t = 0 and is consumed at the fractional order 1/2.  The slope
+  d(c^0.5)/dc = 0.5 c^-0.5 is infinite at c = 0, so a Newton matrix cannot
+  hold it.  Until 2026-11-22 the analytic Jacobian differenced such a
+  reaction at its own step and the audit, differencing at ITS step, read a
+  different number across the singularity and refused the run
+  (d(n_compB)/d(n_compB) -2.678 against -2.671).  The Jacobian now takes the
+  slope at the smallest concentration it resolves, c_floor = sqrt(eps) s / V,
+  and the audit takes that reaction's share of the column out of the analytic
+  Jacobian and out of its reference (the share at the singularity has no
+  reference), auditing the rest (Theory Guide sec:batch-analytic-jacobian).
+  The answer is the same within the error estimate: a Rosenbrock method has no
+  Newton iteration, the Jacobian enters the step formula itself, so a different
+  J moves the step a little, never the solution beyond the tolerance.
+
+  Isothermal 350 K, constant V; mass and element closure are gated as for
+  every batch case.  k2 = 2e-3 (m3/kmol)^0.5 / s.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        solver
+        {
+            integrator  Rosenbrock23;
+            jacobian    analytic;
+        }
+
+        reactions  ( A_to_B  B_to_C );
+    }
+);

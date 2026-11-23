@@ -51,6 +51,7 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitAcceptance.H"   // what a vessel accepts (C188)
+#include "solver/ODE/ODEIntegrator.H"          // ODEAnalyticJacobian::Exclusion (C468)
 
 #include <functional>
 #include <map>
@@ -174,6 +175,12 @@ public:
     // difference step sqrt(eps) * s_i, and its row scaling).  Empty =>
     // the integrator's scale max(|y_i|, atol).
     virtual sVector odeJacobianScale(const sVector& /*y*/) const { return {}; }
+    // The singular terms of that Jacobian at y, for its audit (C468; see
+    // ODEAnalyticJacobian::auditExclusions): a reaction's share of the column of
+    // a species it reads at an order in (0,1) near zero, in the analytic
+    // Jacobian and in the reference.  Empty: none.
+    virtual std::vector<solver::ODEAnalyticJacobian::Exclusion>
+        odeAuditExclusions(const sVector& /*y*/, const sVector& /*sc*/) const { return {}; }
     // OPT-IN sparse form of that Jacobian (solver/SparseLU, Theory Guide
     // sec:sparse-lu): the pattern, declared once, and the values on it.
     // odeSparseLinear() true asks the stiff integrator to factor W on it.

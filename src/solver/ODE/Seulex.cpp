@@ -362,7 +362,7 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
                 const auto Jref = detail::auditDifference(f, t, y, f0, sc, ctrl, evals);
                 A->auditEvals += evals;
                 A->nextAudit *= 2;
-                detail::auditAnalytic(SJ.dense(P), Jref, t, y, sc, *A);   // may refuse
+                detail::auditAnalytic(SJ.dense(P), Jref, t, y, sc, *A, &f0);   // may refuse
             }
             const bool r1 = !SJ.u.empty() && !SJ.v.empty();
             const std::vector<std::size_t> blk =
@@ -404,7 +404,7 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
                     const auto Jref = detail::auditDifference(f, t, y, f0, sc, ctrl, evals);
                     A->auditEvals += evals;
                     A->nextAudit *= 2;
-                    detail::auditAnalytic(Jd, Jref, t, y, sc, *A);        // may refuse
+                    detail::auditAnalytic(Jd, Jref, t, y, sc, *A, &f0);        // may refuse
                 }
             }
             else

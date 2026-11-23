@@ -142,6 +142,12 @@ struct OdeUnit
     //  or the packed rows reach kSparseAutoRows (C474: the key used to be
     //  read by the sweep of one unit only, silently dropped for several).
     int                                      linearKey = 2;
+    //  (declared after linearKey, still LAST)
+    //  Optional: the unit's singular terms for the audit
+    //  (ODEAnalyticJacobian::auditExclusions), in the unit's own rows; the
+    //  sweep shifts each by the unit's offset.
+    std::function<std::vector<ODEAnalyticJacobian::Exclusion>(const sVector& y,
+                                                                const sVector& sc)> auditExclusions = nullptr;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -395,6 +401,28 @@ public:
                 }
                 return sc;
             };
+            analytic_.auditExclusions = [&units, off, N](const sVector& yg, const sVector& sg)
+            {
+                std::vector<ODEAnalyticJacobian::Exclusion> all;
+                for (std::size_t u = 0; u < units.size(); ++u)
+                {
+                    if (!units[u].auditExclusions) continue;
+                    const std::size_t lo = off[u], hi = off[u + 1];
+                    const auto ex = units[u].auditExclusions(
+                        sVector(yg.begin() + lo, yg.begin() + hi),
+                        sVector(sg.begin() + lo, sg.begin() + hi));
+                    for (const auto& e : ex)
+                    {
+                        ODEAnalyticJacobian::Exclusion g;
+                        g.col = lo + e.col;
+                        g.dJa.assign(N, 0.0); g.dJd.assign(N, 0.0);
+                        for (std::size_t i = 0; i < e.dJa.size(); ++i)
+                        { g.dJa[lo + i] = e.dJa[i]; g.dJd[lo + i] = e.dJd[i]; }
+                        all.push_back(std::move(g));
+                    }
+                }
+                return all;
+            };
             analytic_.sparse = false;
             if (units.size() == 1 && units[0].sparse && units[0].pattern
                 && units[0].sparseJacobian)
@@ -542,6 +570,7 @@ public:
         analytic_.jacobian = nullptr;
         analytic_.rowLabel = nullptr;
         analytic_.auditScale = nullptr;
+        analytic_.auditExclusions = nullptr;
         analytic_.sparseJacobian = nullptr;
 
         // --- a FAILED interval is refused, never handed back as a step ----
