@@ -58,7 +58,15 @@ import { Alert, Box, Group, Loader, Stack, Text, Title }
 import { useMethodRun } from "../../case/methodRun.js";
 import type { AadRecord } from "../../adapters/SolverAdapter.js";
 import { OriginMark } from "./origin.js";
-import { LessonReferences } from "./lessonStep.js";
+import { LessonReferences, LessonStepView } from "./lessonStep.js";
+import { LessonQuiz } from "./lessonQuiz.js";
+import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS } from "./fourWaysMixtureLesson.js";
+
+export { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS };
+
+/** Step `n` of the lesson, by its own number. */
+const STEP = (n: number): (typeof FOUR_WAYS_STEPS)[number] =>
+  FOUR_WAYS_STEPS.find((s) => s.n === n)!;
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -246,36 +254,19 @@ export function FourWaysMixtureTool(): JSX.Element {
         </Box>
 
         <Box>
-          <Title order={5}>1 · One binary, one question</Title>
-          <Text size="sm" mt={4}>
-            The test system is ethanol/water at 1 atm — the most measured
-            binary in the discipline, non-ideal enough to have an
-            azeotrope, and the witness carries 12 measured T-x-y points to
-            grade every model against.  The data itself is cross-examined
-            before any model is: a Gibbs-Duhem consistency op runs the
-            Herington area test on the measured points
-            {herington && typeof herington["herington_D"] === "number" && (
-              <>{" "}(live from your browser’s run: D = {
+          <LessonStepView step={STEP(1)} />
+          {herington && typeof herington["herington_D"] === "number" && (
+            <Text size="sm" mt={4}>
+              Live from your browser’s run: D = {
                 (herington["herington_D"] as number).toFixed(1)}, J = {
                 (herington["herington_J"] as number).toFixed(1)},
-                |D − J| &lt; 10 — <strong>the dataset passes</strong>)</>
-            )}
-            .  A model graded against inconsistent data would inherit the
-            data’s own sins.
-          </Text>
+              |D − J| &lt; 10 — <strong>the dataset passes</strong>.
+            </Text>
+          )}
         </Box>
 
         <Box>
-          <Title order={5}>2 · The ladder of information</Title>
-          <Text size="sm" mt={4}>
-            Every mixture model is a position on one ladder: how much did
-            it have to know?  Climbing down the ladder buys reach —
-            answers about pairs nobody measured — and, on a pair somebody
-            did measure, typically gives up some of the accuracy a fit to
-            that pair has.  It orders what each model needs, not how
-            accurate each one is: that depends on the chemistry, the data
-            and the property asked for.
-          </Text>
+          <LessonStepView step={STEP(2)} />
           <Box my={8}>
             {MODEL_LADDER.map((m) => (
               <Box key={m.name} px="sm" py={6}
@@ -295,13 +286,8 @@ export function FourWaysMixtureTool(): JSX.Element {
         </Box>
 
         <Box>
-          <Title order={5}>3 · The score, live</Title>
+          <LessonStepView step={STEP(3)} />
           <OriginMark of={["engine", "reference"]} note="the AAD is the engine's validation block, run in this browser, against measured points the witness cites" />
-          <Text size="sm" mt={4}>
-            Your browser has just asked the real engine to sweep all four
-            activity models across the full composition range and grade
-            each curve against the measured points:
-          </Text>
           {run.busy && (
             <Group gap={8} my={8}><Loader size="xs" />
               <Text size="sm" c="dimmed">
@@ -317,23 +303,10 @@ export function FourWaysMixtureTool(): JSX.Element {
             </Alert>
           )}
           {aad && <AadTable aad={aad} />}
-          <Text size="sm" mt={6}>
-            PC-SAFT and COSMO-SAC are deliberately not rows in this table:
-            PC-SAFT is an equation of state, priced against this system in
-            its own twin-flash witness (flash20 — the K-values on its card
-            above), and the public COSMO-SAC profiles are teaching
-            surrogates that would make any AAD here a number about the
-            surrogate, not the method.  A missing row is honest; a wrong
-            row would not be.
-          </Text>
         </Box>
 
         <Box>
-          <Title order={5}>4 · Back to the number</Title>
-          <Text size="sm" mt={4}>
-            When a simulation hands you a separation, you own it when you
-            can ask:
-          </Text>
+          <LessonStepView step={STEP(4)} />
           <Box my={8} px="sm" py={8} style={{ borderLeft: `3px solid ${ACCENT}` }}>
             {MIXTURE_INTERROGATION.map((q) => (
               <Text size="sm" key={q} mb={4}>· {q}</Text>
@@ -348,6 +321,9 @@ export function FourWaysMixtureTool(): JSX.Element {
             read before trusting any of these models’ inputs.
           </Text>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={FOUR_WAYS_QUIZ}
+          lesson={FOUR_WAYS_STEPS} />
 
         <LessonReferences tool="four-ways-mixture" />
       </Stack>
