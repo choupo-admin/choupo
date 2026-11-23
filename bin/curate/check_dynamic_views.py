@@ -50,6 +50,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
 ROOTS = ("tutorials/ctrl", "tutorials/unsteady")
+# The walk reads exactly these two trees (check_scan_roots: bin/integrate --plan
+# names a touched case under them as this gate's input).
+SCAN_ROOTS = ROOTS
 STRIP = ("expected", "converged", "constant/propertyManifest")
 
 
