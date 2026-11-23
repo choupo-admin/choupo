@@ -60,6 +60,7 @@ License
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -69,6 +70,11 @@ public:
     const std::string& type() const override { static const std::string t = "pitzerActivity"; return t; }
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
+
+    //  THE SALT'S CURVES AS A TABLE AND FIGURES (C480): `curve`, m [mol/kg],
+    //  gamma_pm, phi, a_w and the two L_phi curves [J/mol] -- the CSV's rows.
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string defaultViews(const std::string& opName) const override;
 
     //  Each AAD exists only when the case GAVE this op the matching measured
     //  set: a gamma dataset publishes gamma_AAD_pct, an enthalpy one
@@ -85,6 +91,8 @@ public:
 
 private:
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    std::string salt_;
 };
 
 } // namespace Choupo

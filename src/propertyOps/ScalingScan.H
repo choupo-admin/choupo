@@ -73,6 +73,7 @@ License
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -83,8 +84,18 @@ public:
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE SCAN AS A TABLE AND FIGURES (C480): `scan`, one row per recovery --
+    //  recovery [-], ionic strength I [mol/kg], pH, SI_<mineral> [-] and, where
+    //  the CSV carries them, LSI, StiffDavis and RSI [-].  Drawn as the
+    //  saturation indices against recovery (SI = 0 is where scaling begins).
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    std::vector<std::string> siCols_;
+    bool indices_ = false;
 };
 
 } // namespace Choupo

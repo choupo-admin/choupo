@@ -59,6 +59,34 @@ propsDict (the op's presentation kept with the op), and `outerDict`'s drivers
 | `poreTransport` | `rejection` (R_obs of every ion against J_v, where the op ran ≥ 2 points); `pore` and `potential` (the ions and ψ across the pore at its last point -- every op since DEV.md 4c C165, where until then only an op writing its `profile` CSV drew them) |
 | `polarisationIndex` | `gamma` (Γ of every ion row by row), `rejection` (observed 1 − C_p/C_b as markers, real 1 − C_p/C_m as lines), `rows` (the dataset with the model's wall) |
 
+### The bench's other operations draw themselves too (C480)
+
+*2026-11-23, DEV.md 4c C480, from the student walk of C266 (every props case
+sampled said "No figure published"; the psychrometric chart and the LLE map
+existed only as a CSV).*  No grammar was added: each of these operations now
+publishes the rows it already wrote to its CSV as a NAMED TABLE
+(`PropertyOperation::publishedTables`) and writes its own default views
+(`defaultViews`) in the grammar of section 4.  The CSV is unchanged; where a
+table speaks a unit the CSV does not (bar for Pa, kJ/kg for J/kg, MPa), the
+table says so in its column.
+
+| op | table | default views |
+|---|---|---|
+| `steamTables` (also the units of its diagnostics, the release's table units) | `saturation` (T K, psat MPa, v_f v_g, h_f h_g h_fg kJ/kg, s_f s_g), `isobar` (T, region, v, h, s, cp) | `saturation` (psat against T, log), `enthalpy` (h_f, h_g against T); `isobar` (h against T) |
+| `psychrometricChart` | `chart` (T_C degC, Y kg/kg, `family` 0 saturation / 1 relative humidity / 2 adiabatic-saturation / 3 true wet-bulb, `param` the phi in per cent or the anchor degC) | `chart`, one series per curve drawn |
+| `propertyScanBinary` | `gmix` (x1, gmix J/mol), `binodal` (x1, gmix, beta; no rows for a miscible pair) | `lleMap`: the g_mix curve, the two coexisting liquids and the common tangent through them |
+| `propertyScan1D` (table `scan`, C443) | -- | a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`; otherwise one figure per unit of the properties against the swept variable (log axis where a curve spans two decades) |
+| `vaporPressureFit` | `fitPoints` (point, T_K, measured Pa, model Pa, residual, `heldOut` when evidence was held out) | `curve` (data and fitted Antoine curve, log), `parameters` (A, B, C, R2, dHvap), and the generic parity and residuals |
+| `phaseEnvelope` | `envelope` (T K, P bar, `family` 0 bubble / 1 dew) | `envelope` |
+| `purePhaseDiagram` | `diagram` (T K, P bar, `family` 0 saturation / 1 critical / 2 sublimation / 3 triple / 4 fusion) | `phaseDiagram` |
+| `pitzerActivity` | `curve` (m, gamma_pm, phi, a_w, L_phi_fit, L_phi_anchored) | `activity`, `waterActivity`, `enthalpy` |
+| `gibbsMap` | `map` (T K, P bar, iP, metric) | `metric` against T, one curve per pressure, when the grid holds at most six pressures (a true 2-D map stays the GUI's map page) |
+| `scalingScan` | `scan` (recovery, I, pH, SI_<mineral>, LSI, StiffDavis, RSI) | `saturationIndex`, and `indices` where the calcite indices ran |
+
+A CURVE of a table whose rows hold several curves (a psychrometric family, an
+envelope's two branches) is selected on a NUMBER column (`family`, `param`),
+never on a word, because a published table holds numbers.
+
 The generic fit defaults have ONE home (`genericDefaultViews` in
 `src/postProcessing/views/Views.cpp`), so every fit earns the same three
 whatever it fits; an op's own (`PropertyOperation::defaultViews`) are written

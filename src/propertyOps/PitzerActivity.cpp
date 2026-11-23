@@ -92,6 +92,11 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
 
     csv << "m,gamma_pm,phi,a_w,L_phi_fit,L_phi_anchored\n";
     csv << std::scientific << std::setprecision(8);
+    PublishedTable tab;
+    tab.name = "curve";
+    tab.description = "one row per molality: the mean ionic activity coefficient, the osmotic coefficient, the water activity and the apparent relative molar enthalpy L_phi (fitted and anchored kernels)";
+    tab.columns = { { "m", "mol/kg" }, { "gamma_pm", "-" }, { "phi", "-" }, { "a_w", "-" },
+                    { "L_phi_fit", "J/mol" }, { "L_phi_anchored", "J/mol" } };
     const scalar dm = (n > 1) ? (mTo - mFrom) / static_cast<scalar>(n - 1) : 0.0;
     for (std::size_t k = 0; k < n; ++k)
     {
@@ -99,7 +104,11 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
         csv << m << "," << model.gammaPM(m, T) << "," << model.osmoticCoefficient(m, T)
             << "," << model.waterActivity(m, T)
             << "," << Lphi(model, m) << "," << Lphi(anchored, m) << "\n";
+        tab.rows.push_back({ m, model.gammaPM(m, T), model.osmoticCoefficient(m, T),
+                             model.waterActivity(m, T), Lphi(model, m), Lphi(anchored, m) });
     }
+    tables_.clear();
+    tables_.push_back(std::move(tab));
 
     // -- optional VALIDATION vs a measured L_phi dataset -----------------------
     //   validation { dataset "constant/experiments/...dat"; series naoh; }
@@ -230,4 +239,16 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     return 0;
 }
 
+std::string PitzerActivity::defaultViews(const std::string& op) const
+{
+    if (tables_.empty() || tables_[0].rows.empty()) return {};
+    return "{ name activity; type series; op " + op + "; table curve; x m; y ( gamma_pm phi ); style lines;"
+           " title \"" + op + ": mean ionic activity coefficient and osmotic coefficient against molality (Pitzer)\";"
+           " xAxis { label \"molality, m\"; } yAxis { label \"gamma_pm, phi\"; } }\n"
+           "{ name waterActivity; type series; op " + op + "; table curve; x m; y ( a_w ); style lines;"
+           " title \"" + op + ": water activity against molality\"; xAxis { label \"molality, m\"; } yAxis { label \"a_w\"; } }\n"
+           "{ name enthalpy; type series; op " + op + "; table curve; x m; y ( L_phi_fit L_phi_anchored ); style lines;"
+           " title \"" + op + ": apparent relative molar enthalpy L_phi -- the calorimetrically fitted kernel and the anchored one\";"
+           " xAxis { label \"molality, m\"; } yAxis { label \"L_phi\"; } }\n";
+}
 } // namespace Choupo

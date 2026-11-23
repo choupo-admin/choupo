@@ -64,6 +64,8 @@ License
 #include "PropertyOperation.H"
 
 #include <map>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -77,10 +79,22 @@ public:
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE MAP'S METRIC AS A TABLE AND A FIGURE (C480): `map`, one row per
+    //  (T, P) cell -- T [K], P [bar], the pressure's index iP and the metric
+    //  [-] (NaN where the cell did not converge).  A few pressures are drawn as
+    //  the metric against T, one curve each; a true two-dimensional map is
+    //  left to the GUI's own map page.
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string defaultViews(const std::string& opName) const override;
+
     std::vector<std::string> headline() const override { return headline_; }
 
 private:
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    std::vector<scalar> pBar_;      // the pressure grid, bar
+    std::size_t nT_ = 0;
+    std::string metricLabel_;
     std::vector<std::string> headline_;
 };
 

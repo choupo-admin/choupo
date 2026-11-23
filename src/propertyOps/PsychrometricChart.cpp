@@ -33,6 +33,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -132,6 +133,17 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
         throw std::runtime_error("psychrometricChart: cannot open output file");
     csv << "T_C,Y,curve\n";
     csv << std::fixed << std::setprecision(6);
+    carrier_ = carrierN; condensable_ = condensableN; P_Pa_ = P;
+    tables_.clear(); curves_.clear();
+    PublishedTable tab;
+    tab.name = "chart";
+    tab.description = "one row per point of every curve: dry-bulb T_C, humidity ratio Y, and the curve as family (0 saturation, 1 relative humidity, 2 adiabatic-saturation, 3 true wet-bulb) and param (phi in per cent, or the anchor temperature in degC)";
+    tab.columns = { { "T_C", "degC" }, { "Y", "kg/kg" }, { "family", "-" }, { "param", "-" } };
+    auto note = [&](int family, double param)
+    {
+        const std::pair<int, double> key{ family, param };
+        if (std::find(curves_.begin(), curves_.end(), key) == curves_.end()) curves_.push_back(key);
+    };
 
     const std::size_t iCond = thermo.indexOf(condensableN);
     auto psat = [&](double T_K) -> double {
@@ -155,6 +167,7 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
         if (pv < PV_CAP)
         {
             csv << Tc_ << "," << ratio * pv / (P - pv) << ",saturation\n";
+            tab.rows.push_back({ Tc_, ratio * pv / (P - pv), 0.0, 0.0 }); note(0, 0.0);
             //  Pin the ceiling at BOTH ends of the declared range.  Y_sat is
             //  ratio * Psat/(P - Psat), so it moves with the vapour-pressure
             //  model AND with `ratio` -- the molar-mass ratio of the DECLARED
@@ -174,6 +187,10 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
             if (pvp > 0.0 && pvp < PV_CAP)
                 csv << Tc_ << "," << ratio * pvp / (P - pvp)
                     << ",rh:" << rhLabel(phi) << "\n";
+            if (pvp > 0.0 && pvp < PV_CAP)
+            {
+                tab.rows.push_back({ Tc_, ratio * pvp / (P - pvp), 1.0, phi }); note(1, phi);
+            }
             diag_["nRhCurves"] = static_cast<double>(rhList.size());
         }
     }
@@ -221,6 +238,8 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 Y  = Yas - cs * (Tc_ - TasC) / lam;
                 if (Y < 0.0) break;
                 csv << Tc_ << "," << Y << ",adiabatic:" << static_cast<int>(TasC) << "\n";
+                tab.rows.push_back({ Tc_, Y, 2.0, static_cast<double>(static_cast<int>(TasC)) });
+                note(2, static_cast<double>(static_cast<int>(TasC)));
                 if (k == 0) ++nAdiabaticDrawn;
                 //  The adiabatic line's END is where the latent-heat term has
                 //  done its work; it moves with Hvap and with the moist-gas
@@ -296,6 +315,8 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 const double Y = Yas - slope * (Tc_ - TasC);
                 if (Y < 0.0) break;
                 csv << Tc_ << "," << Y << ",wetbulb:" << static_cast<int>(TasC) << "\n";
+                tab.rows.push_back({ Tc_, Y, 3.0, static_cast<double>(static_cast<int>(TasC)) });
+                note(3, static_cast<double>(static_cast<int>(TasC)));
                 if (k == 0)
                 {
                     ++nTrueWetBulbDrawn;
@@ -312,6 +333,7 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     }
 
     diag_["nTrueWetBulbCurves"] = static_cast<double>(nTrueWetBulbDrawn);
+    tables_.push_back(std::move(tab));
     if (!wbList.empty() && nTrueWetBulbDrawn == 0)
     {
         std::ostringstream why;
@@ -345,6 +367,37 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
         std::cout << "psychrometricChart: " << carrierN << " / " << condensableN
                   << " at " << P / 1000.0 << " kPa, " << TminC << "-" << TmaxC << " C.\n";
     return 0;
+}
+
+std::string PsychrometricChart::diagnosticUnit(const std::string& key) const
+{
+    if (key == "Y_sat_first" || key == "Y_sat_last" || key == "Y_adiabatic_last") return "kg/kg";
+    if (key == "Lewis_last") return "-";
+    if (key == "nRhCurves" || key == "nSaturationPoints" || key == "nAdiabaticCurves"
+        || key == "nTrueWetBulbCurves") return "-";
+    return {};
+}
+
+std::string PsychrometricChart::defaultViews(const std::string& op) const
+{
+    if (curves_.empty()) return {};
+    auto num = [](double v) { std::ostringstream o; o << std::defaultfloat << v; return o.str(); };
+    std::string ser;
+    for (const auto& [family, param] : curves_)
+    {
+        std::string name, label;
+        if (family == 0)      { name = "sat"; label = "saturation (100 % relative humidity)"; }
+        else if (family == 1) { name = "rh" + num(param); label = "relative humidity " + num(param) + " %"; }
+        else if (family == 2) { name = "ad" + num(param); label = "adiabatic-saturation line through " + num(param) + " degC"; }
+        else                  { name = "wb" + num(param); label = "true wet-bulb line through " + num(param) + " degC (Le^2/3)"; }
+        for (char& c : name) if (c == '.' || c == '-') c = '_';
+        ser += " { name " + name + "; label \"" + label + "\"; op " + op + "; table chart; select { family "
+             + num(family) + "; param " + num(param) + "; } x T_C; y Y; style lines; }";
+    }
+    return "{ name chart; type series; title \"" + op + ": psychrometric chart of " + condensable_
+         + " in " + carrier_ + " at " + num(P_Pa_ / 1000.0) + " kPa -- humidity ratio against dry-bulb temperature\";"
+           " xAxis { label \"dry-bulb temperature\"; } yAxis { label \"humidity ratio, Y (kg vapour / kg dry gas)\"; }"
+           " series (" + ser + " ); }\n";
 }
 
 } // namespace Choupo
