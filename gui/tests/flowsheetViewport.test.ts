@@ -184,6 +184,8 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
       //  the overview zoom (toGraph.ts unitCardSize, C266 item 4): its row is wider
       "plant/greenAmmonia03_basicDesign/CONVERTER",
       "plant/greenAmmoniaPEQ_baseCase",
+      //  the same three-bed converter sector, copied into the reference plant by C440
+      "plant/greenAmmoniaPEQ_baseCase/CONVERTER",
       "plant/swro01_campoDalias",
       "steady/economics/economics03_startup_years",
       "steady/flowsheets/proxy01_gas_loop",
