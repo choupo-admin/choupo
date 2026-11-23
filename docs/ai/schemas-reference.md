@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*121 of 121 registered operations carry a schema and are documented below.*
+*122 of 122 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -138,10 +138,10 @@ A RECIRCULATING BATCH electrodialysis rig (choupoBatch): two well-mixed tanks --
 |---|:-:|---|---|---|
 | `stack` | ✓ | string | - | REQUIRED -- there is no inline-geometry form here. Names a `kind edStack` record (assets catalogue or the case's constant/assets/) which … |
 | `diluateFlow` | ✓ | number | m3/s | REQUIRED. The rate at which the diluate tank is pumped through the stack: it sets the crossflow velocity, hence the mass-transfer coeffic… |
-| `current` |   | number | - | Constant-current drive. Raw SI (amperes). Give this OR voltage, exactly one: they are two different experiments. At constant current i do… |
-| `voltage` |   | number | - | Constant-voltage drive. Raw SI (volts). The current is solved from U = N (E_mem + I R_pair) + E_electrodes at every instant and DECAYS as… |
+| `current` |   | number | A | Constant-current drive. Raw SI (amperes). Give this OR voltage, exactly one: they are two different experiments. At constant current i do… |
+| `voltage` |   | number | V | Constant-voltage drive. Raw SI (volts). The current is solved from U = N (E_mem + I R_pair) + E_electrodes at every instant and DECAYS as… |
 | `xi` |   | number | - | Fraction of the charge that moves salt; defaults to 0.9, announced. Constant apart from the opt-in over-limiting plateau below. |
-| `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. No Butler-Volmer here, exactly as in t… |
+| `E_electrodes` |   | number | V | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. No Butler-Volmer here, exactly as in t… |
 | `membrane` |   | string | - | A `kind IEM` record (e.g. CMX_AMX) supplying the area resistances and counter-ion transport numbers. A stack record whose own source name… |
 | `limitingCurrent` |   | object | — | Optional, and there is one route: `GeraldesAfonso2010`, the prediction from the ion diffusivities and the diluate composition. `CowanBrow… |
 | `overLimiting` |   | object | — | OPTIONAL, and the default is `none` -- announced. `none`: the current efficiency stays at xi; if i crosses i_lim the run WARNS that the a… |
@@ -413,6 +413,21 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `efficiency` |   | object | — | Computes each tray's Murphree efficiency from the `hydraulics` geometry, the tray traffic and the transport properties (AIChE correlation… |
 | `packing` |   | object | — | Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, E… |
 
+## `dynamicCSTR`  (dynamicCSTR operation)
+
+The well-stirred tank of choupoCtrl / choupoSemiContinuous: a holdup with mole balances and an energy equation integrated in time. The feed is the `inlet {}` block and the starting state the `initial {}` block of the unit; this `operation` block holds the heat-transfer jacket and the vessel's declarations. A jacket is `UA` (W/K) against `T_jacket` (K): with no UA the vessel is adiabatic. T_jacket may be driven at run time by a controller whose actuator names it.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `UA` |   | number | W/K | Overall heat-transfer coefficient times jacket area, U*A, in W/K (raw SI). Heat to the holdup is UA (T_jacket - T). Absent or 0 = no jack… |
+| `T_jacket` |   | number | K | The jacket's fluid temperature. Defaults to the initial temperature of the holdup (no heat flows). A controller's actuator (`mv T_jacket`… |
+| `catalystLoading` |   | number | kg/m3 | Catalyst mass per volume of the holdup, kg/m3 (raw SI), multiplying a catalytic rate law's per-kg rate. Defaults to 0. |
+| `UAScaling` |   | string | — | Variable-volume vessels only. `wetted` (default) scales UA by the wetted area A_w(h)/A_w(H); `fixed` keeps UA constant whatever the level. |
+| `volumeMode` |   | string | — | `constant` (default) is the fixed-volume vessel; `variable` lets the level integrate and needs `geometry {}` and `outflow {}`. |
+| `energy` |   | string | — | `isothermal` holds T at its initial value (refused with a reaction, which would need a duty this unit does not compute). Omit it for the … |
+| `geometry` |   | object | — | The vertical cylinder of a variable-volume vessel (volumeMode variable). |
+| `outflow` |   | object | — | The declared outflow of a variable-volume vessel: `mode flow` with `F`, or `mode valve` with `opening` and a `valve {}` block. |
+
 ## `electricLoad`  (electricLoad operation)
 
 Shaft sink / electrical generator. Hardware-free apart from the generator efficiency, and it has no stream ports. The shaft power W_shaft is NOT authored here — it arrives over an energy wire from a turbine or any other work producer, via energyInputs ( { from <unit>.shaft; kind work; target W_shaft; } ). The electrical power shipped to the grid (eta * W_shaft) and the dissipated losses ((1-eta) * W_shaft) are RESULTS. See docs/ai/energy.md; tutorials rankine01_water, combined01_brayton_rankine, proxy01_gas_loop.
@@ -434,11 +449,11 @@ Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membran
 | `channelThickness` |   | number | m | Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one. |
 | `channelLength` |   | number | m | Used by the Leveque film correlation of the CowanBrown route; defaults to 0.5 m. Typed INLINE; required only when the case names no `stac… |
 | `linearVelocity` |   | number | m/s | The crossflow velocity of the no-record form only; defaults to 0.05 m/s, announced. Under a `stack` record it is REFUSED, because it is t… |
-| `current` |   | number | - | Imposed-current form. Raw SI (amperes). Give this OR targetDemin OR targetConductivityRemoval -- exactly one of the three. |
+| `current` |   | number | A | Imposed-current form. Raw SI (amperes). Give this OR targetDemin OR targetConductivityRemoval -- exactly one of the three. |
 | `targetDemin` |   | number | - | Solved-current form: fraction of the diluate's salt to remove; the current is the result. The reference is the FIRST cation in component … |
 | `targetConductivityRemoval` |   | number | - | Solved-current form: fraction of the diluate's CONDUCTIVITY to remove; the current is the result. Conductivity is what a cellar or a plan… |
 | `xi` |   | number | - | Fraction of the charge that moves salt; defaults to 0.9, announced. |
-| `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. |
+| `E_electrodes` |   | number | V | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. |
 | `membrane` |   | string | — | Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. A stack record whose own sour… |
 
 ## `electrolyteActivity`  (electrolyteActivity operation)
