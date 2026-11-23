@@ -1,4 +1,18 @@
 /*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
   userMeasurements -- C289: the points a user brings to a fitted record.
   The parse, the refusal of a malformed file by name, the hash match and
   mismatch, the outlier rule, the run plan and the reading of the engine's
