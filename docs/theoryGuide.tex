@@ -40873,7 +40873,7 @@ Each dynamic unit and each controller is published as \code{unit:<name>} (a view
 \end{itemize}
 The unit of a controller's PV and MV is read from the controlled and manipulated variable the controller names (\code{measurement \{ cv \}}, \code{actuator \{ mv \}}); where a label does not say its unit the column is published without one and the view declares the axis unit.
 A case that declares no \code{views} builds nothing, keeps nothing and writes nothing (its outputs are byte-identical); a \code{postDict} with \code{views} beside an \code{outerDict} is refused by name.
-The witness is \file{tutorials/ctrl/ctrl02\_disturbance\_rejection}: the reactor temperature against its set point, with the jacket temperature and the stepped feed temperature on the right axis.
+The witness is \file{tutorials/ctrl/ctrl02\_disturbance\_rejection}: the reactor temperature against its set point, with the jacket temperature and the stepped feed temperature on the right axis (\code{response}, the overview), and the same signals from 600~s on a tight axis (\code{rejection}, the deviation after the steps, whose axis range is read from the run).
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 
