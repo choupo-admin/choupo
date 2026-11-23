@@ -2448,6 +2448,30 @@
         }
       ]
     },
+    "sentence-to-decision": {
+      "references": [
+        {
+          "text": "Soujanya, J.; Satyavathi, B.; Vittal Prasad, T. E. (2010). Experimental (vapour + liquid) equilibrium data of (methanol + water), (water + glycerol) and (methanol + glycerol) systems at atmospheric and sub-atmospheric pressures. The Journal of Chemical Thermodynamics 42(5), 621–624.",
+          "doi": "10.1016/j.jct.2009.11.020",
+          "note": "The measured series the pair is fitted to (six isobars).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2009.11.020: authors, title, container, volume, issue, pages and year matched (C127)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Yang, C.; Ma, S.; Yin, X. (2011). Organic Salt Effect of Tetramethylammonium Bicarbonate on the Vapor–Liquid Equilibrium of the Methanol–Water System. Journal of Chemical & Engineering Data 56(10), 3747–3751.",
+          "doi": "10.1021/je200341c",
+          "note": "The measured series the pair is held out against (one isobar at 101.32 kPa).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je200341c: authors, title, container, volume, issue, pages and year matched (C127)",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
     "residue-curves": {
       "references": [
         {

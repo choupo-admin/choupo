@@ -337,6 +337,9 @@ const EconomicsErrorsTool = lazy(() =>
 const DemandForecastTool = lazy(() =>
   import("./methods/DemandForecastTool.js")
     .then((m) => ({ default: m.DemandForecastTool })));
+const SentenceToDecisionTool = lazy(() =>
+  import("./methods/SentenceToDecisionTool.js")
+    .then((m) => ({ default: m.SentenceToDecisionTool })));
 const CampaignPlanTool = lazy(() =>
   import("./methods/CampaignPlanTool.js")
     .then((m) => ({ default: m.CampaignPlanTool })));
@@ -670,6 +673,7 @@ export function MethodsWorkspace() {
             : tool === "property-origins" ? <PropertyOriginsTool />
             : tool === "property-data-sources" ? <DataSourcesTool />
             : tool === "database-to-parameters" ? <DatabaseToParametersTool />
+            : tool === "sentence-to-decision" ? <SentenceToDecisionTool />
             : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />

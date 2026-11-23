@@ -163,6 +163,12 @@
           "href": "/app/?workspace=methods&tool=database-to-parameters&path=measurement-to-parameter"
         },
         {
+          "tool": "sentence-to-decision",
+          "label": "From a sentence to a decision: fit, test, verdict",
+          "why": "One worked example, from a request in plain language to a decision you can defend: the data, the fit, the held-out test and the verdict in context.",
+          "href": "/app/?workspace=methods&tool=sentence-to-decision&path=measurement-to-parameter"
+        },
+        {
           "tool": "sle-pair",
           "label": "Pair parameters from the solubility of a solid",
           "why": "Fit a pair to how much solid dissolves, and see which end of the composition range solubility fixes.",
@@ -313,8 +319,8 @@
       ]
     }
   ],
-  "liveTools": 97,
-  "registryTools": 97,
+  "liveTools": 98,
+  "registryTools": 98,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -431,6 +437,19 @@
         "reference"
       ],
       "href": "/app/?workspace=methods&tool=database-to-parameters"
+    },
+    {
+      "id": "sentence-to-decision",
+      "label": "From a sentence to a decision: fit, test, verdict",
+      "blurb": "Walk one request from a sentence to a defensible decision.",
+      "discipline": "Property data & parameters",
+      "teaches": "How a request in plain language becomes a fit, a test and a decision, on methanol and water: what the sentence leaves out, the two measured series and where each point came from, the fit with its partition and its band declared before it, the held-out test with fit and held-out points drawn apart and the residual of every point against its condition, how independent the test is, the verdict read for this test set, this range and this property, and the sentence you would sign.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=sentence-to-decision"
     },
     {
       "id": "four-ways-mixture",

@@ -100,6 +100,8 @@ import { DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
 import { DRYER_SELECTION_QUIZ, DRYER_SELECTION_STEPS } from "../src/ui/methods/dryerSelectionLesson.js";
 import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
 import { CampaignPlanTool } from "../src/ui/methods/CampaignPlanTool.js";
+import { SD_QUIZ, SD_STEPS } from "../src/ui/methods/sentenceToDecisionLesson.js";
+import { SentenceToDecisionTool } from "../src/ui/methods/SentenceToDecisionTool.js";
 import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
 import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool.js";
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
@@ -184,6 +186,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "demand-forecast": {
     quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",
     file: "src/ui/methods/DemandForecastTool.tsx", tool: DemandForecastTool,
+  },
+  "sentence-to-decision": {
+    quiz: SD_QUIZ, quizName: "SD_QUIZ", lesson: SD_STEPS, lessonName: "SD_STEPS",
+    file: "src/ui/methods/SentenceToDecisionTool.tsx", tool: SentenceToDecisionTool,
   },
   "campaign-plan": {
     quiz: CAMPAIGN_PLAN_QUIZ, quizName: "CAMPAIGN_PLAN_QUIZ", lesson: CAMPAIGN_PLAN_STEPS, lessonName: "CAMPAIGN_PLAN_STEPS",
