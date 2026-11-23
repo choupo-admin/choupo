@@ -593,7 +593,7 @@ export const GMP_LAYOUT_QUIZ: readonly QuizQuestion[] = [
     options: [
       "Air leaves the suite into the sink and is exhausted there, so the suite's powder does not reach the neighbouring room",
       "A mistake the engine overlooks",
-      "A contained room has no airlock",
+      "A contained room lacks an airlock",
       "Because sinks are always cleaner",
     ],
     correct: 0,
@@ -607,7 +607,7 @@ export const GMP_LAYOUT_QUIZ: readonly QuizQuestion[] = [
     options: [
       "A lift is not an exit: in a fire it is the one way nobody may use",
       "Lifts are too slow",
-      "Lifts have no doors",
+      "Lifts lack doors",
       "Lifts are always on the ground floor",
     ],
     correct: 0,

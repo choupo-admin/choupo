@@ -472,7 +472,7 @@ export const LUB_SCALEUP_QUIZ: readonly QuizQuestion[] = [
     q: "Why is the unused length carried across to the plant only at the same velocity?",
     options: [
       "LUB is a property of the velocity: a faster gas leaves a solid that cannot keep up and a wider zone",
-      "The plant has no velocity",
+      "The plant lacks a velocity",
       "The unit system changes",
       "Velocity cancels out",
     ],

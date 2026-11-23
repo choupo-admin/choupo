@@ -569,7 +569,7 @@ export const BODE_QUIZ: readonly QuizQuestion[] = [
       "Always: they are a universal test",
       "When the open loop is stable and its phase crosses -180 degrees once, falling",
       "When the dead time is zero",
-      "When the controller has no integral term",
+      "When the controller lacks an integral term",
     ],
     correct: 1,
     feedback: "The Bode reading is a special case of Nyquist's criterion.  A "

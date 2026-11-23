@@ -254,7 +254,7 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "What the choice actually depends on — and the option students are rarely offered",
-    body: "There is no correct structure to arrive at, and a page that "
+    body: "No single correct structure can be arrived at, and a page that "
       + "produced one would be teaching you to misapply it the first time the "
       + "conditions differed.  What there is, is a short list of things the "
       + "choice depends on: which end carries the tight specification, "
@@ -385,7 +385,7 @@ export const COLUMN_CONTROL_QUIZ: readonly QuizQuestion[] = [
       "Each loop acts as a disturbance on the other, since the two handles are not independent knobs on independent halves of the column",
       "Steady-state balances are wrong",
       "The analysers are too slow",
-      "The valves have no gain",
+      "The valves lack a gain",
     ],
     correct: 0,
     feedback: "Raising the reflux sharpens the top and changes the bottom, and "

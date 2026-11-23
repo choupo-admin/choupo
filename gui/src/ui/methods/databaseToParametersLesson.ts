@@ -290,7 +290,7 @@ export const DP_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 1,
     feedback: "Names repeat and two substances can share a formula, so the "
-      + "pipeline joins through an InChIKey bridge and refuses a pair it "
+      + "pipeline joins through an InChIKey bridge and rejects a pair it "
       + "cannot join (step 2).",
   },
   {
@@ -304,7 +304,7 @@ export const DP_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 1,
     feedback: "A vapour composition with no liquid one, a varying temperature "
-      + "or a repeated row is refused (step 3).",
+      + "or a repeated row is rejected (step 3).",
   },
   {
     id: "all-labs", steps: [4],

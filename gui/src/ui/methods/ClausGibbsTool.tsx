@@ -418,7 +418,7 @@ export const CLAUS_QUIZ: readonly QuizQuestion[] = [
     options: [
       "The atom balance closes for any x, but the mole count does not, and x is the number of sulfur atoms in the allotrope that actually forms",
       "The burner reaction is unbalanced",
-      "Hydrogen sulfide has no formation data",
+      "Hydrogen sulfide lacks any formation data",
       "The air rate is unknown",
     ],
     correct: 0,

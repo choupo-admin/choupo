@@ -408,7 +408,7 @@ export const FLUID_QUIZ: readonly QuizQuestion[] = [
     options: [
       "Gas reaches the particles only by leaving the bubble into its cloud, so bubble gas that crosses the bed without exchanging has bypassed the solid",
       "The bubbles contain the solid",
-      "The emulsion has no gas in it",
+      "The emulsion holds no gas",
       "The bubbles are always small",
     ],
     correct: 0,

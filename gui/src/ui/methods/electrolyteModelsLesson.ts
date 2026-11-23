@@ -411,7 +411,7 @@ export const EM_QUIZ: readonly QuizQuestion[] = [
       "Sets the activity coefficient to one",
     ],
     correct: 2,
-    feedback: "The engine does not substitute or fall back; it refuses by "
-      + "name, so a missing record is seen rather than hidden (step 6).",
+    feedback: "The engine does not substitute or fall back; it rejects by "
+      + "name, so an absent record is seen rather than hidden (step 6).",
   },
 ];

@@ -352,7 +352,7 @@ export const LEVENSPIEL_QUIZ: readonly QuizQuestion[] = [
     options: [
       "The vessel is at its outlet composition everywhere, so all feed converts at the single exit rate: width X, height the exit ordinate",
       "It is approximated by a rectangle for convenience",
-      "A CSTR has no volume",
+      "A CSTR lacks a volume",
       "The rate is constant",
     ],
     correct: 0,

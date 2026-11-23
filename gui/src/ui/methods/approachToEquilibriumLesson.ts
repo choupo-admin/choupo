@@ -370,7 +370,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
     body: "A real ammonia converter has three catalyst beds with coolers between "
       + "them, and the tempting model is one Gibbs reactor per bed.  It is a "
       + "mistake, and this project made it on 2026-10-01 in its own green "
-      + "ammonia case.  A Gibbs reactor has no volume and no path: it returns "
+      + "ammonia case.  A Gibbs reactor lacks a volume and a path: it returns "
       + "the equilibrium of the atoms that enter (step 1), at the temperature "
       + "and pressure it is given.  A cooler changes the temperature and moves "
       + "no atom, so every bed sees the same atom inventory b, and the last "

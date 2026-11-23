@@ -235,7 +235,7 @@ export const KREMSER_QUIZ: readonly QuizQuestion[] = [
     q: "Why can absorbers be designed with a formula while distillation columns are drawn or solved stage by stage?",
     options: [
       "A straight equilibrium line makes the steps a geometric series that sums in closed form",
-      "Absorbers have no equilibrium",
+      "Absorbers lack an equilibrium",
       "Distillation has fewer stages",
       "The formula applies to any curve",
     ],

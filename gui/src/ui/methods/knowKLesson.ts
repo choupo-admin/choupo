@@ -322,7 +322,7 @@ export const KNOW_K_QUIZ: readonly QuizQuestion[] = [
     correct: 0,
     feedback: "A line with a free intercept reads k and shows the "
       + "contamination: diffusion and other removal of OH that the slope "
-      + "does not include (step 3).",
+      + "leaves out (step 3).",
   },
   {
     id: "arrhenius", steps: [4],

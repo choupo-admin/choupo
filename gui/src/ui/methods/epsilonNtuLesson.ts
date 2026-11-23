@@ -313,7 +313,7 @@ export const ENTU_QUIZ: readonly QuizQuestion[] = [
       "LMTD needs all four terminal temperatures, but a rating problem gives the inlets and the hardware, with the outlets unknown",
       "LMTD is wrong for heat exchangers",
       "NTU needs no hardware",
-      "LMTD has no first law",
+      "LMTD lacks a first law",
     ],
     correct: 0,
     feedback: "The log-mean difference is built from the two end approaches, "
@@ -358,7 +358,7 @@ export const ENTU_QUIZ: readonly QuizQuestion[] = [
       "When C_r = 2",
     ],
     correct: 0,
-    feedback: "With one side isothermal there is no 'which way round' left to "
+    feedback: "With one side isothermal nothing is left of the 'which way round' choice to "
       + "choose; C_r decides whether the arrangement matters at all "
       + "(step 4).",
   },

@@ -352,7 +352,7 @@ export const BJERRUM_QUIZ: readonly QuizQuestion[] = [
     id: "ph-not-a-knob", steps: [2, 3],
     q: "Why does the page not simply set the pH and compute the fractions?",
     options: [
-      "Fixing [H+] removes the electroneutrality equation, so the curve describes a beaker only if something unwritten carries the missing charge",
+      "Fixing [H+] removes the electroneutrality equation, so the curve describes a beaker only if something unwritten carries the charge that is lacking",
       "The engine cannot accept a pH declaration",
       "The pH is a measured quantity that cannot be varied",
       "Mass action does not apply at fixed pH",

@@ -285,21 +285,21 @@ export const CASE_ASSEMBLY_QUIZ: readonly QuizQuestion[] = [
       "In the solver, chosen at run time",
     ],
     correct: 1,
-    feedback: "A flowsheetDict with a streams block of values is refused; the "
+    feedback: "A flowsheetDict with a streams block of values is rejected; the "
       + "streams it names must be exactly the files in 0/, outlets included "
       + "(step 4).",
   },
   {
-    id: "refusal-location", steps: [3, 6],
-    q: "A run stops with a refusal.  What does it tell you?",
+    id: "error-location", steps: [3, 6],
+    q: "A run stops with an error message.  What does it tell you?",
     options: [
-      "Nothing, since a refusal is a crash",
+      "Nothing, since it is only a crash",
       "The first move of the assembly that could not proceed, so where it stops tells you which file to open",
       "That the solver diverged",
       "That the case must be reinstalled",
     ],
     correct: 1,
-    feedback: "The engine assembles a case in a fixed order, and a refusal "
+    feedback: "The engine assembles a case in a fixed order, and an error message "
       + "names the file, the rule and usually the remedy.  It is the engine "
       + "doing its job (steps 3 and 6).",
   },

@@ -244,7 +244,7 @@ export const HUNTER_NASH_QUIZ: readonly QuizQuestion[] = [
       "They are the same as vapour-liquid tie lines",
     ],
     correct: 1,
-    feedback: "There is no single curve to read them off, so the diagram is "
+    feedback: "No single curve exists to read them off, so the diagram is "
       + "drawn from measured or computed tie lines; the tool draws the ones "
       + "the engine solved (step 3).",
   },
@@ -253,7 +253,7 @@ export const HUNTER_NASH_QUIZ: readonly QuizQuestion[] = [
     q: "The difference point Delta lies outside the triangle.  Is that a mistake?",
     options: [
       "Yes: a composition cannot lie outside the triangle",
-      "No: Delta is a difference of flows, not a mixture, and has no obligation to be a composition",
+      "No: Delta is a difference of flows, not a mixture, and need not be a composition",
       "Yes, the feed is wrong",
       "Only if the solvent is pure",
     ],

@@ -351,7 +351,7 @@ export const ISO_QUIZ: readonly QuizQuestion[] = [
       "The loading is proportional to the concentration",
     ],
     correct: 2,
-    feedback: "Langmuir counts sites and saturates.  Freundlich has no "
+    feedback: "Langmuir counts sites and saturates.  Freundlich lacks a "
       + "saturation and describes unlike sites; the linear isotherm is "
       + "proportional.  A model that fits is not thereby a mechanism (step 2).",
   },
