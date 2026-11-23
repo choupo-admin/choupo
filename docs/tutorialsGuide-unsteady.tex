@@ -256,7 +256,7 @@ check\_dynamic\_cstr\_level recomputes these from the declared numbers and holds
 
 ENERGY. Both species carry a formation datum, so the vessel takes the CANONICAL route (announced at start-up): it stores H on the elements datum, the heat of reaction is a consequence of it, the outlet term cancels, and the ledger CLAIMS mass and energy and closes. Compare ctrl22, the same reactor with a level loop and a temperature loop together.
 
-TWO DECLARED FIGURES (system/postDict, C487): `fill`, "how fast does the reactor fill, and is it near the top of the vessel?", and `reaction`, "how far has the reaction gone while the reactor fills?" (amounts and temperature).
+TWO DECLARED FIGURES (system/postDict, C487): `fill`, "how fast does the reactor fill?", and `reaction`, "how far has the reaction gone while the reactor fills?" (amounts and temperature).
 
 \end{tutnarrative}
 \tutreadme{dynamicCSTR with volumeMode variable (D = 0.5 m, H = 1.0 m) starts from a heel (0.02 m of isobutanol at 300 K, an "empty" vessel --- exactly zero is refused by name), is fed 1.0e-3 kmol/s of pure isobutanol, has no outflow, and isomerises it to 2-butanol with a first-order law, k = 4.0e-4 1/s (Ea = 0, so k cannot move with the small temperature rise). 1500 s, 5 s steps; runs under choupoSemiContinuous (no controller).}

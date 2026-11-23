@@ -41,7 +41,7 @@
   reactor with a level loop and a temperature loop together.
 
   TWO DECLARED FIGURES (system/postDict, C487): `fill`, "how fast does the
-  reactor fill, and is it near the top of the vessel?", and `reaction`,
+  reactor fill?", and `reaction`,
   "how far has the reaction gone while the reactor fills?" (amounts and
   temperature).
 \*---------------------------------------------------------------------------*/

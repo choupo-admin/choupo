@@ -15,8 +15,9 @@
               vessel?"  The level (the unit's `level`, m) against time, 1500 s.
               Read from this run's table (100 s grid): 0.020 m (the heel) to
               0.7402 m at 1500 s, rising by 0.048 m per 100 s at the end; the
-              volume goes from 3.93e-3 to 0.1453 m3.  The vessel is 1.0 m high
-              (the case's declared cylinder).
+              volume goes from 3.93e-3 to 0.1453 m3.  The vessel's height is declared in
+              the case (1.0 m) but the run does not publish it, so it is not
+              drawn and the question is not about it.
     reaction  "How far has the reaction gone while it fills?"  The reactant and
               product amounts (kmol) on the left axis, the temperature (K) on
               the right: n_2Methyl1Propanol 0.0421 to 1.1511 kmol, n_2Butanol 0
@@ -28,8 +29,8 @@ views
     {
         name    fill;
         type    series;
-        title   "How fast does the reactor fill, and is it near the top of the vessel?";
-        note    "The reactor starts from a 0.02 m heel and fills with no outflow: 0.74 m at 1500 s, rising by 0.048 m per 100 s at the end, three quarters of the way up the 1.0 m vessel.";
+        title   "How fast does the reactor fill?";
+        note    "The reactor starts from a 0.02 m heel and fills with no outflow: 0.74 m at 1500 s, rising by 0.048 m per 100 s at the end.";
         xAxis   { label "time"; unit "s"; scale linear; }
         yAxis   { label "level"; unit "m"; scale linear; }
         series

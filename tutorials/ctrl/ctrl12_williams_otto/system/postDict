@@ -15,7 +15,10 @@
               operating point u*, and what does it make?"  The product P and
               waste G rates of the plant unit (the `trajectory` table's
               F_pP_klbh and F_wG_klbh, klb/h), the time axis in hours (the run
-              publishes seconds).  Read from this run's table (a 20 h write
+              publishes seconds), 0 to 100 h: both rates are within 1 % of their
+              400 h values from 60 h on (F_pP 3.8959 against 3.90162, F_wG 1.2160
+              against 1.22338; F_wG is 2.5 % short at 40 h), so the window runs
+              a little past that and the flat remainder to 400 h is left out.  Read from this run's table (a 20 h write
               grid, 400 h): F_pP is 3.797 klb/h at 20 h, 3.878 (0.6 % below
               its end value) at 40 h, 3.9002 at 80 h and 3.90162 at 400 h; F_wG
               1.0962 at 20 h and 1.22338 at 400 h.
@@ -31,8 +34,8 @@ views
         name    rates;
         type    series;
         title   "How long does the open-loop plant take to settle at the operating point, and what does it make?";
-        note    "The Williams-Otto plant at the paper's operating point (F_fA = 10 and F_fB = 20 klb/h, 580 R, mu = 129.5 klb/h, eta = 0.2), started from the charge of A and B, makes product at 3.80 klb/h after 20 h, within 0.6 % of its final 3.90 klb/h by 40 h and 3.9002 klb/h at 80 h; the waste rate settles at 1.22 klb/h.";
-        xAxis   { label "time"; unit "h"; scale linear; }
+        note    "The Williams-Otto plant at the paper's operating point (F_fA = 10 and F_fB = 20 klb/h, 580 R, mu = 129.5 klb/h, eta = 0.2), started from the charge of A and B, makes product at 3.80 klb/h after 20 h, within 0.6 % of its final 3.90 klb/h by 40 h; the waste rate follows more slowly, 1.22 klb/h final and within 1 % of it from 60 h. Both rates are within 1 % of their final values from 60 h on, and the axis stops at 100 h.";
+        xAxis   { label "time"; unit "h"; scale linear; min 0; max 100; }
         yAxis   { label "production rate"; unit "klb/h"; scale linear; }
         series
         (

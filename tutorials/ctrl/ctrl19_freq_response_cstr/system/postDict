@@ -20,7 +20,9 @@
                kmol/s; the tank content 6.206e-4 to 1.2994e-3 kmol, an amplitude
                3.39e-4 about the mean 9.6e-4 kmol (35 % of it, against 50 % for
                the feed); its maximum at 12630 s, 190 s after the feed's (12440 s),
-               about 45 deg of the period.
+               about 45 deg of the period.  The axes are FIXED, 0 to 1.92e-3 kmol and 0 to
+               8e-6 kmol/s (twice each mean), so the two curves swing about the same
+               middle line and their heights compare as fractions of the mean.
 \*---------------------------------------------------------------------------*/
 
 views
@@ -29,10 +31,10 @@ views
         name    response;
         type    series;
         title   "How much does the tank damp and delay a sinusoidal tracer feed?";
-        note    "The tracer feed oscillates between 2e-6 and 6e-6 kmol/s with a period of 1508 s (omega times the tank's 240 s residence time equals 1). Once the start-up is gone the tracer in the tank swings between 6.2e-4 kmol and 1.30e-3 kmol, 35 % of its mean against the feed's 50 %, and peaks 190 s after the feed does, about an eighth of a period.";
+        note    "The tracer feed oscillates between 2e-6 and 6e-6 kmol/s with a period of 1508 s (omega times the tank's 240 s residence time equals 1). Once the start-up is gone the tracer in the tank swings between 6.2e-4 kmol and 1.30e-3 kmol, 35 % of its mean against the feed's 50 %, and peaks 190 s after the feed does (both axes start at 0 and end at twice their mean, 9.6e-4 kmol and 4e-6 kmol/s, so equal heights are equal fractions of the mean), about an eighth of a period.";
         xAxis   { label "time"; unit "s"; scale linear; }
-        yAxis   { label "tracer in the tank"; unit "kmol"; scale linear; }
-        yAxis2  { label "tracer feed"; unit "kmol/s"; scale linear; }
+        yAxis   { label "tracer in the tank"; unit "kmol"; scale linear; min 0; max 0.00192; }
+        yAxis2  { label "tracer feed"; unit "kmol/s"; scale linear; min 0; max 8e-6; }
         series
         (
             { name n_B; label "tracer in the tank"; unitOp reactor; table trajectory; x t; y n_compB; style lines; }
