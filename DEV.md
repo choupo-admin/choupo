@@ -5417,7 +5417,10 @@ accepts today, and that is a policy call.
 > yes, as an option, but NOT inside internalStates, which by contract is the restartable snapshot
 > and stays one: `writeSteps true;` writes `<t>/steps/<unit>.csv`, the accepted steps in
 > (t_prev, t] (t, h, T, n_i), the real steps, no interpolation; off by default.  Wish list, after
-> 2 December.
+> 2 December.  Same question, asked next ("Estes perfis onde estao presentemente gravados?"): in the browser
+> they live only in the tab's memory (the worker's MEMFS); the case .zip carries the case files and the
+> run's proposals, not trajectory.csv nor the `<t>/` directories.  Added to C482: the .zip carries the
+> last run's outputs.
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
