@@ -86,7 +86,7 @@ def check_text(text, label, block=None):
         if cls.group not in ("residual", "zero") or claim == "anchor" or tol == "exact":
             continue
         row = f"{label}: {kind} {name} {key}"
-        if cls.rule in ("abs", "abs_if_tiny"):
+        if cls.rule == "abs" or cls.rule.startswith("abs_if_tiny"):
             #  C429: an `abs` class puts every NON-ZERO row of its keys on the absolute
             #  band max(param, 1e-4 x |e|) (abs_if_tiny: abs:param, only a row recorded at
             #  round-off); an expected 0 keeps the absolute band it was authored with.

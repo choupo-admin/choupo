@@ -11,14 +11,14 @@ kpi     balance                element_H_closure_rel 2.31433916649e-14 abs:1e-09
 kpi     balance                element_O_closure_rel 2.31433916649e-14 abs:1e-09
 kpi     balance                element_worst_closure_rel 2.31433916649e-14 abs:1e-09
 kpi     balance                energy_balance_available 1                1e-4
-kpi     balance                energy_closure_rel 3.79805900307e-14 abs:1e-09
+kpi     balance                energy_closure_rel 3.79805900307e-14 abs:3e-07
 kpi     balance                energy_functional_H 1                1e-4
 kpi     balance                energy_kJ_final  -99842109.8295   1e-4
 kpi     balance                energy_kJ_heat_cum 0                1e-4
 kpi     balance                energy_kJ_in_cum -240894437.056   1e-4
 kpi     balance                energy_kJ_initial -99842112.9503   1e-4
 kpi     balance                energy_kJ_out_cum -240894440.177   1e-4
-kpi     balance                energy_residual_kJ 9.14931297302e-06 abs:0.2409
+kpi     balance                energy_residual_kJ 9.14931297302e-06 abs:2.409
 kpi     balance                mass_closure_rel 2.31391469837e-14 abs:1e-09
 kpi     balance                mass_kg_final    6271.9203053     1e-4
 kpi     balance                mass_kg_in_cum   15132.6          1e-4

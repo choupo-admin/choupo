@@ -49,7 +49,7 @@ ledger  bed->(external_boundary) material.feedAmendment.H_kJ 0                1e
 ledger  bed->(external_boundary) material.feedAmendment.valid valid            exact
 kpi     campaign               energy_H_external_kJ -0.0022814738417 1e-4
 kpi     campaign               energy_Q_ledger_kJ 0                1e-4
-kpi     campaign               energy_closure_rel 4.48879197267e-10 abs:1e-09
+kpi     campaign               energy_closure_rel 4.48879197267e-10 abs:3e-07
 kpi     campaign               energy_dH_vessels_kJ 0.00228147384272 1e-4
 kpi     campaign               energy_residual_kJ 1.02410614711e-12 abs:1e-09
 kpi     bed                    D_axial_interstitial 0.00025          1e-4

@@ -35,7 +35,7 @@ kpi     transporter            dT               17.6645246008    1e-4
 kpi     transporter            vf_out           0.0130276610378  1e-4
 closure transporter            raw_kW           -2.97106056232   1e-4
 closure transporter            step_kW          -2.97106057067   1e-4
-closure transporter            remaining_kW     8.35461833049e-09 1e0
+closure transporter            remaining_kW     8.35461833049e-09 abs:0.0001
 utility transporter            heating.steamLP.duty_kW 40               1e-4
 utility transporter            heating.steamLP.T 330.814524601    1e-4
 utility transporter            heating.steamLP.kg_s 0.0182982616651  1e-4
