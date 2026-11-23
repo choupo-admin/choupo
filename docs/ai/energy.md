@@ -122,7 +122,12 @@ bills.  A MOTOR draws grid electricity
 (`W_shaft / driveEfficiency`) -- billed on the published positive `W_shaft`, not on the
 unit type, so a pump, a compressor and an `agitatedVessel` are all billed (a turbine
 publishes it negative and is not); a turbine GENERATOR (an `electricLoad`) feeds it
-back (`W_electric`, a credit).  Shaft work supplied by a **wire** (turbine →
+back (`W_electric`, a credit) -- but an `electricLoad` fed by a unit that DRAWS
+power (an electrodialysis stack publishes `drawsPower`, on any of the load's
+wires) is a RECTIFIER: a consumer, billed `W_electric = W_DC / eta` as a cost
+under `electricity`, the unit printing that same number and its losses
+`W_DC (1/eta - 1)` (its KPI is `eta_rectifier`, not `eta_generator`).  Shaft work
+supplied by a **wire** (turbine →
 compressor) is mechanical, not grid, and is skipped — so a combined cycle that
 exports power shows a negative €/h.  The `electricity` utility carries the
 tariff (≈ 0.10 €/kWh = 27.8 €/GJ) and the motor/generator `driveEfficiency`.

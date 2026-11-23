@@ -222,6 +222,14 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) csv << ",s_" << spNames[i];
     csv << "\n" << std::scientific << std::setprecision(8);
 
+    PublishedTable mapTab;
+    mapTab.name = "map";
+    mapTab.description = "one row per (T, P) cell: T, P, the pressure's index and the metric (NaN where the cell did not converge)";
+    mapTab.columns = { { "T_K", "K" }, { "P_bar", "bar" }, { "iP", "-" }, { "metric", "-" } };
+    pBar_.clear();
+    nT_ = static_cast<std::size_t>(nT);
+    metricLabel_ = mtype == "moleFraction" ? "mole fraction of " + met->lookupWord("species") + " in the gas"
+                                           : "yield of " + met->lookupWord("element") + " as " + met->lookupWord("product");
     int nBad = 0, nSuperCells = 0;     // + cells whose gas a condensable supersaturates (R07)
     //  WHY a cell did not converge, as the solver said it -- the first cause
     //  seen, reported once beside the count, so "unconverged" is never a
@@ -237,6 +245,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
             const scalar P = logP ? P0 * std::pow(P1 / P0, f)
                                   : P0 + (P1 - P0) * f;
             prob.P = P;
+            if (it == 0) pBar_.push_back(P / 1.0e5);
             resolveDirection(T);
             GibbsEquilibrium eq = solver.solve(prob, T, {});  if (!eq.supersaturatedNotCondensed.empty() && nSuperCells++ == 0) firstSuper = "T = " + std::to_string(T) + " K, P = " + std::to_string(P) + " Pa: " + eq.supersaturatedNotCondensed;
             csv << T << "," << P << "," << prob.dTapproach << ","
@@ -264,9 +273,13 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                 for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) csv << ",nan";
             }
             csv << "\n";
+            mapTab.rows.push_back({ T, P / 1.0e5, static_cast<scalar>(ip + 1),
+                                    eq.converged ? metricOf(eq) : std::nan("") });
         }
     }
     csv.close();
+    tables_.clear();
+    tables_.push_back(std::move(mapTab));
 
     //  PLOT ANNOTATIONS BELONG TO THE GUI, AND ARE NAMED RATHER THAN IGNORED.
     //
@@ -377,4 +390,19 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     return 0;
 }
 
+std::string GibbsMapOp::defaultViews(const std::string& op) const
+{
+    if (tables_.empty() || tables_[0].rows.empty() || nT_ < 2 || pBar_.empty() || pBar_.size() > 6) return {};
+    std::string ser;
+    for (std::size_t ip = 0; ip < pBar_.size(); ++ip)
+    {
+        std::ostringstream lab;
+        lab << std::setprecision(4) << pBar_[ip];
+        ser += " { name P" + std::to_string(ip + 1) + "; label \"P = " + lab.str() + " bar\"; op " + op
+             + "; table map; select { iP " + std::to_string(ip + 1) + "; } x T_K; y metric; style lines; }";
+    }
+    return "{ name metric; type series; title \"" + op + ": " + metricLabel_ + " at chemical equilibrium against temperature"
+           + std::string(pBar_.size() > 1 ? ", one curve per pressure" : "") + "\";"
+           " xAxis { label \"temperature, T\"; } yAxis { label \"" + metricLabel_ + "\"; } series (" + ser + " ); }\n";
+}
 } // namespace Choupo

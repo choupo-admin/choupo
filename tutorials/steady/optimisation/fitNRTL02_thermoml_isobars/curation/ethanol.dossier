@@ -30,10 +30,10 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  1.61695367799;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -531.927330369;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  -0.251712699726;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  615.230695516;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  1.62;   // +/- 0.73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -530;   // +/- 230 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  -0.3;   // +/- 1.2 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  620;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence
@@ -75,7 +75,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.109639705335;
+        aadHeldOutPct     0.10964;
         //  No acceptance band was declared, so the residuals above are
         //  reported and NO verdict is claimed on them.  Whether they are
         //  small enough is a judgement, and the engine does not make it.

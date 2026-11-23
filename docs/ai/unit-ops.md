@@ -1257,7 +1257,11 @@ gone), and a state the door cannot price refuses by name.
   operation   { eta  0.97; }                       // generator efficiency
   energyInputs ( { from turbine01.shaft;  kind work;  target W_shaft; } ) }
 ```
-KPIs: `W_in`, `W_electric` (= η·W_in).  See [`energy.md`](energy.md).
+KPIs: `W_shaft` (the wire's work), `W_electric` (= η·W_shaft, the grid feed of a generator),
+`W_losses`, `eta_generator`.  Fed by a unit that draws power (an electrodialysis stack, which
+publishes `drawsPower`) it is a RECTIFIER instead: `W_shaft` is the DC power in,
+`W_electric` = W_shaft/η the grid draw (a cost, not a credit), `W_losses` = W_shaft (1/η − 1),
+`eta_rectifier`, `drawsPower`.  See [`energy.md`](energy.md).
 
 ## Distillation / absorption (staged separations)
 
@@ -2188,7 +2192,7 @@ each channel node):
   difference across the membrane (permeate against the feed-side solution
   at the wall, both Donnan jumps included).  It publishes two named TABLES
   a view draws (`points`: one row per J_v; `pore`: the solved profile), and
-  its default views (rejection against J_v; the pore, where it writes one).  The NanoFiltran paper is ONE case,
+  its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
   `nanofiltran_geraldesAlves2008`: part A code to code, part B Bowen &
   Mohammad's measured CA30 rejections (a comparison with EXPERIMENT, several
   inputs being fits to those data), part C its Table 2 (which carries

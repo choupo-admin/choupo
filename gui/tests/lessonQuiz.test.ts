@@ -34,7 +34,10 @@ License
   not yet require a quiz of every tool; it requires one of every tool in the
   table, holds each to the shape, and refuses a quiz that is drawn without
   being in the table.  When every tool has one, the requirement becomes
-  "every live tool in the registry" -- the arm that would say so is (a).
+  "every live tool in the registry" -- arm (e) says so NOW (C158, 2026-11-23):
+  a live tool with no quiz fails by name.  The shrink-only list of tools
+  still owing one (NO_QUIZ_YET) held the last two and was removed with them:
+  an empty list checks nothing.
 
     (a) every tool in the table is a LIVE tool of the registry;
     (b) every question: an id unique in its quiz, a question ending in a
@@ -121,6 +124,11 @@ import { SentenceToDecisionTool } from "../src/ui/methods/SentenceToDecisionTool
 import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
 import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool.js";
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
+import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
+import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
+import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
+import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
+import { MethaneAssemblyTool } from "../src/ui/methods/MethaneAssemblyTool.js";
 import { LinearAlgebraTool } from "../src/ui/methods/LinearAlgebraTool.js";
 import { LA_QUIZ, LA_STEPS } from "../src/ui/methods/linearAlgebraLesson.js";
 
@@ -294,6 +302,21 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  "stiff-chemistry": {
+    quiz: SC_QUIZ, quizName: "SC_QUIZ",
+    lesson: SC_STEPS, lessonName: "SC_STEPS",
+    file: "src/ui/methods/StiffChemistryTool.tsx", tool: StiffChemistryTool,
+  },
+  "methane-assembly": {
+    quiz: METHANE_QUIZ, quizName: "METHANE_QUIZ",
+    lesson: METHANE_STEPS, lessonName: "METHANE_STEPS",
+    file: "src/ui/methods/MethaneAssemblyTool.tsx", tool: MethaneAssemblyTool,
+  },
+  "four-ways-mixture": {
+    quiz: FOUR_WAYS_QUIZ, quizName: "FOUR_WAYS_QUIZ",
+    lesson: FOUR_WAYS_STEPS, lessonName: "FOUR_WAYS_STEPS",
+    file: "src/ui/methods/FourWaysMixtureTool.tsx", tool: FourWaysMixtureTool,
+  },
   "standard-state": {
     quiz: STANDARD_STATE_QUIZ, quizName: "STANDARD_STATE_QUIZ",
     lesson: STANDARD_STATE_STEPS, lessonName: "STANDARD_STATE_STEPS",
@@ -711,6 +734,10 @@ describe("the quiz coverage (C158)", () => {
     for (const id of Object.keys(QUIZZES)) expect(ids.has(id as MethodToolId), id).toBe(true);
     expect(quizzed.length).toBe(Object.keys(QUIZZES).length);
     expect(quizzed.length).toBeGreaterThanOrEqual(7);
+  });
+  it("(e) every live tool has a quiz", () => {
+    const missing = live.filter((t) => QUIZZES[t.id] === undefined).map((t) => t.id);
+    expect(missing, `live tool(s) with no quiz: ${missing.join(", ")}`).toEqual([]);
   });
 });
 

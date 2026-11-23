@@ -49,6 +49,9 @@ public:
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
+    //  gamma_<component> is dimensionless (C480: the page printed "unit not published")
+    std::string diagnosticUnit(const std::string& key) const override
+    { return key.compare(0, 6, "gamma_") == 0 ? "-" : std::string(); }
 
 private:
     std::map<std::string, scalar> diag_;

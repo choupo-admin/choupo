@@ -220,6 +220,9 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     // the number the Davies-vs-Pitzer comparison hinges on (recovery_at_<m>_onset)
     // -- distinct from the precipitation onset above (which needs equilibrate{}).
     std::map<std::string, scalar> prevSI, prevR, siOnset;
+    PublishedTable tab;
+    tab.name = "scan";
+    tab.description = "one row per recovery: the concentrate's ionic strength, pH and the saturation index of each catalogue mineral (and the calcite indices where the CSV carries them)";
     for (std::size_t k = 0; k < nPts; ++k)
     {
         const scalar r = rFrom + dr * static_cast<scalar>(k);
@@ -272,6 +275,12 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
             csv << "recovery,I,pH";
             for (const auto& m : siCols) csv << ",SI_" << m;
             if (doIndices) csv << ",LSI,StiffDavis,RSI";
+            tab.columns = { { "recovery", "-" }, { "I", "mol/kg" }, { "pH", "-" } };
+            for (const auto& m : siCols) tab.columns.push_back({ "SI_" + m, "-" });
+            if (doIndices)
+                for (const char* ix : { "LSI", "StiffDavis", "RSI" }) tab.columns.push_back({ ix, "-" });
+            siCols_ = siCols;
+            indices_ = doIndices;
             for (const auto& g : gammaCols) csv << ",gamma_" << g;
             if (doEquil)
                 for (const auto& m : eqCols)
@@ -284,6 +293,8 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
 
         csv << r << "," << raw.I << "," << raw.pH;
         for (const auto& m : siCols) csv << "," << raw.SI.at(m);
+        std::vector<scalar> trow{ r, raw.I, raw.pH };
+        for (const auto& m : siCols) trow.push_back(raw.SI.at(m));
         if (doIndices)
         {
             // Concentration proxy = concentrated molality [mol/kg] ~ mol/L
@@ -293,6 +304,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
             const auto ix = electrolyte::ScalingIndices::compute(
                 raw.pH, cCa, cHCO3, raw.I, feed.T, logK_calcite_T);
             csv << "," << ix.LSI << "," << ix.stiffDavis << "," << ix.RSI;
+            trow.push_back(ix.LSI); trow.push_back(ix.stiffDavis); trow.push_back(ix.RSI);
             if (k == 0 || k + 1 == nPts)
             {
                 const std::string suf = (k == 0) ? "_r0" : "_rmax";
@@ -355,6 +367,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
                 }
             }
         csv << "\n";
+        tab.rows.push_back(std::move(trow));
 
         if (raw.activityBeyondDomain && !beyondDomain)
         { beyondDomain = true; rExceed = r; domainNote = raw.activityDomainNote; }
@@ -384,6 +397,8 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
             diag_["pHeq_rmax"] = eq.pH;   // equilibrated pH at the endpoint
         }
     }
+    tables_.clear();
+    tables_.push_back(std::move(tab));
     // r_onset diagnostics (one per allowed mineral that ever precipitated)
     if (doEquil)
         for (const auto& m : eqCols)
@@ -415,4 +430,18 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     return 0;
 }
 
+std::string ScalingScan::defaultViews(const std::string& op) const
+{
+    if (tables_.empty() || tables_[0].rows.empty() || siCols_.empty()) return {};
+    std::string ys;
+    for (const auto& m : siCols_) ys += " SI_" + m;
+    std::string out = "{ name saturationIndex; type series; op " + op + "; table scan; x recovery; y (" + ys + " ); style lines;"
+                      " title \"" + op + ": saturation index of each mineral against recovery -- a mineral scales once its SI passes 0\";"
+                      " xAxis { label \"recovery\"; } yAxis { label \"saturation index, SI = log10(IAP/Ksp)\"; } }\n";
+    if (indices_)
+        out += "{ name indices; type series; op " + op + "; table scan; x recovery; y ( LSI StiffDavis RSI ); style lines;"
+               " title \"" + op + ": the empirical calcite indices (Langelier, Stiff-Davis, Ryznar) against recovery\";"
+               " xAxis { label \"recovery\"; } yAxis { label \"index\"; } }\n";
+    return out;
+}
 } // namespace Choupo

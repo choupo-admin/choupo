@@ -211,6 +211,19 @@ int PhaseEnvelope::run(const DictPtr& dict,
             " the RANGE, not about the mixture: check that `pressure { from;"
             " to; }` brackets the two-phase region for this feed.");
 
+    //  the published table (C480): the same rows, P in bar
+    {
+        PublishedTable tab;
+        tab.name = "envelope";
+        tab.description = "one row per converged point of the marched branches: T, P and the branch (family 0 bubble, 1 dew)";
+        tab.columns = { { "T_K", "K" }, { "P_bar", "bar" }, { "family", "-" } };
+        for (const auto& p : bub.pts) tab.rows.push_back({ p.T, p.P / 1.0e5, 0.0 });
+        for (const auto& p : dew.pts) tab.rows.push_back({ p.T, p.P / 1.0e5, 1.0 });
+        hasBub_ = !bub.pts.empty(); hasDew_ = !dew.pts.empty();
+        tables_.clear();
+        tables_.push_back(std::move(tab));
+    }
+
     // ---- the CSV, which is what a plot consumes ---------------------------
     if (dict->found("output"))
     {
@@ -457,4 +470,13 @@ int PhaseEnvelope::run(const DictPtr& dict,
     return 0;
 }
 
+std::string PhaseEnvelope::defaultViews(const std::string& op) const
+{
+    if (!hasBub_ && !hasDew_) return {};
+    std::string ser;
+    if (hasBub_) ser += " { name bubble; label \"bubble curve (liquid begins to boil)\"; op " + op + "; table envelope; select { family 0; } x T_K; y P_bar; style lines; }";
+    if (hasDew_) ser += " { name dew; label \"dew curve (vapour begins to condense)\"; op " + op + "; table envelope; select { family 1; } x T_K; y P_bar; style lines; }";
+    return "{ name envelope; type series; title \"" + op + ": P-T phase envelope of the feed (marched in pressure; the trace does not close the nose)\";"
+           " xAxis { label \"temperature, T\"; } yAxis { label \"pressure, P\"; } series (" + ser + " ); }\n";
+}
 } // namespace Choupo

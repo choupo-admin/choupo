@@ -109,6 +109,12 @@ public:
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE ENVELOPE AS A TABLE AND A FIGURE (C480): `envelope`, T [K], P [bar]
+    //  and the branch (family 0 bubble, 1 dew) -- the rows the CSV holds (which
+    //  stays in Pa) -- drawn as the P-T envelope.
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string defaultViews(const std::string& opName) const override;
+
     //  DERIVED FROM WHAT THIS RUN PUBLISHED, never a fixed list.  The two
     //  `*_stopped_bar` keys exist only when a branch actually stopped, and a
     //  headline naming a key the run did not produce is a claim about a path
@@ -127,6 +133,8 @@ public:
 private:
     std::string type_ = "phaseEnvelope";
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    bool hasBub_ = false, hasDew_ = false;
 };
 
 } // namespace Choupo

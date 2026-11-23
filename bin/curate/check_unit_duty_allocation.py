@@ -46,6 +46,19 @@ WHAT THIS CHECKS:
       on a unit that publishes no generic duty.  Each must exit non-zero and
       say WHY in the words the engine uses.
 
+  (f) THE DIRECTION OF ELECTRICITY (C481, walk finding 9).  An electricLoad
+      was credited "electricity (generated)" in every case, including the
+      nine electrodialysis cases where it is the RECTIFIER of power the stack
+      DRAWS: the plant was paid for what it buys.  The direction is now told
+      to the load by its feeders (a unit that publishes `drawsPower`, any of
+      its wires).  Probed through the real engine on damaged COPIES: ed01 at
+      rectifier eta 0.9 bills W_DC / eta as a positive cost under
+      "electricity" and the unit prints the same number as W_electric (and
+      W_DC (1/eta - 1) as losses); a rectifier fed by two stacks is still a
+      rectifier; a turbine generator (rankine01) stays "electricity
+      (generated)" and a second electricLoad chained behind it stays
+      generated.
+
 THE NEGATIVES: the undamaged copies run clean and allocate; without that a
 gate would pass an engine that refused everything.
 
@@ -341,6 +354,87 @@ def main() -> int:
                 nref += 1
         claims.append(f"refusals: {nref}/{len(probes)} fired with their reason"
                       + ("" if g_ok else " (NEGATIVE FAILED)"))
+
+        # ---- (f) the direction of electricity ------------------------------
+        def power_rows(res, unit):
+            return [r for r in (res.get("utilityAllocation") or [])
+                    if r.get("unit") == unit and r.get("tier") == "power"]
+
+        ED1 = "tutorials/steady/electrodialysis/ed01_nacl_desalination"
+        (td / "f1").mkdir()
+        c = copy(ED1, td / "f1")
+        fd = c / "system/flowsheetDict"
+        fd.write_text(fd.read_text().replace("eta 1.0;", "eta 0.9;"))
+        rc, out, res = run(c)
+        if rc != 0 or not res:
+            fail.append(f"(f) ed01 at rectifier eta 0.9 does not run (exit {rc})")
+        else:
+            k = (res.get("kpis") or {}).get("rectifier", {})
+            rows = power_rows(res, "rectifier")
+            wdc, wel, wls = k.get("W_shaft"), k.get("W_electric"), k.get("W_losses")
+            if len(rows) != 1 or rows[0].get("utility") != "electricity":
+                fail.append(f"(f) the ed01 rectifier row is {rows}, not one 'electricity' row")
+            elif not (wdc and wel and wls is not None
+                      and abs(wel - wdc / 0.9) < 1e-9 * wdc
+                      and abs(wls - wdc * (1 / 0.9 - 1)) < 1e-9 * wdc
+                      and abs(rows[0]["duty_kW"] * 1000.0 - wel) < 1e-6 * wel
+                      and rows[0]["eur_h"] > 0.0):
+                fail.append("(f) the rectifier's three powers disagree at eta 0.9:"
+                            f" W_DC {wdc}, W_electric {wel}, losses {wls}, row {rows}")
+            else:
+                claims.append("rectifier at eta 0.9: unit and bill both W_DC/eta, a cost")
+
+        ED6 = "tutorials/steady/electrodialysis/ed06_stages_in_series"
+        (td / "f2").mkdir()
+        c = copy(ED6, td / "f2")
+        fd = c / "system/flowsheetDict"
+        t = fd.read_text()
+        # R2 takes ST1's power as well: a rectifier with TWO wires
+        t = t.replace("{ from ST2.power;  kind work;  target W_shaft; }",
+                      "{ from ST2.power;  kind work;  target W_shaft; }\n"
+                      "            { from ST1.power;  kind work;  target W_shaft; }", 1)
+        fd.write_text(t)
+        rc, out, res = run(c)
+        rows = power_rows(res, "R2") if (rc == 0 and res) else []
+        if len(rows) != 1 or rows[0].get("utility") != "electricity":
+            fail.append(f"(f) a rectifier fed by two stacks: rows {rows} (exit {rc})")
+        else:
+            claims.append("a two-wire rectifier is a rectifier")
+
+        RK = "tutorials/steady/power/rankine01_water"
+        (td / "f3").mkdir()
+        c = copy(RK, td / "f3")
+        fd = c / "system/flowsheetDict"
+        t = fd.read_text()
+        t = t.replace("        name        generator;\n        type        electricLoad;\n"
+                      "        operation   { eta 0.97; }\n",
+                      "        name        generator;\n        type        electricLoad;\n"
+                      "        operation   { eta 0.97; }\n"
+                      "        energyOutputs ( { name out; kind work; expression \"W_electric\"; unit W; } );\n", 1)
+        t = t.rstrip()
+        assert t.endswith(");")
+        t = t[:-2] + """    {
+        name        generator2;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs ( { from generator.out;  kind work;  target W_shaft; } );
+    }
+);
+"""
+        fd.write_text(t)
+        rc, out, res = run(c)
+        if rc != 0 or not res:
+            fail.append(f"(f) rankine01 with a chained second electricLoad does not run (exit {rc})")
+        else:
+            r1, r2 = power_rows(res, "generator"), power_rows(res, "generator2")
+            ok = (len(r1) == 1 and r1[0].get("utility") == "electricity (generated)"
+                  and len(r2) == 1 and r2[0].get("utility") == "electricity (generated)")
+            if not ok:
+                fail.append(f"(f) a generator, and one chained behind it, must stay"
+                            f" 'electricity (generated)': {r1} / {r2}")
+            else:
+                claims.append("a turbine generator, and a load chained behind it, stay generated")
+
     finally:
         shutil.rmtree(td, ignore_errors=True)
 

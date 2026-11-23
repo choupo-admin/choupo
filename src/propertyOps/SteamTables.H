@@ -79,6 +79,7 @@ License
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -89,8 +90,24 @@ public:
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE UNITS THE DIAGNOSTICS SPEAK (C480): the release's table units, as
+    //  the header above states them -- published, so a reader never sees
+    //  "unit not published" beside an IAPWS verification number.
+    std::string diagnosticUnit(const std::string& key) const override;
+
+    //  The saturation line and the isobar as NAMED TABLES (C480), the very
+    //  rows the op writes to its CSV, in the release's table units, so a view
+    //  can draw them (the CSV stays canonical SI, unchanged).
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+
+    //  The op's own figure: the saturation line, or the isobar (C480).
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    std::string mode_;   // "point" | "saturation" | "isobar"
+    scalar isobarP_MPa_ = 0.0;
 };
 
 } // namespace Choupo

@@ -1661,6 +1661,12 @@ int FitParameters::run(const DictPtr& dict,
                                : [&]{ DictPtr e = fitSource->found("equilibrium") ? fitSource->subDict("equilibrium") : nullptr, l = (e && e->found("liquid")) ? e->subDict("liquid") : nullptr, a = (l && l->found("activityModel")) ? l->subDict("activityModel") : nullptr; return (a ? a->lookupWordOrDefault("model", "NRTL") : std::string("NRTL")) + " binary pair, bubble-T residual at fixed P"; }();   // the model the op fits (C294), NRTL as before
         for (const auto& ps : params)
             rec.parameters.push_back({ps.path, ps.value});
+        for (std::size_t i = 0; i < params.size(); ++i)   // the fit's own sigma, NaN where it could not be computed (C483)
+        {
+            const auto it = diag_.find("fit." + std::to_string(i) + ".stderr");
+            rec.parameterStdErr.push_back(it != diag_.end() ? it->second
+                                                            : std::numeric_limits<scalar>::quiet_NaN());
+        }
         rec.engaged     = true;
         rec.fingerprint = part.fingerprint();
         rec.fitSets        = part.fit();

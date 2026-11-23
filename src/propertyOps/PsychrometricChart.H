@@ -88,6 +88,8 @@ License
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace Choupo {
 
@@ -106,8 +108,24 @@ public:
     //  model, in the CARRIER's molar mass, or in the grid moves at least one.
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE CHART AS A TABLE AND A FIGURE (C480).  Before, the chart existed
+    //  only as the CSV it wrote (`T_C,Y,curve`), so a student opened the case
+    //  and found no figure.  The rows the CSV holds are published as ONE table
+    //  `chart` -- T_C [degC], Y [kg/kg], and the curve as two NUMBERS a view
+    //  can `select` on: `family` (0 saturation, 1 relative humidity, 2
+    //  adiabatic-saturation line, 3 true wet-bulb line) and `param` (the phi in
+    //  per cent, or the anchor temperature in degC; 0 for the saturation
+    //  curve) -- and the op's default view draws every curve it drew.
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string diagnosticUnit(const std::string& key) const override;
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
+    std::vector<std::pair<int, double>> curves_;   // (family, param) in drawing order
+    std::string carrier_, condensable_;
+    scalar P_Pa_ = 0.0;
 };
 
 } // namespace Choupo

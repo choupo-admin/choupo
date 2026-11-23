@@ -88,12 +88,23 @@ int PropertyScanBinary::run(const DictPtr& dict,
     csv << "x1,gmix_J_per_mol,role,beta\n";
     csv << std::scientific << std::setprecision(8);
 
+    PublishedTable curveTab, binTab;
+    curveTab.name = "gmix";
+    curveTab.description = "the molar Gibbs energy of mixing along composition (interior nodes)";
+    curveTab.columns = { { "x1", "-" }, { "gmix", "J/mol" } };
+    binTab.name = "binodal";
+    binTab.description = "the two coexisting liquids of the liquid-liquid flash on the g_mix curve; beta is each phase's fraction (no rows when the model predicts miscibility)";
+    binTab.columns = { { "x1", "-" }, { "gmix", "J/mol" }, { "beta", "-" } };
+    comp1_ = thermo.comp(0).name();
+
     // (a) the g_mix(x1) curve -- interior nodes only (x ln x -> 0 at the ends,
     //     but ln x diverges, so we never sample x1 = 0 or 1 exactly).
     for (std::size_t i = 1; i < g; ++i)
     {
         const scalar x1 = static_cast<scalar>(i) / static_cast<scalar>(g);
-        csv << x1 << ',' << gmixBinary(thermo, T, x1) << ",curve,\n";
+        const scalar gm = gmixBinary(thermo, T, x1);
+        csv << x1 << ',' << gm << ",curve,\n";
+        curveTab.rows.push_back({ x1, gm });
     }
 
     // (b) the two coexisting liquid compositions from ONE liquid-liquid flash
@@ -145,6 +156,8 @@ int PropertyScanBinary::run(const DictPtr& dict,
             if (std::abs(xa - xb) > 1.0e-3)        // a genuine, non-trivial split
             {
                 split = true;
+                binTab.rows.push_back({ xa, gmixBinary(thermo, T, xa), 1.0 - bB });
+                binTab.rows.push_back({ xb, gmixBinary(thermo, T, xb), bB });
                 csv << xa << ',' << gmixBinary(thermo, T, xa) << ",binodal," << (1.0 - bB) << '\n';
                 csv << xb << ',' << gmixBinary(thermo, T, xb) << ",binodal," << bB << '\n';
                 std::cout << "[binaryLLE] two liquid phases at " << T << " K, "
@@ -170,6 +183,10 @@ int PropertyScanBinary::run(const DictPtr& dict,
                      "liquid-liquid split) -- the g_mix curve stays convex.\n";
 
     csv.close();
+    split_ = split;
+    tables_.clear();
+    tables_.push_back(std::move(curveTab));
+    tables_.push_back(std::move(binTab));
     diag_["split"] = split ? 1.0 : 0.0;
     diag_["T"]     = T;
     if (verbosity >= 2)
@@ -177,6 +194,20 @@ int PropertyScanBinary::run(const DictPtr& dict,
                   << " nodes + " << (split ? 2 : 0) << " binodal points -> "
                   << outFile << "\n";
     return 0;
+}
+
+std::string PropertyScanBinary::defaultViews(const std::string& op) const
+{
+    std::string out =
+        "{ name lleMap; type series; title \"" + op + ": molar Gibbs energy of mixing against composition"
+        + std::string(split_ ? " -- the two coexisting liquids sit on the common tangent" : " -- convex everywhere: the model predicts one liquid")
+        + "\"; xAxis { label \"mole fraction of " + comp1_ + ", x1\"; } yAxis { label \"g_mix\"; }"
+          " series ( { name curve; label \"g_mix(x1)\"; op " + op + "; table gmix; x x1; y gmix; style lines; }";
+    if (split_)
+        out += " { name tangent; label \"common tangent\"; op " + op + "; table binodal; x x1; y gmix; style lines; }"
+               " { name binodal; label \"coexisting liquids (binodal)\"; op " + op + "; table binodal; x x1; y gmix; style markers; }";
+    out += " ); }\n";
+    return out;
 }
 
 } // namespace Choupo

@@ -30,10 +30,11 @@ import { Anchor, Badge, Box, Code, Group, Slider, Stack, Table, Text, Title } fr
 
 import {
   COST_ROWS, COUNT_ROWS, DENSE_OUTPUT_LANDED, IGNITION_ROWS, JACOBIAN_ROWS, JOURNEY_ROWS,
-  DENSE_ROWS, SC_LIMITS, SC_STEPS, SPARSE_ROWS, SPLIT_ROWS, TIMING_ROWS, VESSEL_ACCURACY_NOTE, VESSEL_ROWS,
+  DENSE_ROWS, SC_LIMITS, SC_QUIZ, SC_STEPS, SPARSE_ROWS, SPLIT_ROWS, TIMING_ROWS, VESSEL_ACCURACY_NOTE, VESSEL_ROWS,
   calc, rk4StabilityLimit,
 } from "./stiffChemistryLesson.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool } from "./registry.js";
 
@@ -209,6 +210,8 @@ export function StiffChemistryTool(): JSX.Element {
         </Stack>
 
         <LessonLimits limits={SC_LIMITS} />
+
+        <LessonQuiz title="Check your understanding" questions={SC_QUIZ} lesson={SC_STEPS} />
 
         <Text size="sm">
           Related:{" "}

@@ -1665,6 +1665,25 @@ Without \code{--maxAAD} no verdict is claimed.  Nothing is promoted: the
 dossier sits in \file{<case>/curation/}; admission to
 \file{data/standards/} is the separate act
 \file{bin/curate/promote-from-dossier}.
+
+\paragraph{The digits a dossier prints.}
+The dossier is a tracked file that every run regenerates, and an
+iterative fit stops at its own tolerance, so its converged value differs
+between platforms and builds in the 7th--8th significant digit.  The
+writer (\file{src/propertyOps/CurationDossier.cpp}) therefore prints each
+number with the digits it can justify, and a rerun writes the same bytes.
+A fitted parameter is printed to two significant digits of its own
+standard error, and the error is written beside it
+(\code{182.9;   // +/- 2.9 (1 sigma, from the fit)}): \code{fitParameters}
+computes $\sigma^2 (J^{T}J)^{-1}$ and passes the square root of its
+diagonal in \code{PropertyRecord::parameterStdErr}.  A parameter whose
+operation reports no error (\code{vaporPressureFit},
+\code{heatCapacityFit}: closed-form least squares, deterministic) keeps
+12 digits, and so does \code{r2InSample}.  The held-out metrics
+\code{rmsHeldOut} and \code{aadHeldOutPct}, for which no operation
+computes an uncertainty, are printed to five significant digits, one more
+than the console shows.  \file{bin/curate/promote-from-dossier} takes the
+rounded values, which is what the fit supports.
 % =====================================================================
 \section{Adding an outer driver / post-processor}
 

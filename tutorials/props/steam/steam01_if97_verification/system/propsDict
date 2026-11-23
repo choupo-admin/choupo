@@ -22,6 +22,12 @@
   Plus the working artefacts: the saturated-steam table 0.01-350 degC
   (saturation.csv) and three isobars (h, s, v, cp vs T) crossing the
   saturation line -- the crossing is ANNOUNCED in the log.
+
+  THE FIGURE AND THE TABLES (C480).  The Studies page draws the six single-phase
+  verification states and the Table 35/36 points on the saturation line, and four
+  tables set the release's value beside Choupo's with the relative difference of
+  every value (IAPWS R7-97(2012) Tables 5, 15, 35, 36, read from this case's own
+  expected file).
 \*---------------------------------------------------------------------------*/
 operations
 (
@@ -95,5 +101,147 @@ operations
         source "IAPWS R7-97(2012)";
         isobar { P 10 MPa; from 20 degC; to 350 degC; n 67; }
         output { file isobar_10MPa.csv; }
+    }
+);
+
+/*---------------------------------------------------------------------------*\
+  WHAT THE CASE SHOWS (C480).  The question is "does this engine give the
+  numbers IAPWS published for checking a computer program?", so the figure is
+  WHERE the verification states sit (the saturation line of the satline op,
+  with the release's own points on it and the six single-phase states in the
+  (T, p) plane) and the tables set the release's value beside Choupo's, with
+  their relative difference.  Every IAPWS number is read from
+  constant/reference/iapws_if97_verification.csv, which is written from this
+  case's `expected` file (the digits of Tables 5, 15, 35 and 36); every Choupo
+  number is read from the run.  Units are the release's table units.
+\*---------------------------------------------------------------------------*/
+references
+(
+    {
+        name      iapws;
+        file      "constant/reference/iapws_if97_verification.csv";
+        role      reference;
+        citation  "IAPWS R7-97(2012), Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam: computer-program verification Tables 5 (region 1), 15 (region 2), 35 (psat) and 36 (Tsat)";
+        units
+        {
+            T_K "K"; P_MPa "MPa"; v_m3kg "m3/kg"; h_kJkg "kJ/kg"; u_kJkg "kJ/kg";
+            s_kJkgK "kJ/(kg K)"; cp_kJkgK "kJ/(kg K)"; w_ms "m/s"; psat_MPa "MPa";
+        }
+    }
+);
+
+studies
+(
+    {
+        name     verification;
+        title    "Does Choupo reproduce the IAPWS-IF97 verification tables? Region 1 and 2 properties (Tables 5 and 15), psat (Table 35), Tsat (Table 36)";
+        purpose  codeToCodeVerification;
+        summary  "The release publishes the values a program must return at a few states; this case evaluates all of them and sets them beside the release's own numbers.";
+        ops      ( r1_T300_p3MPa r1_T300_p80MPa r1_T500_p3MPa r2_T300_p3p5kPa r2_T700_p3p5kPa r2_T700_p30MPa satline isobar_1bar isobar_1MPa isobar_10MPa );
+    }
+);
+
+views
+(
+    {
+        name     states;
+        type     series;
+        title    "Where the IAPWS verification states sit: the saturation line (region 4) and the release's single-phase states (T, p plane)";
+        note     "The line is Choupo's satline op (IAPWS-IF97 psat, Eq. 30); the markers are the verification states of the release: Table 5 (liquid, region 1), Table 15 (vapour, region 2), and Tables 35 and 36 (points ON the saturation line).";
+        xAxis    { label "temperature, T"; unit "K"; }
+        yAxis    { label "pressure, p"; unit "MPa"; scale log; }
+        series
+        (
+            { name sat;   label "saturation line, Choupo"; op satline; table saturation; x T; y psat; style lines; }
+            { name t5;    label "Table 5, region 1 states";  reference iapws; select { kind T5; }  x T_K; y P_MPa; style markers; }
+            { name t15;   label "Table 15, region 2 states"; reference iapws; select { kind T15; } x T_K; y P_MPa; style markers; }
+            { name t35;   label "Table 35, psat at 300 and 500 K";  reference iapws; select { kind T35; } x T_K; y psat_MPa; style markers; }
+            { name t36;   label "Table 36, Tsat at 0.1, 1 and 10 MPa"; reference iapws; select { kind T36; } x T_K; y psat_MPa; style markers; }
+        );
+    }
+    {
+        name     table5;
+        type     table;
+        title    "Table 5 (region 1, compressed liquid): the release's value, Choupo's, and their relative difference";
+        columns
+        (
+            { name v;  label "v";  unit "m3/kg"; }
+            { name h;  label "h";  unit "kJ/kg"; }
+            { name u;  label "u";  unit "kJ/kg"; }
+            { name s;  label "s";  unit "kJ/(kg K)"; }
+            { name cp; label "cp"; unit "kJ/(kg K)"; }
+            { name w;  label "w";  unit "m/s"; }
+        );
+        rows
+        (
+            { name a_ref; label "300 K, 3 MPa: IAPWS";    reference iapws; select { id r1_T300_p3MPa; }  cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name a_chp; label "300 K, 3 MPa: Choupo";   op r1_T300_p3MPa;  cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name a_dif; label "300 K, 3 MPa: relative difference"; difference ( a_chp a_ref ); relative yes; }
+            { name b_ref; label "300 K, 80 MPa: IAPWS";   reference iapws; select { id r1_T300_p80MPa; } cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name b_chp; label "300 K, 80 MPa: Choupo";  op r1_T300_p80MPa; cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name b_dif; label "300 K, 80 MPa: relative difference"; difference ( b_chp b_ref ); relative yes; }
+            { name c_ref; label "500 K, 3 MPa: IAPWS";    reference iapws; select { id r1_T500_p3MPa; }  cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name c_chp; label "500 K, 3 MPa: Choupo";   op r1_T500_p3MPa;  cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name c_dif; label "500 K, 3 MPa: relative difference"; difference ( c_chp c_ref ); relative yes; }
+        );
+    }
+    {
+        name     table15;
+        type     table;
+        title    "Table 15 (region 2, superheated vapour): the release's value, Choupo's, and their relative difference";
+        columns
+        (
+            { name v;  label "v";  unit "m3/kg"; }
+            { name h;  label "h";  unit "kJ/kg"; }
+            { name u;  label "u";  unit "kJ/kg"; }
+            { name s;  label "s";  unit "kJ/(kg K)"; }
+            { name cp; label "cp"; unit "kJ/(kg K)"; }
+            { name w;  label "w";  unit "m/s"; }
+        );
+        rows
+        (
+            { name a_ref; label "300 K, 3.5 kPa: IAPWS";    reference iapws; select { id r2_T300_p3p5kPa; } cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name a_chp; label "300 K, 3.5 kPa: Choupo";   op r2_T300_p3p5kPa; cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name a_dif; label "300 K, 3.5 kPa: relative difference"; difference ( a_chp a_ref ); relative yes; }
+            { name b_ref; label "700 K, 3.5 kPa: IAPWS";    reference iapws; select { id r2_T700_p3p5kPa; } cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name b_chp; label "700 K, 3.5 kPa: Choupo";   op r2_T700_p3p5kPa; cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name b_dif; label "700 K, 3.5 kPa: relative difference"; difference ( b_chp b_ref ); relative yes; }
+            { name c_ref; label "700 K, 30 MPa: IAPWS";     reference iapws; select { id r2_T700_p30MPa; } cells { v v_m3kg; h h_kJkg; u u_kJkg; s s_kJkgK; cp cp_kJkgK; w w_ms; } }
+            { name c_chp; label "700 K, 30 MPa: Choupo";    op r2_T700_p30MPa; cells { v v; h h; u u; s s; cp cp; w w; } }
+            { name c_dif; label "700 K, 30 MPa: relative difference"; difference ( c_chp c_ref ); relative yes; }
+        );
+    }
+    {
+        name     table35;
+        type     table;
+        title    "Table 35 (saturation pressure at 300 K and 500 K): the release's value, Choupo's, and their relative difference";
+        columns  ( { name psat; label "psat"; unit "MPa"; } );
+        rows
+        (
+            { name a_ref; label "300 K: IAPWS";  reference iapws; select { id r1_T300_p3MPa_psat; } cells { psat psat_MPa; } }
+            { name a_chp; label "300 K: Choupo"; op r1_T300_p3MPa; cells { psat psat_MPa; } }
+            { name a_dif; label "300 K: relative difference"; difference ( a_chp a_ref ); relative yes; }
+            { name b_ref; label "500 K: IAPWS";  reference iapws; select { id r1_T500_p3MPa_psat; } cells { psat psat_MPa; } }
+            { name b_chp; label "500 K: Choupo"; op r1_T500_p3MPa; cells { psat psat_MPa; } }
+            { name b_dif; label "500 K: relative difference"; difference ( b_chp b_ref ); relative yes; }
+        );
+    }
+    {
+        name     table36;
+        type     table;
+        title    "Table 36 (saturation temperature at 0.1, 1 and 10 MPa): the release's value, Choupo's, and their relative difference";
+        columns  ( { name Tsat; label "Tsat"; unit "K"; } );
+        rows
+        (
+            { name a_ref; label "0.1 MPa: IAPWS";  reference iapws; select { id isobar_1bar_Tsat; }  cells { Tsat T_K; } }
+            { name a_chp; label "0.1 MPa: Choupo"; op isobar_1bar;  cells { Tsat Tsat_K; } }
+            { name a_dif; label "0.1 MPa: relative difference"; difference ( a_chp a_ref ); relative yes; }
+            { name b_ref; label "1 MPa: IAPWS";    reference iapws; select { id isobar_1MPa_Tsat; }  cells { Tsat T_K; } }
+            { name b_chp; label "1 MPa: Choupo";   op isobar_1MPa;  cells { Tsat Tsat_K; } }
+            { name b_dif; label "1 MPa: relative difference"; difference ( b_chp b_ref ); relative yes; }
+            { name c_ref; label "10 MPa: IAPWS";   reference iapws; select { id isobar_10MPa_Tsat; } cells { Tsat T_K; } }
+            { name c_chp; label "10 MPa: Choupo";  op isobar_10MPa; cells { Tsat Tsat_K; } }
+            { name c_dif; label "10 MPa: relative difference"; difference ( c_chp c_ref ); relative yes; }
+        );
     }
 );

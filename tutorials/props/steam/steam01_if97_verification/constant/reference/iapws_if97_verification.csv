@@ -1,0 +1,22 @@
+# The computer-program verification values of IAPWS R7-97(2012) (the IAPWS-IF97 release),
+#   as this case's own `expected` file carries them (each value there was copied digit for
+#   digit from the release's tables; this file is WRITTEN from that file, nothing is retyped):
+#   kind T5  = Table 5, region 1 (liquid): v [m3/kg], h, u [kJ/kg], s, cp [kJ/(kg K)], w [m/s]
+#   kind T15 = Table 15, region 2 (vapour): the same six properties
+#   kind T35 = Table 35, the saturation pressure psat [MPa] at T = 300 K and 500 K
+#   kind T36 = Table 36, the saturation temperature at p = 0.1, 1, 10 MPa
+#              (T_K carries Tsat, psat_MPa the pressure, so a row is one point of the saturation line)
+#   P_MPa of the 3.5 kPa rows is 0.0035.  cv is NOT in the release's tables and is not here.
+#   The release itself was not re-read for this file; see the case README.
+id,kind,T_K,P_MPa,v_m3kg,h_kJkg,u_kJkg,s_kJkgK,cp_kJkgK,w_ms,psat_MPa
+r1_T300_p3MPa,T5,300,3,0.100215168e-2,0.115331273e3,0.112324818e3,0.392294792,0.417301218e1,0.150773921e4,
+r1_T300_p80MPa,T5,300,80,0.971180894e-3,0.184142828e3,0.106448356e3,0.368563852,0.401008987e1,0.163469054e4,
+r1_T500_p3MPa,T5,500,3,0.120241800e-2,0.975542239e3,0.971934985e3,0.258041912e1,0.465580682e1,0.124071337e4,
+r2_T300_p3p5kPa,T15,300,0.0035,0.394913866e2,0.254991145e4,0.241169160e4,0.852238967e1,0.191300162e1,0.427920172e3,
+r2_T700_p3p5kPa,T15,700,0.0035,0.923015898e2,0.333568375e4,0.301262819e4,0.101749996e2,0.208141274e1,0.644289068e3,
+r2_T700_p30MPa,T15,700,30,0.542946619e-2,0.263149474e4,0.246861076e4,0.517540298e1,0.103505092e2,0.480386523e3,
+r1_T300_p3MPa_psat,T35,300,,,,,,,,0.353658941e-2
+r1_T500_p3MPa_psat,T35,500,,,,,,,,0.263889776e1
+isobar_1bar_Tsat,T36,0.372755919e3,0.1,,,,,,,0.1
+isobar_1MPa_Tsat,T36,0.453035632e3,1,,,,,,,1
+isobar_10MPa_Tsat,T36,0.584149488e3,10,,,,,,,10

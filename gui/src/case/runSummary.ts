@@ -134,3 +134,28 @@ export function runSummarySentence(s: RunSummary | null, phase: "idle" | "runnin
     : s.converged ? "converged" : "NOT converged";
   return `Run complete: ${conv}; ${s.advisories} advisor${s.advisories === 1 ? "y" : "ies"}.`;
 }
+
+/** THE PRODUCTS A RUN PUBLISHED NO STATE FOR (C481, walk finding 8).  A
+ *  time-integrated run (choupoCtrl / choupoSemiContinuous) writes its streams to
+ *  the `<t>/` directories and publishes no steady stream table (`streams` is
+ *  empty: the Streams tab says "no steady streams"), so the strip's products
+ *  list, filtered on stream rows, read "none" for a case whose flowsheet plainly
+ *  has a product.  "None" and "not published" are different statements, and this
+ *  names the graph's own outlets -- a stream a unit produces and no unit
+ *  consumes, the rule the stream roles use -- so the strip can say WHICH
+ *  products exist without inventing a value for them. */
+export function declaredProductNames(flowsheet: unknown): string[] {
+  const units = (((flowsheet as { units?: unknown } | null | undefined)?.units) ?? []) as Array<{
+    in?: string | string[]; inputs?: string[]; outputs?: string[];
+  }>;
+  if (!Array.isArray(units)) return [];
+  const consumed = new Set<string>();
+  const produced: string[] = [];
+  for (const u of units) {
+    const ins = Array.isArray(u.in) ? u.in : u.in ? [u.in] : [];
+    for (const n of ins) consumed.add(n);
+    for (const n of u.inputs ?? []) consumed.add(n);
+    for (const n of u.outputs ?? []) produced.push(n);
+  }
+  return produced.filter((n, i) => !consumed.has(n) && produced.indexOf(n) === i);
+}

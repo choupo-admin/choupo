@@ -114,6 +114,11 @@ int PurePhaseDiagram::run(const DictPtr& dict,
         throw std::runtime_error("purePhaseDiagram: cannot open '" + outFile + "'");
     csv << "T,P,curve\n";
     csv << std::scientific << std::setprecision(8);
+    PublishedTable tab;
+    tab.name = "diagram";
+    tab.description = "one row per point of the P-T diagram: T, P and the curve (family 0 saturation, 1 critical point, 2 sublimation, 3 triple point, 4 fusion)";
+    tab.columns = { { "T_K", "K" }, { "P_bar", "bar" }, { "family", "-" } };
+    comp_ = comp.name();
 
     constexpr scalar R = 8.314462618;       // J/(mol K)
 
@@ -124,9 +129,10 @@ int PurePhaseDiagram::run(const DictPtr& dict,
         const scalar T = Tlo + (Tc - Tlo) * static_cast<scalar>(k) / static_cast<scalar>(n - 1);
         scalar P = 0.0;
         try { P = thermo.Psat(0, T); } catch (const std::exception&) { rethrowHardRefusal(); continue; }
-        if (P > 0.0) csv << T << "," << P << ",saturation\n";
+        if (P > 0.0) { csv << T << "," << P << ",saturation\n"; tab.rows.push_back({ T, P / 1.0e5, 0.0 }); }
     }
     csv << Tc << "," << Pc << ",critical\n";
+    tab.rows.push_back({ Tc, Pc / 1.0e5, 1.0 });
 
     std::size_t nSub = 0, nFus = 0;
     if (hasSolid)
@@ -139,9 +145,10 @@ int PurePhaseDiagram::run(const DictPtr& dict,
         {
             const scalar T = Ts0 + (Tt - Ts0) * static_cast<scalar>(k) / static_cast<scalar>(m - 1);
             const scalar P = Pt * std::exp(-(Hsub / R) * (1.0 / T - 1.0 / Tt));
-            if (P > 0.0) { csv << T << "," << P << ",sublimation\n"; ++nSub; }
+            if (P > 0.0) { csv << T << "," << P << ",sublimation\n"; ++nSub; tab.rows.push_back({ T, P / 1.0e5, 2.0 }); }
         }
         csv << Tt << "," << Pt << ",triple\n";
+        tab.rows.push_back({ Tt, Pt / 1.0e5, 3.0 });
 
         // -- fusion (solid-liquid): triple -> high P, Clapeyron melting line
         //    dP/dT = Hfus/(T dVfus)  ->  T(P) = Tt + (Tt dVfus/Hfus)(P - Pt)
@@ -156,10 +163,13 @@ int PurePhaseDiagram::run(const DictPtr& dict,
                 const scalar P = Pt + (Phi - Pt) * static_cast<scalar>(k) / static_cast<scalar>(m - 1);
                 const scalar T = Tt + (Tt * dVfus / Hfus) * (P - Pt);
                 csv << T << "," << P << ",fusion\n"; ++nFus;
+                tab.rows.push_back({ T, P / 1.0e5, 4.0 });
             }
         }
     }
     csv.close();
+    tables_.clear();
+    tables_.push_back(std::move(tab));
 
     if (verbosity >= 2)
         std::cout << "\n=========================  PurePhaseDiagram  ===============\n"
@@ -175,4 +185,23 @@ int PurePhaseDiagram::run(const DictPtr& dict,
     return 0;
 }
 
+std::string PurePhaseDiagram::defaultViews(const std::string& op) const
+{
+    if (tables_.empty() || tables_[0].rows.empty()) return {};
+    bool has[5] = { false, false, false, false, false };
+    for (const auto& r : tables_[0].rows) has[static_cast<int>(r[2])] = true;
+    auto one = [&](const char* name, const char* label, int fam, const char* style)
+    {
+        return std::string(" { name ") + name + "; label \"" + label + "\"; op " + op + "; table diagram; select { family "
+             + std::to_string(fam) + "; } x T_K; y P_bar; style " + style + "; }";
+    };
+    std::string ser;
+    if (has[0]) ser += one("saturation", "liquid-vapour (saturation)", 0, "lines");
+    if (has[2]) ser += one("sublimation", "solid-vapour (sublimation)", 2, "lines");
+    if (has[4]) ser += one("fusion", "solid-liquid (fusion)", 4, "lines");
+    if (has[1]) ser += one("critical", "critical point", 1, "markers");
+    if (has[3]) ser += one("triple", "triple point", 3, "markers");
+    return "{ name phaseDiagram; type series; title \"" + op + ": P-T phase diagram of " + comp_ + "\";"
+           " xAxis { label \"temperature, T\"; } yAxis { label \"pressure, P\"; scale log; } series (" + ser + " ); }\n";
+}
 } // namespace Choupo

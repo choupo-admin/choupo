@@ -510,11 +510,31 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                 r.duty_kW = Pelec / 1000.0;  r.MW = Pelec / 1.0e6;  r.eur_h = eurPerW(Pelec);
                 rows.push_back(std::move(r));
             }
-            else if (ty == "electricLoad")                  // generator -> grid
+            else if (ty == "electricLoad")
             {
                 auto w = kf("W_electric");
                 if (!w || *w <= 1.0) continue;
-                UtilityAllocation r;
+                //  WHICH WAY THE POWER CROSSES THE BOUNDARY (C481, walk finding 9).
+                //  A turbine's wire carries work EXTRACTED, so its electricLoad is
+                //  a generator, credited below.  A unit that DRAWS power
+                //  (ElectrodialysisStack publishes `drawsPower 1`) feeds a
+                //  RECTIFIER: the electricLoad is told so when its wires are
+                //  resolved (any wire, Flowsheet.cpp resolveEnergyInputs) and
+                //  publishes `drawsPower` and the grid draw W_electric =
+                //  W_DC / eta itself.  The bill is exactly what the unit prints;
+                //  the electricity record's motor efficiency is not applied --
+                //  this is a rectifier, not a motor.
+                const scalar* dp = kf("drawsPower");
+                if (dp && *dp > 0.5)
+                {
+                    UtilityAllocation r;
+                    r.unit = unit;  r.tier = "power";  r.utility = "electricity";
+                    r.T = -1.0;     r.allocated = true;
+                    r.duty_kW = *w / 1000.0;  r.MW = *w / 1.0e6;  r.eur_h = eurPerW(*w);
+                    rows.push_back(std::move(r));
+                    continue;
+                }
+                UtilityAllocation r;                        // generator -> grid
                 r.unit = unit;  r.tier = "power";  r.utility = "electricity (generated)";
                 r.T = -1.0;     r.allocated = true;
                 r.duty_kW = *w / 1000.0;  r.MW = *w / 1.0e6;  r.eur_h = -eurPerW(*w);  // credit

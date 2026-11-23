@@ -417,4 +417,65 @@ int PropertyScan1D::run(const DictPtr& dict,
     return emptyCurves.empty() ? 0 : 1;
 }
 
+std::string PropertyScan1D::defaultViews(const std::string& op) const
+{
+    if (tables_.empty() || tables_[0].columns.empty() || tables_[0].rows.empty()) return {};
+    const PublishedTable& t = tables_[0];
+    const std::string& xName = t.columns[0].name;
+    auto finite = [&](std::size_t c)
+    {
+        for (const auto& r : t.rows) if (std::isfinite(r[c])) return true;
+        return false;
+    };
+    //  a log axis only where the curve spans decades and stays positive
+    auto spansDecades = [&](const std::vector<std::size_t>& cols)
+    {
+        double lo = 1e300, hi = -1e300;
+        for (const std::size_t c : cols)
+            for (const auto& r : t.rows)
+                if (std::isfinite(r[c])) { lo = std::min(lo, r[c]); hi = std::max(hi, r[c]); }
+        return lo > 0.0 && hi / lo >= 100.0;
+    };
+    auto quote = [](const std::string& s) { return "\"" + s + "\""; };
+    std::string out;
+    std::vector<bool> used(t.columns.size(), false);
+
+    //  T-x-y: the bubble curve against x and the dew curve against y
+    int cT = -1, cY = -1;
+    for (std::size_t c = 1; c < t.columns.size(); ++c)
+    {
+        if (t.columns[c].name == "T_bubble" && finite(c)) cT = static_cast<int>(c);
+        if (t.columns[c].name.rfind("y_eq_", 0) == 0 && finite(c) && cY < 0) cY = static_cast<int>(c);
+    }
+    if (cT >= 0 && cY >= 0 && xName.rfind("x_", 0) == 0)
+    {
+        const std::string comp = xName.substr(2);
+        out += "{ name txy; type series; title " + quote(op + ": T-x-y diagram -- bubble temperature against x, dew branch against y")
+             + "; xAxis { label " + quote("mole fraction of " + comp + ", x and y") + "; } yAxis { label \"temperature\"; }"
+               " series ( { name bubble; label \"bubble curve (liquid x)\"; op " + op + "; table scan; x " + xName
+             + "; y T_bubble; style lines; } { name dew; label \"dew curve (vapour y)\"; op " + op
+             + "; table scan; x " + t.columns[cY].name + "; y T_bubble; style lines; } ); }\n";
+        used[cT] = used[cY] = true;
+    }
+
+    //  everything else, one figure per unit
+    std::vector<std::string> units;
+    for (std::size_t c = 1; c < t.columns.size(); ++c)
+        if (!used[c] && finite(c) && std::find(units.begin(), units.end(), t.columns[c].unit) == units.end())
+            units.push_back(t.columns[c].unit);
+    int k = 0;
+    for (const std::string& u : units)
+    {
+        std::vector<std::size_t> cols;
+        std::string ys;
+        for (std::size_t c = 1; c < t.columns.size(); ++c)
+            if (!used[c] && finite(c) && t.columns[c].unit == u) { cols.push_back(c); ys += " " + t.columns[c].name; }
+        out += "{ name scan" + (units.size() > 1 || !out.empty() ? std::to_string(++k) : std::string())
+             + "; type series; op " + op + "; table scan; x " + xName + "; y (" + ys + " ); style lines; title "
+             + quote(op + ":" + ys + " against " + xName) + "; xAxis { label " + quote(xName) + "; }"
+             + std::string(spansDecades(cols) ? " yAxis { scale log; }" : "") + " }\n";
+    }
+    return out;
+}
+
 } // namespace Choupo

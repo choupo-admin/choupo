@@ -25027,7 +25027,9 @@
   "tutorials/props/steam/steam01_if97_verification": {
    "application": "choupoProps",
    "ops": [
-    "steamTables"
+    "series",
+    "steamTables",
+    "table"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -38666,7 +38668,8 @@
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/membrane/dspmde02_lab_characterisation_template",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
-    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    "tutorials/props/steam/steam01_if97_verification"
    ],
    "solubilityParameter": [
     "tutorials/props/molecular/solubility01_hildebrand_ladder"
@@ -38693,7 +38696,8 @@
    "table": [
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
-    "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
+    "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
+    "tutorials/props/steam/steam01_if97_verification"
    ],
    "thielePellet": [
     "tutorials/props/reactor/thiele01_sphere_first_order",

@@ -6,6 +6,9 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  psychro01_n2_water: THE FIGURE (C480).  The chart is published as a table and drawn on the Studies page: humidity ratio against dry-bulb temperature, the saturation curve, the relative-humidity lines and the adiabatic-saturation and true wet-bulb lines, each its own series, so the difference between the two families is read off the picture.
+\*---------------------------------------------------------------------------*/
 operations
 (
     {

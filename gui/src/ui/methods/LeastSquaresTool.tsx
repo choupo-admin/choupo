@@ -565,7 +565,7 @@ export function LeastSquaresTool(): JSX.Element {
                   , so the engine publishes{" "}
                   <Text span fw={700}>{cur["verdict"] ?? "—"}</Text>. The word
                   comes from one short function of the engine
-                  (src/propertyOps/CurationDossier.cpp:59-72) and every sink —
+                  (src/propertyOps/CurationDossier.cpp:61-74) and every sink —
                   this page, the console, the curation dossier and the
                   promotable record — reads that one word rather than deciding
                   for itself.

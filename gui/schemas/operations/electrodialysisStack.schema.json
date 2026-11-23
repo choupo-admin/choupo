@@ -66,7 +66,7 @@
       "exclusiveMinimum": 0,
       "title": "Applied current",
       "description": "Imposed-current form. Raw SI (amperes). Give this OR targetDemin OR targetConductivityRemoval -- exactly one of the three.",
-      "unit": "-"
+      "unit": "A"
     },
     "targetDemin": {
       "type": "number",
@@ -97,7 +97,7 @@
       "minimum": 0,
       "title": "Electrode overpotential",
       "description": "Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced.",
-      "unit": "-"
+      "unit": "V"
     },
     "membrane": {
       "type": "string",

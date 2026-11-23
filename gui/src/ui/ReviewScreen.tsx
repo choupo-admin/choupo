@@ -689,7 +689,6 @@ export function ReviewScreen({ model, readiness, readinessProminent, opPanel, co
           </SectionTitle>
           {ran ? strip(rows) : <StepPlan steps={outline.flatMap((s) => s.steps)} rows={rows} onSelect={onSelect} />}
         </Box>
-        {readinessBlock}
         <Box>
           <SectionTitle hint="Each operation's default views, and the ones the propsDict declares -- every point the engine's.">
             Figures
@@ -704,6 +703,10 @@ export function ReviewScreen({ model, readiness, readinessProminent, opPanel, co
             ? <ViewGrid groups={groups} ops={ops} csvFiles={csvFiles} kind="table" linkOf={figureLink} />
             : <Text size="sm" c="dimmed">Not run yet.</Text>}
         </Box>
+        {/*  THE READINESS AFTER THE ANSWER (C480): a case that creates a
+            component still opens on its figures (the fit, the data against
+            the curve); the 70vh readiness panel had pushed them off screen. */}
+        {readinessBlock}
         {comparisonsBlock}
         {ran && otherFiles.length > 0 && <OtherPlots files={otherFiles} csvFiles={csvFiles} />}
       </Stack>

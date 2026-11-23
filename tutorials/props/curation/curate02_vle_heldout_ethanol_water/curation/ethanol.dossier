@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -66.1593780164;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  684.045431048;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -66.2;   // +/- 3.0 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  684.0;   // +/- 5.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0362379363438;
+        aadHeldOutPct     0.036238;
         acceptanceMaxAADPct 0.061;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the rule curate04 applies to its systems: the held-out set's largest stated expanded uncertainty (U95 = 0.18 K) plus the catalogue vapour-pressure models' own error at the pure endpoints of the series (water -0.033 K, ethanol -0.003 K; measured with no pair involved, from the Raoult scan at x = 0 and 1), as a percentage of the held-out mean T (354.28 K) = 0.0601 %, rounded UP to two significant figures";
     }

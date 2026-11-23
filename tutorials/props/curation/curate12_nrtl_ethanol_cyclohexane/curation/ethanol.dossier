@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  354.742000533;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  565.388613923;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  355;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  565;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.093961584242;
+        aadHeldOutPct     0.093962;
         acceptanceMaxAADPct 0.41;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.4 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (342.92 K) = 0.4083 %, rounded UP to two significant figures";
     }
@@ -88,8 +88,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  354.741649667;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  565.38905221;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  355;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  565;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -132,7 +132,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.093961668562;
+        aadHeldOutPct     0.093962;
         acceptanceMaxAADPct 0.41;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.4 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (342.92 K) = 0.4083 %, rounded UP to two significant figures";
     }

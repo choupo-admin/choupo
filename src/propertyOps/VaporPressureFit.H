@@ -64,6 +64,7 @@ Description
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -85,11 +86,13 @@ public:
     //  the held-out AAD is a RELATIVE deviation in per cent (DEV.md 4c C172:
     //  each fit's held-out statistic is published with its own unit -- the
     //  SAME declaration its acceptance band is held to)
-    std::string diagnosticUnit(const std::string& key) const override
-    {
-        const HeldOutStatistic s = HeldOutStatistic::relativeAAD();
-        return key == s.key ? s.unit : std::string();
-    }
+    std::string diagnosticUnit(const std::string& key) const override;
+    //  THE FIT AS A TABLE AND TWO FIGURES (C480): `fitPoints` (the generic fit
+    //  views draw its parity and residuals) and the op's own curve and
+    //  parameter table.
+    std::vector<PublishedTable> publishedTables() const override
+    { return tab_.rows.empty() ? std::vector<PublishedTable>() : std::vector<PublishedTable>{ tab_ }; }
+    std::string defaultViews(const std::string& opName) const override;
     //  The CURATION axis (maturity), as WORDS -- see
     //  PropertyOperation::curation().  NOT `validation`: that key
     //  already names this document's top-level overlay AAD table.
@@ -100,6 +103,8 @@ private:
     std::string type_ = "vaporPressureFit";
     std::map<std::string, scalar> diag_;
     std::map<std::string, std::string> curation_;
+    PublishedTable tab_;
+    std::string comp_;
 };
 
 } // namespace Choupo
