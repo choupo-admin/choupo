@@ -5309,7 +5309,21 @@ accepts today, and that is a policy call.
 > is one FEL stage, no fusion); C158 PARTIAL (quizzes on every tool except four-ways-mixture; that one
 > and the test arm requiring every live tool remain).  The red test was the architect's to catch:
 > C440 added seven lines above the PEQ postDict paragraph the materials lesson cites, and those
-> citations are unmanaged by repoint, so the lesson and its test were moved by hand.
+> citations are unmanaged by repoint, so the lesson and its test were moved by hand.  The batch-2
+> rows (C204, C289, C450) had been left open after 0828b6d74d landed; closed in the same commit.
+
+> **C478 (from the C266 student walk, cloud, 2026-11-23; S1 ENGINE).**  greenAmmoniaPEQ_baseCase,
+> Plots > Profile > FEHE: the profile arrays run past the exchanger ends (cold side 650 -> 216 K, hot
+> 733 -> 263 K) while the stream table and the engine's own KPIs say cold 276 -> 650 K, hot 733 ->
+> 337 K.  The cold side shows cooling below its own inlet on the plant the colleagues will see.  Ranked
+> right after C238: a calculation defect on screen outranks every wish.
+
+> **C479 (from the C266 student walk, cloud, 2026-11-23; S1/S2 CASE).**  What a colleague reads first
+> on the reference plant and the MTBE column: the economic appraisal opens on NPV -3237.87 M EUR with
+> no framing (honest and cited; the demonstration path, C238, decides how it is introduced); the MTBE
+> comparison with the reference simulator (within 2.5 %) appears nowhere on screen (no views, no
+> anchors; only a comment); ten identical H2Buffer vessels V-105A..J carry 55 % of capital under raw
+> names; 107 advisories sit under the run header; the plant's `variables` publish no `unit`.
 
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
