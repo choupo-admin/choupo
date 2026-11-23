@@ -1271,7 +1271,8 @@ int HeatExchanger::solve(const DictPtr& dict,
                   << "  NTU = " << std::setprecision(3) << NTU
                   << ",  C_r = " << Cr << ",  effectiveness = " << eps << "\n"
                   << "  Q = " << std::setprecision(2) << (Q/1000.0) << " kW,  LMTD = "
-                  << LMTD << " K   (check: U.A.LMTD = " << (U*A*LMTD/1000.0) << " kW)\n";
+                  << LMTD << " K\n  U.A.LMTD = " << (U*A*LMTD/1000.0) << " kW from the outlet temperatures"
+                  << (Q > 0.0 ? ("  (" + std::string(U*A*LMTD >= Q ? "+" : "") + [&]{ std::ostringstream o; o << std::setprecision(1) << std::fixed << 100.0*(U*A*LMTD - Q)/Q; return o.str(); }() + " % vs Q: Q is eps-NTU on mean heat capacities, the outlets are inverted from the enthalpy; the two agree only for constant C)") : std::string()) << "\n";
         //  WHAT THE CHECK IS A CHECK OF (C150 R14).  Q = U.A.LMTD holds as
         //  written only for ONE tube pass with both sides single-phase.  With
         //  2N tube passes Q = U.A.F.LMTD, F < 1, so the product exceeds Q by
