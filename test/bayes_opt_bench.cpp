@@ -37,8 +37,9 @@ CSV row per simulation:
 
     outerDict:   type bayesBench;
                  variables (...);  objective {...};  constraints (...);   // as `optimization`
-                 bench { method bayes|sqpForward|sqpCentral;  seed 1;  budget 30;
+                 bench { method bayes|sqpForward|sqpCentral|grid;  seed 1;  budget 30;
                          file bench.csv; }
+                 method grid (two variables): `gridN` points per variable.
 
     The start is drawn uniformly in the box from `seed` (mt19937_64(1000+seed));
     seed 0 is the variables' own `initial` (the check against `method sqp`).
@@ -225,6 +226,18 @@ public:
                 const scalar e = solver::verifyBayesOpt(0);
                 std::cout << "worst |df| " << e << " (passed)\n";
                 solver::bayesOpt(simulate, lo, hi, nc, o);
+            }
+            else if (method == "grid")
+            {
+                //  A regular grid of the box over two variables, `gridN`
+                //  points each (the best-known value of problem (a)).
+                if (n != 2)
+                    throw std::runtime_error("bayesBench: grid needs two variables");
+                const int gn = static_cast<int>(b->lookupScalar("gridN"));
+                for (int i = 0; i < gn; ++i)
+                    for (int j = 0; j < gn; ++j)
+                        simulate({lo[0] + (hi[0] - lo[0]) * i / (gn - 1),
+                                  lo[1] + (hi[1] - lo[1]) * j / (gn - 1)});
             }
             else
             {
