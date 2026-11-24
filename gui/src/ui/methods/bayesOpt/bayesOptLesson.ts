@@ -243,8 +243,8 @@ u &= \frac{f_{\min} - \hat y}{s}
       + "failure: the method finds only what its model allows it to "
       + "imagine, and a length scale chosen too long forbids the dip.  A "
       + "short length scale, or enough points, finds it.  And Bayesian "
-      + "optimisation returns a point, not multipliers: it has no shadow "
-      + "prices, so a constraint's value at the optimum is not part of "
+      + "optimisation returns a point, not multipliers, so it gives no "
+      + "shadow prices, so a constraint's value at the optimum is not part of "
       + "what it tells you.",
     note: "The comparison with the engine's own methods waits for the "
       + "measurement that is being made.  Until then this card makes no claim "
@@ -258,7 +258,7 @@ export const BAYES_LIMITS: readonly LessonLimit[] = [
   { id: "one-variable", title: "One variable only.",
     body: "Everything is drawn on one axis so the posterior can be seen.  "
       + "That hides the difficulty that matters in practice: with several "
-      + "variables there is no picture, the model needs far more points, "
+      + "variables the picture is gone, the model needs far more points, "
       + "and the maximisation of expected improvement becomes an "
       + "optimisation problem of its own." },
   { id: "hyperparameters", title: "The length scale and noise are yours.",
@@ -279,7 +279,7 @@ export const BAYES_LIMITS: readonly LessonLimit[] = [
       + "would run." },
   { id: "no-constraints", title: "No constraints, and no multipliers.",
     body: "The card minimises an unconstrained function on an interval.  "
-      + "Bayesian optimisation has no Lagrange multipliers or shadow prices; "
+      + "Bayesian optimisation returns neither Lagrange multipliers nor shadow prices; "
       + "a gradient-based method with an active-set or sequential-quadratic "
       + "structure does, and those numbers are often what an engineer wants "
       + "from an optimum." },

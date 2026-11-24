@@ -25,8 +25,8 @@
   finite-difference quasi-Newton SKETCH started at the same point.  The
   narrow-dip setting is the honest failure.
 
-  ZERO PHYSICS IN TYPESCRIPT in the sense of this repository: there is no
-  engine call here.  The mathematics is gp.ts, held against hand values by
+  ZERO PHYSICS IN TYPESCRIPT in the sense of this repository: this file makes
+  no engine call.  The mathematics is gp.ts, held against hand values by
   tests/bayesOpt.test.ts; this file draws it.
 
   THE ENGINE STATUS SENTENCE is shown on the card (ENGINE_STATUS): the method
@@ -301,13 +301,13 @@ export function BayesOptCard(): JSX.Element {
         {dipMissed && nBo > setting.initial.length && (
           <PanelNote>
             No call has landed near the dip yet (x = {DIP.at}, the true minimum).
-            The model has no way to imagine it at this length scale; try
+            At this length scale the model cannot imagine it; try
             shortening it, or keep pressing the button.
           </PanelNote>
         )}
         <PanelNote>
-          Bayesian optimisation has no multipliers: it returns a point and a
-          value, never a shadow price.  The gradient method is a one-variable
+          Bayesian optimisation returns a point and a value only, never
+          multipliers or a shadow price.  The gradient method is a one-variable
           sketch of ours, not the engine&apos;s <code>sqp</code>.
         </PanelNote>
       </Box>
