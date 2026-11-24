@@ -156,6 +156,7 @@ function runNative(w: Wiring): Outcome {
     cpSync(WITNESS_DIR, dir, { recursive: true });
     const out = buildLoopCase(raw(), w);
     for (const f of RAW_FILES) writeFileSync(join(dir, f), out[f]!);
+    if (out["system/postDict"] === undefined) rmSync(join(dir, "system/postDict"), { force: true });
     const r = spawnSync(bin, [dir], { cwd: REPO, encoding: "utf-8", maxBuffer: 256 * 1024 * 1024 });
     const m = /<<<Choupo:result-begin>>>\s*\n([\s\S]*?)\n<<<Choupo:result-end>>>/.exec(r.stdout ?? "");
     if (!m) {
