@@ -64,8 +64,8 @@ were already accurate.
 * **Species thermochemistry.**  The paper used the CHEMKIN thermodynamic data base of its time; this
   case uses NASA/TP-2002-211556 and, for the nine species without a table entry, RRHO-computed
   records anchored to ATcT.  The paper's Table 1 (p. 289) prints heats of formation that differ
-  from ATcT for five species (paper minus ATcT, kJ/mol): 1CH2 -4.6, NNH -4.5, H2CN +8.7,
-  HOCN +5.5, HCNO -8.6.  Appendix B contains NNH, which takes part in 14 reactions (B38, B43-B49, B64, B65, B67,
+  from ATcT for five species (paper minus ATcT, kJ/mol): 1CH2 -4.6, NNH -5.0, H2CN +8.7,
+  HOCN +5.3, HCNO -8.8.  Appendix B contains NNH, which takes part in 14 reactions (B38, B43-B49, B64, B65, B67,
   B68, B70, B71); the case does not switch to the paper's values.
 * **Interpretation: B10.**  Reaction 10 (2H + M = H2 + M) prints no efficiencies in Appendix B although
   B11 and B12 supply the H2 and H2O colliders as in Appendix A reaction 139, where H2 and H2O have

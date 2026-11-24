@@ -476,3 +476,20 @@ Rules kept: nothing is added to the graph, the stream table, the balances or the
 the GUI computes nothing (the engine publishes no molar reflux flow `L`, so none is
 drawn; the only arithmetic is the unit presentation, kmol/s to the chosen flow unit and
 m3/s to m3/h).
+
+## 9. The lin/log axis toggle (DEV.md 4c C486)
+
+Every Plotly figure of the app is drawn by the one `<Plot>` wrapper
+(`gui/src/ui/plotting/plotly.ts`), and it gives each Cartesian axis a small `x lin` /
+`y log` button in the figure's bottom-right corner (`AxisScaleToggles.tsx`; the state is
+per figure per axis, in the component, not persisted).  The rule is pure and tested
+(`axisScale.ts`, `gui/tests/axisScale.test.ts`): the button is ENABLED only when every
+value shown on the axis is above 0 -- the numbers of the traces on THAT axis (the right
+axis is judged on its own traces), the low end of every error bar (value minus error),
+and, when the axis has a window (`range`, or `rangemode tozero`), only what lies inside it
+and only if the window starts above 0; NaN and missing values are ignored.  Otherwise it
+is shown disabled and its tooltip is the reason ("values <= 0 on the y axis").  An axis
+the case DECLARED log (a `views` axis with `scale log;`) gets no button.  Only the axis
+`type` (and a declared window, converted to decades) changes; no trace is altered.  Not
+covered: figures with a heatmap, contour or ternary trace on the axis, category axes, and
+the hand-drawn SVG figures (the electrolyte-models tool).
