@@ -5623,6 +5623,11 @@ accepts today, and that is a policy call.
 > variables) and it reaches no existing case, with an acceptance rule written first: offered to main only
 > if it needs fewer simulations than `sqp` on an expensive shipped plant at 1e-2, median of five seeds;
 > otherwise it stays on its branch with the table.  One measurement, not the large bench (stopped).
+> WITHDRAWN the same hour (Vitor: "Fica com um case study que achares melhor!  A ideia é os alunos terem
+> mais essa ferramenta! ... ou então comparas só num caso!").  AGREED: the acceptance rule and the second
+> case are dropped.  One case study, a copy of the MTBE reactive column (expensive, few variables, a
+> constraint, runs that can fail), compared ONCE with `sqp` there in a README table that says what it is;
+> it lands opt-in when it runs and is documented.
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
