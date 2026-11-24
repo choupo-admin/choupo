@@ -78,6 +78,12 @@ const CASE_FILES = import.meta.glob(
     // machine's stale sizing is served to every visitor before they run
     // anything.
     "!../../../tutorials/**/design/**",
+    // `props/curation/fixtures` is a folder of raw XML FIXTURES (read by the
+    // Database-to-parameters tool through its own `?raw` import), not a case:
+    // it has neither dictionary, so the index skipped it with a console
+    // warning on every page load (browser pass 2026-11-24).  Left out at the
+    // glob, the warning has no source and the XML is not bundled twice.
+    "!../../../tutorials/props/curation/fixtures/**",
     // The SOLVED state view.  Gitignored, so the glob cannot reach one today
     // -- but since 2026-09-06 it also carries each unit's INTERIOR
     // (`converged/internalStates/<SECTOR>/<unit>`), which is exactly the sizing-sheet
@@ -812,9 +818,38 @@ export function canonicalCaseName(
   return name;
 }
 
-export function tutorialByName(name: string): TutorialEntry | undefined {
+/** The answer of a case-name lookup: the canonical full name, nothing, or
+ *  SEVERAL candidates (never a guess among them). */
+export type CaseNameResolution =
+  | { status: "found"; name: string }
+  | { status: "ambiguous"; candidates: string[] }
+  | { status: "none" };
+
+/** THE ONE RESOLVER of a case name (2026-11-24 browser pass: the
+ *  demonstration path's URLs and the EduTool witnesses are written by BARE
+ *  name, `flash01_benzene_toluene`, while the registry keys by path,
+ *  `steady/flash/flash01_benzene_toluene`).  A full path (or a former name,
+ *  or a drilled sub-node) resolves as before.  A name with no `/` is matched
+ *  against the last segment of every bundled case: exactly one match
+ *  resolves, several are refused BY NAME with the candidates listed, none is
+ *  "none".  `names` defaults to the bundled corpus; pure for the test. */
+export function resolveCaseName(
+  name: string,
+  names: readonly string[] = TUTORIALS.map((t) => t.name),
+): CaseNameResolution {
   const canon = canonicalCaseName(name);
-  return TUTORIALS.find((t) => t.name === canon) ?? SUBNODES[canon];
+  if (names.includes(canon) || SUBNODES[canon]) return { status: "found", name: canon };
+  if (canon.includes("/") || canon === "") return { status: "none" };
+  const hits = names.filter((n) => n.slice(n.lastIndexOf("/") + 1) === canon);
+  if (hits.length === 1) return { status: "found", name: hits[0]! };
+  if (hits.length > 1) return { status: "ambiguous", candidates: [...hits].sort() };
+  return { status: "none" };
+}
+
+export function tutorialByName(name: string): TutorialEntry | undefined {
+  const r = resolveCaseName(name);
+  if (r.status !== "found") return undefined;
+  return TUTORIALS.find((t) => t.name === r.name) ?? SUBNODES[r.name];
 }
 
 /** Resolve a (possibly drilled) view name to its registered ROOT case + the

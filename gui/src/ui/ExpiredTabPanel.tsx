@@ -79,3 +79,29 @@ export function ExpiredTabPanel({ kind }: {
     </Box>
   );
 }
+
+/** `?case=<bare name>` that several bundled cases answer to: the tab refuses
+ *  by name and lists the full paths, each a link (never a guess). */
+export function AmbiguousCasePanel({ name, candidates }: { name: string; candidates: string[] }) {
+  return (
+    <Box
+      style={{
+        height: "var(--choupo-vh)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+      }}
+    >
+      <Alert color="yellow" variant="light" icon={<IconClockX size={18} />}
+        title={`'${name}' names ${candidates.length} cases`} maw={560}>
+        <Text size="sm">Open one by its full path:</Text>
+        <ul data-testid="ambiguous-case-candidates">
+          {candidates.map((c) => (
+            <li key={c}><a href={`?case=${c}`}>{c}</a></li>
+          ))}
+        </ul>
+      </Alert>
+    </Box>
+  );
+}

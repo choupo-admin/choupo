@@ -826,6 +826,13 @@ this Credo before proposing**.
   (IconExternalLink).
 - **Drill-in** — double-clicking a sector to open its sub-case as a
   root case in a new browser window.  URL: `?case=<plant>/<sector>`.
+- **Case URL** — `?case=<name>`: the full path under `tutorials/`
+  (`steady/flash/flash01_benzene_toluene`) or, since 2026-11-24, the BARE name
+  (`flash01_benzene_toluene`) when exactly one bundled case carries it (the
+  address bar is rewritten to the full path).  A bare name shared by several
+  cases is refused by name with the candidates listed, never guessed.  The
+  resolver is `resolveCaseName` in `gui/src/cases/tutorials.ts`; EduTool
+  witnesses go through the same door.
 - **Run** — pressing the Run button to invoke the WASM solver on the
   current case.  ONE button, in the top toolbar, its label naming what it
   runs ("Run flowsheet" / "Run workflow"), plus Ctrl+Enter — see §2.5
