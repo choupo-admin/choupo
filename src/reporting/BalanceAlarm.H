@@ -64,6 +64,7 @@ Description
 
 #include <cstdlib>
 #include <iostream>
+#include <set>
 #include <string>
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -84,6 +85,19 @@ inline bool alarmColour()
 #endif
 }
 
+//  WHICH LAWS HAVE ALARMED IN THIS RUN (C498).  A steady run whose MASS or
+//  ELEMENT balance at the plant boundary breaks the band above is not a
+//  converged run: it used to print the red alarm below and still exit 0 with
+//  `converged` true (R-012: 44 % of mass created, ELEMENT BALANCE FAILED,
+//  exit 0).  The alarm is the one place that knows, so it records the law and
+//  choupoSolve reads it after the reports; ENERGY stays an alarm only (some
+//  shipped cases pin an open energy closure by name).
+inline std::set<std::string>& alarmedLaws()
+{
+    static std::set<std::string> laws;
+    return laws;
+}
+
 //  THE alarm.  `law` is the conservation law that failed (MASS / ELEMENTS /
 //  ENERGY), `locus` what failed (a unit, or the plant boundary), `detail`
 //  the numbers that make the claim checkable, and `remedy` where to look.
@@ -94,6 +108,7 @@ inline void balanceAlarm(const std::string& law,
                          const std::string& detail,
                          const std::string& remedy = "")
 {
+    alarmedLaws().insert(law);
     const bool c = alarmColour();
     const std::string red  = c ? "\033[1;31m" : "";
     const std::string off  = c ? "\033[0m"    : "";

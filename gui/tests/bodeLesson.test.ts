@@ -280,14 +280,14 @@ describe("every file:line this page cites into the engine resolves", () => {
    *  long enough" and "the claim is where I said it is". */
   const ANCHORS: [string, number, string][] = [
     // the measurement: the sin/cos fit and what it publishes
-    ["src/dynamicDriver/DynamicDriver.cpp", 2127, "std::hypot(abc[1], abc[2])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2129, "std::atan2(abc[2], abc[1])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2141, "out_phase_rad"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2146, "fit_residual_rel"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2128, "std::hypot(abc[1], abc[2])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2130, "std::atan2(abc[2], abc[1])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2142, "out_phase_rad"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2147, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
     // the half-step lag: the drive is held across the step (C22 slice 2)
-    ["src/dynamicDriver/DynamicDriver.cpp", 1852, "zero-order hold"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1853, "zero-order hold"],
     // "one point of a Bode plot" — the engine's own words for what it measures
     ["src/control/signal/Signal.H", 42, "one point of a Bode plot"],
     // the tank whose lag the page derives

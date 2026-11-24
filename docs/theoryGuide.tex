@@ -468,6 +468,41 @@ runs the SM loop:
         the result emitter.
 \end{enumerate}
 
+\subsection{An outlet must be a state --- the admissibility guard}\label{sec:flowsheet-admissibility}
+
+Between ``register outputs'' and the next unit, \code{runUnit()} asks of
+every produced stream the three things a stream must be: a
+\emph{finite} total flow, temperature and vapour fraction; every
+component flow $F\,z_i$ and the total flow \emph{non-negative}; and a
+vapour fraction in $[0,1]$.  A unit that publishes anything else has not
+computed a state that exists, and the run is refused instead of reported
+as converged --- by unit, stream, component and value on an accepted
+pass, and as an infeasible trial (the Newton line search shortens its
+step, Wegstein falls back to direct substitution) on a trial sweep, as for
+a negative pressure.
+
+The threshold is \emph{relative}, never a floor in mol/s.  A component
+flow is admitted down to $-10^{-6}\,\dot n_{\mathrm{thr}}$, where
+$\dot n_{\mathrm{thr}}=\sum_k |F_k|$ over the unit's own inlets (the
+unit's own outlet total for a unit with no inlet, so a zero-feed unit
+divides by nothing).  Roundoff and the inner solvers' stopping tests are
+relative to the size of what flows; a mol/s floor would hide a real fault
+in exactly the small-scale problem it was set for.
+
+Second, a steady run whose \emph{mass} or \emph{element} balance at the
+plant boundary leaves the conservation band ($0.1\,\%$, the band of the
+red alarm) is \emph{not converged}: the reports raise their alarm, the run
+says so, exits non-zero and writes no \file{converged/}.  The energy
+closure stays an alarm (some shipped cases pin an open one by name).
+Under an \code{outerDict} the reports run once, on the driver's
+representative pass, and that pass carries the verdict.
+
+Source: \code{Flowsheet.cpp} (\code{outletInadmissible}, called in
+\code{runUnit}), \code{reporting/BalanceAlarm.H},
+\code{applications/choupoSolve/main.cpp}.  Gate:
+\code{check\_mass\_closure}, admissibility arm.  Found by an external
+review (cases R-011 and R-012, \S\ref{sec:cstr-feasible-extent}).
+
 \subsection{The outer layer --- DesignSpec, SweepDriver,
             OptimizationDriver}\label{sec:outer-layer}
 
@@ -15938,6 +15973,10 @@ Plus the usual safety net of \texttt{maxIter}.
     \item Hard constraints, especially non-linear ones.  Use SQP ---
           Choupo's constrained optimiser, §\ref{ch:sqp} --- or an
           interior-point wrapper (Choupo offers no interior-point method).
+    \item A non-smooth response, an integer decision, or a constraint on
+          a quantity with no derivative.  Use MADS --- §\ref{ch:mads} ---
+          which is derivative-free and carries the constraints on a
+          progressive barrier.
 \end{itemize}
 
 \subsection*{What you see in Choupo}
@@ -16659,6 +16698,163 @@ self-checks \code{verifySQP} / \code{verifyActiveSetQP} run first and
 their pass is announced. On convergence the five-line KKT certificate is
 printed and the simulator is replayed once at the optimum with full
 verbosity, exactly as the Nelder-Mead path does.
+
+% ---------------------------------------------------------------------
+\section{Derivative-free constrained optimisation: MADS}\label{ch:mads}
+
+The SQP of §\ref{ch:sqp} needs responses that are smooth in $\xv$, and
+a simulator is often not: a table lookup, a piecewise correlation, a
+regime switch, a phase that appears, an integer number of stages.
+Nelder-Mead (§\ref{ch:nelder-mead}) survives such a problem but has no
+constraints.  \emph{Mesh Adaptive Direct Search} (MADS) takes the
+nonsmooth, constrained problem
+\begin{equation}
+  \min_{\xv}\; f(\xv)
+  \quad\text{s.t.}\quad c_j(\xv) \le 0,\;\; j=1..m,
+  \qquad \mathbf{lo}\le\xv\le\mathbf{hi},
+  \label{eq:mads-nlp}
+\end{equation}
+with some $x_i$ possibly integer, using only values of $f$ and $c_j$ at
+trial points.  Choupo's \code{solver::mads} is selected explicitly,
+\code{method mads;}, never as a silent fall-back.
+
+\subsection{What was read}\label{sec:mads-sources}
+The rules below are those \emph{restated} by Audet and co-workers in
+\cite{AuditNOMAD4} (Algorithm~2.1), \cite{AuditCrossEntropy}
+(Algorithm~1), the GERAD notes \cite{AuditScaling}, Le Digabel's course
+notes on the progressive barrier \cite{LeDigabelMTH8418} and the
+Householder poll of \cite{AuditADS}.  The originals --- Audet and Dennis
+(2006) for MADS \cite{AudetDennis2006}, the progressive barrier of
+Audet and Dennis (2009) \cite{AudetDennis2009}, OrthoMADS of Abramson,
+Audet, Dennis and Le Digabel (2009) \cite{OrthoMADS} --- are paywalled
+and were \emph{not} read; this section does not claim their wording or
+their theorems.
+
+\subsection{Poll size, mesh size and the poll}\label{sec:mads-poll}
+Let $\Delta^k$ be the \emph{poll size} and $\delta^k$ the \emph{mesh
+size}, in \emph{normalised coordinates} (each variable measured in its
+own range $\mathrm{hi}_i-\mathrm{lo}_i$):
+\begin{equation}
+  \delta^k = \min\bigl\{\Delta^k,\,(\Delta^k)^2\bigr\},
+  \label{eq:mads-mesh}
+\end{equation}
+so $\delta^k\ll\Delta^k$ as the search closes in and the set of poll
+directions can become dense.  With $\tau\in(0,1)$ rational
+($\tau=\tfrac12$, Choupo's choice),
+\begin{equation}
+  \Delta^{k+1} =
+  \begin{cases}
+    \Delta^k/\tau & \text{dominating iteration (capped at 1)}\\
+    \Delta^k      & \text{improving iteration}\\
+    \tau\,\Delta^k& \text{unsuccessful iteration}
+  \end{cases}
+  \label{eq:mads-update}
+\end{equation}
+and the run stops when $\Delta^k<\varepsilon$ (option \code{tolX}), or at the
+evaluation budget.  The initial $\Delta^0=0.1$ is Choupo's choice.
+
+\emph{The poll set} is $2n$ directions, ``OrthoMADS-style'': at
+iteration $t$ let $u_j = 2\,H_j(t)-1$, with $H_j(t)$ the Halton radical
+inverse of $t$ in the $j$-th prime, and
+$Q=\|u\|^2 I-2uu^{\mathsf T}$, a Householder-type matrix with mutually
+orthogonal columns.  Each column is scaled to infinity-norm $\Delta^k$,
+rounded onto the mesh, and the poll set is $\pm$ the columns.  The
+Halton index is $\texttt{seed}+k$; the seed is printed, so the same seed
+gives the same run.  (The exact Halton indexing of the original
+OrthoMADS was not read and is not claimed.)  If rounding makes the
+columns dependent --- coarse frames --- the poll falls back to $\pm$ the
+coordinate directions, which span positively.  The \emph{search step} is
+empty.  The poll is opportunistic: the first dominating trial ends it.
+
+\subsection{Constraints: the progressive barrier}\label{sec:mads-barrier}
+The constraint violation is
+\begin{equation}
+  h(\xv)=\sum_{j=1}^m \max\{c_j(\xv),0\}^2,
+  \qquad h=+\infty \text{ if the evaluation failed.}
+  \label{eq:mads-h}
+\end{equation}
+In Choupo $c_j$ is the \emph{normalised residual} of the constraint
+(violation divided by $\max(|\mathrm{rhs}|,\mathrm{tol})$), so $h$ has
+no units and an equality is the pair $|r-\mathrm{rhs}|\le\mathrm{tol}$.
+A point $\xv$ \emph{dominates} an infeasible $\yv$ if
+$h(\xv)\le h(\yv)$ and $f(\xv)\le f(\yv)$ with one strict.  The
+\emph{feasible incumbent} $x^{\mathrm{feas}}$ is the feasible point of
+least $f$; the \emph{infeasible incumbent} $x^{\mathrm{inf}}$ is the
+undominated infeasible point of least $f$ with $h\le h_{\max}$.  Points
+with $h>h_{\max}$ are rejected; $h_{\max}^0=+\infty$.  An iteration is
+\emph{dominating} if a trial point is feasible with lower $f$ than
+$x^{\mathrm{feas}}$ or dominates $x^{\mathrm{inf}}$; \emph{improving} if
+it is not dominating but an infeasible trial point has $h<h_I^k$, the
+$h$ of $x^{\mathrm{inf}}$ ($+\infty$ if none); \emph{unsuccessful}
+otherwise.  The barrier is then moved,
+\begin{equation}
+  h_{\max}^{k+1}=
+  \begin{cases}
+    h_I^k & \text{dominating or unsuccessful}\\
+    \max\{h(v):\,h(v)<h_I^k,\; v\in\text{cache}\} & \text{improving}
+  \end{cases}
+  \label{eq:mads-hmax}
+\end{equation}
+so the threshold never rises: the search may cross the constraint on
+its way and is squeezed back to it.  The poll is run around the
+\emph{primary} centre (the feasible incumbent when
+$f(x^{\mathrm{feas}})\le f(x^{\mathrm{inf}})$, else the infeasible one)
+and, with the two directions $\pm q_1$ only (the \emph{reduced poll}),
+around the other.  $\rho=0$ is Choupo's choice.  Starting infeasible is
+allowed.
+
+\subsection{Bounds, integers, failures}\label{sec:mads-int}
+\emph{Bounds} are handled by projection: a trial point is clipped into
+$[\mathbf{lo},\mathbf{hi}]$ (the originals use an extreme barrier; a
+clipped point may leave the mesh at the bound --- announced, not
+proven).  \emph{Integer variables} are native: the mesh and frame of
+that variable never go below $1$ (``granularity 1'', as the granular
+variables of \cite{AuditGranular}, cited from \cite{AuditNOMAD4}, not
+read), displacements are whole numbers and the incumbent is integer, so
+every trial is.  There is no enumeration and no relaxation.  A
+\emph{failed evaluation} (the simulator threw, did not converge, a
+non-finite number) is $h=+\infty$: outside $X$, rejected, counted and
+said with its point.  A cache of every evaluated point means a repeated
+point is not simulated again (and not counted).
+
+\subsection{A worked self-check}\label{sec:mads-selfcheck}
+As for the SQP, Choupo re-proves the algorithm before every MADS run
+(\code{verifyMADS}, a merge-blocking gate; the run aborts on a miss, the
+tolerance is never loosened): \textbf{HS35} (the problem of
+§\ref{ch:sqp}, smooth, one active constraint; published
+$f^\star=0.11111111$ \cite{Schittkowski306}) and \textbf{CB3},
+$f=\max\{x_1^4+x_2^2,\;(2-x_1)^2+(2-x_2)^2,\;2e^{-x_1+x_2}\}$, nonsmooth
+(three pieces meet at the minimum), published $f^\star=2$
+\cite{HANSOcmp}.  It also checks that two runs with the same seed are
+identical.
+
+\paragraph{Power and limit.} \textbf{Power:} no gradient, so a table, a
+regime switch or an integer does not break it; constraints through the
+progressive barrier; integers native.  \textbf{Limit:} more simulations
+than the SQP on the smooth problems measured (see
+\code{docs/audits/2026-11-24-optimizer-comparison.md}); a local
+optimum on the mesh; no multipliers --- the shadow prices of the SQP are
+not available --- and, with bounds by projection, no convergence theorem
+is claimed.  Choupo does not rank it above \code{sqp} or Nelder-Mead: on
+every smooth case measured it needed more simulations.
+
+\paragraph{Closure guard.} In all three optimisation methods, an evaluation whose run publishes a mass or element closure above the conservation band (0.1\,\%) is a failed evaluation, and a best point whose replay is above it is not reported as an optimum.  A steady optimum's closure is held by the run's own balance reports, not by the guard.
+
+\subsection*{What you see in Choupo}
+\code{method mads;} makes \code{OptimizationDriver} announce the
+self-check, then print per iteration the poll size $\Delta$, the mesh
+size $\delta$, the number of points polled and the number found in the
+cache, the outcome (dominating / improving / unsuccessful), the best
+objective, the violation $h$ of the best point and of the infeasible
+incumbent, and $h_{\max}$.  The end prints why it stopped, the number of
+simulations, the failed evaluations by cause, and which constraints are
+\emph{active} (within $10^{-3}$ of their bound).  The case
+\code{optim07\_mads\_mixed\_column} solves the column question of
+\code{optim06} --- stages \emph{and} reflux, one integer and one
+continuous, with a purity constraint --- in a single run, against
+\code{optim06}'s enumeration of one SQP per stage count.  Options:
+\code{maxEvaluations}, \code{tolX}, \code{seed},
+\code{initialPollSize}, \code{tau}.
 
 % ---------------------------------------------------------------------
 \section{Runge-Kutta 4 for the PFR}\label{ch:rk4}
@@ -19399,6 +19595,62 @@ equation in one number.}
 
 A single non-linear equation in a single unknown $\xi$: \textbf{Newton-1D
 in one variable}, with damping. Convergence is typically 3--5 iterations.
+
+\subsection{The feasible interval of the extent, and a law with no root}\label{sec:cstr-feasible-extent}
+
+The extent $\xi$ is not free.  Every outlet flow
+$F_i=F_{i,\mathrm{in}}+\nu_i\xi$ must be non-negative, so
+\begin{equation}
+  -\min_{\nu_i>0}\frac{F_{i,\mathrm{in}}}{\nu_i}\;\le\;\xi\;\le\;
+  \xi_{\max}=\min_{\nu_i<0}\frac{F_{i,\mathrm{in}}}{-\nu_i},
+  \label{eq:cstr-extent-interval}
+\end{equation}
+the minimum taken over \emph{every} consumed species (and, for the lower
+bound, every product, where the reaction may run backwards).  The named
+\code{limitingReactant} is only the reference of the reported conversion
+$X$; it does not bound the extent.  Bounding by the named reactant alone
+let the pseudo-first-order esterification (zero order in the acid) run
+past the acid it was fed: with $0.1$ kmol/h of acid against $0.5$ of
+ethanol the outlet carried an acid mole fraction of $-0.357$ at
+$X=62.9\,\%$ against a ceiling of $20\,\%$, and the run said converged.
+
+The converged extent is checked \emph{before} anything is clipped: the
+extent equation $\xi=r(\xi)V_R$ must hold there to $10^{-6}$ of the
+extent's own scale $\xi_{\max}$ (a Newton that stopped looser, as an
+absolute $10^{-9}$ mol/s does on a flow of $10^{-6}$ mol/s, is polished to a
+relative $10^{-9}$) and every outlet flow must be non-negative.  If the interval holds no root
+--- a reactant is exhausted while the law still asks for more: a rate
+\emph{zero order} in it, or a volume too large for the feed --- the
+reactor has no steady state at these feeds and this volume, and the run is
+refused by name (which reactant ran out, whether the order in it is
+zero), never cut at the bound and reported as a conversion.  In the
+multi-reaction path the finite-difference probe of the Newton iteration
+may step a relative $10^{-6}$ of the feed past a vertex of the feasible
+set (the $A\to B\to C$ chain fed pure $A$ needs it); that room is never a
+licence to accept a final state with a negative flow, which is checked
+with the Newton's own tolerance.  Before this check an absolute probe
+tolerance of $\max(F_{\mathrm{in}},1)$ mol/s clipped the negative flow of
+a $10^{-5}$-scaled case to zero and created $44\,\%$ of the mass.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lll}
+\hline
+case & before & now\\\hline
+acid $0.1$ vs ethanol $0.5$ kmol/h (single reaction) & $X=62.9\,\%$, acid $-0.357$, exit 0 & refused, acid runs out\\
+same through \code{reactions ( ... )}, all $\times10^{-5}$ & $+44\,\%$ mass, exit 0 & refused, no root\\
+acid $0.3,0.4,0.5$; equimolar at $\times1,\dots,10^{-6}$ & solved & solved, unchanged\\\hline
+\end{tabular}
+\caption{Reproduced on the shipped \texttt{cstr01\_first\_order}
+(acid/ethanol feeds in kmol/h) and held by the admissibility arm of
+\texttt{check\_mass\_closure}.}
+\end{table}
+
+Source: \code{CSTR.cpp} (the single-reaction extent interval and
+\code{g(xi)} check; the multi-reaction probe, \code{refuseNoRoot} and the
+pre-clip check).  The PFR integrates until the reactant is gone and stops
+there (probed: a $0.1$ kmol/h acid feed gives $X=20\,\%$, mass closing);
+\code{batchReactor} and \code{dynamicCSTR} announce the fixed-step clip
+and their ledgers fail the run.
 
 \subsection{The volumetric flow, by the phase of the feed}\label{sec:cstr-volumetric-basis}
 
@@ -35629,6 +35881,65 @@ Mathematical Systems, vol.~187, Springer, 1981. Source of the analytic
 problems HS21, HS35 and HS71 used by \code{verifySQP} as the
 merge-blocking self-check of the SQP algorithm against published optima.
 
+\bibitem{AuditNOMAD4} Audet, C., Le Digabel, S., Rochon Montplaisir, V.,
+\& Tribes, C., ``Algorithm 1027: NOMAD version 4: nonlinear optimization
+with the MADS algorithm'', \emph{ACM Trans. Math. Software} (2022),
+arXiv:2104.11627. READ: Algorithm~2.1 (mesh size
+$\delta^k=\min\{\Delta^k,(\Delta^k)^2\}$, the $\tau$ update, the
+stopping rule), the poll and the progressive barrier in outline.
+
+\bibitem{AuditCrossEntropy} Audet, C., et al., ``Combining cross entropy
+and MADS methods for inequality constrained global optimization'',
+arXiv:2012.10173. READ: Algorithm~1 and the text above it (violation
+function $h$, dominance, $x^{\mathrm{feas}}$ and $x^{\mathrm{inf}}$, the
+three iteration types and the $h_{\max}$ updates).
+
+\bibitem{AuditScaling} Audet, C., et al., ``Constraint scaling in the mesh
+adaptive direct search algorithm'', Les Cahiers du GERAD G--2019--65.
+READ: Definitions~1--2 and the sets $F^k$, $U^k$, $I^k$.
+
+\bibitem{LeDigabelMTH8418} Le Digabel, S., course notes MTH8418,
+``Constraints'' (GERAD). READ: the progressive barrier, the primary and
+secondary poll centres and the reduced poll.
+
+\bibitem{AuditADS} Audet, C., et al., ``Adaptive direct search algorithms
+for constrained optimization'', arXiv:2507.23054. READ: OrthoMADS polls
+the frame boundary with Householder directions, $D=[I_n\;-I_n]$ (Sect.~4.2).
+
+\bibitem{AudetDennis2006} Audet, C., \& Dennis, J. E., Jr., ``Mesh adaptive
+direct search algorithms for constrained optimization'', \emph{SIAM J.
+Optim.} \textbf{17}(1), 188--217 (2006). The MADS algorithm
+(\code{solver::mads}). NOT READ (paywalled): the rules used are those
+restated in the papers below.
+
+\bibitem{AudetDennis2009} Audet, C., \& Dennis, J. E., Jr., ``A progressive
+barrier for derivative-free nonlinear programming'', \emph{SIAM J. Optim.}
+\textbf{20}(1), 445--472 (2009). The progressive barrier. NOT READ
+(paywalled); the violation function, the dominance relation, the
+incumbents and the threshold updates are as restated in
+\cite{AuditCrossEntropy,AuditScaling,LeDigabelMTH8418}.
+
+\bibitem{OrthoMADS} Abramson, M. A., Audet, C., Dennis, J. E., Jr., \& Le
+Digabel, S., ``OrthoMADS: a deterministic MADS instance with orthogonal
+directions'', \emph{SIAM J. Optim.} \textbf{20}(2), 948--966 (2009). NOT
+READ (paywalled); the Householder construction is as described in
+\cite{AuditADS}.
+
+\bibitem{AuditGranular} Audet, C., Le Digabel, S., \& Tribes, C., ``The mesh
+adaptive direct search algorithm for granular and discrete variables'',
+\emph{SIAM J. Optim.} \textbf{29}(2), 1164--1189 (2019). Cited from the
+reference list of \cite{AuditNOMAD4}; not read.
+
+\bibitem{Schittkowski306} Schittkowski, K., ``An updated set of 306 test
+problems for nonlinear programming with validated optimal solutions''
+(table row 35: $f^\star=0.11111111$; row 21: $-0.99960000\times10^{2}$).
+READ. Published optimum of HS35 used by \code{verifyMADS}.
+
+\bibitem{HANSOcmp} ``Comparative numerical results on HANSO (Hybrid
+Algorithm for Nonsmooth Optimization)'', arXiv:2009.01037, Table~1. READ:
+CB3, 2 variables, optimal value 2 (the chained form of arXiv:2404.16273
+gives $2(n-1)$). Published optimum of CB3 used by \code{verifyMADS}.
+
 \bibitem{Andrade1930} Andrade, E. N. da C., ``The Viscosity of Liquids'',
 \emph{Nature} \textbf{125}, 309--310, 1930.  The two-constant
 $\ln\mu = A + B/T$ form, as given in Reid, Prausnitz \& Poling, 4th ed.\
@@ -37580,6 +37891,20 @@ Two stills poison their distillate records in opposite temporal orders
 invalid, naming the datum-less species, with no partial integral
 emitted.
 \end{tutoriallink}
+
+\paragraph{A time-integrated run whose ledger does not close fails.}
+\code{choupoCtrl} and \code{choupoSemiContinuous} close the same total-mass
+ledger over the domain boundary,
+$\varepsilon = |(M(t)-M(0))-\int(\dot m_{\mathrm{in}}-\dot m_{\mathrm{out}})\,dt|
+/\max(M(0),M(t),m_{\mathrm{in}},m_{\mathrm{out}})$, and the element ledger
+beside it.  Up to $10^{-6}$ the printed line says \emph{closed}; between
+$10^{-6}$ and the conservation band $10^{-3}$ (the steady reports' and the
+gates' band) the line is printed as it stands; beyond the band the run raises
+the steady run's conservation alarm (which ledger, the residual, what entered
+and what left), is reported \emph{not converged} and exits non-zero.  Under
+an \code{outerDict} the point is a failed evaluation, not a crash of the
+sweep.  The reason is that a state clamped at zero, or a unit whose ODE does
+not conserve, creates matter without any other symptom.
 
 The material ledger has an energy twin.  Each vessel contributes
 \emph{energy records}: one per segment of constant physics --- a recipe

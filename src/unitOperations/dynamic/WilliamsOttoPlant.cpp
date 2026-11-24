@@ -36,6 +36,8 @@ License
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 namespace Choupo {
 
@@ -212,7 +214,7 @@ sVector WilliamsOttoPlant::odeDerivative(const sVector& y) const
     return d;
 }
 
-void WilliamsOttoPlant::step(scalar /*t*/, scalar dt)
+void WilliamsOttoPlant::step(scalar t, scalar dt)
 {
     //  Classic RK4 on the six masses, dt in seconds -> hours inside.
     const scalar h = dt / 3600.0;
@@ -237,8 +239,33 @@ void WilliamsOttoPlant::step(scalar /*t*/, scalar dt)
     const sVector k4 = f(axpy(y, h, k3));
     for (std::size_t i = 0; i < y.size(); ++i)
         y[i] += h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
+    //  NO VALID STATE AT (NEAR-)ZERO HOLDUP (C495b).  A mass below zero was
+    //  clamped silently, which creates matter: ctrl16 with a schedule that
+    //  empties the plant ran to 4.3e6 kg created and exit 0.  Roundoff is
+    //  still clamped as before; a component that goes negative by more
+    //  than 1e-6 of the plant's holdup before the step (the integrator's
+    //  own truncation error at a sane dt is far below that) is a state the
+    //  model has left, and is refused by name.  1e-6 is the ledger's own
+    //  "closed" band; the absolute floor 1e-12 klb covers an empty plant.
+    auto fmtE = [](scalar v) { std::ostringstream o; o << std::scientific << std::setprecision(4) << v; return o.str(); };
+    scalar mBefore = 0.0;
+    for (auto v : m_) mBefore += std::abs(v);
+    const scalar negTol = 1.0e-6 * mBefore + 1.0e-12;
     for (std::size_t i = 0; i < 6; ++i)
+    {
+        if (y[i] < -negTol)
+            throw std::runtime_error(
+                "williamsOttoPlant '" + name_ + "': at t = "
+                + std::to_string(t + dt) + " s the holdup of species "
+                + std::to_string(i) + " reached "
+                + fmtE(y[i]) + " klb, below zero by more"
+                " than the integrator's error can explain (tolerance "
+                + fmtE(negTol) + " klb; plant holdup before the step "
+                + fmtE(mBefore) + " klb).  The model has no valid state"
+                " at (near-)zero holdup: the schedule withdraws more than the"
+                " plant holds.  Clamping would create matter.");
         y[i] = std::max<scalar>(0.0, y[i]);
+    }
     setOdeState(y);
 }
 

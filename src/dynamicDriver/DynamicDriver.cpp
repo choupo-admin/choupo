@@ -147,6 +147,7 @@ Description
 #include <map>
 #include <memory>
 #include <set>
+#include "reporting/BalanceAlarm.H"
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -2151,6 +2152,11 @@ try
         }
 
         // ---- Balance-ledger KPIs (engine-owned; the GUI only draws) -----
+        bool ledgerBreach = false;
+        std::string ledgerBreachDetail;
+        const scalar ledgerBand = reporting::massBandPct / 100.0;
+        auto fmtG = [](scalar v)
+        { std::ostringstream o; o << std::scientific << std::setprecision(4) << v; return o.str(); };
         writeLedgerMeta();   // FINAL state: a mid-run refusal reaches the sidecar
         {
             auto& bk = result.kpis["balance"];
@@ -2210,6 +2216,24 @@ try
                 //  tiny closure here must NOT be read as "every component
                 //  is conserved across the chain".  Halve deltaT and the
                 //  discrepancy halves: that is how to size it.
+                //  A CLOSURE BEYOND THE CONSERVATION BAND IS A FAILED RUN
+                //  (C495a, CLAUDE.md rule 4b).  Real defect: ctrl16 with a
+                //  hand-written schedule closed at 0.984 (4.3e6 kg created)
+                //  and printed only the line above, converged, exit 0.  The
+                //  band is the one the steady reports and the gates use
+                //  (reporting::massBandPct, a percent); between 1e-6 (the
+                //  "closed" word) and it the line is unchanged.
+                if (!(bk["mass_closure_rel"] <= ledgerBand))
+                {
+                    ledgerBreach = true;
+                    ledgerBreachDetail =
+                        "material ledger: M(t)-M(0) = " + fmtG(mF - m0)
+                        + " kg but integral(in-out) = " + fmtG(mIn - mOut)
+                        + " kg (in " + fmtG(mIn) + " kg, out " + fmtG(mOut)
+                        + " kg); residual " + fmtG(residual) + " kg, closure "
+                        + fmtG(bk["mass_closure_rel"]) + " > band "
+                        + fmtG(ledgerBand) + ".";
+                }
                 if (!routes.empty())
                     std::cout << "[balance] NOTE: " << routes.size()
                               << " routed hand-off(s) are explicit and one"
@@ -2256,6 +2280,17 @@ try
                         worst = std::max(worst, r);
                     }
                     bk["element_worst_closure_rel"] = worst;
+                    //  (a PARTIAL ledger cannot close better than its data: C498)
+                    if (!ledgerBreach && !ledgerElemsPartial
+                        && !(worst <= ledgerBand))
+                    {
+                        ledgerBreach = true;
+                        ledgerBreachDetail =
+                            "element ledger: worst element closure "
+                            + fmtG(worst) + " > band " + fmtG(ledgerBand)
+                            + " (atoms entered, left and stored do not add up;"
+                              " per-element values in balance.element_*_closure_rel).";
+                    }
                     if (ledgerElemsPartial)
                         bk["element_balance_partial"] = 1.0;
                     std::cout << "[balance] elements: worst closure "
@@ -2302,6 +2337,22 @@ try
                                                 " energy functional")
                                   : ledger.energyReason) << "\n";
             }
+        }
+        if (ledgerBreach)
+        {
+            result.converged = false;
+            const std::string remedy =
+                "The run is reported NOT CONVERGED and exits non-zero.  Matter"
+                " is created or lost: look for a state driven negative and"
+                " clamped, a unit whose ODE does not conserve, or a schedule"
+                " that empties a holdup.";
+            if (writeOutputs)
+                reporting::balanceAlarm("MASS/ELEMENT",
+                    "the time-integrated run's own ledger",
+                    ledgerBreachDetail, remedy);
+            else
+                AdvisoryLog::instance().add("balance", "warning",
+                    "ledger closure beyond the band", ledgerBreachDetail);
         }
         //  THE END-OF-RUN CAVEAT BLOCK (see core/AdvisorySummary.H).  Every
         //  binary prints it: a caveat surface that exists in one application

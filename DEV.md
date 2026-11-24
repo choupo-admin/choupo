@@ -5629,6 +5629,29 @@ accepts today, and that is a policy call.
 > constraint, runs that can fail), compared ONCE with `sqp` there in a README table that says what it is;
 > it lands opt-in when it runs and is documented.
 
+> **C500. THE SOFTENER'S RESIN BECOMES NAMED STREAMS (architect, 2026-11-24, from C498's sweep).**  Rule 4b:
+> no shipped case shows a violated element balance, and a modelling assumption that moves matter becomes a
+> named stream carrying exactly it.  IonExchanger publishes one outlet; Ca, Mg and K stay on the resin and
+> Na comes off it, so membrane08 closes Ca at 0.01 % and creates 0.4 kg/h.  To design: a resin-in and a
+> resin-out stream (both with non-negative flows), computed by the unit, so the plant boundary sees them;
+> then the pin in check_element_closure (KNOWN_OPEN, NOT_A_LEAK) goes to zero and the RESIN-HOLDUP name in
+> ElementBalanceReport is deleted.
+
+> **C501. EDUTOOL: DESIGNING A COLUMN FOR A REAL MIXTURE (Vitor through the cloud, 2026-11-24; after the
+> presentation).**  Feasibility on the residue-curve map, the rigorous R-against-N curve by designSpec, the cost
+> optimum with the energy price as a slider, FUG beside the rigorous result.  The pinch-point minimum reflux is
+> not in the engine: its own slice, against a published case, then its card.
+
+> **C502. THE PEQ PRICE MAP (Vitor, 2026-11-24: "how is the Madoqua plant in Sines being built then?").**
+> Hydrogen cost against green-ammonia price, the region where the plant pays.  Waits on `gridSweep` reading
+> `economics.*` (nan today).  Until then the run's two break-evens answer it: ammonia at 1.952 EUR/kg, or
+> hydrogen at 1.685 EUR/kg.  THE TAX QUESTION, ruled the same night: `taxOnLoss credit` stays (README states it
+> and both NPVs); the stand-alone reading was run again, -4140.1 MEUR.
+
+> **C503. EDUTOOL: FROM THE CALCULATED TO THE BOUGHT (architect, 2026-11-24, on reading the practitioner's design
+> book Vitor brought).**  Same item: calculated value, margin, commercial size, cost.  First measure which design
+> sheets already show margin and commercial size; nothing before 2 December.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
@@ -5762,6 +5785,8 @@ accepts today, and that is a policy call.
 > case, all of which close today (C258).
 > CORRECTION the same evening: "as a steady run does" was wrong -- a steady run whose balance fails
 > prints the alarm and still exits 0 with `converged` true (C498).
+> LANDED 2026-11-24 with C498: the closure alarm of a time-integrated run, the Williams-Otto vessel's refusal.
+> Not looked at: the same pattern in BatchDiafilter and BatchCrystalliser (their closures are gated in every run).
 
 > **C498. A REACTOR PUBLISHES A NEGATIVE FLOW, OR HIDES IT BY CLIPPING, AND THE RUN SAYS CONVERGED
 > (external review handed over by Vitor, 2026-11-24, its R-011 and R-012; BOTH REPRODUCED by the
@@ -5782,6 +5807,13 @@ accepts today, and that is a policy call.
 > (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
 > closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
 > lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
+> LANDED 2026-11-24 (full sweep, alone, 22:30-23:13: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
+> and fixed, then their gates and the cases they reach).  What the sweep taught: (1) a PARTIAL element
+> ledger (a declared composition with unaccounted mass) cannot close better than its data, in choupoSolve and
+> in the dynamic driver: it alarms as PARTIAL-DATA and does not fail the run; (2) membrane08's softener is
+> the one shipped steady case that still breaks rule 4b (the exchanged cations stay on a resin that is not a
+> stream): RESIN-HOLDUP alarm, C500; (3) the CSTR's refusals are InfeasibleTrial, so a recycle trial shortens
+> its step; (4) check_element_balance now REQUIRES the failed run on its chlorine fixture.
 
 > **C497. THE GIBBS ELEMENT-POTENTIAL NEWTON CONVERGES ON AN ABSOLUTE mol/s RESIDUAL (found 2026-11-24 by
 > the cloud's homogeneity measurement, C491 (2)).**  FASTSET's 36 steady entries with every feed x2: 17
@@ -5821,6 +5853,13 @@ accepts today, and that is a policy call.
 > EXTERNAL programs, never linked: SLSQP and COBYLA (SciPy), COBYQA, IPOPT with finite differences, NOMAD,
 > OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
 > Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
+> OPUS REVIEW, 2026-11-24 22:10 (docs/audits/2026-11-24-c496-opus-review.md, the reviewer's report):
+> DOES NOT LAND BEFORE 2 DECEMBER.  ff4fbdc8ca: land after F1-F7 (the default path is unchanged; under
+> `fdMode auto` a steep penalty beside a flat optimum is certified non-stationary (x = 0.575 for 0.6), the
+> shadow-price bar is wrong when a CONSTRAINT carries the noise, the robust QP calls feasible problems
+> infeasible, and steps can leave the box -- optim05 simulates 17.5 K above its declared bound).
+> 79bf454c79 (noise-aware stopping): NOT; it certifies false optima.  In its place F11, a scaled
+> stationarity test.  `sqp` on main is untouched by any of this.
 
 > **THE 11-24 AFTERNOON STACK LANDED (C493, and the cloud's afternoon).**  Full sweep alone, reason
 > written before launch (restart-tears edits Flowsheet.cpp and main.cpp): 16:58-17:54, 2032 PASS / 1

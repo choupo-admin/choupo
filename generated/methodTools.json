@@ -252,7 +252,7 @@
     {
       "id": "linear-solves",
       "title": "Linear solves and the bowl",
-      "intro": "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+      "intro": "From why every Newton step is a linear system to the bowl, the constrained bowl, the optimisers that solve it at every step, and a fit whose damping keeps it a bowl.",
       "steps": [
         {
           "tool": "linear-algebra-without-pain",
@@ -265,6 +265,12 @@
           "label": "Quadratic programming with constraints (active set)",
           "why": "The same bowl under constraints: the inner problem of every SQP step.",
           "href": "/app/?workspace=methods&tool=active-set-qp&path=linear-solves"
+        },
+        {
+          "tool": "optimizers",
+          "label": "Three ways to optimise a flowsheet",
+          "why": "The outer loop that uses that inner problem: SQP with shadow prices beside Nelder-Mead and MADS, on a smooth and a stepped landscape.",
+          "href": "/app/?workspace=methods&tool=optimizers&path=linear-solves"
         },
         {
           "tool": "least-squares",
@@ -325,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 102,
-  "registryTools": 102,
+  "liveTools": 103,
+  "registryTools": 103,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1306,6 +1312,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=active-set-qp"
+    },
+    {
+      "id": "optimizers",
+      "label": "Three ways to optimise a flowsheet",
+      "blurb": "Compare Nelder-Mead, SQP and MADS on a smooth and a stepped landscape.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "Which optimiser to trust and how to read what it says: one problem (a cost, a purity limit, a stage count beside a reflux ratio) drawn whole, in a smooth and a stepped version, and Nelder-Mead, SQP and MADS stepped on both.  Nelder-Mead compares values and takes no constraint; SQP builds a quadratic model, honours the limit and prints a Lagrange multiplier that is a shadow price, and on the staircase its finite-difference slope is zero so it converges where it started; MADS polls a mesh, keeps the integer whole and has a convergence theory for non-smooth functions.  Then the shipped integer-stages case optim06 read row by row, the multiplier checked against the engine by moving the limit, and a decision card with McKinnon's counter-example.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=optimizers"
     },
     {
       "id": "least-squares",
