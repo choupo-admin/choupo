@@ -5521,6 +5521,22 @@ accepts today, and that is a policy call.
 > DOI from rrho_species.json), records regenerated, no value moved, nox03 pair repinned.  C4H4 stays
 > open with the cloud (identity: cyclobutadiene-class enthalpy under the vinylacetylene name).
 
+> **THE 11-24 CLOUD STACK LANDED (afd3f8ff91): C256, C200 phase D, C335 C4H4, the slow gates.**
+> Squashed from the cloud's bc54a6a9ac (main merged first).  FULL SWEEP, ALONE, with its reason
+> written before launch (C256 reaches the PhaseChanger saturation T, the Gibbs condensation test and
+> every gamma-phi flash): 08:43-09:35, PASS 2032 / FAIL 1 / KNOWN-BROKEN 1 / EXPECTED-FAIL 13; no case
+> moved beyond the cloud's listed goldens; mass, element and energy closures held; 0 dossiers moved.
+> The one FAIL was check_ppr78_route arm (h): the behaviour held (the H2-dominant effluent reaches vf
+> 0.9 in its window) but C256 reworded the announcement the arm read; the arm now reads the new
+> sentence, re-run OK, claim re-observed.  --gui 49/0.  The cloud's scope (177 cases) had not reached
+> that gate: a reworded announcement is a behaviour change for every gate that quotes it, and a grep
+> of bin/curate for the old sentence is the cheap check a brief should name.  C335 is DONE
+> (NC_COMPILATION empty); C256 DONE; C200 DONE.  NEW C490 (from the C200 findings): the GUI's
+> thermoPackage schema hand-keeps 3 of 7 activity models, and nine registered types have no schema;
+> dispatched to the cloud with the C477 corpus survey (read only).  NOT dispatched: restarting a
+> layout arm from converged/ (the big lever for the slow gates) -- it changes what each arm proves;
+> weighed after 2 December.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,

@@ -606,7 +606,9 @@ def main() -> int:
                          % (rc, out[-500:]))
         elif abs(float(mv.group(1)) - 0.9) > 1e-5 or not (300.0 < float(m.group(1)) < 453.73):
             fails.append("(h) the H2-dominant phaseChanger landed vf %s at T_out %s K" % (mv.group(1), m.group(1)))
-        elif "is above its critical temperature" not in out:
+        elif "so the mixture has no dome centre" not in out:
+            # The sentence C256 (a) wrote (2026-11-24): a dominant component with no
+            # saturation T at P_out, or Tc <= 150 K, is "a gas of the mixture".
             fails.append("(h) the H2-dominant phaseChanger did not say that the dominant component has no dome"
                          " centre (the window it searched instead)")
         else:
