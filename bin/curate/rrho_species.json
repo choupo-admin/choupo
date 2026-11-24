@@ -865,5 +865,84 @@
    }
   ],
   "note": "HCCOH OH stretch left out: a matrix (Ar) shift, not a method error; the other validation molecules of rrho_thermo.py (HNCO, NCO, HCO, CH2 triplet, ketene) were not run at this level (time), so the set is 23 pairs from H2O, NH2, singlet CH2, HCNO, HOCN, ethynol"
- }
+ },
+ "component_records": [
+  {
+   "name": "C4H4",
+   "formula": "C4H4",
+   "description": "vinylacetylene H2C=CH-C#CH (1-buten-3-yne), X 1A'",
+   "CAS": "689-97-4",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 1.67754,
+    "B": 0.15827,
+    "C": 0.14442
+   },
+   "vib": [
+    220.2,
+    311.1,
+    540.8,
+    624.5,
+    651.1,
+    681.3,
+    862.0,
+    926.7,
+    973.0,
+    1074.7,
+    1277.9,
+    1397.9,
+    1609.3,
+    2124.4,
+    3028.1,
+    3040.0,
+    3124.4,
+    3346.8
+   ],
+   "vib_source": [
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "from_0K": {
+     "value_kJ": 295.7
+    },
+    "source_short": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2: ANL0 0 K value 295.7 kJ/mol, +-1.4 kJ/mol (2 sigma, their Sec. 4.1); converted to 298.15 K here",
+    "method": "ab initio ANL0 composite (CCSD(T) with higher-order, core-valence, relativistic and anharmonic-ZPE corrections), enthalpy of formation at 0 K, ideal gas; Table 2 lists species NOT in the ATcT data set; 0 K value converted to 298.15 K as dHf(0) + [H(298.15)-H(0)] of the molecule (this tool's RRHO) - sum of the element increments (CODATA Key Values: graphite C 1.050, H2 8.468 kJ/mol)",
+    "version": "J. Phys. Chem. A 121, 6580 (2017); accepted manuscript OSTI 1389058, Table 2, row CH2CHCCH, read 2026-11-24",
+    "uncertainty": "+-1.4 kJ/mol (2 sigma, the ANL0 scheme's estimate, Sec. 4.1); the same row's ANL0-F12 and ANL1 values differ by -0.3 and -0.1 kJ/mol",
+    "notes": "Replaces 431.7 kJ/mol, which belonged to a cyclobutadiene-class C4H4, not to vinylacetylene (C335, 2026-11-24). A computed value, no measurement was read; the NIST WebBook lists 295 kJ/mol (298.15 K, Roth et al. 1991, a force-field resonance-energy paper, not independent) for the same species."
+   },
+   "uncertainty_S": "+-0.7 J/(mol K) (every frequency moved by its 1.7 % rms scale error; the measured rotational constants add less than 0.1); plus 1.0 for the two lowest bends treated as harmonic (judgement, as for the other computed records)",
+   "uncertainty_Cp": "+-0.9 J/(mol K) at 298 K and at 1000 K from the same propagation; plus 0.5 for the two lowest bends; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "rotational constants A, B, C: NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-24, source listed there as NISThydrocarbon (microwave); NO measured fundamental is tabulated there or in the WebBook (the fundamentals of Stamm 1949, J. Chem. Phys. 17, 104, were not readable): the 18 vibrations are CALCULATED: B3LYP/def2-TZVP (density fitted, DFT grid level 3) harmonic frequencies (PySCF, bin/curate/rrho_abinitio_constants.py C4H4) x 0.9642 (the single factor fitted on 23 measured fundamentals, the scale_calibration block of rrho_species.json, rms 1.7 %), raw harmonic frequencies 228.4, 322.6, 560.9, 647.6, 675.3, 706.6, 894.0, 961.1, 1009.2, 1114.6, 1325.4, 1449.8, 1669.0, 2203.3, 3140.5, 3152.9, 3240.4, 3471.0 cm-1; the B3LYP equilibrium rotational constants 1.742, 0.1584, 0.1452 cm-1 agree with the measured ones to 3.9, 0.1, 0.5 %",
+   "approximations": "rigid rotor, harmonic oscillator, all 18 vibrations calculated and scaled; Cs, sigma 1; the two lowest modes (about 220 and 311 cm-1, CCC and CCH bends) are large-amplitude; cross-check, information only and not an origin: the NIST WebBook lists Cp 73.18 J/(mol K) at 298.15 K and 138.74 at 1000 K (Stamm 1949 and the Glushko Thermocenter, a statistical calculation whose compiler warns of 4-7 J/(mol K)), against 72.79 and 138.61 here",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "licence_note": "inputs: a cited computed enthalpy (Klippenstein, Harding & Ruscic 2017), NIST rotational constants; the computation is Choupo's own",
+   "measured_doi": "10.18434/T47C7Z",
+   "rot_source": "exp"
+  }
+ ]
 }

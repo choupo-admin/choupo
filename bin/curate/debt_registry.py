@@ -158,11 +158,15 @@ SOURCE_LICENCE = {
 #  them); C4H4 stays because Henry/C4H4-water.dat reads it.  ATcT was NOT used: neither its site nor its
 #  OSTI dataset records (DOI 10.17038/CSE/3703591) state any licence, and the
 #  authors are contractor staff, so 17 U.S.C. 105 does not apply -- silence is
-#  not a grant (CLAUDE.md 6, the sigma-profile rule).  The seven left:
-NC_COMPILATION = {
-    "data/standards/components/C4H4.dat":
-        "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  Remedy: a clean primary for vinylacetylene (none in ~/Choupo-Literature, listed whole 2026-11-21), or removal, which cascades through the route-bench hash tables, the henry_sander batch (Henry/C4H4-water reads the record) and the generated dossier (measured 2026-11-21, not done: a simple fix lands simply).",
-}
+#  not a grant (CLAUDE.md 6, the sigma-profile rule).  The one left was C4H4, below:
+#  LAST ENTRY DISCHARGED 2026-11-24 (DEV.md 4c C335): C4H4 was VINYLACETYLENE
+#  carrying a cyclobutadiene-class enthalpy (431.7 kJ/mol, about 135 kJ/mol too
+#  high).  It is re-sourced: dHf from the ab initio ANL0 value of Klippenstein,
+#  Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2 (0 K, converted to
+#  298.15 K), s_298 and Cp(T) computed by bin/curate/rrho_thermo.py from the measured
+#  rotational constants and calculated vibrations (component_records, gate arm e).
+#  No record cites a NonCommercial compilation as the origin of a value any more.
+NC_COMPILATION = {}
 
 #  basis01_two_unit_chain LEFT 2026-11-12 (C335): the importer's validator
 #  read `energyClosures` as a dict; fixed, re-imported, no row moved.
