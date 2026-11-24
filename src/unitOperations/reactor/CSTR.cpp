@@ -555,7 +555,7 @@ int CSTR::solve(const DictPtr& dict,
                   << "' is consumed and nothing stops the reaction before it is gone";
             m << ".  Reduce the volume or the rate constant, feed more '"
               << thermo.comp(iOut).name() << "', or give the law a positive order in it.";
-            throw std::runtime_error(m.str());
+            throw InfeasibleTrial(m.str());
         }
     }
 
@@ -1029,7 +1029,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
              " order in it) or a volume too large for the feed has no root;"
              " reduce the volume or the rate constant, feed more of the"
              " exhausted reactant, or give the law a positive order in it.";
-        throw std::runtime_error(m.str());
+        throw InfeasibleTrial(m.str());
     };
 
     //  THE EXTENT ROOTS OF A ONE-REACTION SET, at the reported temperature.
@@ -1441,7 +1441,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             scalar v = F_i_in[i];
             for (std::size_t j = 0; j < R; ++j) v += nu[j][i] * xi[j];
             if (!(v >= -1.0e-9 * F_in))
-                throw std::runtime_error("CSTR: the converged extents give '"
+                throw InfeasibleTrial("CSTR: the converged extents give '"
                     + thermo.comp(i).name() + "' an outlet flow of "
                     + std::to_string(v * 3.6) + " kmol/h (feed "
                     + std::to_string(F_i_in[i] * 3.6) + " kmol/h): a reaction"
