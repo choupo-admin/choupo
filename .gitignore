@@ -280,6 +280,7 @@ thirdParty/chemsep/pcd/*
 converged/
 iterations/
 **/converged/
+**/converged.restart
 **/iterations/
 
 # equipment specification sheets (regenerated WHOLE by the solver, like

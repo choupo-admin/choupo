@@ -3539,7 +3539,29 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
-        if (recSolver == "Wegstein" || recDE || recDirect)
+        //  EXACT TEAR RESTART (opt-in, `--restart-tears`; io/RestartTears.H): a
+        //  trusted record seeds the tears bit for bit and the iteration is
+        //  skipped; the final pass below is then the whole solve.
+        tearRestartApplied_ = false;
+        std::string restartSolverName;
+        if (tearRestart_)
+        {
+            const std::string why = restartTears::seed(*tearRestart_, tears, streams_, bool(onInstant_));
+            if (!why.empty())
+                std::cout << "[restart] the record is not used: " << why << " -- the full recycle solve runs.\n";
+            else
+            {
+                tearRestartApplied_ = true;
+                restartSolverName = tearRestart_->solver;
+                finalConverged = tearRestart_->converged;  finalResidual = tearRestart_->residual;
+                finalIteration = tearRestart_->iteration;  finalSolver = restartSolverName.c_str();
+                std::cout << "Recycle restart: " << tears.size() << " tear stream(s) seeded EXACTLY from a converged"
+                             " run's record (the values it entered its last pass with; build, inputs and package"
+                             " verified); its " << restartSolverName << " iteration is skipped.\n";
+            }
+        }
+        if (tearRestartApplied_) {}
+        else if (recSolver == "Wegstein" || recDE || recDirect)
         {
             const std::string accName = recDE ? "DominantEigenvalue"
                                       : recDirect ? "DirectSubstitution" : "Wegstein";
@@ -4066,6 +4088,13 @@ int Flowsheet::solve(const DictPtr& dict,
         std::map<std::string, ProcessStream> finalAssumedTears;
         for (const auto& t : tears)
             if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
+        if (onTearSnapshot_ && !tearRestartApplied_ && finalConverged)
+        {
+            restartTears::Record rec;   // x_k, what the final sweep below is entered with
+            rec.solver = finalSolver; rec.converged = true; rec.residual = finalResidual;
+            rec.iteration = finalIteration; rec.tears = finalAssumedTears;
+            onTearSnapshot_(rec);
+        }
         sweep(/*quiet=*/false);
         if (g_trialPressureClamps > 0)
         {

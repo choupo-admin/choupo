@@ -121,6 +121,7 @@ Description
 #include "unitOperations/separation/cycloneModel/CycloneModel.H"
 #include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
 #include "unitOperations/flowsheet/Flowsheet.H"
+#include "io/RestartTears.H"          // --restart-tears
 #include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <algorithm>
 #include <cctype>
@@ -148,6 +149,7 @@ namespace fs = std::filesystem;
 // or macro magic.  See bin/buildCode and CLAUDE.md §"case-local code".
 void registerUserTypes();
 
+static fs::path g_restartCase;   // --restart-tears, a single direct pass only (io/RestartTears.H)
 // --------------------------------------------------------------------------
 //   One simulator pass: load thermo + run flowsheet → SimulationResult.
 //   Reusable from the outer-driver layer (varies flowsheetDict each call).
@@ -288,7 +290,11 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
                 });
     }
 
+    restartTears::Session restart(g_restartCase, thermo.identity(), !init0 && !lint && !manifest);
+    if (restart.record()) flowsheet.setTearRestart(restart.record());
+    flowsheet.setTearSnapshotHook(restart.hook());
     int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);
+    restart.finish(rc == 0 && !flowsheet.tearRestartApplied());
 
     // Lint / --manifest: solve() returned at a validate-and-stop seam -- there
     // is no simulation result to assemble (and no T-x-y sweep to run).
@@ -559,6 +565,8 @@ try
         "  --layout-draft    solve, then write a DRAFT system/layoutDict from the\n"
         "                    sized items (flow order, one area per sector); never\n"
         "                    overwrites without --force (bin/choupo-layout --draft)\n"
+        "  --restart-tears   opt-in, recycle cases: keep/reuse the exact converged tears\n"
+        "                    (<case>/converged.restart); a stale record is named\n"
         "  --describe-units  print every unit type's declared acceptance as JSON\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
@@ -568,7 +576,7 @@ try
 
     bool init0Mode = false, init0Force = false, lintMode = false;
     bool manifestMode = false;
-    bool layoutDraftMode = false;
+    bool layoutDraftMode = false, restartTearsMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
     {
@@ -578,6 +586,7 @@ try
         else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
         else if (arg == "--manifest")                 manifestMode = true;
         else if (arg == "--layout-draft")             layoutDraftMode = true;
+        else if (arg == "--restart-tears")            restartTearsMode = true;
         else if (arg == "--describe-units") { describeUnitsJson(std::cout); return 0; }  // C188 item 5
         //  A FLAG IS NOT A FILENAME.  The catch-all this replaces turned any
         //  unrecognised argument into a case directory, so `--lnt myCase`
@@ -813,6 +822,8 @@ try
     DictPtr outerDict;
     if (fs::exists("system/outerDict"))
         outerDict = Dictionary::fromFile("system/outerDict");
+    if (restartTearsMode)   // a single direct pass only: an outerDict runs many
+    { if (outerDict) std::cout << "[restart] --restart-tears is not used under an outerDict.\n"; else g_restartCase = fs::current_path(); }
 
     DictPtr postDict;
     if (fs::exists("system/postDict"))

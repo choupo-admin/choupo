@@ -485,6 +485,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 #  THE WAIVERS LIVE IN ONE PLACE -- see `debt_registry.py`.
 import case_records as _case_records   # noqa: E402
 from debt_registry import SHEET_UNIT_WORDS_UNPARSEABLE   # noqa: E402
+import restart_tears   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -651,6 +652,13 @@ def _input_key(d):
     return h.hexdigest()
 
 
+# Arms that differ only in system/postDict (or layoutDict) share one recycle
+# solve: the engine restarts from the exact converged tears for all but the first
+# (restart_tears.py -- exactness is PROVEN per solve key against the full run,
+# never assumed).  CHOUPO_GATE_NO_RESTART=1 turns it off (it changes no result).
+_RST = restart_tears.Restarter(_ancestor_inputs)
+
+
 def _engine(d):
     """`choupoSolve d`, captured; replayed when an identical input ran before."""
     d = Path(d)
@@ -669,8 +677,13 @@ def _engine(d):
             stash = _RUN_STASH[0] / key
     if mine:
         try:
-            with _slots():
-                proc = subprocess.run(cmd, capture_output=True, text=True)
+            def _go(flags):
+                with _slots():
+                    r = subprocess.run([cmd[0], *flags, cmd[1]],
+                                       capture_output=True, text=True)
+                return r.stdout, r.stderr, r.returncode
+            out, err, rc = _RST.run(d, (), _go)
+            proc = subprocess.CompletedProcess(cmd, rc, out, err)
             shutil.copytree(d, stash)
             fl.res = (proc, str(d), stash)
         except BaseException as e:
@@ -4859,9 +4872,11 @@ def check_pressure_store_link(problems, notes):
 def main() -> int:
     import atexit
     atexit.register(lambda: [shutil.rmtree(x, ignore_errors=True) for x in _RUN_STASH])
+    atexit.register(_RST.cleanup)
     if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
-        atexit.register(lambda: print("run-cache: %d engine runs, %d replayed"
-                                      % (len(_RUNS), _HITS[0]), file=sys.stderr))
+        atexit.register(lambda: print("run-cache: %d engine runs, %d replayed; restart: %d proofs, %d restarted, %d not exact"
+                                      % (len(_RUNS), _HITS[0], _RST.proofs, _RST.restarts,
+                                         _RST.refused), file=sys.stderr))
     problems, notes = [], []
 
     all_units = []

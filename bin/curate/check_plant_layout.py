@@ -474,6 +474,7 @@ import os
 import re
 import shutil
 import case_records  # noqa: E402
+import restart_tears  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -546,7 +547,7 @@ def prepare(work, name, src, edit=None, drop_layout=False):
     if d.exists():
         shutil.rmtree(d)
     case_records.copytree(src, d, ignore=shutil.ignore_patterns(
-        "reports", "converged", "design", "iterations"))
+        "reports", "converged", "converged.restart", "design", "iterations"))
     lay = d / "system" / "layoutDict"
     if drop_layout and lay.exists():
         lay.unlink()
@@ -659,6 +660,13 @@ def _input_key(d, extra):
     return h.hexdigest()
 
 
+# Arms that differ only in system/layoutDict or system/postDict share one recycle
+# solve: the engine restarts from the exact converged tears for all but the first
+# (restart_tears.py -- exactness is PROVEN per solve key against the full run,
+# never assumed).  CHOUPO_GATE_NO_RESTART=1 turns it off (it changes no result).
+_RST = restart_tears.Restarter(_ancestor_inputs)
+
+
 def solve(d, *extra):
     global _RUN_STASH
     if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
@@ -674,7 +682,8 @@ def solve(d, *extra):
             stash = _RUN_STASH / key
     if mine:
         try:
-            out, err, rc = run([str(BIN), *extra, str(d)])
+            out, err, rc = _RST.run(
+                d, extra, lambda flags: run([str(BIN), *flags, *extra, str(d)]))
             shutil.copytree(d, stash)
             fl.res = (out, err, rc, str(d), stash)
         except BaseException as e:
@@ -3870,8 +3879,10 @@ def main():
             _POOL.shutdown(wait=True)
         if _RUN_STASH is not None:
             shutil.rmtree(_RUN_STASH, ignore_errors=True)
+        _RST.cleanup()
         if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
-            print("run-cache: %d engine runs, %d replayed, %d slots" % (len(_RUNS), _HITS[0], _JOBS), file=sys.stderr)
+            print("run-cache: %d engine runs, %d replayed, %d slots; restart: %d proofs, %d restarted, %d not exact"
+                  % (len(_RUNS), _HITS[0], _JOBS, _RST.proofs, _RST.restarts, _RST.refused), file=sys.stderr)
     if fails:
         print("check_plant_layout: FAIL")
         for f in fails:
