@@ -371,13 +371,15 @@ def run_ipopt(cnt, x0, lo, hi, mi, me):
             return cnt(x)[0]
 
         def gradient(self, x):
-            return approx_derivative(fobj, x, method="2-point", bounds=(lo, hi), f0=cnt(x)[0])
+            xc = np.clip(x, lo, hi)      # IPOPT relaxes bounds by ~1e-8; the difference routine refuses a point outside
+            return approx_derivative(fobj, xc, method="2-point", bounds=(lo, hi), f0=cnt(xc)[0])
 
         def constraints(self, x):
             return fcon(x)
 
         def jacobian(self, x):
-            return approx_derivative(fcon, x, method="2-point", bounds=(lo, hi), f0=fcon(x)).ravel()
+            xc = np.clip(x, lo, hi)
+            return approx_derivative(fcon, xc, method="2-point", bounds=(lo, hi), f0=fcon(xc)).ravel()
 
     nlp = cyipopt.Problem(n=n, m=m, problem_obj=P(), lb=lo, ub=hi,
                           cl=np.zeros(m), cu=np.concatenate([np.full(mi, np.inf), np.zeros(me)]))
@@ -908,8 +910,8 @@ def flow_noise():
     for name in FLOW:
         P = FlowProblem(name, "noise")
         x0 = P.x0_tutorial
+        P.fscale = max(1.0, abs(P.raw(x0)[0]))       # the rescaling of section 3 (A2), fixed before anything is measured
         base = P.raw(x0)
-        P.fscale = max(1.0, abs(base[0]))
         rep = [P.raw(x0) for _ in range(5)]
         names = ["f"] + [c[0] for c in P.spec["cons"]]
         vals = lambda r: [r[0] * 1.0] + list(r[1])
@@ -1014,8 +1016,10 @@ def run_flow_choupo_own():
                     last = b.end()
                 new.append(txt[last:])
                 txt = "".join(new)
+                txt = re.sub(r"method\s+\w+;", "method %s;" % method, txt)
+                if method == "sqp" and "options" in txt and "fdStep" not in txt:
+                    txt = re.sub(r"options\s*\{", "options\n{\n    fdStep 1e-5;\n    fdMode forward;", txt, count=1)
                 if method == "nelderMead":
-                    txt = re.sub(r"method\s+\w+;", "method nelderMead;", txt)
                     txt = re.sub(r"constraints\s*\(.*?\n\);", "", txt, flags=re.S)
                     txt = re.sub(r"\n\s*fdStep[^\n]*", "", txt)
                     txt = re.sub(r"\n\s*fdMode[^\n]*", "", txt)
@@ -1025,7 +1029,7 @@ def run_flow_choupo_own():
                 o = p.stdout
                 info = dict(problem=name, method=method, start=st, wall=time.time() - t0,
                             rc=p.returncode, tail=(o[-600:] if p.returncode else ""))
-                m = re.search(r"evaluations:\s*(\d+)", o)
+                m = re.search(r"(?:evaluations|simulator runs):\s*(\d+)", o)
                 info["evaluations"] = int(m.group(1)) if m else None
                 if "<<<Choupo:result-begin>>>" in o:
                     js = json.loads(o.split("<<<Choupo:result-begin>>>")[1].split("<<<Choupo:result-end>>>")[0])
@@ -1039,6 +1043,66 @@ def run_flow_choupo_own():
                 with open(out, "a") as fh:
                     fh.write(json.dumps(info, default=str) + "\n")
                 print(name, method, st, "evaluations", info["evaluations"], flush=True)
+
+
+def report_flow(workdir, outdir):
+    """Set B: reference = best feasible value over every run of every code; per-cell gaps and counts."""
+    rows = [json.loads(ln) for ln in open(Path(workdir) / "flow_runs.jsonl")]
+    md = []
+    probs = list(dict.fromkeys(r["problem"] for r in rows))
+    codes = [c for c in CODES if any(r["code"] == c for r in rows)]
+    solved = {(c, tau): 0 for c in codes for tau in TAUS}
+    ncell = {c: 0 for c in codes}
+    for p in probs:
+        rr = [r for r in rows if r["problem"] == p]
+        best = np.inf
+        for r in rr:
+            for f, cv in zip(r["f_true"], r["cv_true"]):
+                if np.isfinite(f) and cv <= CV_TOL:
+                    best = min(best, f)
+        md.append("\n**%s**: reference value (best feasible over all runs, rescaled objective, sense folded in) = %.9g  (physical objective = %.9g x scale %.6g)\n"
+                  % (p, best, best, rr[0]["fscale"]))
+        md.append("| code | start A: gap / evals | start B: gap / evals | start C: gap / evals | failed evals |")
+        md.append("|---|---|---|---|---|")
+        for c in codes:
+            cells, fails = [], 0
+            for st in "ABC":
+                r = [x for x in rr if x["code"] == c and x["start"] == st]
+                if not r:
+                    cells.append("-")
+                    continue
+                r = r[0]
+                fails += r["fail"]
+                if r.get("na"):
+                    cells.append("N/A (no constraints)")
+                    ncell[c] += 0
+                    continue
+                ncell[c] += 1
+                g = [abs(f - best) / max(1.0, abs(best)) for f, cv in zip(r["f_true"], r["cv_true"])
+                     if np.isfinite(f) and cv <= CV_TOL]
+                cells.append(("%.1e" % min(g) if g else "no feasible point") + " / %d" % r["count"])
+                for tau in TAUS:
+                    if g and min(g) <= tau:
+                        solved[(c, tau)] += 1
+            md.append("| %s | %s | %d |" % (c, " | ".join(cells), fails))
+    md.append("\n**Cells solved against the bench reference (4 problems x 3 starts = 12 cells; N/A cells count as unsolved)**\n")
+    md.append("| code | " + " | ".join("tau %g" % t for t in TAUS) + " |")
+    md.append("|---|---|---|---|")
+    for c in codes:
+        md.append("| %s | " % c + " | ".join("%d / 12" % solved[(c, t)] for t in TAUS) + " |")
+    own = Path(workdir) / "flow_own.jsonl"
+    if own.exists():
+        md.append("\n**Choupo's own codes through their own `outerDict` (driver's own count)**\n")
+        md.append("| problem | method | start | evaluations (driver) | objective (physical) | constraint values | return code |")
+        md.append("|---|---|---|---|---|---|---|")
+        for ln in open(own):
+            r = json.loads(ln)
+            md.append("| %s | %s | %s | %s | %s | %s | %s |" % (
+                r["problem"], r["method"], r["start"], r["evaluations"],
+                ("%.9g" % r["f"]) if "f" in r else "-",
+                ", ".join("%.5g" % g[0] for g in r.get("g", [])) or "-", r["rc"]))
+    (Path(outdir) / "flow_tables.md").write_text("\n".join(md) + "\n")
+    print("\n".join(md))
 
 
 if __name__ == "__main__":
@@ -1062,6 +1126,9 @@ if __name__ == "__main__":
     elif cmd == "flow-own":
         WORK.mkdir(parents=True, exist_ok=True)
         run_flow_choupo_own()
+    elif cmd == "report-flow":
+        report_flow(sys.argv[2] if len(sys.argv) > 2 else WORK,
+                    sys.argv[3] if len(sys.argv) > 3 else WORK / "out")
     elif cmd == "report":
         report(sys.argv[2] if len(sys.argv) > 2 else WORK,
                sys.argv[3] if len(sys.argv) > 3 else WORK / "out")
