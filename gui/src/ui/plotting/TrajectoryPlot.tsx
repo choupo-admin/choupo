@@ -201,7 +201,9 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
           yref: "paper" as const, y: 1.0, yanchor: "bottom" as const,
           text: `${traces.length} series; legend hidden, hover to identify`,
           showarrow: false,
-          font: { ...darkLayout.font, size: 11 },
+          // no colour here: the layout font is re-themed for light mode, an
+          // explicit dark-mode grey would be faint on white
+          font: { size: 12 },
         }]
       : []),
     ...(referenceLines ?? [])
