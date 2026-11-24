@@ -37,7 +37,7 @@
   segregated CFD solvers need a fixed factor; a unit's Newton does not.
 
   THE HONESTY SPINE.  Steps 1-7 describe a ONE-variable linear toy this page
-  declares in full; it is not a Choupo model.  Step 8 and the fourth figure
+  declares in full; it is not a Choupo model.  Step 9 and the fourth figure
   are the real engine on a real recycle (process03_recycle) under
   `recycleSolver directSubstitution; recycleRelaxation w;`, and the page says
   at the top of each half which one it is in.  Every claim about the engine
@@ -275,7 +275,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       { sym: "\\Delta x_{k}", means: "the full Newton step at pass k, before "
         + "any shortening" },
     ],
-    note: "The engine run in step 8 can show the cap: `recycleMaxStep` is "
+    note: "The engine run in step 9 can show the cap: `recycleMaxStep` is "
       + "declared in system/solverDict and announced in the run log.",
   },
   {
@@ -301,6 +301,119 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
   },
   {
     n: 8,
+    title: "How hard should the inside be solved? Inexact inner solves (relTol and Final)",
+    body: "Whenever one solve sits inside another, the inner one only needs "
+      + "the precision the outer one can use at that moment. Early in the "
+      + "outer iteration the outer guess is still far from its answer, so "
+      + "solving the inside to full precision is work the next outer step "
+      + "throws away. The remedy is to tie the inner tolerance to the outer "
+      + "residual and to solve to full tolerance only on the last pass. For "
+      + "Newton's method this is the inexact-Newton idea: the linear "
+      + "system of each step is solved only until its own residual is a "
+      + "chosen fraction eta of the outer residual (the forcing term), and "
+      + "the convergence rate follows how eta is chosen (Dembo, Eisenstat "
+      + "and Steihaug 1982; Eisenstat and Walker 1996, who give rules for "
+      + "choosing it). OpenFOAM users know the same trade as `relTol` on "
+      + "the intermediate correctors of a time step and `pFinal` with "
+      + "`relTol 0` on the last. "
+      + "A measured case in Choupo is the rate-based packed segment. Its "
+      + "outer fixed point freezes the film coefficients, solves the "
+      + "segment rows by Newton, and re-evaluates the coefficients. The "
+      + "inner Newton now stops at the larger of the full tolerance and "
+      + "1e-3 times the last coefficient change "
+      + "(RateBasedSegment.cpp:653), never looser than 1e-6 "
+      + "(RateBasedSegment.cpp:654); the tolerance is set at "
+      + "RateBasedSegment.cpp:728, the flag that says this pass is at the "
+      + "full tolerance at RateBasedSegment.cpp:729, and the outer loop "
+      + "ends only on such a pass (RateBasedSegment.cpp:780). "
+      + "The measurement is dated, not live: on commit ad528a8c48 the four "
+      + "cases ratebased01 to ratebased04 went from 1632 to 1216 inner "
+      + "Newton iterations (321 to 239, 407 to 309, 378 to 278, 526 to "
+      + "390), the printed sweep tables were identical to six digits, and "
+      + "the largest relative change in any printed number was 1.0e-10 "
+      + "(recorded in that commit's message; the page recomputes none of "
+      + "it). "
+      + "The trap is the Jacobian. A finite-difference Jacobian divides a "
+      + "difference of two residuals by a small step h, so noise of size "
+      + "epsilon in the residual becomes an error of epsilon over h in the "
+      + "slope. Choupo's tear Newton builds its Jacobian that way, with "
+      + "h of order the square root of machine precision times the "
+      + "unknown's scale (NewtonND.cpp:163, called at NewtonND.cpp:769, "
+      + "for the tear at Flowsheet.cpp:4043). An inner solve left loose "
+      + "is therefore safe on a step that only advances but spoils a step "
+      + "that measures the Jacobian: the inner tolerance must be well "
+      + "below h there. Wegstein and direct substitution form no "
+      + "Jacobian and are far less sensitive to it. "
+      + "The same scheme one level up, in the recycle loops of whole "
+      + "plants, is not built in Choupo: those loops evaluate every unit "
+      + "at its own fixed tolerance. It was measured instead, on six "
+      + "plants (docs/audits/2026-11-24-recycle-inner-solves.md; dated, "
+      + "not live): a tolerance 100 times looser in every unit would "
+      + "remove 0.9 % of the wall time on the two green-ammonia plants "
+      + "and at most 24 % on the others, and on the acetic plant it "
+      + "removed one column Newton iteration of six. The reason is the "
+      + "lesson: a column restarts from a cold seed at every recycle "
+      + "iteration, and its iterations are spent travelling from the seed "
+      + "to the answer, which no tolerance shortens; the ammonia plants "
+      + "spend 92-93 % of their time in a reactor integrated with a fixed "
+      + "number of steps, whose cost is set by that count, not by a "
+      + "tolerance. The same idea "
+      + "applied to that step count (a quarter of the steps on every pass "
+      + "but the last) took the reference plant from 20.4 s to 5.2 s with "
+      + "a 1e-8 change in the result, but the tears then converge to the "
+      + "coarse model's fixed point, it was tried on one plant whose beds "
+      + "sit near equilibrium; Choupo still runs every pass on the full "
+      + "step count. An inexact inner solve "
+      + "pays where the inner work is converging, not where it is "
+      + "travelling.",
+    derivation: [
+      { step: "Inexact Newton (Dembo, Eisenstat and Steihaug 1982): the "
+          + "step s_k need only make the linearised residual a fraction "
+          + "eta_k of the nonlinear one, the forcing term.",
+        eq: String.raw`\lVert F(x_{k}) + J_{k}\,s_{k} \rVert \le \eta_{k}\,\lVert F(x_{k}) \rVert`},
+      { step: "The engine's rule for a nested fixed point, with the "
+          + "previous outer change c as the size of the outer residual.",
+        eq: String.raw`\tau_{k} = \min\!\bigl(\tau_{\mathrm{cap}},\ \max(\tau_{\mathrm{full}},\ \eta\,c_{k-1})\bigr)`},
+      { step: "The trap: a central difference with step h turns residual "
+          + "noise epsilon into a Jacobian error of order epsilon over h.",
+        eq: String.raw`\delta J \approx \frac{\varepsilon}{h}, \qquad h = \sqrt{\epsilon_{\mathrm{mach}}}\,\max\!\left(\lvert x_{j} \rvert,\ s_{j}\right)`},
+    ],
+    formula: String.raw`\tau_{k} = \min\!\bigl(\tau_{\mathrm{cap}},\ \max(\tau_{\mathrm{full}},\ \eta\,c_{k-1})\bigr)`,
+    where: [
+      { sym: "F", means: "the outer residual vector whose root is sought" },
+      { sym: "x_{k}", means: "the outer unknowns at pass k" },
+      { sym: "J_{k}", means: "the Jacobian of F at \\(x_k\\)" },
+      { sym: "s_{k}", means: "the (inexact) Newton step taken at pass k" },
+      { sym: "\\eta_{k}", means: "the forcing term: the fraction of the outer "
+        + "residual the inner solve is asked to remove (dimensionless)" },
+      { sym: "\\tau_{k}", means: "the tolerance the inner solve of pass k "
+        + "is stopped at" },
+      { sym: "\\tau_{\\mathrm{cap}}", means: "the loosest tolerance ever "
+        + "used (1e-6 in the rate-based segment)" },
+      { sym: "\\tau_{\\mathrm{full}}", means: "the full tolerance, used on "
+        + "the pass that may end the outer loop (1e-11 in the "
+        + "rate-based segment)" },
+      { sym: "\\eta", means: "the factor tying the inner tolerance to the "
+        + "outer change (1e-3 in the rate-based segment)" },
+      { sym: "c_{k-1}", means: "the relative change of the outer "
+        + "unknowns on the previous pass" },
+      { sym: "\\delta J", means: "the error of a finite-difference "
+        + "Jacobian entry" },
+      { sym: "\\varepsilon", means: "the noise in the residual, here the "
+        + "inner solve's leftover error" },
+      { sym: "h", means: "the finite-difference step" },
+      { sym: "\\epsilon_{\\mathrm{mach}}", means: "machine precision, about "
+        + "2.2e-16 in double precision" },
+      { sym: "x_{j}", means: "the unknown being perturbed" },
+      { sym: "s_{j}", means: "that unknown's declared scale" },
+    ],
+    note: "The slider below the card runs the same idea on the toy loop of "
+      + "the first figure: the inner solve gains one decade of accuracy "
+      + "per inner iteration, an assumption of the toy and not a Choupo "
+      + "number.",
+  },
+  {
+    n: 9,
     title: "In Choupo: the knobs, and a real recycle",
     body: "In a case's system/solverDict, `recycleSolver "
       + "directSubstitution;` selects plain substitution and "

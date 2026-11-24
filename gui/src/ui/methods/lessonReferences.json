@@ -2098,6 +2098,36 @@
             "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
             "date": "2026-11-09"
           }
+        },
+        {
+          "text": "Dembo, R. S.; Eisenstat, S. C.; Steihaug, T. (1982). Inexact Newton methods. SIAM Journal on Numerical Analysis 19(2), 400–408.",
+          "doi": "10.1137/0719025",
+          "note": "The forcing term: solve each Newton step only as hard as the outer residual allows.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0719025: authors, title, container, volume 19, issue 2, pages 400-408 and year 1982 matched (2026-11-24)",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Eisenstat, S. C.; Walker, H. F. (1996). Choosing the forcing terms in an inexact Newton method. SIAM Journal on Scientific Computing 17(1), 16–32.",
+          "doi": "10.1137/0917003",
+          "note": "Rules for choosing the forcing term from the previous residuals.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0917003: authors, title, container, volume 17, issue 1, pages 16-32 and year 1996 matched (2026-11-24)",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "OpenFOAM Foundation. OpenFOAM v12 User Guide (CFD Direct): fvSolution.",
+          "url": "https://doc.cfd.direct/openfoam/user-guide-v12/fvsolution",
+          "note": "relTol on an intermediate solve and the Final settings with relTol 0 on the last.",
+          "verified": {
+            "method": "official",
+            "evidence": "doc.cfd.direct/openfoam/user-guide-v12/fvsolution: the pitzDaily example p {relTol 0.01} and pFinal {relTol 0}, and the text that the first solutions of a step use the settings with relTol 0.01 and only the last uses the Final ones, read 2026-11-24",
+            "date": "2026-11-24"
+          }
         }
       ]
     },

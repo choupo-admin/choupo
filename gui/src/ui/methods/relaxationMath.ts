@@ -194,3 +194,57 @@ export function relaxationOverrides(w: number): DictOverride[] {
     { file: SOLVER_DICT, append: `recycleRelaxation ${w};` },
   ];
 }
+
+// ---- Inexact inner solves on the same toy (step 8) -------------------------
+//
+//  Each outer pass needs G(x), and G is itself the answer of an inner
+//  iteration that gains INNER_DECADES decades of accuracy per inner
+//  iteration (a declared assumption, not a Choupo number).  Stopping the
+//  inner solve at tolerance tau leaves an error of up to tau in G, so the
+//  relaxed outer pass is
+//
+//      u+ = (1 - w) u + w (a u + tau).
+//
+//  Exact: tau = INEXACT_TIGHT on every pass.  Inexact: tau_k = min(cap,
+//  max(tight, eta |u_k|)), the engine's rule with the outer mistake in place
+//  of the previous coefficient change (the rate-based segment's inner tolerance); and the
+//  outer loop ends only on a pass whose tolerance was the tight one (the
+//  engine's `fullTol`).  The inner solve starts from the
+//  previous pass's result, so it must close the gap between the last two
+//  iterates: its work is max(1, ceil(log10(gap / tau))) inner iterations,
+//  the seed gap being 1.
+
+export const INNER_DECADES = 1;
+export const INEXACT_TIGHT = 1e-10;
+export const INEXACT_CAP = 1e-3;
+export const INEXACT_OUTER_TOL = 1e-6;
+
+export interface InexactRun {
+  outer: number;
+  inner: number;
+  tau: number[];
+  stop: "converged" | "cap" | "diverged";
+}
+
+/** The relaxed toy with each pass's inner solve stopped at tau_k.  eta = 0
+ *  is the exact (always tight) run. */
+export function inexactDrive(a: number, w: number, eta: number): InexactRun {
+  const maxOuter = 200;
+  let u = 1, gap = 1;
+  let inner = 0;
+  const tau: number[] = [];
+  for (let k = 0; k < maxOuter; ++k) {
+    const t = eta <= 0 ? INEXACT_TIGHT
+      : Math.min(INEXACT_CAP, Math.max(INEXACT_TIGHT, eta * Math.abs(u)));
+    tau.push(t);
+    inner += Math.max(1, Math.ceil(Math.log10(gap / t) / INNER_DECADES));
+    const next = (1 - w) * u + w * (a * u + t);
+    gap = Math.abs(next - u);
+    u = next;
+    if (!Number.isFinite(u) || Math.abs(u) > 1e6)
+      return { outer: k + 1, inner, tau, stop: "diverged" };
+    if (Math.abs(u) < INEXACT_OUTER_TOL && t <= INEXACT_TIGHT)
+      return { outer: k + 1, inner, tau, stop: "converged" };
+  }
+  return { outer: maxOuter, inner, tau, stop: "cap" };
+}

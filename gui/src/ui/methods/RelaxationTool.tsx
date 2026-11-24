@@ -50,7 +50,7 @@ import { recycleResidual } from "./wegsteinMath.js";
 import {
   ENGINE_QMAX, ENGINE_QMIN, ENGINE_W_VALUES, GAIN_MAX, GAIN_MIN, OPEN_QMAX,
   OPEN_QMIN, RELAXATION_WITNESS, W_MAX, W_MIN, drive, effectiveSlope,
-  optimalW, passesToReduce, region, relaxationOverrides,
+  inexactDrive, optimalW, passesToReduce, region, relaxationOverrides,
 } from "./relaxationMath.js";
 
 const GAIN: PanelKnob = {
@@ -66,6 +66,14 @@ const FACTOR: PanelKnob = {
     + "returned. 1 is plain substitution. The engine's recycleRelaxation "
     + "accepts 0 < w <= 1; the part above 1 is drawn so you can see what "
     + "Wegstein does.",
+};
+
+const LOG_ETA: PanelKnob = {
+  id: "logEta", label: "log10 of the inner tolerance factor", min: -4, max: 0, step: 0.5,
+  why: "The inner solve of each outer pass is stopped at this fraction of "
+    + "the current outer mistake (the toy's analogue of 1e-3 in the "
+    + "rate-based segment). -4 is almost exact; 0 means the inner error "
+    + "is as large as the outer mistake itself.",
 };
 
 /** Floor for the log plot: an exact zero (Newton's one-step landing) cannot be
@@ -90,6 +98,7 @@ export function RelaxationTool(): JSX.Element {
 
   const [a, setA] = useState(-1.5);
   const [w, setW] = useState(0.5);
+  const [logEta, setLogEta] = useState(-3);
   const [clamp, setClamp] = useState<"engine" | "open">("engine");
 
   const qMin = clamp === "engine" ? ENGINE_QMIN : OPEN_QMIN;
@@ -102,6 +111,8 @@ export function RelaxationTool(): JSX.Element {
     newton: drive("newton", a, w),
   }), [a, w, qMin, qMax]);
 
+  const exactRun = useMemo(() => inexactDrive(a, w, 0), [a, w]);
+  const looseRun = useMemo(() => inexactDrive(a, w, Math.pow(10, logEta)), [a, w, logEta]);
   const aEff = effectiveSlope(a, w);
   const wOpt = optimalW(a);
   const reg = region(a, w);
@@ -248,6 +259,33 @@ export function RelaxationTool(): JSX.Element {
         {step(6)}
         {step(7)}
         {step(8)}
+        <Stack gap={8} style={{ borderLeft: `3px solid ${RELAXED}`, paddingLeft: 12 }}>
+          <OriginMark of="assumption" note="the toy loop above, each pass's G(x) itself an inner iteration of one decade per step" />
+          <Title order={5}>Inner iterations against outer passes (toy)</Title>
+          <KnobSlider knob={LOG_ETA} value={logEta} showWhy
+            onChange={(v) => setLogEta(Math.min(0, Math.max(-4, v)))} />
+          <Group gap={6} wrap="wrap" role="status">
+            <Badge variant="light" color="gray">
+              exact inside: {exactRun.outer} outer, {exactRun.inner} inner
+              {exactRun.stop === "converged" ? "" : ` (${exactRun.stop})`}
+            </Badge>
+            <Badge variant="light" color="gray">
+              tied to the outer mistake: {looseRun.outer} outer, {looseRun.inner} inner
+              {looseRun.stop === "converged" ? "" : ` (${looseRun.stop})`}
+            </Badge>
+          </Group>
+          <Text size="xs" c="dimmed">
+            Uses the gain a and factor w set above. Each pass stops its
+            inner solve at the factor times the current outer mistake (never
+            looser than 1e-3, and the last pass at 1e-10); the exact run
+            uses 1e-10 on every pass. Slide the factor up: the inner work
+            falls while the outer passes rise, and a factor near 1 costs
+            more than it saves. This is a toy, as the cards above say: the
+            inner rate is assumed, so the counts show the trade, not
+            Choupo&apos;s.
+          </Text>
+        </Stack>
+        {step(9)}
 
         {/* ---------------- the engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
