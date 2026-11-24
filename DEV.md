@@ -5552,6 +5552,19 @@ accepts today, and that is a policy call.
 > confounds every model at once.  The "plant held to measurement" rows in BRAIN.md (Validation,
 > Risks) are retired as targets.
 
+> **C491. THE PROOFS OF NINE THAT LOGIC STILL OWES (Vitor, 2026-11-24: "Sabes se há mais 'provas dos
+> nove' (como balanços, etc.) que testem a lógica, e que nos tenham escapado?").**  Measured on main
+> (grep of bin/curate/check_*.py): mass, element, solute and energy closures are held on every case;
+> Gibbs-Duhem on the activity models (check_gibbs_duhem, check_ion_gibbs_duhem); isofugacity only in
+> the columns and the supercritical gate.  NOT held corpus-wide: (1) the SECOND LAW per unit, entropy
+> generation >= 0 (heat from cold to hot, an efficiency above 1, a split with no work); (2)
+> HOMOGENEITY, every feed x2 gives every extensive result x2 and every intensive one unchanged (a
+> hidden absolute flow or tolerance); (3) isofugacity re-evaluated at every reported equilibrium
+> outlet, independently of the solver; (4) the component ORDER changes nothing; (5) a dynamic run
+> held to steady state ends on the steady solver's answer.  Architect's plan, by rule 4e(4): each is
+> run first as a MEASUREMENT over the corpus; it becomes a gate only where it finds a real defect,
+> named in its header.  (1) first: it reaches every unit, like the closures.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
