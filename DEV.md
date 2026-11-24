@@ -5514,6 +5514,13 @@ accepts today, and that is a policy call.
 > Ruscic database, the NonCommercial compilation, which is not a route.  To the cloud inside C335.
 > Next cloud batch: C486, C335, C256 in that order.
 
+> **C486 and C335 landed 2026-11-24 (7e6c4f548c), one validation.**  --scope of the three nox cases
+> 5/0, --gui 49/0.  The integration found one real defect: check_origin_census (d) refused seven
+> RRHO-computed records whose dHf_298 is `origin derived` (a printed 0 K value converted to 298.15 K)
+> with no `inputs` list; fixed in the generator (rrho_thermo.py writes the 0 K value with its paper's
+> DOI from rrho_species.json), records regenerated, no value moved, nox03 pair repinned.  C4H4 stays
+> open with the cloud (identity: cyclobutadiene-class enthalpy under the vinylacetylene name).
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
