@@ -5008,6 +5008,7 @@
    "src/thermo/transport/WilkeReduction.H"
   ],
   "src/io/RestartTears.cpp": [
+   "src/core/ReadLog.H",
    "src/core/Types.H",
    "src/io/RestartTears.H",
    "src/streams/Carried.H",
@@ -20271,6 +20272,7 @@
    "src/io/DesignSheetWriter.cpp",
    "src/io/EquipmentListWriter.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/RestartTears.cpp",
    "src/io/SolutionWriter.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/outerDriver/DesignSpec.cpp",
