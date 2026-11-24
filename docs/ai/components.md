@@ -135,6 +135,15 @@ holds (S298 within 1 J/(mol K), Cp within 2 % to 1000 K), and `bin/curate/check_
 holds every record equal to the tool's output.  Roles follow the gas-only rule:
 radicals and biradicals `gasOnly`, closed-shell molecules `gasData`.
 
+A computed species that must stay a `components/` record (a Henry pair, a sigma
+profile) is listed under `component_records` in the same input file and its three
+blocks are spliced into the component by `rrho_thermo.py component NAME`; the gate's
+arm (e) holds them equal.  The one such record is `C4H4` (vinylacetylene,
+H2C=CH-C#CH): dHf_298 289.04 kJ/mol from the ANL0 0 K value 295.7 +-1.4 kJ/mol of
+Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2; s_298
+278.49 and Cp(T) from the measured rotational constants and calculated vibrations
+(Theory Guide sec:rrho-component).
+
 The component COUNT is not written here: this whole section below
 `AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
 themselves, and the heading it writes is the count.  (A number typed into this
