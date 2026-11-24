@@ -414,11 +414,11 @@ describe("one-flux-many-units: the lesson", () => {
       "RateBasedSegment.cpp:605": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
       "RateBasedSegment.cpp:606": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
       "RateBasedSegment.cpp:599": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
-      "RateBasedSegment.cpp:682": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
+      "RateBasedSegment.cpp:691": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
       "RateBasedSegment.cpp:473": "c.HOG = r.HG + st.lambda * r.HL;",
-      "RateBasedSegment.cpp:693": "const scalar wl = (ys - xm[lk]) / (1.0 / c0.betaV + m / c0.betaL);",
-      "RateBasedSegment.cpp:865": "const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;",
-      "RateBasedSegment.cpp:897": "profile_.columns[\"HOG\"].push_back(HOGk);",
+      "RateBasedSegment.cpp:702": "const scalar wl = (ys - xm[lk]) / (1.0 / c0.betaV + m / c0.betaL);",
+      "RateBasedSegment.cpp:877": "const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;",
+      "RateBasedSegment.cpp:909": "profile_.columns[\"HOG\"].push_back(HOGk);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
       "ThermoPackage.cpp:1327": "K[i] = hl.H(T) / P;",
@@ -507,7 +507,7 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
 
   it("C449: step 4 does not claim the first guess is the only place the sum appears", () => {
     expect(body(4)).not.toContain("The one place the sum appears");
-    expect(body(4)).toContain("RateBasedSegment.cpp:865");
+    expect(body(4)).toContain("RateBasedSegment.cpp:877");
   });
 
   it("C449: water's vapour pressure is the Wagner/IAPWS form, never called Antoine", () => {

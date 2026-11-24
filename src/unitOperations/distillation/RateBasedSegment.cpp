@@ -643,6 +643,15 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     int auditedAt = 0;
     int verifiedEarlierAt = 0;    // shape audited by an earlier solve of this run
     const scalar newtonTol = 1.0e-11;
+    //  INEXACT INNER SOLVE.  While the coefficients are still moving, solving
+    //  the segment rows to newtonTol on rows that the next pass will rewrite
+    //  is wasted work: pass p solves to max(newtonTol, kInexactFactor x the
+    //  relative coefficient change of pass p-1), capped at kInexactCap (the
+    //  first pass, whose seed is a crude march, has no previous change).  A
+    //  pass that would end the outer loop on a loose tolerance does not: the
+    //  loop ends only on a pass solved at the full newtonTol.
+    const scalar kInexactFactor = 1.0e-3;
+    const scalar kInexactCap    = 1.0e-6;
 
     //  ---- Coefficients and the pressure profile from a profile ------------
     auto evaluateAll = [&](const sVector& Xs, std::vector<SegmentCoefficients>& cs,
@@ -716,7 +725,8 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         {
             ++passes;
             solver::NDOptions o;
-            o.tolerance = newtonTol;
+            o.tolerance = std::min(kInexactCap, std::max(newtonTol, kInexactFactor * lastChange));
+            const bool fullTol = (o.tolerance <= newtonTol);
             o.maxIter   = 80;
             o.globalisation = solver::Globalisation::armijo;
             o.blockTri.nBlocks   = static_cast<std::size_t>(M);
@@ -765,7 +775,9 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             }
             for (int k = 0; k <= M; ++k) ch = std::max(ch, relChange(Pnew[k], Pface[k]));
             lastChange = ch;
-            if (ch < 1.0e-10) break;      // X solves the rows written on `coef`
+            //  X solves the rows written on `coef` -- to newtonTol, or the
+            //  pass is repeated on the new coefficients at the full tolerance
+            if (ch < 1.0e-10 && fullTol) break;
             coef = cNew;
             Pface = Pnew;
             reb = reboilerAt(Pface[M], reb.T);

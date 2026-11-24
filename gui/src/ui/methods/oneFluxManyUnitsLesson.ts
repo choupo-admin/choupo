@@ -242,9 +242,9 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "both films with the interface compositions as unknowns, and the interface in equilibrium "
       + "(RateBasedSegment.cpp:587), except in the limit mode that checks it against the transfer-unit bed, where the "
       + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:599).  The sum is used as the first guess of the profile, "
-      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:682; again at RateBasedSegment.cpp:693), and its HEIGHT form "
-      + "H_OG = H_G + λ H_L is evaluated on every segment (RateBasedSegment.cpp:473 and RateBasedSegment.cpp:865), where the liquid-film share "
-      + "m(V/L)H_L/H_OG is exactly this step's share; it is published as the profile column HOG (RateBasedSegment.cpp:897), "
+      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:691; again at RateBasedSegment.cpp:702), and its HEIGHT form "
+      + "H_OG = H_G + λ H_L is evaluated on every segment (RateBasedSegment.cpp:473 and RateBasedSegment.cpp:877), where the liquid-film share "
+      + "m(V/L)H_L/H_OG is exactly this step's share; it is published as the profile column HOG (RateBasedSegment.cpp:909), "
       + "as a diagnostic: the solution itself never uses it.",
     derivation: [
       { step: "Steady state: the flux through the gas film equals the flux through the liquid film (Treybal Eq. 5.1):",
