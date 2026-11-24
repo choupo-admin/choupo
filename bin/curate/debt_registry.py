@@ -186,12 +186,13 @@ SOURCE_LICENCE = {
 #      or an ATcT paper tabulating C4H3, supplied as a PDF.
 #    * heavyWater.dat: holds NO ATcT value (it enters neither dHf nor s_298;
 #      its header only says the ATcT server was not read), nothing to change.
-#    * C4H4 (vinylacetylene): still pinned below, see its entry.
-#  The seven left:
-NC_COMPILATION = {
-    "data/standards/components/C4H4.dat":
-        "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  MEASURED 2026-11-23 (C335): the record's dHf_298 431.7 kJ/mol is a cyclobutadiene-class value, not vinylacetylene's -- Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2 (OSTI 1389058) prints an ab initio Delta_f H(0 K) of 295.7 kJ/mol for CH2CHCCH, about 135 kJ/mol lower; s_298 and the Cp polynomial of the record are then suspect too.  No ATcT paper printing vinylacetylene was readable here (the paper's Table 2 lists it as NOT in the ATcT set of that paper).  Remedy: a clean primary for vinylacetylene whole (dHf, S, Cp; none in ~/Choupo-Literature, listed whole 2026-11-21; an ATcT journal paper tabulating C4H4, or a measurement paper, supplied as a PDF), or removal, which cascades through the route-bench hash tables, the henry_sander batch (Henry/C4H4-water reads the record) and the generated dossier (measured 2026-11-21, not done: a simple fix lands simply).",
-}
+#    * C4H4 (vinylacetylene), 2026-11-24: DISCHARGED.  dHf is the ab initio ANL0 0 K value
+#      295.7 +-1.4 kJ/mol of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017)
+#      6580, Table 2 (a species not in the ATcT set), converted to 298.15 K by the record's
+#      own RRHO enthalpy (289.04 kJ/mol; the old 431.7 was a cyclobutadiene-class value);
+#      s_298 and Cp(T) computed by rrho_thermo.py (component_records, check_rrho_thermo arm e).
+#  No record cites a NonCommercial compilation as the origin of a value any more.
+NC_COMPILATION = {}
 
 #  ATCT_VERSION_ONLY -- files that cite ATcT by database version or website
 #  and name no journal paper (RULING ON ATcT, 2026-11-23, C335).  EMPTY: the
