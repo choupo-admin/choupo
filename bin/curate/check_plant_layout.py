@@ -504,6 +504,34 @@ def run(cmd, cwd=ROOT):
     return p.stdout, p.stderr, p.returncode
 
 
+# The run cache (_input_key, _ancestor_inputs) hashes the files of the cases
+# this gate solves IN PLACE and the system/ and constant/ of their parent
+# folders (the cascade); every other walk is over the gate's own scratch
+# copies (check_scan_roots).
+SCAN_ROOTS = (
+    "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/ammonia02_full_plant",
+    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "constant",
+    "system",
+    "tutorials/batch/constant",
+    "tutorials/batch/plant/constant",
+    "tutorials/batch/plant/system",
+    "tutorials/batch/system",
+    "tutorials/constant",
+    "tutorials/plant/constant",
+    "tutorials/plant/system",
+    "tutorials/steady/constant",
+    "tutorials/steady/distillation/constant",
+    "tutorials/steady/distillation/system",
+    "tutorials/steady/system",
+    "tutorials/system",
+)
+
+
 # One engine run per DISTINCT input (2026-11-24, slow-gates profile).  Forty-odd
 # arms run the same case unchanged -- the witness a dozen times, the green PEQ
 # plant and the acetic plant once per arm that only READS their layout block --

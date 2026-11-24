@@ -508,6 +508,40 @@ TOL = 1.0e-6      # relative, between two projections of the same number
 CONTINGENCY_AND_FEE = 1.18
 
 
+# The run cache (_input_key, _ancestor_inputs) hashes the files of the cases
+# this gate solves IN PLACE and the system/ and constant/ of their parent
+# folders (the cascade); every other walk is over the gate's own scratch
+# copies (check_scan_roots).
+SCAN_ROOTS = (
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/ammonia02_full_plant",
+    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "tutorials/steady/distillation/column17_exchanger_design",
+    "tutorials/steady/economics/economics03_startup_years",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "constant",
+    "system",
+    "tutorials/constant",
+    "tutorials/plant/constant",
+    "tutorials/plant/system",
+    "tutorials/steady/constant",
+    "tutorials/steady/distillation/constant",
+    "tutorials/steady/distillation/system",
+    "tutorials/steady/economics/constant",
+    "tutorials/steady/economics/system",
+    "tutorials/steady/flowsheets/constant",
+    "tutorials/steady/flowsheets/system",
+    "tutorials/steady/reactors/constant",
+    "tutorials/steady/reactors/system",
+    "tutorials/steady/system",
+    "tutorials/system",
+)
+
+
 # One engine run per DISTINCT input (2026-11-24, slow-gates profile).  The same
 # shipped plant is solved again and again by arms that only READ its sheets
 # (the green PEQ plant four times in place, at about 16 s each).  The engine is
