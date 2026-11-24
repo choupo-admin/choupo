@@ -26,18 +26,22 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
 ## 2. "Does it agree with the simulator we use?" -- the MTBE column
 
 - Open `?case=column19_mtbe_reactive_mesh` and Run.
-- Quote: against the reference simulator, duties within +2.5 % and +1.5 %,
-  temperatures within 0.6 K (BRAIN.md, Distillation row, C235).
-- Trap (C479, a general is on it): until it lands the comparison is not on
-  screen; say the numbers, then open the next case, which shows its
-  comparison.  Never name the commercial simulator.
+- Show: Plots > Declared views, the course's reference-simulator run of the
+  same column beside Choupo, with its "Read it right" note (a cross-check,
+  not a validation).
+- Quote, AS ON SCREEN (browser pass 2026-11-24): condenser duty 2.73 % and
+  reboiler duty 1.60 % larger than the reference run's, top and bottom
+  temperatures within 0.48 K and 0.63 K, conversion 0.1 % lower.
+- Trap: never name the commercial simulator.
 
 ## 3. "Validated against what?" -- a measured industrial column
 
 - Open `?case=column14_klemola_c4_splitter` and Run.
 - Show: the parity plot and the paper's Table 2 beside the run.
-- Quote: both key purities within 1 % of the measured plant (+0.45 %,
-  +0.24 %; Klemola & Ilme 1996 Table 2; BRAIN.md Distillation row).
+- Quote, AS ON SCREEN (browser pass 2026-11-24, wt %): both key purities
+  within 1 % of the measured plant -- i-butane in the distillate 93.90 against
+  93.5 (+0.43 %), n-butane in the bottoms 97.98 against 98.1 (-0.12 %); Klemola
+  & Ilme 1996 Table 2.
 - Say the honest half too: the two minor keys miss in opposite senses and the
   paper's own balance fails on them.  Colleagues trust a tool that says where
   it is weak.
@@ -58,8 +62,9 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
    64 381 kW (`expected`, `kpi FEHE Q_kW`).
 4. **Pinch.**  The plant's pinch includes the converter segment (C302).
 5. **Equipment and cost.**  Total capital investment 167.9 M EUR (`kpi
-   economics TCI`).  Trap (C479): until it lands the ten H2 buffer vessels
-   show as raw names; they are the hydrogen stock and carry 55 % of capital.
+   economics TCI`).  The ten H2 buffer vessels are one grouped row of the
+   equipment table, the hydrogen stock, 43.4 % of its cost (on screen,
+   browser pass 2026-11-24).
 6. **The economics, framed before it is opened.**  The appraisal opens on an
    NPV of -3 288 M EUR (`kpi economics NPV`).  Say first, then open it: every
    price is public, dated and cited (constant/economics): ammonia at its 2025
@@ -86,11 +91,13 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
 ## 6. If time remains -- kinetics against Cantera
 
 - `?case=nox02_millerbowman_denox`: the paper's Fig. 57; minimum 16.7 ppm NOx
-  at 1225 K, the paper's model curve within 2.9 ppm rms and Cantera within
-  1.7e-3 in every species (BRAIN.md, Miller & Bowman entry).  Speed: about 1.2
-  times Cantera's time on this case (C473).
-- The essential plots of these cases are being built (C477); until they land,
-  show the trajectory plot, not the full list of species.
+  at 1225 K.  SAY, do not look for on screen (the browser pass found none of
+  them there): the paper's model curve within 2.9 ppm rms, Cantera within
+  1.7e-3 in every species (BRAIN.md, Miller & Bowman entry), about 1.2 times
+  Cantera's time (C473).
+- Trap: do NOT open Plots > Trajectory -- 357 traces under a legend that
+  covers them.  The cloud is making the case open on its declared views; until
+  that lands, skip this stop.
 
 ## Before the day
 
@@ -99,8 +106,11 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
       167.86 M EUR, NPV -3 287.7 M EUR, break-even 1.952 and 1.685 EUR/kg read from
       the PEQ `expected`; column19 duties from its `expected`; every case of the path
       PASSED in the full sweep of that morning, both EduTools in `--gui` 49/0.
-- [ ] C479 landed (the U.A.LMTD line, variable units, buffer names, the MTBE
-      comparison on screen); else use the traps' words.
+- [x] C479 landed: the MTBE comparison and the grouped buffer row are on
+      screen (browser pass 2026-11-24, docs/audits/2026-11-24-demo-browser-pass.md).
+- [ ] Every `?case=` link above opens its case (the browser pass found a bare
+      name opens the landing; the cloud is fixing the lookup).  Until then use
+      the full path, e.g. `?case=steady/flash/flash01_benzene_toluene`.
 - [x] WASM rebuilt from the landed main; the site serves it (rebuilt 2026-11-24
       10:01 at afd3f8ff91; publish-site succeeded for that commit).  Redo if an engine
       change lands before the day.
