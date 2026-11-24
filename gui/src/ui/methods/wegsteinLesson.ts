@@ -189,7 +189,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The newton branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent, "
           + "followed by the temperature and the pressure "
-          + "(Flowsheet.cpp:3806-3815, the pressure, in pascals, at Flowsheet.cpp:3813). "
+          + "(Flowsheet.cpp:3835-3844, the pressure, in pascals, at Flowsheet.cpp:3842). "
           + "The total and the fractions are recovered afterwards.",
         eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ), \qquad F_i = F z_i`},
     ],
@@ -435,7 +435,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein class "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:74-75); the recycle loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3550-3551). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3578-3579). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp. "
       + "A cut is never silent: the run counts the secants formed and the ones "
       + "cut to q_min or q_max, per tear, and prints \"q clamped to [q_min, "
@@ -514,11 +514,11 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3870-3889, applied at Flowsheet.cpp:3912).",
+          + "(Flowsheet.cpp:3899-3918, applied at Flowsheet.cpp:3941).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
-          + "old Wegstein default also had (Flowsheet.cpp:3872-3873)." },
+          + "old Wegstein default also had (Flowsheet.cpp:3901-3902)." },
       { step: "And for the convergence plot the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
@@ -615,7 +615,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3995-3996). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:4024-4025). So the state "
       + "handed to the first consumer of a tear is an assumption about four "
       + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

@@ -72,7 +72,7 @@ import { FlowCanvas } from "./FlowCanvas.js";
 import { StaleFitBanner } from "./StaleFitBanner.js";
 import { WelcomeScreen } from "./WelcomeScreen.js";
 import { CaseIntro } from "./CaseIntro.js";
-import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
+import { ExpiredTabPanel, AmbiguousCasePanel } from "./ExpiredTabPanel.js";
 import { LogWorkspace } from "./LogWorkspace.js";
 import { LiteratureWorkspace } from "./LiteratureWorkspace.js";
 import { MenuBar } from "./MenuBar.js";
@@ -183,6 +183,7 @@ export function AppShell() {
   // No case (blank boot) -> no console (and no reserved dock row).
   const caseOpen = hasCaseOpen(tutorialName);
   const bootExpired = useStore((s) => s.bootExpired);
+  const bootAmbiguous = useStore((s) => s.bootAmbiguous);
   const showIntro = useStore((s) => s.showIntro);
   // The console belongs to a case you are WORKING on -- not the welcome, and not
   // the tutorial intro (it would clutter a student's first look).
@@ -421,6 +422,11 @@ export function AppShell() {
   // citizenship") instead of silently degrading to the welcome screen.
   if (bootExpired) {
     return <ExpiredTabPanel kind={bootExpired} />;
+  }
+
+  // `?case=<bare name>` shared by several cases: refuse BY NAME, list them.
+  if (bootAmbiguous) {
+    return <AmbiguousCasePanel name={bootAmbiguous.name} candidates={bootAmbiguous.candidates} />;
   }
 
   return (

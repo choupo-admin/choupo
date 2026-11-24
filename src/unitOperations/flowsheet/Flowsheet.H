@@ -89,6 +89,7 @@ Dictionary form (topology only -- state in 0/):
 #include "streams/StreamOverrides.H"
 
 #include "core/Dictionary.H"
+#include "io/RestartTears.H"
 #include "result/SimulationResult.H"
 #include "result/UnitProfile.H"
 #include "streams/ProcessStream.H"
@@ -191,6 +192,25 @@ public:
         std::map<std::string, ProcessStream>& streams,
         const std::vector<std::string>&        tears)>;
     void setRestartHook(RestartHook h) { onRestart_ = std::move(h); }
+
+    // ---- Exact tear restart (opt-in, `choupoSolve --restart-tears`) ----------
+    //  The tear values the recycle solver ENTERED its last pass with (x_k,
+    //  not the G(x_k) that converged/ holds), as an exact record
+    //  (io/RestartTears.H).  `setTearRestart` hands solve() a record whose
+    //  trust (build, inputs, package) the CALLER has already checked: solve
+    //  seeds the tears from it, skips the iteration and runs the final pass,
+    //  or -- if the record does not fit this flowsheet's tears -- says why
+    //  and solves in full.  `setTearSnapshotHook` is called once, at the
+    //  final pass of a CONVERGED full solve, with the record to keep.  Both
+    //  default empty: no flag, no change.
+    using TearSnapshotHook = std::function<void(restartTears::Record&)>;
+    void setTearRestart(std::shared_ptr<const restartTears::Record> r)
+    { tearRestart_ = std::move(r); }
+    void setTearSnapshotHook(TearSnapshotHook h) { onTearSnapshot_ = std::move(h); }
+    /// true when the last solve() seeded from the record instead of iterating
+    bool tearRestartApplied() const { return tearRestartApplied_; }
+    /// solver iterations the applied record let this run skip (0 when none)
+    int  tearRestartIterationsSkipped() const { return tearRestartSkipped_; }
 
     int solve(const DictPtr& dict,
               const ThermoPackage& thermo,
@@ -471,6 +491,10 @@ private:
     // Solution-directory hooks (default empty => feature OFF, zero change).
     InstantCallback                                        onInstant_;
     RestartHook                                            onRestart_;
+    std::shared_ptr<const restartTears::Record>            tearRestart_;
+    TearSnapshotHook                                       onTearSnapshot_;
+    bool                                                   tearRestartApplied_ = false;
+    int                                                    tearRestartSkipped_ = 0;
 };
 
 } // namespace Choupo

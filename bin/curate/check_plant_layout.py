@@ -454,16 +454,33 @@ strengthened):
       the 0.1 m route through the kerb announces nothing.
   S54 a depth allowance over the catch area only (the pit dropped)      -> (p)
       "allowance rain 9.6 m3; 0.05 m over 204.0 m2 gives 10.2".
+
+  PARALLEL ARMS AND SOLVES (2026-11-24, the slow-gates profile: 664 s on four
+  cores, 99 % of it 133 sequential `choupoSolve` runs).  The sixteen arms print
+  nothing while they run, so they run side by side in threads and their `fails`
+  and `claims` are joined in the arms' fixed order (the stdout is the
+  sequential run's, byte for byte); arm_pipes and arm_plot, which share
+  PLOT_SEEN, are one chain in one thread.  Every engine run holds one of
+  CHOUPO_GATE_JOBS slots (default min(4, cpu_count); 1 = the sequential walk),
+  the run cache is lock-guarded and holds a run IN FLIGHT, and arm_bunds and
+  arm_utility prepare every directory they solve before their first solve and
+  `prefetch` the runs together.  Sabotages are unchanged: any edited input is a
+  new cache key and runs for real.  Measured here: 664 s -> 141 s, stdout
+  identical to the sequential run's, 29 MB per engine run; a layoutDict
+  sabotage in a scratch copy of the tree FAILs by name in arms (h), (m), (p), (u).
 """
 import json
 import os
 import re
 import shutil
 import case_records  # noqa: E402
+import restart_tears  # noqa: E402
 import subprocess
 import sys
 import tempfile
 import hashlib
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from math import hypot, atan2, degrees, pi, sin, cos, radians, floor
 from pathlib import Path
 
@@ -476,8 +493,49 @@ APALUTAMIDE = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 COLUMN = ROOT / "tutorials/steady/distillation/column09_tray_hydraulics"
 ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
 
-fails = []
-claims = []
+# PARALLEL ARMS (2026-11-24).  The arms are independent programs over their own
+# scratch directories and they print nothing while they run (the verdict is
+# printed once, at the end), so the gate runs them side by side and joins their
+# `fails` and `claims` in the arms' fixed order -- the stdout is the sequential
+# run's, byte for byte.  Three pieces make that safe: (1) `fails`, `claims` and
+# the *_SEEN lists are PER THREAD (a chain of arms that share one, as arm_pipes
+# and arm_plot share PLOT_SEEN, runs in one thread); (2) every engine run holds
+# one of CHOUPO_GATE_JOBS slots (default min(4, cpu_count)), so the machine runs
+# that many engines whatever the number of threads; (3) the run cache is guarded
+# by a lock and holds a run IN FLIGHT, so two arms asking for the same input
+# wait for one run.  `prefetch` starts the solves an arm will need before it
+# asks for them (the arm's own sequence of prepare/solve/check is unchanged).
+_TL = threading.local()
+
+
+class _PerThread:
+    """A list that is one list per thread."""
+
+    def __init__(self, name):
+        self._name = name
+
+    def _l(self):
+        l = getattr(_TL, self._name, None)
+        if l is None:
+            l = []
+            setattr(_TL, self._name, l)
+        return l
+
+    def append(self, x):
+        self._l().append(x)
+
+    def extend(self, xs):
+        self._l().extend(xs)
+
+    def __iter__(self):
+        return iter(self._l())
+
+    def __len__(self):
+        return len(self._l())
+
+
+fails = _PerThread("fails")
+claims = _PerThread("claims")
 
 
 def fail(msg):
@@ -489,7 +547,7 @@ def prepare(work, name, src, edit=None, drop_layout=False):
     if d.exists():
         shutil.rmtree(d)
     case_records.copytree(src, d, ignore=shutil.ignore_patterns(
-        "reports", "converged", "design", "iterations"))
+        "reports", "converged", "converged.restart", "design", "iterations"))
     lay = d / "system" / "layoutDict"
     if drop_layout and lay.exists():
         lay.unlink()
@@ -498,9 +556,22 @@ def prepare(work, name, src, edit=None, drop_layout=False):
     return d
 
 
+def _jobs():
+    try:
+        n = int(os.environ.get("CHOUPO_GATE_JOBS", "0"))
+    except ValueError:
+        n = 0
+    return n if n > 0 else max(1, min(4, os.cpu_count() or 1))
+
+
+_JOBS = _jobs()
+_SLOTS = threading.BoundedSemaphore(_JOBS)
+
+
 def run(cmd, cwd=ROOT):
-    p = subprocess.run(cmd, capture_output=True, text=True, cwd=str(cwd),
-                       timeout=900, env=ENV)
+    with _SLOTS:
+        p = subprocess.run(cmd, capture_output=True, text=True, cwd=str(cwd),
+                           timeout=900, env=ENV)
     return p.stdout, p.stderr, p.returncode
 
 
@@ -545,7 +616,17 @@ SCAN_ROOTS = (
 _RUNS = {}
 _RUN_STASH = None
 _HITS = [0]
+_LOCK = threading.Lock()
 _SKIP_DIRS = ("reports", "converged", "design", "iterations")
+
+
+class _Flight:
+    """One engine run, finished or in flight; waiters block on `done`."""
+
+    def __init__(self):
+        self.done = threading.Event()
+        self.res = None
+        self.exc = None
 
 
 def _ancestor_inputs(h, d):
@@ -579,24 +660,66 @@ def _input_key(d, extra):
     return h.hexdigest()
 
 
+# Arms that differ only in system/layoutDict or system/postDict share one recycle
+# solve: the engine restarts from the exact converged tears for all but the first
+# (restart_tears.py -- exactness is PROVEN per solve key against the full run,
+# never assumed).  CHOUPO_GATE_NO_RESTART=1 turns it off (it changes no result).
+_RST = restart_tears.Restarter(_ancestor_inputs)
+
+
 def solve(d, *extra):
     global _RUN_STASH
     if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
         return run([str(BIN), *extra, str(d)])
     key = _input_key(d, extra)
-    hit = _RUNS.get(key)
-    if hit is not None:
+    with _LOCK:
+        fl = _RUNS.get(key)
+        mine = fl is None
+        if mine:
+            fl = _RUNS[key] = _Flight()
+            if _RUN_STASH is None:
+                _RUN_STASH = Path(tempfile.mkdtemp(prefix="plantlayout.stash."))
+            stash = _RUN_STASH / key
+    if mine:
+        try:
+            out, err, rc = _RST.run(
+                d, extra, lambda flags: run([str(BIN), *flags, *extra, str(d)]))
+            shutil.copytree(d, stash)
+            fl.res = (out, err, rc, str(d), stash)
+        except BaseException as e:
+            fl.exc = e
+            raise
+        finally:
+            fl.done.set()
+        return out, err, rc
+    fl.done.wait()
+    if fl.exc is not None:
+        raise fl.exc
+    with _LOCK:
         _HITS[0] += 1
-        out, err, rc, first, stash = hit
+    out, err, rc, first, stash = fl.res
+    if first != str(d):
         shutil.copytree(stash, d, dirs_exist_ok=True)
-        return out.replace(first, str(d)), err.replace(first, str(d)), rc
-    out, err, rc = run([str(BIN), *extra, str(d)])
-    if _RUN_STASH is None:
-        _RUN_STASH = Path(tempfile.mkdtemp(prefix="plantlayout.stash."))
-    stash = _RUN_STASH / key
-    shutil.copytree(d, stash)
-    _RUNS[key] = (out, err, rc, str(d), stash)
-    return out, err, rc
+    return out.replace(first, str(d)), err.replace(first, str(d)), rc
+
+
+_POOL = None
+_FUTURES = []
+
+
+def prefetch(*dirs):
+    """Start the default-argument solve of each (prepared, final) directory in
+    the background; the arm's own `solve(d)` later takes the run's result from
+    the cache.  A hint only: the cache is keyed by CONTENT, so a directory the
+    arm changes afterwards simply runs again for real."""
+    global _POOL
+    if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE") or _JOBS < 2:
+        return
+    with _LOCK:
+        if _POOL is None:
+            _POOL = ThreadPoolExecutor(max_workers=_JOBS)
+    for d in dirs:
+        _FUTURES.append(_POOL.submit(solve, d))
 
 
 def result_json(out):
@@ -824,7 +947,42 @@ def arm_utility(work):
     if not PEQ.exists():
         fail("(u) the reference plant tutorials/plant/greenAmmoniaPEQ_baseCase is missing")
         return
-    d = prepare(work, "util_plain", PEQ)
+    #  Every directory this arm solves is prepared before the first solve and
+    #  their runs are started together (prefetch); the checks below are the
+    #  sequential ones, each solve a cache hit or a wait.
+    cases = {
+        "an unknown service": (lambda t: t.replace("service   coolingWaterSupply;", "service   steamSupply;", 1),
+                               [r"steamSupply.*not a service this layout knows"]),
+        "an item that is not placed": (lambda t: t.replace('to        "N2Cooler";', 'to        "nowhere";', 1),
+                                       [r"item `nowhere` is not placed"]),
+        "a name used twice": (lambda t: t.replace('"CW-Intercooler-supply"', '"CW-N2Cooler-supply"', 1),
+                              [r"declared twice"]),
+        "from equal to": (lambda t: t.replace('to        "N2Cooler";', 'to        "coolingTower";', 1),
+                          [r"`from` and `to` are both"]),
+        "a face that is not one": (lambda t: t.replace("toPort    { side west; elevation 2 m; }", "toPort    { side sideways; }", 1),
+                                   [r"side sideways"]),
+        "an allocation the run does not carry": (lambda t: t.replace("utility coolingWater; }", "utility chilledWater; }", 1),
+                                                  [r"names an allocation the run does not carry"]),
+    }
+    box = ('    { nonProcess "tallBox"; kind building; x 112 m; y 10 m; z 0 m;'
+           ' orientation alongX; footprint { length 4 m; width 4 m; height 30 m; }'
+           ' source "gate sabotage"; reason "a tall box across the tower lines"; }\n')
+    def no_fouling(t):
+        return t.replace("""                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
+                                           shellSide 0.00035 m2.K/W; }  // treated tower water
+""", "", 1)
+    pre = {"plain": prepare(work, "util_plain", PEQ),
+           "without": prepare(work, "util_without", PEQ,
+                              lambda t: UTILITY_BLOCK.sub("\n", t))}
+    for label, (edit, pats) in cases.items():
+        pre["ref " + label] = prepare(work, "util_ref_" + re.sub(r"\W", "_", label), PEQ, edit)
+    pre["clash"] = prepare(work, "util_clash", PEQ,
+                           lambda t: t.replace("items\n(\n", "items\n(\n" + box, 1))
+    pre["refused"] = prepare(work, "util_refused", PEQ)
+    pd = pre["refused"] / "system" / "postDict"
+    pd.write_text(no_fouling(pd.read_text()))
+    prefetch(*pre.values())
+    d = pre["plain"]
     out, err, rc = solve(d)
     j = result_json(out)
     if rc != 0 or j is None:
@@ -883,7 +1041,7 @@ def arm_utility(work):
         fail("(u) the reference plant raises findings: " + ", ".join(f["id"] for f in lay["findings"]))
 
     # no existing row moved: the same case without the block
-    d0 = prepare(work, "util_without", PEQ, lambda t: UTILITY_BLOCK.sub("\n", t))
+    d0 = pre["without"]
     out0, err0, rc0 = solve(d0)
     j0 = result_json(out0)
     if rc0 != 0 or j0 is None:
@@ -900,25 +1058,9 @@ def arm_utility(work):
         fail("(u) declaring utility lines moved the layout summary's own counts")
 
     # refusals, each through the real reader
-    def first_line(t, svc="coolingWaterSupply"):
-        return t
-    cases = {
-        "an unknown service": (lambda t: t.replace("service   coolingWaterSupply;", "service   steamSupply;", 1),
-                               [r"steamSupply.*not a service this layout knows"]),
-        "an item that is not placed": (lambda t: t.replace('to        "N2Cooler";', 'to        "nowhere";', 1),
-                                       [r"item `nowhere` is not placed"]),
-        "a name used twice": (lambda t: t.replace('"CW-Intercooler-supply"', '"CW-N2Cooler-supply"', 1),
-                              [r"declared twice"]),
-        "from equal to": (lambda t: t.replace('to        "N2Cooler";', 'to        "coolingTower";', 1),
-                          [r"`from` and `to` are both"]),
-        "a face that is not one": (lambda t: t.replace("toPort    { side west; elevation 2 m; }", "toPort    { side sideways; }", 1),
-                                   [r"side sideways"]),
-        "an allocation the run does not carry": (lambda t: t.replace("utility coolingWater; }", "utility chilledWater; }", 1),
-                                                  [r"names an allocation the run does not carry"]),
-    }
     n = 0
     for label, (edit, pats) in cases.items():
-        dd = prepare(work, "util_ref_" + re.sub(r"\W", "_", label), PEQ, edit)
+        dd = pre["ref " + label]
         o, e, c = solve(dd)
         if c != 2:
             fail(f"(u) {label}: exit {c}, expected the refusal's 2")
@@ -929,11 +1071,7 @@ def arm_utility(work):
         n += 1
 
     # a tall item across the tower lines' run: exactly the lines through it
-    box = ('    { nonProcess "tallBox"; kind building; x 112 m; y 10 m; z 0 m;'
-           ' orientation alongX; footprint { length 4 m; width 4 m; height 30 m; }'
-           ' source "gate sabotage"; reason "a tall box across the tower lines"; }\n')
-    dd = prepare(work, "util_clash", PEQ,
-                 lambda t: t.replace("items\n(\n", "items\n(\n" + box, 1))
+    dd = pre["clash"]
     o, e, c = solve(dd)
     jc = result_json(o)
     if c != 0 or jc is None:
@@ -953,13 +1091,7 @@ def arm_utility(work):
     # a sizer that REFUSES an end's item refuses the ITEM, never the run: the
     # lines to it are listed not routed (a finding naming the refusal), the
     # others route, and the run exits 0 (found by check_design_sheet)
-    def no_fouling(t):
-        return t.replace("""                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
-                                           shellSide 0.00035 m2.K/W; }  // treated tower water
-""", "", 1)
-    dp = prepare(work, "util_refused", PEQ)
-    pd = dp / "system" / "postDict"
-    pd.write_text(no_fouling(pd.read_text()))
+    dp = pre["refused"]
     o, e, c = solve(dp)
     jr = result_json(o)
     if c != 0 or jr is None:
@@ -1405,10 +1537,10 @@ def check_routes(tag, lay, require_rack_route=True):
     return n
 
 
-HEADERS_SEEN = []   # (plant, stream, branches) of every header check_routes held
+HEADERS_SEEN = _PerThread("headers_seen")   # (plant, stream, branches) of every header check_routes held
 
 
-SOLIDS_SEEN = []
+SOLIDS_SEEN = _PerThread("solids_seen")
 
 
 def check_solids(tag, j, lay):
@@ -1707,7 +1839,7 @@ def check_plot(tag, case, lay, out, err, j):
     PLOT_SEEN.append(tag)
 
 
-PLOT_SEEN = []
+PLOT_SEEN = _PerThread("plot_seen")
 
 FLAGSHIP_ITEMS = ('items ( { item "DRYING.SD"; x 0 m; y 0 m; z 0 m; orientation vertical; }\n'
                   '        { item "FERMENTATION.Fermentor"; x 20 m; y 0 m; z 0 m;'
@@ -3191,7 +3323,7 @@ def arm_site(work):
                   f" reversing); {n_ref} refusals")
 
 
-INDOOR_SEEN = []
+INDOOR_SEEN = _PerThread("indoor_seen")
 
 
 def indoor_units(lay):
@@ -3508,10 +3640,44 @@ BUND_REFUSALS = [
 def arm_bunds(work):
     """(p) SECONDARY CONTAINMENT (DEV.md 4c C134)."""
     n_checked = []
+    #  Every directory this arm solves is prepared HERE, before the first solve,
+    #  and their runs are started together (prefetch); the arm then walks its
+    #  sequence of checks unchanged, each solve a cache hit or a wait.
+    pre = {}
+    for tag, case in (("greenAmmoniaPEQ", GREEN), ("ammonia02", WITNESS)):
+        pre["bund_" + tag] = prepare(work, "bund_" + tag, case)
+    pre["none"] = prepare(work, "bund_none", GREEN, drop_bunds)
+    pre["small"] = prepare(work, "bund_small", GREEN, sub("wall        { height 4.5 m; }",
+                                                           "wall        { height 2 m; }"))
+    pre["polygon"] = prepare(work, "bund_polygon", GREEN, sub(
+        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
+        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -69 m; } { x 213 m; y -1 m; }"
+        " { x 160 m; y -1 m; } { x 160 m; y -10 m; } { x 103 m; y -10 m; } );"))
+    pre["bowtie"] = prepare(work, "bund_bowtie", GREEN, sub(
+        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
+        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -1 m; } { x 213 m; y -69 m; }"
+        " { x 103 m; y -1 m; } );"))
+    pre["lying"] = prepare(work, "bund_lying", WITNESS, chain(
+        sub("kind        impounding;", "kind        bund;"),
+        sub("        pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }\n", ""),
+        sub("wall        { height 0.3 m; }", "wall        { height 2 m; }")))
+    pre["drain"] = prepare(work, "bund_drain", GREEN, sub("drain       closedValve;",
+                                                           "drain       openToSewer;"))
+    pre["pit"] = prepare(work, "bund_pit", WITNESS, sub(
+        "pit         { x 108 m; y -77 m; length 24 m; width 9 m;",
+        "pit         { x 103 m; y -45 m; length 3 m; width 3 m;"))
+    pre["road"] = prepare(work, "bund_road", WITNESS, sub("yMax -36 m;", "yMax -30 m;"))
+    pre["pipe"] = prepare(work, "bund_pipe", WITNESS, sub("yMin -71 m; yMax -36 m;",
+                                                           "yMin -70 m; yMax -36 m;"))
+    ref_text = (GREEN / "system" / "layoutDict").read_text()
+    for k, (label, needle, edit) in enumerate(BUND_REFUSALS):
+        pre["ref%d" % k] = prepare(work, f"bund_ref{k}", GREEN,
+                                   lambda _t, e=edit: e(ref_text))
+    prefetch(*pre.values())
     # ---- the two witnesses, recomputed ----------------------------------
     for tag, case, kinds in (("greenAmmoniaPEQ", GREEN, {"bund", "impounding"}),
                              ("ammonia02", WITNESS, {"impounding"})):
-        d = prepare(work, "bund_" + tag, case)
+        d = pre["bund_" + tag]
         out, err, rc, j, lay = layout_of(d)
         bs = lay.get("bunds") or []
         if rc != 0 or not bs:
@@ -3537,7 +3703,7 @@ def arm_bunds(work):
             if inside or finding(lay, "pitNotRemote"):
                 fail(f"(p) {tag}: the pit of {b['bund']} must stand outside its catch area")
     # ---- unbunded liquid: the green witness with no bunds ---------------
-    d = prepare(work, "bund_none", GREEN, drop_bunds)
+    d = pre["none"]
     out, err, rc, j, lay = layout_of(d)
     tanks = [i["id"] for i in lay.get("items", [])
              if sheet_liquid(d, sheet_rel(lay, i["id"])) > 0]
@@ -3556,8 +3722,7 @@ def arm_bunds(work):
         fail(f"(p) an item holding no liquid by its sheet was announced unbunded:"
              f" {[f['a'] for f in finding(lay, 'unbundedLiquid')]}")
     # ---- a bund too small for its rule: announced, never refused --------
-    d = prepare(work, "bund_small", GREEN, sub("wall        { height 4.5 m; }",
-                                                "wall        { height 2 m; }"))
+    d = pre["small"]
     out, err, rc, j, lay = layout_of(d)
     bs = lay.get("bunds") or []
     f = finding(lay, "bundCapacity")
@@ -3574,10 +3739,7 @@ def arm_bunds(work):
     # ---- a POLYGON wall: an L-shaped bund round the same tanks ------------
     #  The witnesses declare rectangles; the outline's own corners must give
     #  the area (shoelace) and the containment test (inside, not across).
-    d = prepare(work, "bund_polygon", GREEN, sub(
-        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
-        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -69 m; } { x 213 m; y -1 m; }"
-        " { x 160 m; y -1 m; } { x 160 m; y -10 m; } { x 103 m; y -10 m; } );"))
+    d = pre["polygon"]
     out, err, rc, j, lay = layout_of(d)
     bs = lay.get("bunds") or []
     if rc != 0 or not bs or bs[0]["regionFrom"] != "polygon" \
@@ -3586,10 +3748,7 @@ def arm_bunds(work):
              f" {110 * 68 - 57 * 9} m2")
     else:
         check_bund("green, L-shaped wall", d, lay, bs[0], None)
-    d = prepare(work, "bund_bowtie", GREEN, sub(
-        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
-        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -1 m; } { x 213 m; y -69 m; }"
-        " { x 103 m; y -1 m; } );"))
+    d = pre["bowtie"]
     o, e, rc = solve(d)
     if rc != 2 or "a wall's outline must not cross itself" not in o + e:
         fail(f"(p) a bow-tie polygon must be refused as crossing itself: exit {rc}")
@@ -3597,10 +3756,7 @@ def arm_bunds(work):
     #  The witness's bullets (D 5.27 m, lying along y) in a 2 m bund: each
     #  displaces the segment of its circle below 2 m times its length -- the
     #  one shape the green witness's boxes cannot reach.
-    d = prepare(work, "bund_lying", WITNESS, chain(
-        sub("kind        impounding;", "kind        bund;"),
-        sub("        pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }\n", ""),
-        sub("wall        { height 0.3 m; }", "wall        { height 2 m; }")))
+    d = pre["lying"]
     out, err, rc, j, lay = layout_of(d)
     bs = lay.get("bunds") or []
     if rc != 0 or not bs or bs[0]["containment"] != "bund" \
@@ -3614,18 +3770,15 @@ def arm_bunds(work):
                  f" bounding boxes would give {box} -- the segment is not being taken")
     # ---- the open drain, the pit inside its catch area, a road and a pipe
     #      through a wall: announced ----------------------------------------
-    d = prepare(work, "bund_drain", GREEN, sub("drain       closedValve;",
-                                                "drain       openToSewer;"))
+    d = pre["drain"]
     out, err, rc, j, lay = layout_of(d)
     if rc != 0 or not finding(lay, "bundDrainOpen"):
         fail(f"(p) a drain open to the sewer must be announced: exit {rc}")
-    d = prepare(work, "bund_pit", WITNESS, sub(
-        "pit         { x 108 m; y -77 m; length 24 m; width 9 m;",
-        "pit         { x 103 m; y -45 m; length 3 m; width 3 m;"))
+    d = pre["pit"]
     out, err, rc, j, lay = layout_of(d)
     if rc != 0 or not finding(lay, "pitNotRemote"):
         fail(f"(p) a pit inside its own catch area must be announced `pitNotRemote`: exit {rc}")
-    d = prepare(work, "bund_road", WITNESS, sub("yMax -36 m;", "yMax -30 m;"))
+    d = pre["road"]
     out, err, rc, j, lay = layout_of(d)
     if rc != 0 or not finding(lay, "roadCrossesBund", "tankFarm"):
         fail(f"(p) a road through the catch area's kerb must be announced"
@@ -3638,8 +3791,7 @@ def arm_bunds(work):
     #  bullets' south ends, so the `productStored` main at grade (1 m off the
     #  row, y = -70.6 m) lies outside it and each outlet BRANCH crosses the
     #  kerb at grade -- announced once per branch, under its own subject.
-    d = prepare(work, "bund_pipe", WITNESS, sub("yMin -71 m; yMax -36 m;",
-                                                "yMin -70 m; yMax -36 m;"))
+    d = pre["pipe"]
     out, err, rc, j, lay = layout_of(d)
     through = {f["a"] for f in finding(lay, "pipeThroughBund")}
     want = {"productStored@T201/vessel%d" % k for k in range(1, 9)}
@@ -3649,9 +3801,8 @@ def arm_bunds(work):
              f" announced for {sorted(through)}; {err.strip()[-300:]}")
     # ---- refusals ----------------------------------------------------------
     n_ref = 0
-    text = (GREEN / "system" / "layoutDict").read_text()
     for k, (label, needle, edit) in enumerate(BUND_REFUSALS):
-        d = prepare(work, f"bund_ref{k}", GREEN, lambda _t, e=edit: e(text))
+        d = pre["ref%d" % k]
         o, e, rc = solve(d)
         if rc != 2:
             fail(f"(p) {label}: exit {rc}, not refused")
@@ -3681,29 +3832,57 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     try:
         load_leaves(work)
-        arm_witness(work)
-        arm_refusals(work)
-        arm_hazards(work)
-        arm_draft(work)
-        arm_absent(work)
-        arm_refused_sizer(work)
-        arm_pipes(work)
-        arm_pipe_override(work)
-        arm_plot(work)
-        arm_roads(work)
-        arm_fence(work)
-        arm_clash(work)
-        arm_site(work)
-        arm_indoor(work)
-        arm_bunds(work)
-        arm_utility(work)
+        # (arm, name of the chain's thread); a chain runs in ONE thread, in order
+        arms = [arm_witness, arm_refusals, arm_hazards, arm_draft, arm_absent,
+                arm_refused_sizer, arm_pipes, arm_pipe_override, arm_plot,
+                arm_roads, arm_fence, arm_clash, arm_site, arm_indoor,
+                arm_bunds, arm_utility]
+        #  arm_plot reports the plants arm_pipes recorded in PLOT_SEEN.
+        chains = [[a] for a in arms if a is not arm_plot]
+        for c in chains:
+            if c[0] is arm_pipes:
+                c.append(arm_plot)
+        results = {}        # arm -> (fails, claims, exception)
+
+        def run_chain(chain):
+            for a in chain:
+                for nm in ("fails", "claims"):
+                    setattr(_TL, nm, [])
+                exc = None
+                try:
+                    a(work)
+                except BaseException as e:      # re-raised in arm order below
+                    exc = e
+                results[a] = (list(_TL.fails), list(_TL.claims), exc)
+        #  longest chains first, so the tail of the run is short
+        order = sorted(chains, key=lambda c: c[0] not in (
+            arm_bunds, arm_clash, arm_utility, arm_pipes))
+        if _JOBS < 2:
+            for c in order:
+                run_chain(c)
+        else:
+            ts = [threading.Thread(target=run_chain, args=(c,)) for c in order]
+            for t in ts:
+                t.start()
+            for t in ts:
+                t.join()
+        for a in arms:
+            f, c, exc = results[a]
+            if exc is not None:
+                raise exc
+            fails.extend(f)
+            claims.extend(c)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
+        if _POOL is not None:
+            _POOL.shutdown(wait=True)
         if _RUN_STASH is not None:
             shutil.rmtree(_RUN_STASH, ignore_errors=True)
+        _RST.cleanup()
         if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
-            print("run-cache: %d engine runs, %d replayed" % (len(_RUNS), _HITS[0]), file=sys.stderr)
+            print("run-cache: %d engine runs, %d replayed, %d slots; restart: %d proofs, %d restarted, %d not exact"
+                  % (len(_RUNS), _HITS[0], _JOBS, _RST.proofs, _RST.restarts, _RST.refused), file=sys.stderr)
     if fails:
         print("check_plant_layout: FAIL")
         for f in fails:

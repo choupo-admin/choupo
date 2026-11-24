@@ -61,6 +61,14 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 type Side = "left" | "right";
 
+/** Beyond this many series the legend is hidden and the count is said on the
+ *  plot (the browser pass of 2026-11-24: nox02's 357 traces, 17 vessels x 21
+ *  variables, had a legend that covered the plot).  Twelve is what the
+ *  palette's colours can tell apart and what a legend can list without
+ *  covering a plot of ordinary height; past it the name is read by hovering
+ *  (every trace carries a hover template naming it). */
+export const TRAJECTORY_LEGEND_CAP = 12;
+
 /** A horizontal reference line (e.g. the controller setpoint). */
 export interface ReferenceLine {
   y: number;
@@ -185,7 +193,19 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
     })),
   ];
 
+  const manySeries = traces.length > TRAJECTORY_LEGEND_CAP;
   const annotations = [
+    ...(manySeries
+      ? [{
+          xref: "paper" as const, x: 0.01, xanchor: "left" as const,
+          yref: "paper" as const, y: 1.0, yanchor: "bottom" as const,
+          text: `${traces.length} series; legend hidden, hover to identify`,
+          showarrow: false,
+          // no colour here: the layout font is re-themed for light mode, an
+          // explicit dark-mode grey would be faint on white
+          font: { size: 12 },
+        }]
+      : []),
     ...(referenceLines ?? [])
       .filter((r) => r.label)
       .map((r) => ({
@@ -235,6 +255,7 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
         : undefined,
         shapes,
         annotations,
+        showlegend: !manySeries,
         legend: {...darkLayout.legend, x: 0.02, y: 0.98 },
       }}
       config={PLOT_CONFIG}

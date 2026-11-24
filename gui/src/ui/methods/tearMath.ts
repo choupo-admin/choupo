@@ -20,14 +20,14 @@
   division of labour.  Choupo executes the flattened units IN DECLARED ORDER
   and never topologically sorts them, and
   `Flowsheet::validateSequentialPlan`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:5052) validates that order
+  (src/unitOperations/flowsheet/Flowsheet.cpp:5147) validates that order
   against the declared tears after 0/ is seeded and before any unit is solved
   (called at src/unitOperations/flowsheet/Flowsheet.cpp:2692).  It DETECTS every material
   cycle, names the chain it found, and refuses SEVEN ways by name — MISSING
   TEAR, INVALID ORDER, FORWARD TEAR, OFF-CYCLE TEAR, INLET TEAR, UNKNOWN TEAR,
-  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:5143-5260) — and
+  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:5238-5355) — and
   where the problem is the order it prints a valid one to paste
-  (src/unitOperations/flowsheet/Flowsheet.cpp:5143-5174).  SEVEN.
+  (src/unitOperations/flowsheet/Flowsheet.cpp:5238-5269).  SEVEN.
   The engine's own source is the authority on the list.  What it will NOT do is CHOOSE the cut:
   `tearSelection auto` is named and deliberately deferred.  Cycle detection is
   the engine's job; tear choice is the author's.
@@ -275,7 +275,7 @@ export interface PlanVerdict {
   /** Tear VARIABLES this plan costs, per solver.  Wegstein packs
    *  (F, z_1..z_Nc, T, P) per torn stream
    *  (src/unitOperations/flowsheet/Flowsheet.cpp:1855-1888) and Newton packs
-   *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3806-3815):
+   *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3835-3844):
    *  the pressure has been a tear variable since DEV.md 4c C186 (5). */
   variablesWegstein: number;
   variablesNewton: number;
@@ -304,7 +304,7 @@ export function judgePlan(
     const c = pos.get(e.to as number) ?? 0;
     //  `c <= p` and not `c < p`: a unit consuming its own output is a genuine
     //  one-unit cycle, and the engine counts it as backward for that reason
-    //  (src/unitOperations/flowsheet/Flowsheet.cpp:5191-5194).
+    //  (src/unitOperations/flowsheet/Flowsheet.cpp:5286-5289).
     if (c > p) continue;
     const cyc = cycles.find((y) => y.edges.includes(e.name)) ?? null;
     backward.push({
@@ -394,7 +394,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *  page was the single button that withdraws the witness case's declaration.
  *
  *  So this is a TRANSCRIPTION of `Flowsheet::validateSequentialPlan`
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:5052-5260), in the same two
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:5147-5355), in the same two
  *  passes and the same order: the ordered walk first (:5074-5106), then the
  *  declared-tear pass (:5110-5210).  It is the same posture `wegsteinStep`
  *  takes toward `Wegstein::step` -- the arithmetic is the engine's, the toy
@@ -582,7 +582,7 @@ export function withdrawTearOverrides(): DictOverride[] {
  *  Verbatim is the point: these sentences are the contract, they carry the
  *  cycle the engine found and the remedy it recommends, and paraphrasing them
  *  here would be a second home for a refusal message.  The prefixes are the
- *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:5143-5260)
+ *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:5238-5355)
  *  and the leading sentence is at :2684-2686. */
 const FINDING_WORDS = [
   "MISSING TEAR", "INVALID ORDER", "FORWARD TEAR", "OFF-CYCLE TEAR",
@@ -598,7 +598,7 @@ export function planFindings(log: string | null | undefined): string[] {
 
 /** The engine ANNOUNCING a valid plan: `[plan] material recycle: tear 'x'
  *  cuts A -> B --x--> A`, printed at verbosity 2 and above
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:5309-5310).  A valid recycle
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:5404-5405).  A valid recycle
  *  shows its cut; it is never implicit. */
 export function planAnnouncements(log: string | null | undefined): string[] {
   if (!log) return [];

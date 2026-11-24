@@ -34,7 +34,7 @@ License
 import { create } from "zustand";
 import { resolveWorkspaceSearch } from "./workspaceUrl.js";
 
-import { canonicalCaseName, tutorialByName } from "../cases/tutorials.js";
+import { canonicalCaseName, resolveCaseName, tutorialByName } from "../cases/tutorials.js";
 import { readCaseAt } from "../cases/workspace.js";
 import type { CaseFiles } from "../case/types.js";
 import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
@@ -269,6 +269,9 @@ interface AppState {
    *  localStorage stash is gone: render the honest "expired" panel instead of
    *  silently degrading to the welcome screen. */
   bootExpired: "focus" | null;
+  /** Non-null when `?case=<bare name>` matches SEVERAL bundled cases: the
+   *  shell refuses by name and lists them (never guesses). */
+  bootAmbiguous: { name: string; candidates: string[] } | null;
   caseFiles: CaseFiles;
   /** Snapshot of caseFiles AT LOAD TIME.  Compared against `caseFiles`
    *  to determine `hasEdits`; restored by `discardEdits`. */
@@ -475,6 +478,8 @@ function bootCase(): {
    *  another browser): the tab must refuse honestly instead of silently
    *  degrading to the welcome screen (gui-credo §4 "Tab citizenship"). */
   expired?: "focus";
+  /** `?case=<bare name>` matching several cases (see resolveCaseName). */
+  ambiguous?: { name: string; candidates: string[] };
 } {
   if (typeof window !== "undefined") {
     const q = new URLSearchParams(window.location.search);
@@ -521,7 +526,19 @@ function bootCase(): {
     }
     const param = q.get("case");
     if (param) {
-      let t = tutorialByName(param);
+      const resolved = resolveCaseName(param);
+      if (resolved.status === "ambiguous")
+        return { ...BLANK_CASE, ambiguous: { name: param, candidates: resolved.candidates } };
+      // A BARE name that resolves to one case opens it under its full name,
+      // and the address bar is corrected so a copied link is the full one.
+      const full = resolved.status === "found" ? resolved.name : param;
+      if (full !== param && canonicalCaseName(param) === param) {
+        try {
+          q.set("case", full);
+          history.replaceState(history.state, "", `${window.location.pathname}?${q.toString()}${window.location.hash}`);
+        } catch { /* history blocked -- the case still opens */ }
+      }
+      let t = tutorialByName(full);
       // A FORMER name (tutorials/ALIASES, DEV.md 4c C68) resolves to the
       // renamed case; the address bar is corrected to the canonical name, so
       // a link copied from this tab is never the old one again.
@@ -662,6 +679,7 @@ let navigating = false;
 export const useStore = create<AppState>((set, get) => ({
   tutorialName: initial.name,
   bootExpired: initial.expired ?? null,
+  bootAmbiguous: initial.ambiguous ?? null,
   caseFiles: initial.files,
   pristineCaseFiles: initial.files,
   scratchEdits: {},

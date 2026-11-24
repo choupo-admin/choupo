@@ -348,7 +348,9 @@ message, fix exactly that, re-run.
 
 In the app: open the case, *Run*, read **Streams** first, then **Log**.
 Command line: `bin/runCase <case>`; `bin/choupo-lint <case>` validates
-without solving.  Every converged steady run prints and writes mass,
+without solving; `choupoSolve --restart-tears <case>` reruns a recycle case
+from its converged tears (user guide; confirm a result that matters with one
+plain run).  Every converged steady run prints and writes mass,
 element and energy balances in the LOG and under `reports/` (the app's
 run strip may still say MASS "not published" on cases where the log
 closes it -- a known display defect; trust the log) — check they close
@@ -450,7 +452,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
   turbine keys ......... src/unitOperations/rotating/Turbine.cpp:78-86 (as read by the pressure-pack general)
   tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:342
   ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:835,1075
-  -init0 ............... src/applications/choupoSolve/main.cpp:156,209,536
+  -init0 ............... src/applications/choupoSolve/main.cpp:158,211,542
   material forms ....... src/streams/StreamStateIO.cpp:1069-1103
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
   heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79

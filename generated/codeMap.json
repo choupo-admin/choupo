@@ -2088,6 +2088,9 @@
   "ReconciliationRequest": [
    "src/streams/AnalysisReconciler.H"
   ],
+  "Record": [
+   "src/io/RestartTears.H"
+  ],
   "RecordLawPin": [
    "src/thermo/Database.H"
   ],
@@ -2275,6 +2278,9 @@
   ],
   "SelectionFunction": [
    "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "Session": [
+   "src/io/RestartTears.H"
   ],
   "Seulex": [
    "src/solver/ODE/Seulex.H"
@@ -4390,6 +4396,7 @@
    "src/io/DesignSheetWriter.H",
    "src/io/EquipmentListWriter.H",
    "src/io/InternalStateIO.H",
+   "src/io/RestartTears.H",
    "src/io/SolutionWriter.H",
    "src/materials/Material.H",
    "src/materials/MaterialRegistry.H",
@@ -4999,6 +5006,13 @@
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H"
+  ],
+  "src/io/RestartTears.cpp": [
+   "src/core/ReadLog.H",
+   "src/core/Types.H",
+   "src/io/RestartTears.H",
+   "src/streams/Carried.H",
+   "src/streams/ProcessStream.H"
   ],
   "src/io/SolutionWriter.cpp": [
    "src/core/Advisory.H",
@@ -14267,6 +14281,7 @@
    "src/core/distribution/SizeDistribution.H",
    "src/core/distribution/SizeGrid.H",
    "src/io/InternalStateIO.H",
+   "src/io/RestartTears.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -14345,6 +14360,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/io/RestartTears.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -20256,6 +20272,7 @@
    "src/io/DesignSheetWriter.cpp",
    "src/io/EquipmentListWriter.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/RestartTears.cpp",
    "src/io/SolutionWriter.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/outerDriver/DesignSpec.cpp",
@@ -20904,6 +20921,7 @@
    "src/io/DesignSheetWriter.cpp",
    "src/io/EquipmentListWriter.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/RestartTears.cpp",
    "src/io/SolutionWriter.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/outerDriver/DesignSpec.cpp",
@@ -21449,6 +21467,12 @@
    "src/io/SolutionWriter.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/io/RestartTears.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/io/RestartTears.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/io/SolutionWriter.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -23492,6 +23516,7 @@
    "src/io/DesignSheetWriter.cpp",
    "src/io/EquipmentListWriter.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/RestartTears.cpp",
    "src/io/SolutionWriter.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/GridSweepDriver.cpp",
@@ -23680,6 +23705,7 @@
    "src/io/DesignSheetWriter.cpp",
    "src/io/EquipmentListWriter.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/RestartTears.cpp",
    "src/io/SolutionWriter.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/GridSweepDriver.cpp",

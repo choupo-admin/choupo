@@ -3497,6 +3497,7 @@ int Flowsheet::solve(const DictPtr& dict,
         bool        finalConverged = false;
         scalar      finalResidual  = 0.0;
         int         finalIteration = itBase;
+        int         finalIterations = 0;   // solver iterations ("converged in N"); finalIteration is the INSTANT, N + 1
         const char* finalSolver    = "recycle";
 
         //  PRESSURE IS A TEAR VARIABLE (DEV.md 4c C186 (5), record
@@ -3539,7 +3540,34 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
-        if (recSolver == "Wegstein" || recDE || recDirect)
+        //  EXACT TEAR RESTART (opt-in, `--restart-tears`; io/RestartTears.H): a
+        //  trusted record seeds the tears bit for bit and the iteration is
+        //  skipped; the final pass below is then the whole solve.
+        tearRestartApplied_ = false;
+        std::string restartSolverName;
+        if (tearRestart_)
+        {
+            const std::string why = restartTears::seed(*tearRestart_, tears, streams_, bool(onInstant_));
+            if (!why.empty())
+                std::cout << "[restart] the record is not used: " << why << " -- the full recycle solve runs.\n";
+            else
+            {
+                tearRestartApplied_ = true;
+                restartSolverName = tearRestart_->solver;
+                finalConverged = tearRestart_->converged;  finalResidual = tearRestart_->residual;
+                finalIteration = tearRestart_->iteration;  finalSolver = restartSolverName.c_str();
+                finalIterations = tearRestart_->iterations;
+                tearRestartSkipped_ = finalIterations;
+                std::cout << "Recycle restart: " << tears.size() << " tear stream(s) seeded bit for bit from a converged"
+                             " run's record (the tears are the exact values it entered its last pass with; the"
+                             " non-tear unit state and fields such as carried quantities, speciation and enthalpies"
+                             " come from 0/, as in any run).  Build, inputs, package and catalogue files verified;"
+                             " its " << finalIterations << " " << restartSolverName << " iteration(s) are skipped, and"
+                             " the final pass checks that the record is a fixed point of these inputs.\n";
+            }
+        }
+        if (tearRestartApplied_) {}
+        else if (recSolver == "Wegstein" || recDE || recDirect)
         {
             const std::string accName = recDE ? "DominantEigenvalue"
                                       : recDirect ? "DirectSubstitution" : "Wegstein";
@@ -3790,6 +3818,7 @@ int Flowsheet::solve(const DictPtr& dict,
             // marched iteration (both would land on the same x and the residual
             // plot shows two values at one iteration / a vertical plunge).
             finalIteration = itBase + outerIt + 1;
+            finalIterations = outerIt;
             finalSolver    = recDE ? "dominantEigenvalue"
                            : recDirect ? "directSubstitution" : "wegstein";
         }
@@ -4054,6 +4083,7 @@ int Flowsheet::solve(const DictPtr& dict,
             // the last iterate (which caused two values at iteration N / the
             // vertical drop in the residual plot).
             finalIteration = itBase + res.iterations + 1;
+            finalIterations = res.iterations;
             finalSolver    = "newtonOnTears";
         }
 
@@ -4066,7 +4096,72 @@ int Flowsheet::solve(const DictPtr& dict,
         std::map<std::string, ProcessStream> finalAssumedTears;
         for (const auto& t : tears)
             if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
+        if (onTearSnapshot_ && !tearRestartApplied_ && finalConverged)
+        {
+            restartTears::Record rec;   // x_k, what the final sweep below is entered with
+            rec.solver = finalSolver; rec.converged = true; rec.residual = finalResidual;
+            rec.iteration = finalIteration; rec.iterations = finalIterations; rec.tears = finalAssumedTears;
+            onTearSnapshot_(rec);
+        }
         sweep(/*quiet=*/false);
+        if (tearRestartApplied_)
+        {
+            //  THE LAST GUARD of a restart (io/RestartTears.H, 3b): the seeded x
+            //  against the published outlets G(x), measured as the loop that
+            //  wrote the record measured it (Newton: the L2 norm of the
+            //  residual relative to the tear's own scales; the fixed-point
+            //  family: the L2 norm of the packed tears) and held to the same
+            //  tolerance.  A record that is not a fixed point of THESE inputs
+            //  (a catalogue record or a data/local file the identity does not
+            //  name, a unit reading a file outside the package) is not a
+            //  solution: the run is NOT converged and says why.  It is never
+            //  re-solved in this process.
+            scalar r2 = 0.0;
+            if (restartSolverName == "newtonOnTears")
+            {
+                const std::size_t nc = thermo.n();
+                for (const auto& t : tears)
+                {
+                    const ProcessStream& a = finalAssumedTears.at(t);
+                    const ProcessStream& g = streams_.at(t);
+                    scalar Ftot = 0.0;
+                    std::vector<scalar> xa(nc, 0.0), xg(nc, 0.0);
+                    for (std::size_t i = 0; i < nc; ++i)
+                    {
+                        xa[i] = a.F * (i < a.z.size() ? a.z[i] : 0.0);
+                        xg[i] = g.F * (i < g.z.size() ? g.z[i] : 0.0);
+                        Ftot += xa[i];
+                    }
+                    Ftot = std::max(Ftot, 1.0e-12);
+                    for (std::size_t i = 0; i < nc; ++i)
+                    { const scalar d = (xg[i] - xa[i]) / Ftot; r2 += d * d; }
+                    const scalar dT = (g.T - a.T) / std::max(std::abs(a.T), 1.0);
+                    const scalar dP = (g.P - a.P) / std::max(std::abs(a.P), 1.0);
+                    r2 += dT * dT + dP * dP;
+                }
+                r2 = std::sqrt(r2);
+            }
+            else
+                r2 = normL2(packTears(tears, finalAssumedTears), packTears(tears, streams_));
+            finalResidual = r2;
+            const bool fixedPoint = (r2 <= tearTol);
+            std::cout << "Recycle restart check: the seeded tears against the final pass's outlets, |r|2 = "
+                      << std::scientific << std::setprecision(3) << r2 << (fixedPoint ? " <= " : " > ")
+                      << "recycleTol " << tearTol << (fixedPoint ? " -- a fixed point of these inputs.\n" : ".\n");
+            if (!fixedPoint)
+            {
+                finalConverged = false;
+                std::ostringstream m;
+                m << "the restart record is not a fixed point of these inputs (residual "
+                  << std::scientific << std::setprecision(3) << r2 << " > tol " << tearTol
+                  << "): a record the engine trusted no longer describes this case (a file the package"
+                     " identity does not name, such as data/local or a record a unit reads itself,"
+                     " has changed).  The result is NOT converged; run without --restart-tears.";
+                std::cout << "  [restart] " << m.str() << "\n";
+                std::cerr << "[restart] " << m.str() << "\n";
+                AdvisoryLog::instance().add("restart", "error", "recycle restart", m.str());
+            }
+        }
         if (g_trialPressureClamps > 0)
         {
             //  Not silent: the accepted pass above did NOT meet a negative

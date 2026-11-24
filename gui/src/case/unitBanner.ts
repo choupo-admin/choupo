@@ -119,6 +119,14 @@ export interface AnnouncementGroup {
   lines: number[];
 }
 
+/** The page's own plumbing lines (`[adapter] spawning worker`, `[worker]
+ *  received run`) are the WASM runner narrating itself, not an announcement of
+ *  the engine: grouped, they showed `[worker] received run for binary=...` in
+ *  the rail beside the same line in the log, which the 2026-11-24 browser pass
+ *  read as two engine invocations per click (a count of worker spawns shows
+ *  ONE).  They stay in the log; they are not announcements. */
+const PLUMBING_TAGS: ReadonlySet<string> = new Set(["adapter", "worker"]);
+
 export function groupAnnouncements(log: string): AnnouncementGroup[] {
   const by = new Map<string, AnnouncementGroup>();
   if (!log) return [];
@@ -129,6 +137,7 @@ export function groupAnnouncements(log: string): AnnouncementGroup[] {
     const m = /^\s*\[([A-Za-z][A-Za-z0-9 _-]*)\]\s+(.*)$/.exec(l);
     if (!m) continue;
     const tag = m[1]!;
+    if (PLUMBING_TAGS.has(tag)) continue;
     const norm = m[2]!
       .replace(/'[^']*'|"[^"]*"/g, "'…'")
       .replace(/[-+]?\d+(\.\d+)?([eE][-+]?\d+)?/g, "#")
