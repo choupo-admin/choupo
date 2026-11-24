@@ -6,6 +6,7 @@ identifier in its leading comment, no file that must carry none does, and no
 commit since a pinned one has a stranger as its author.
 
     bin/curate/check_source_headers.py             # check
+    bin/curate/check_source_headers.py --files F...  # arm (a) only, for those paths (pre-commit hook)
     bin/curate/add_source_headers.py               # the tool that fixes (a)
 
 WHY (DEV.md 4c C393, Vítor, 2026-11-13).  Copyright does not depend on a
@@ -247,7 +248,38 @@ def arm_d(fails):
     return ("OK", "%d commits since %s, every author listed in AUTHORS" % (n, PIN[:9]))
 
 
+def main_files(paths):
+    """Arm (a) for the given paths only: the pre-commit hook's quick form."""
+    want = set(paths)
+    fails = []
+    n = 0
+    for path, cat, det in K.classify_all():
+        if path not in want:
+            continue
+        if cat == "unclassified":
+            fails.append("UNCLASSIFIED  %s  (give it a kind or an exclusion rule in "
+                         "bin/curate/source_headers_kinds.py)" % path)
+        elif cat == "code":
+            raw = K.read_head(path)
+            if raw is None:
+                fails.append("UNREADABLE  %s" % path)
+                continue
+            n += 1
+            for code, text in K.findings(path, det, raw):
+                fails.append("%s  %s  (kind %s: %s)" % (code, path, det, text))
+    if fails:
+        print("source-headers --files: FAIL -- %d finding(s)" % len(fails))
+        for f in fails:
+            print("  " + f)
+        print("  bin/curate/add_source_headers.py adds the header.")
+        return 1
+    print("source-headers --files: OK -- %d code file(s) of %d checked" % (n, len(want)))
+    return 0
+
+
 def main():
+    if "--files" in sys.argv:
+        return main_files(sys.argv[sys.argv.index("--files") + 1:])
     try:
         subprocess.run(["git", "--version"], capture_output=True, check=True)
     except (OSError, subprocess.CalledProcessError):
