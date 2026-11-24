@@ -41,8 +41,11 @@ Description
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <set>
+#include <map>
+#include <memory>
 #include <sstream>
 #include <vector>
 
