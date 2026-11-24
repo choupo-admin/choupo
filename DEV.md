@@ -5697,6 +5697,30 @@ accepts today, and that is a policy call.
 > which unit, and whether the run ends at exit 0 with no announcement.  Diagnosis first (the C494
 > general, one forward run); a fix is its own slice.
 
+> **C496. A NOISE-AWARE SQP WITH ERROR BARS ON ITS SHADOW PRICES (Vitor, 2026-11-24: "Escolhe o melhor
+> método top notch para o Choupo ficar o simulador de referência! Naturalmente, fazemos tudo from blank
+> slate e comparamos com o state of the art open source!").**  CHOSEN, for smooth constrained problems
+> with numerical derivatives: an active-set quasi-Newton SQP (the family of SNOPT and of the published
+> OpenSQP, which tied it at 479 of 575 CUTEst problems in its authors' own test, arXiv 2512.05392;
+> read through a page summary, not the tables), with the two things a simulator needs and that test
+> does not measure: (a) the response NOISE is estimated from points close to each other (not the same
+> point twice, as OptimizationDriver's probe does today, which a deterministic engine answers with
+> zero) and sets the differencing step (Shi, Xuan, Oztoprak & Nocedal, arXiv 2102.09762); (b) the line
+> search and the QP are relaxed by that noise (Oztoprak & Byrd, arXiv 2604.14368).  Smooth augmented
+> Lagrangian merit, damped BFGS, elastic QP.  GLASS BOX: each gradient prints its step and its
+> uncertainty; each SHADOW PRICE is printed with the error bar the noise gives it, and is not printed
+> as a number when the bar is larger than the value.  MADS stays the candidate for non-smooth or
+> integer problems, unproven.
+> HOW: written from the published papers, no line of another code; a NEW method beside `sqp`, which
+> stays until the comparison retires one of them (the old one already passes Hock-Schittkowski and
+> prints multipliers: it is the baseline, not waste).  THE BENCHMARK COMES FIRST, with its rule written
+> before any result: the same problems, starts, bounds, tolerances and evaluation counter for every
+> code; (i) the Hock-Schittkowski set with finite differences, clean and with noise added at known
+> levels; (ii) Choupo flowsheets driven as a black box.  Against the open state of the art run as
+> EXTERNAL programs, never linked: SLSQP and COBYLA (SciPy), COBYQA, IPOPT with finite differences, NOMAD,
+> OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
+> Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
