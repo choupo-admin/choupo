@@ -41,7 +41,7 @@
       "required": ["type"],
       "description": "The rate law, selected by `type` through the ReactionRate factory (thermo/reaction/ReactionRate.H). Built in: `Arrhenius` and `LHHW` (power law / Langmuir-Hinshelwood-Hougen-Watson, A and Ea), `expression` (the law written here as a formula -- every number in the case, DEV.md 4c C67). batchReactor also reads its own CHEMKIN words (modifiedArrhenius, thirdBody, falloff). A case's code/ folder may register its own word (local only: the site has no compiler).",
       "properties": {
-        "type": { "type": "string", "enum": ["Arrhenius", "LHHW", "expression", "modifiedArrhenius", "thirdBody", "falloff"] },
+        "type": { "type": "string", "enum": ["Arrhenius", "LHHW", "expression", "modifiedArrhenius", "thirdBody", "falloff", "plog"] },
         "A":    { "type": "number", "exclusiveMinimum": 0, "description": "Pre-exponential factor (Arrhenius / LHHW)." },
         "Ea":   { "type": "number", "minimum": 0,         "description": "Activation energy, J/mol (Arrhenius / LHHW)." },
         "source":      { "type": "string", "description": "expression: the citation the numbers come from. Required." },

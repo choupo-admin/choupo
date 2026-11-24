@@ -37,7 +37,7 @@
       "type": "object",
       "required": ["model"],
       "properties": {
-        "model": { "type": "string", "enum": ["ideal", "NRTL", "Wilson"] },
+        "model": { "type": "string", "enum": ["ideal", "NRTL", "Wilson", "UNIFAC", "UNIFACDortmund", "UNIQUAC", "cosmoSAC"] },
         "pairs": {
           "type": "array",
           "items": { "$ref": "#/$defs/BinaryInteractionPair" }
@@ -67,7 +67,7 @@
       "properties": {
         "model": {
           "type": "string",
-          "enum": ["idealGas", "PengRobinson", "SRK"]
+          "enum": ["idealGas", "SRK", "PR", "PengRobinson", "PCSAFT", "LeeKeslerPloecker"]
         }
       },
       "additionalProperties": true
