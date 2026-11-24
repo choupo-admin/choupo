@@ -271,7 +271,7 @@ describe("step 8: inexact inner solves", () => {
       "RateBasedSegment.cpp:780": "if (ch < 1.0e-10 && fullTol) break;",
       "NewtonND.cpp:163": "return std::sqrt(std::numeric_limits<scalar>::epsilon())",
       "NewtonND.cpp:769": "auto J = fdJacobian(F, x, Fx, rule, opts.parallel);",
-      "Flowsheet.cpp:4043": "res = solver::newtonND(residual, x0, ndo);",
+      "Flowsheet.cpp:4129": "res = solver::newtonND(residual, x0, ndo);",
     };
     const HOME: Record<string, string> = {
       "RateBasedSegment.cpp": "src/unitOperations/distillation/RateBasedSegment.cpp",

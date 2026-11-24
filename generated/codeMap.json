@@ -4427,6 +4427,7 @@
    "src/postProcessing/layout/TypicalTrain.H",
    "src/postProcessing/views/RunPublications.H",
    "src/postProcessing/views/Views.H",
+   "src/reporting/BalanceAlarm.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
    "src/result/ClosureVariable.H",
@@ -4823,6 +4824,7 @@
    "src/postProcessing/views/BatchPublications.H",
    "src/postProcessing/views/DynamicPublications.H",
    "src/postProcessing/views/Views.H",
+   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ComponentIdentity.H",
    "src/result/ResultEmitter.H",
@@ -9492,6 +9494,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/reporting/BalanceAlarm.H",
    "src/reporting/BalanceMath.H",
    "src/reporting/ClosureByConstruction.H",
    "src/reporting/MassBalanceReport.H",
@@ -22313,9 +22316,12 @@
    "src/propertyOps/Yang2020.cpp"
   ],
   "src/reporting/BalanceAlarm.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
    "src/reporting/ElementBalanceReport.cpp",
-   "src/reporting/EnergyBalanceReport.cpp"
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/MassBalanceReport.cpp"
   ],
   "src/reporting/BalanceMath.H": [
    "src/reporting/ElementBalanceReport.cpp",
