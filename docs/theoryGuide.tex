@@ -18921,6 +18921,24 @@ stream is the one fluid phase, read on the vapour leg, and the run says so
 (``resolved TWO-PHASE \ldots{} above the highest critical temperature \ldots{}
 DISCARDED'').
 
+\paragraph{A single liquid root is the same defect (DEV.md 4c C256 (c)).}
+The same stands for $V/F=0$, ``subcooled liquid'', above every $T_c$.  Measured on
+the ammonia-synthesis loop's feed-effluent exchanger: its cold outlet (690~K,
+231~bar, N$_2$/H$_2$/NH$_3$/Ar, every component above its $T_c$) is a gas --- until
+the \emph{continued} NH$_3$ vapour pressure is multiplied by ten, when the
+dilute-solution solutes, whose Henry constants are referred to the solvent's
+saturation, collapse ($K_{\mathrm{N_2}}$ from 1.44 to 0.0026) and the flash
+returns $V/F=0$: a liquid at 690~K.  A number that moves when a fictitious
+curve is scaled is a defect, and its cause is the one above, not the exchanger:
+the root is discarded exactly as a two-phase root is (the advisory reads
+``resolved a single LIQUID phase \ldots{} DISCARDED'') and the stream is priced
+and labelled as the one fluid phase it can be, so the exchanger's phase report
+(entered \ldots{} leaves \ldots{}) no longer depends on where the continued curve
+sits.  The rule is held to the $\gamma$--$\phi$ route, to streams with no
+electrolyte speciation or organic liquid, and to streams in which every present
+component declares a $T_c$ (a molten salt declares none, and absence is not
+evidence).  Implemented in \code{flashState::supercriticalSplitDiscarded}.\label{sec:flash-above-tc-liquid}
+
 \paragraph{$\phi$--$\phi$ route (the rule is the Gibbs-energy test).}
 Under a $\phi$--$\phi$ package $K_i=\varphi_i^L(x)/\varphi_i^V(y)$ comes from one
 cubic and neither correlation is read.  A converged split can then be real: a
@@ -19108,6 +19126,33 @@ the dew point, and the engine brackets the sign-changing interval on a flash sca
 before driving Newton inside it.  This split --- step-at-$T^{\mathrm{sat}}$ for a
 pure dome, smooth-$\mathrm{vf}(T)$ for a mixture --- is the one subtlety that
 distinguishes the two cases throughout the solve.
+
+\paragraph{A supercritical dominant component has no saturation temperature.}\label{sec:pc-no-dome}
+Above its critical temperature a component has no vapour pressure.  The
+engine \emph{continues} $\ln\Psat$ linearly in $1/T$ past $T_c$ so a solver in
+transit sees a finite, smooth surface (announced \code{[psatContinued]}), but
+that continued curve is not a saturation state, and a bisection on it returned
+a number that is the temperature of nothing: $150$\,K, the lower end of the
+bracket, for a hydrogen-rich stream ($T_c=33$\,K), with a ``latent'' duty
+priced there.  The dome exists at $P_{\mathrm{out}}$ only if the curve reaches
+$P_{\mathrm{out}}$ on or below $T_c$, i.e.\ $\Psat_{\mathrm{dom}}(T_c)\ge
+P_{\mathrm{out}}$; otherwise (the dominant component's $T_c$ is below the
+bracket, or $P_{\mathrm{out}}$ is above its critical pressure) the unit reports
+\emph{no} $T^{\mathrm{sat}}$ and says so once.  Each spec then does the honest
+thing: \code{Q} and \code{outletT} are solved on the single-phase branch (no
+plateau test); \code{superheat}, \code{subcool}, \code{outletState},
+\code{outletQuality} on a pure dome, and the film-condensation / boiling
+geometry models, which \emph{are} distances from $T^{\mathrm{sat}}$, are
+refused by name; a vapour-fraction target on a multicomponent mixture searches
+below the feed temperature (it has no dome centre); and the latent share of the
+duty is split without a saturation temperature: the sensible part is the
+heat the inlet's own phases (their compositions and split frozen) would take
+from $T_{\mathrm{in}}$ to $T_{\mathrm{out}}$,
+$Q_{\mathrm{sens}}=F\,[H^{\mathrm{fr}}(T_{\mathrm{out}})-H^{\mathrm{fr}}(T_{\mathrm{in}})]$,
+and the latent part is the rest, $Q-Q_{\mathrm{sens}}$ --- exactly the effect of
+the re-partitioning between the phases at $T_{\mathrm{out}}$ (ammonia condensing
+out of a hydrogen-rich gas); a cooler that changes no phase has latent zero.  Source:
+\file{PhaseChanger.cpp}, \code{saturationT} (DEV.md 4c C256 (a)).
 
 \subsection{Dome-aware enthalpy and the vf closure}
 
@@ -22659,6 +22704,15 @@ reactions that corresponds to.
         (This bullet said until 2026-09-27 that no multi-phase Gibbs
         was done.)  The EduTool \emph{How a Gibbs reactor solves} draws
         both searches from the engine's own log.
+  \item \textbf{A species above its critical temperature cannot condense.}\label{sec:gibbs-supercritical}
+        A pure liquid exists only below $T_c$.  The condensation test
+        ($y_iP>P^{\mathrm{sat}}_i$), the active set of \code{reactiveFlash} and
+        the liquid-fraction variables of \code{directMin} therefore skip a
+        condensable whose $T\ge T_c$ (\code{canCondenseAt}, \file{GibbsMethod.H}):
+        H$_2$, N$_2$, Ar and, in a converter at 800~K, NH$_3$ itself stay in the gas
+        by rule, not because the engine's continued $\Psat$ happens to be large
+        there (DEV.md 4c C256 (b)).  A species with no declared $T_c$ is judged
+        as before.
   \item \textbf{Element rank deficiency.}  If $\mathbf{A}$ does not
         have full row rank (e.g.\ a redundant element constraint),
         the normal-equation matrix in the initial-guess step becomes
@@ -31331,6 +31385,19 @@ is announced, and its $Q$ is not a condenser's.  Tutorial
 \file{hx02\_condensing\_steam}: 8\,bar steam at 450\,K against 300\,K
 water, $Q = 5.14$\,kW, the steam leaving at $T_\text{sat} = 443.56$\,K with
 vapour fraction $0.869$ and a zero closure gap.
+
+\paragraph{The phase it reports above every critical temperature.}\label{sec:hx-supercritical-phase}
+The outlet's phase word (\code{liquid}, \code{two-phase}, \code{vapour}) and the
+``entered \ldots{} leaves \ldots{}'' announcement read the vapour fraction of the
+equilibrium the package resolves at the outlet $(T,P,\mathbf z)$.  Above the
+highest critical temperature of any component present that equilibrium cannot
+be a liquid or a split: the root is discarded by the flash's one rule
+(Sec.~\ref{sec:flash-above-tc}, \ref{sec:flash-above-tc-liquid}) and the stream
+keeps the single fluid phase it carries, whatever the engine's continued
+vapour pressure of a supercritical component would have said.  A feed-effluent
+exchanger whose cold outlet is above every $T_c$ therefore reports a gas, and
+scaling the continued curve by 0.1 or 10 moves no outlet temperature, vapour
+fraction or duty (DEV.md 4c C256 (c)).
 
 % ---------------------------------------------------------------------
 \section{Heat exchanger DESIGN: geometry, pressure drop, and the sizing

@@ -766,6 +766,12 @@ adiabatic mode it covers the final solve at the converged T.  A path under
 `tutorials/steady/gibbs/gibbs12_element_potential_newton`; the EduTool
 `element-potential` draws it.
 
+A condensable species ABOVE ITS CRITICAL TEMPERATURE is never tested for
+condensation and never given a liquid fraction (C256 (b), `canCondenseAt`): a pure
+liquid does not exist there, so H2, N2, Ar -- and NH3 above 405.5 K -- stay in the
+gas by rule, not because the continued Psat happens to be large.  Theory:
+`sec:gibbs-supercritical`.
+
 For an adiabatic Gibbs reactor (the flame temperature problem), declare
 `mode adiabatic;` (an outer Newton on T balances `H_out = H_in + Q`), or wrap
 in a DesignSpec that varies `$T`.
@@ -823,6 +829,17 @@ operation
     subcool      <K>;           // T = Tsat(P) − ΔK (liquid side) → Q
 }
 ```
+**A supercritical dominant component has no Tsat** (C256 (a)): above its Tc
+(or above its critical pressure) there is no saturation dome, and the continued
+Psat curve is a numerical surface, not a temperature -- it used to return the
+150 K bracket.  The unit then reports no `Tsat` (no KPI, `none` in the result
+block), says so once, solves `Q` / `outletT` on the single-phase branch, books
+the latent part of the duty as the re-partitioning between the phases at the
+outlet T (duty minus the heat the inlet's frozen phases would take; zero when vf
+does not change), and REFUSES by name the specs that are
+a distance from Tsat (`superheat`, `subcool`, `outletState`, `outletQuality` on
+a pure dome, the geometry condensation / boiling models).  Theory: `sec:pc-no-dome`.
+
 For an area/HTC **rating** (duty EMERGES from geometry + a coolant/heating
 medium) use `model geometry;` with a `geometry{}` + `coolant{}` block (Nusselt
 film condensation) or a `boiling{}` + `heatingMedium{}` block (Rohsenow nucleate
