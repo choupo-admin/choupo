@@ -207,3 +207,14 @@ as its source -- taking that number through a public-domain republication is
 exactly the laundering this record is about, so the question goes to Vitor.
 ATcT was read for its terms and states none; under this project's rule
 silence is not a grant, so it supplied no value.
+
+UPDATE 2026-11-24 (C335).  The coordinator's ATcT ruling of 2026-11-23: an
+ATcT value is acceptable when it is READ in a peer-reviewed paper and cited
+by table and page; the website or dataset version alone is not a source
+(check_source_licence now fails a record that cites ATcT only by version or
+site).  Under it, C4H4 is discharged: the record named vinylacetylene but
+carried a cyclobutadiene-class enthalpy (431.7 kJ/mol); it now carries the
+ab initio ANL0 value printed for CH2CHCCH in Klippenstein, Harding & Ruscic,
+J. Phys. Chem. A 121 (2017) 6580, Table 2 (295.7 kJ/mol at 0 K, converted to
+289.0 kJ/mol at 298.15 K), with S and Cp from bin/curate/rrho_thermo.py --
+a computed value, stated as such.  NC_COMPILATION is empty since then.
