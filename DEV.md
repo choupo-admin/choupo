@@ -5821,6 +5821,13 @@ accepts today, and that is a policy call.
 > EXTERNAL programs, never linked: SLSQP and COBYLA (SciPy), COBYQA, IPOPT with finite differences, NOMAD,
 > OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
 > Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
+> OPUS REVIEW, 2026-11-24 22:10 (docs/audits/2026-11-24-c496-opus-review.md, the reviewer's report):
+> DOES NOT LAND BEFORE 2 DECEMBER.  ff4fbdc8ca: land after F1-F7 (the default path is unchanged; under
+> `fdMode auto` a steep penalty beside a flat optimum is certified non-stationary (x = 0.575 for 0.6), the
+> shadow-price bar is wrong when a CONSTRAINT carries the noise, the robust QP calls feasible problems
+> infeasible, and steps can leave the box -- optim05 simulates 17.5 K above its declared bound).
+> 79bf454c79 (noise-aware stopping): NOT; it certifies false optima.  In its place F11, a scaled
+> stationarity test.  `sqp` on main is untouched by any of this.
 
 > **THE 11-24 AFTERNOON STACK LANDED (C493, and the cloud's afternoon).**  Full sweep alone, reason
 > written before launch (restart-tears edits Flowsheet.cpp and main.cpp): 16:58-17:54, 2032 PASS / 1
