@@ -1472,3 +1472,34 @@ LESSON_KNOBS_UNDECLARED_DEBT = {
               "with a reason), and lower the file's count in the same commit.",
     "blocked": None,
 }
+
+
+# ---------------------------------------------------------------------------
+#  REGISTERED BATCH / TIME-INTEGRATED UNITS WITH NO SCHEMA (C490, 2026-11-24)
+# ---------------------------------------------------------------------------
+
+#  check_schema_coverage.py used to scan only UnitOperation.cpp and
+#  PropertyOperation.cpp, so the batch and dynamic registries could register a
+#  unit with no gui/schemas/operations/<name>.schema.json and nothing noticed:
+#  nine did.  Four were written on 2026-11-24 from their sources
+#  (batchAccumulator, quasiSteady, dynamicTank, williamsOttoPlant); these five
+#  remain.  A name here is a unit with no GUI property editor and no entry in
+#  docs/ai/registry-reference.md; the gate fails on a registered type that is
+#  neither schemed nor listed, and on a listed type that has gained a schema
+#  (the pin may only SHRINK).
+BATCH_UNITS_WITHOUT_SCHEMA = {
+    "batchReactor": "BatchReactor.cpp is 3284 lines with its own CHEMKIN grammar",
+    "batchStill": "BatchStill.cpp, 1051 lines, recipe-coupled keys",
+    "batchCrystalliser": "BatchCrystalliser.cpp, 396 lines, population-balance keys",
+    "batchAdsorber": "BatchAdsorber.cpp, 653 lines, isotherm sub-models",
+    "fixedBedAdsorber": "FixedBedAdsorber.cpp is 3803 lines, bed-transport sub-models",
+}
+
+BATCH_UNITS_WITHOUT_SCHEMA_DEBT = {
+    "why": "A batch unit registered without a schema has no GUI property "
+           "editor and is invisible to an assistant reading the generated "
+           "registry reference.",
+    "remedy": "Write gui/schemas/operations/<unit>.schema.json from the unit's "
+              "source (cite each key's read line) and delete the entry here.",
+    "blocked": None,
+}

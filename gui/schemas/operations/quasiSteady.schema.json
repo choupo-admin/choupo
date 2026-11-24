@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/quasiSteady.schema.json",
+  "title": "quasiSteady operation",
+  "description": "The quasi-steady adapter of choupoCtrl / choupoSemiContinuous: a STEADY unit wrapped so that it is solved to steady state on its inlets at every accepted instant, holding no inventory of its own. It has NO `operation` block: the wrapped unit's whole declaration is the `unit { type <steadyType>; ... }` sub-block (its own keys, never `in`, `inputs`, `outputs` or `name`, and never another quasiSteady), and the t = 0 inlet states are `inlets { <stream> { F; T; P; composition } }`, one per declared inlet stream; topology (`in` or `inputs`, `outputs`) stays on the unit itself (QuasiSteadyUnit.cpp:55-115). This schema is empty on purpose: the wrapped unit's keys are described by THAT unit's own schema.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

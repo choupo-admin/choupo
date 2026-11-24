@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/batchAccumulator.schema.json",
+  "title": "batchAccumulator operation",
+  "description": "A passive holdup of choupoBatch: a vessel that only collects what the recipe transfers into it (a dosing tank, a receiver, a place the interlock parks a stopped feed). It has NO `operation` block; its starting state is the unit's `initial {}` block -- T and P required, V optional (default 0), and optionally `totalMoles` with a composition (empty by convention) (BatchAccumulator.cpp:36-50).",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

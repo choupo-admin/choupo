@@ -26,6 +26,28 @@ own claim and the corpus cannot arbitrate them.  Parsing is brace-matching
 over comment-stripped text -- enough for depth-1 key names, and it refuses
 rather than guesses when the braces do not balance.
 
+Two more directions, added 2026-11-24 (backlog C490), each for a defect that
+was measured and nothing caught:
+
+  ENUM MIRROR   a hand-kept `enum` in gui/schemas/*.json that mirrors an
+                engine registry (activity models, equations of state, phase
+                types, steady unit types, rate-law types).  Measured:
+                thermoPackage.schema.json offered 3 of the 7 registered
+                activity models and 3 of the 6 equations of state,
+                flowsheetDict.schema.json offered 20 of the 61 steady unit
+                types, and reactions.schema.json lacked `plog`.  HELD, not
+                generated: the registry is already the one list, the enums are
+                short hand-written JSON a student can read, and a generator
+                plus a `--check` would be a second tool for a one-line table
+                (ENUM_MIRRORS).
+  BATCH / DYNAMIC COMPLETENESS
+                the completeness arm read only the steady and props
+                registries, so nine registered batch and time-integrated unit
+                types had no schema and the gate said OK.  It now reads all
+                four registries through bin/regen-llm-docs's scanner; the five
+                still schema-less are pinned in
+                debt_registry.BATCH_UNITS_WITHOUT_SCHEMA and may only shrink.
+
 Exit 1 listing the disagreements."""
 import json
 import re
@@ -51,6 +73,60 @@ STRUCTURAL = {
 }
 
 failures = []
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import BATCH_UNITS_WITHOUT_SCHEMA  # noqa: E402
+
+OP_CLASSES = ("UnitOperation", "BatchUnitOperation", "DynamicUnitOperation",
+              "PropertyOperation")
+
+#  Hand-kept `enum`s in gui/schemas/*.json that MIRROR an engine registry:
+#  (schema file, path of keys to the enum, registry class).  A schema enum that
+#  differs from the registry is a GUI that offers what the engine refuses or
+#  hides what it accepts.  Held (not generated): the schemas stay readable
+#  hand-written JSON and the registry stays the one list; this table is the
+#  only thing a new mirror must be added to.
+ENUM_MIRRORS = (
+    ("thermoPackage.schema.json", ("$defs", "ActivityModel", "properties", "model", "enum"), "ActivityModel"),
+    ("thermoPackage.schema.json", ("$defs", "EquationOfState", "properties", "model", "enum"), "EquationOfState"),
+    ("thermoPackage.schema.json", ("$defs", "Phase", "properties", "type", "enum"), "Phase"),
+    ("flowsheetDict.schema.json", ("$defs", "Unit", "properties", "type", "enum"), "UnitOperation"),
+    ("reactions.schema.json", ("$defs", "Kinetics", "properties", "type", "enum"), "ReactionRate"),
+)
+
+
+def registries():
+    """The registry scan of bin/regen-llm-docs (its `_scan_registries`): one
+    scanner, loaded rather than copied."""
+    import importlib.machinery
+    import importlib.util
+    loader = importlib.machinery.SourceFileLoader(
+        "regen_llm_docs", str(ROOT / "bin" / "regen-llm-docs"))
+    spec = importlib.util.spec_from_loader("regen_llm_docs", loader)
+    mod = importlib.util.module_from_spec(spec)
+    loader.exec_module(mod)
+    return mod._scan_registries()
+
+
+def check_enum_mirrors(regs):
+    for fname, path, cls in ENUM_MIRRORS:
+        node = json.loads((ROOT / "gui" / "schemas" / fname).read_text())
+        try:
+            for k in path:
+                node = node[k]
+        except (KeyError, TypeError):
+            failures.append(f"ENUM MIRROR: {fname} has no {'/'.join(path)} --"
+                            " the schema moved; fix ENUM_MIRRORS")
+            continue
+        engine = {n for n, _, retired in regs[cls]["calls"] if not retired}
+        schema = set(node)
+        if schema != engine:
+            failures.append(
+                f"ENUM MIRROR: {fname} {'/'.join(path[:-1])} enum differs from"
+                f" the {cls} registry -- offered but not registered: "
+                f"{sorted(schema - engine) or '-'}; registered but not offered: "
+                f"{sorted(engine - schema) or '-'}.  The GUI would offer what"
+                " the engine refuses or hide what it accepts")
 
 
 def strip_comments(t: str) -> str:
@@ -288,13 +364,28 @@ def main() -> int:
     #  that reference concludes it does not exist.  (An alias satisfies this
     #  with its own file, kept equal to its canonical twin by the alias check
     #  below.)
+    #  C490 (2026-11-24): the scan used to read only UnitOperation.cpp and
+    #  PropertyOperation.cpp, so nine batch / time-integrated units were
+    #  registered with no schema and this gate said OK.  The registry is now
+    #  read by bin/regen-llm-docs's own scanner (one scanner, not two), over
+    #  all four op registries; the units still without a schema are PINNED in
+    #  debt_registry.BATCH_UNITS_WITHOUT_SCHEMA and may only shrink.
+    regs = registries()
     all_ops = set()
-    for rel in ("src/unitOperations/UnitOperation.cpp",
-                "src/propertyOps/PropertyOperation.cpp"):
-        all_ops |= set(re.findall(r'reg\("([A-Za-z0-9_]+)"',
-                                  (ROOT / rel).read_text()))
+    for cls in OP_CLASSES:
+        all_ops |= {n for n, _, retired in regs[cls]["calls"] if not retired}
     have = {f.name[:-len(".schema.json")] for f in schemas}
-    for op in sorted(all_ops - have, key=str.lower):
+    for op in sorted(BATCH_UNITS_WITHOUT_SCHEMA):
+        if op not in all_ops:
+            failures.append(f"STALE DEBT: debt_registry.BATCH_UNITS_WITHOUT_SCHEMA"
+                            f" lists '{op}', which is no longer registered --"
+                            " delete the entry")
+        elif op in have:
+            failures.append(f"STALE DEBT: '{op}' now has a schema -- delete it"
+                            " from debt_registry.BATCH_UNITS_WITHOUT_SCHEMA"
+                            " (the pin may only shrink)")
+    for op in sorted((all_ops - have) - set(BATCH_UNITS_WITHOUT_SCHEMA),
+                     key=str.lower):
         failures.append(
             f"NO SCHEMA: operation '{op}' is registered but has no"
             " gui/schemas/operations/" + op + ".schema.json -- write it from"
@@ -323,12 +414,14 @@ def main() -> int:
                     "disagree on properties/required -- one unit, one "
                     "contract; edit them together")
 
+    check_enum_mirrors(regs)
+
     if failures:
         print("check_schema_coverage: FAIL")
         for f in failures:
             print("  -", f)
         return 1
-    print(f"check_schema_coverage: OK -- every one of the {len(all_ops)} "
+    print(f"check_schema_coverage: OK -- every one of the {len(all_ops) - len(BATCH_UNITS_WITHOUT_SCHEMA)} "
           f"registered operations carries a schema ({exercised} exercised by "
           f"the corpus over {checked} case use(s)); no schema rejects a key a "
           "running case uses, none marks required a key a running case "

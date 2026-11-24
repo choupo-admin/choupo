@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/williamsOttoPlant.schema.json",
+  "title": "williamsOttoPlant operation",
+  "description": "The Williams-Otto plant of choupoCtrl: a CSTR plus separator reduced to the paper's six-state model (eqs. (3.6)-(3.11) of arXiv:2004.07614, verbatim; klb, h and degR internally, converted at the boundary with 1 kmol == 1 klb). The starting inventory is the unit's `initial {}` block (T, optional P, totalMoles and a composition over the six species); this `operation` block holds the CONTROLS of the paper's eq. (3.16): the two feed rates, the recycle/purge flow and the reactor-temperature fraction (WilliamsOttoPlant.cpp:97-101). All four keys are read without a default.",
+  "type": "object",
+  "required": ["F_fA", "F_fB", "mu", "eta"],
+  "properties": {
+    "F_fA": { "type": "number", "title": "Feed rate of reactant A", "unit": "kmol/s", "description": "Declared as a molar flow (`10 kmol/h` is accepted); the unit multiplies the SI value by 3600 to get klb/h. No default (WilliamsOttoPlant.cpp:98)." },
+    "F_fB": { "type": "number", "title": "Feed rate of reactant B", "unit": "kmol/s", "description": "As F_fA, for reactant B (WilliamsOttoPlant.cpp:99). A controller's actuator may drive it." },
+    "mu": { "type": "number", "title": "Recycle / purge flow mu", "unit": "kmol/s", "description": "The paper's mu control, a molar flow, as F_fA (WilliamsOttoPlant.cpp:100)." },
+    "eta": { "type": "number", "minimum": 0, "maximum": 1, "title": "Reactor temperature fraction eta", "description": "The paper's eta control; refused outside [0, 1] (WilliamsOttoPlant.cpp:101-104)." }
+  },
+  "additionalProperties": false
+}
