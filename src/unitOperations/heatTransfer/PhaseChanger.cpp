@@ -43,6 +43,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -54,7 +55,8 @@ namespace Choupo {
 
 namespace {
 
-// Saturation temperature [K] at pressure P for the dome-crossing solve.
+// Saturation temperature [K] at pressure P for the dome-crossing solve, or
+// NOTHING when the dominant component has no saturation dome at P.
 //   * pure-fluid route (IF97 et al., effectively-pure flagged component):
 //       the kernel's Tsat(P) -- closed form, frozen.
 //   * generic route: invert the DOMINANT component's vapour-pressure curve
@@ -62,8 +64,31 @@ namespace {
 // For a genuine multicomponent mixture the dome has WIDTH in T (bubble..dew),
 // so the saturated / quality targets are solved on the flash directly and this
 // single Tsat is used only as a bracket centre.
-scalar saturationT(const ThermoPackage& thermo, scalar P_Pa, const sVector& z)
+//
+//  A SUPERCRITICAL DOMINANT COMPONENT HAS NO Tsat (DEV.md 4c C256 (a),
+//  2026-11-24; review round the same day).  Above its critical temperature a
+//  component has no vapour pressure; the engine CONTINUES its Psat curve there
+//  (a numerical surface, announced `[psatContinued]`), and a bisection on that
+//  continued curve returned a number that is not a temperature of anything:
+//  150 K, the lower bracket, for hydrogen (Tc = 33 K).  A dome exists at P iff
+//    (1) P is below the component's declared critical pressure Pc -- NOT only
+//        "the Psat curve reaches P below Tc": CO2's Antoine is fitted on the
+//        sublimation range and reaches 100 bar below Tc = 304 K although Pc is
+//        73.8 bar, so that test alone kept a Tsat for a supercritical-pressure
+//        CO2; and
+//    (2) the curve reaches P at or below Tc (the root lies on the real dome).
+//  The root is searched from a lower bracket taken from the COMPONENT, not a
+//  constant: 150 K, or 0.4 Tc when that is lower (the records carry no triple
+//  point in general), so N2, H2, CO and Ar get their real Tsat below Tc
+//  (N2 at 1 bar: 77 K) instead of a "no dome" that is false.  For Tc >= 375 K
+//  the bracket is the old 150 K and the bisection is the old one, bit for bit.
+//  The caller learns WHY there is no value (`DomeWhy`), so its sentence is true.
+enum class DomeWhy { Dome, AboveCritical, BelowBracket };
+
+std::optional<scalar> saturationT(const ThermoPackage& thermo, scalar P_Pa,
+                                  const sVector& z, DomeWhy* why = nullptr)
 {
+    if (why) *why = DomeWhy::Dome;
     // Dominant component.
     std::size_t dom = 0;
     for (std::size_t i = 1; i < thermo.n(); ++i)
@@ -80,13 +105,57 @@ scalar saturationT(const ThermoPackage& thermo, scalar P_Pa, const sVector& z)
               "kernel.");
 
     const auto& vp = thermo.comp(dom).vp();
+    const scalar Tc = thermo.comp(dom).Tc();
+    const scalar Pc = thermo.comp(dom).Pc() * 1.0e5;
     scalar lo = 150.0, hi = 1200.0;
+    if (Tc > 0.0) lo = std::min(150.0, 0.4 * Tc);
+    if ((Pc > 0.0 && P_Pa >= Pc) || (Tc > 0.0 && !(vp.Psat_Pa(Tc) >= P_Pa)))
+    {
+        if (why) *why = DomeWhy::AboveCritical;
+        return std::nullopt;
+    }
+    if (Tc > 0.0 && vp.Psat_Pa(lo) >= P_Pa)
+    {
+        if (why) *why = DomeWhy::BelowBracket;
+        return std::nullopt;
+    }
+    //  The root lies on the real dome, at or below Tc (tested above): never search
+    //  the continued curve past it, so the answer cannot depend on where that
+    //  curve sits.
+    if (Tc > 0.0) hi = Tc;
     for (int it = 0; it < 90; ++it)
     {
         const scalar mid = 0.5 * (lo + hi);
         if (vp.Psat_Pa(mid) < P_Pa) lo = mid; else hi = mid;
     }
     return 0.5 * (lo + hi);
+}
+
+//  The sentence every caller says, once per unit, when the dominant component
+//  has no usable saturation temperature at the outlet pressure -- and the
+//  reason is the true one.
+std::string noDomeSentence(const ThermoPackage& thermo, const sVector& z,
+                           scalar P_Pa)
+{
+    std::size_t dom = 0;
+    for (std::size_t i = 1; i < thermo.n(); ++i)
+        if (z[i] > z[dom]) dom = i;
+    DomeWhy why = DomeWhy::Dome;
+    saturationT(thermo, P_Pa, z, &why);
+    std::ostringstream m;
+    m << "the dominant component " << thermo.comp(dom).name();
+    if (why == DomeWhy::BelowBracket)
+        m << " has its saturation temperature at " << (P_Pa / 1.0e5)
+          << " bar below the lowest temperature the unit searches ("
+          << std::min(150.0, 0.4 * thermo.comp(dom).Tc()) << " K)";
+    else
+        m << " has no saturation dome at " << (P_Pa / 1.0e5) << " bar (critical "
+          << "temperature " << thermo.comp(dom).Tc() << " K, critical pressure "
+          << thermo.comp(dom).Pc() << " bar: at this pressure it is above its "
+             "critical point at every temperature the unit spans, where there "
+             "is no vapour pressure and the continued Psat curve is a "
+             "numerical surface, not a saturation temperature)";
+    return m.str();
 }
 
 // Dome-aware molar enthalpy [J/mol] of the flashed state at (T, P).  Uses the
@@ -279,9 +348,13 @@ int PhaseChanger::solve(const DictPtr& dict,
         // so test the plateau FIRST; only outside it do we Newton on T in the
         // single-phase region.
         bool resolved = false;
-        if (pureDome)
+        //  A supercritical dominant component has no plateau: the duty is
+        //  inverted on the single-phase branch below (C256 (a)).
+        const std::optional<scalar> TsatQ = pureDome ? saturationT(thermo, P_out, z)
+                                                     : std::nullopt;
+        if (TsatQ)
         {
-            const scalar Tsat = saturationT(thermo, P_out, z);
+            const scalar Tsat = *TsatQ;
             // Saturated-liquid / saturated-vapour enthalpies bracketing the
             // plateau.  Evaluated with a tiny step INTO the two-phase region so
             // the dome-aware split (h = (1-vf)h_f + vf h_g) is exercised --
@@ -335,7 +408,14 @@ int PhaseChanger::solve(const DictPtr& dict,
     }
     else if (hasSup || hasSub)
     {
-        const scalar Tsat = saturationT(thermo, P_out, z);
+        const std::optional<scalar> TsatOpt = saturationT(thermo, P_out, z);
+        if (!TsatOpt)
+            throw std::runtime_error(
+                "phaseChanger: '" + std::string(hasSup ? "superheat" : "subcool")
+                + "' is a distance from the saturation temperature, and "
+                + noDomeSentence(thermo, z, P_out)
+                + ".  Give `outletT` (or `Q`) instead (DEV.md 4c C256).");
+        const scalar Tsat = *TsatOpt;
         if (hasSup)
         {
             const scalar dK = operDict->lookupTemperatureDifference("superheat");
@@ -394,7 +474,14 @@ int PhaseChanger::solve(const DictPtr& dict,
         // vf(T) = target is well-posed (bubble..dew).
         if (pureDome)
         {
-            T_out     = saturationT(thermo, P_out, z);
+            const std::optional<scalar> TsatOpt = saturationT(thermo, P_out, z);
+            if (!TsatOpt)
+                throw std::runtime_error(
+                    "phaseChanger: a saturated / quality target ("
+                    + specMode + ") needs a saturation temperature, and "
+                    + noDomeSentence(thermo, z, P_out)
+                    + ".  Give `outletT` (or `Q`) instead (DEV.md 4c C256).");
+            T_out     = *TsatOpt;
             vf_forced = vf_target;   // vf is the free coordinate at Tsat
         }
         else
@@ -411,7 +498,10 @@ int PhaseChanger::solve(const DictPtr& dict,
                 return (fvf(T + dT) - fvf(T - dT)) / (2.0 * dT);
             };
 
-            const scalar Tc = saturationT(thermo, P_out, z);   // dome centre
+            //  No dome at P_out for the dominant component (above its Tc,
+            //  C256 (a)): the centre is the feed T, and `gasDominant` below.
+            const std::optional<scalar> TcOpt = saturationT(thermo, P_out, z);
+            const scalar Tc = TcOpt.value_or(T_in);            // dome centre
             scalar scanLo = Tc - 120.0, scanHi = Tc + 120.0;
             //  A DOMINANT COMPONENT THAT IS A GAS HAS NO DOME CENTRE (C123).
             //  The centre above is the DOMINANT component's Antoine
@@ -427,7 +517,7 @@ int PhaseChanger::solve(const DictPtr& dict,
             //  Said once.  A subcritical dominant component takes the old
             //  window, bit for bit.
             const scalar TcDom = thermo.comp(domIdx).Tc();
-            if (TcDom > 0.0 && Tc > TcDom)
+            if (TcDom > 0.0 && (!TcOpt || TcDom <= 150.0))
             {
                 scanHi = T_in;
                 scanLo = std::max(T_floor, T_in - 300.0);
@@ -436,10 +526,10 @@ int PhaseChanger::solve(const DictPtr& dict,
                 std::ostringstream m;
                 m << std::fixed << std::setprecision(2)
                   << "the dominant component " << thermo.comp(domIdx).name()
-                  << " is above its critical temperature (" << TcDom
-                  << " K) wherever the outlet can be, so its saturation T at "
-                  << (P_out / 1.0e5) << " bar (" << Tc << " K, an Antoine "
-                     "extrapolation) is no dome centre; the vapour-fraction "
+                  << " is a gas of the mixture (critical temperature " << TcDom
+                  << " K, at or below the 150 K floor of a dome centre, or no "
+                     "saturation T at " << (P_out / 1.0e5) << " bar), so the "
+                     "mixture has no dome centre; the vapour-fraction "
                      "target is searched between " << scanLo << " K and the "
                      "feed's " << scanHi << " K instead (DEV.md 4c C123)";
                 if (AdvisoryLog::instance().addAnnouncedOnce(
@@ -457,7 +547,7 @@ int PhaseChanger::solve(const DictPtr& dict,
             //  package: use it.  Not for a gas-dominant stream (no dome centre,
             //  above): that keeps the search below, which now needs a STRICT
             //  sign change.
-            const bool gasDominant = (TcDom > 0.0 && Tc > TcDom);
+            const bool gasDominant = (TcDom > 0.0 && (!TcOpt || TcDom <= 150.0));
             if ((vf_target == 0.0 || vf_target == 1.0) && !gasDominant)
             {
                 const bool bubble = (vf_target == 0.0);
@@ -565,8 +655,10 @@ int PhaseChanger::solve(const DictPtr& dict,
     // Latent / sensible split: the latent share is the part associated with
     // the vapour-fraction change across the unit; the rest is sensible.
     scalar vf_in_eff;
+    FlashSolution fsIn;                     // the inlet's own phases (no-dome split)
     {
         FlashSolution fs = flashAt(T_in);   // feed re-flashed at the SAME P_out
+        fsIn = fs;
         // (use the genuine inlet state if declared single-phase)
         vf_in_eff = (vf_in_decl >= 0.0) ? std::clamp(vf_in_decl, 0.0, 1.0)
                                         : std::clamp(fs.V_over_F, 0.0, 1.0);
@@ -575,8 +667,68 @@ int PhaseChanger::solve(const DictPtr& dict,
     // h_g - h_f is the molar latent heat at Tsat -- evaluated with a tiny step
     // INTO the two-phase region (the same reason as the plateau bracket: vf = 1
     // exactly on the saturation line would read the liquid branch).
-    const scalar Tsat = saturationT(thermo, P_out, z);
+    //  A MIXTURE WHOSE DOMINANT COMPONENT IS A LOW-Tc GAS (N2 80 / toluene 20)
+    //  has no dome centre either: the dominant component's own Tsat (77 K) is
+    //  not where the mixture's phase change happens, and a latent heat of the
+    //  feed composition at it is not the heat of condensing the toluene.  Such a
+    //  stream takes the no-dome split, as it did when the bracket was 150 K.
+    const scalar TcDomOut = thermo.comp(domIdx).Tc();
+    const bool gasMixture = !pureDome && TcDomOut > 0.0 && TcDomOut <= 150.0;
+    std::optional<scalar> TsatOut = saturationT(thermo, P_out, z);
+    if (gasMixture) TsatOut = std::nullopt;
+    const scalar Tsat = TsatOut.value_or(std::numeric_limits<scalar>::quiet_NaN());
     scalar latent_kW = 0.0;
+    if (!TsatOut)
+    {
+        //  NO DOME, NO LATENT HEAT (C256 (a)): the whole duty is sensible.
+        const std::string un = !dict->name().empty() ? dict->name()
+                             : dict->lookupWordOrDefault("name", "phaseChanger");
+        //  THE SENSIBLE PART, WITHOUT A SATURATION T: the heat the inlet's own
+        //  phases (their compositions and split frozen) would take going from
+        //  T_in to T_out; the LATENT part is the rest, i.e. exactly the effect
+        //  of the re-partitioning between the phases at T_out (ammonia
+        //  condensing out of a hydrogen-rich gas).  An inlet that declares one
+        //  phase is frozen as that phase.  A cooler that changes no phase
+        //  splits to latent = 0 exactly.
+        FlashSolution frozen = fsIn;
+        if (vf_in_decl >= 0.0 && (vf_in_decl <= 1.0e-9 || vf_in_decl >= 1.0 - 1.0e-9))
+        {
+            frozen.V_over_F = std::clamp(vf_in_decl, 0.0, 1.0);
+            frozen.x = z; frozen.y = z;
+        }
+        if (T_out <= T_in)
+        {
+            //  COOLING: the cold end is T_out.  Cool the inlet's phases frozen,
+            //  then re-partition at T_out (the vapour condenses there).
+            const scalar sens_molar = streamEnthalpy(thermo, frozen, T_out, P_out, z)
+                                    - streamEnthalpy(thermo, frozen, T_in,  P_out, z);
+            latent_kW = Q_kW - F * sens_molar;
+        }
+        else
+        {
+            //  HEATING: the cold end is T_in.  Re-partition AT T_in (the liquid
+            //  vaporises where it is cold -- never carried past its Tc to be
+            //  vaporised there), then heat the OUTLET's phases frozen to T_out.
+            const scalar lat_molar = streamEnthalpy(thermo, sol,    T_in, P_out, z)
+                                   - streamEnthalpy(thermo, frozen, T_in, P_out, z);
+            latent_kW = F * lat_molar;
+        }
+        if (std::abs(vf_out - vf_in_eff) <= 1.0e-9) latent_kW = 0.0;
+        const std::string msg = (gasMixture
+              ? "the dominant component " + thermo.comp(domIdx).name() + " (critical temperature "
+                + std::to_string(TcDomOut) + " K) is a gas of this mixture, so it has no dome centre"
+              : noDomeSentence(thermo, z, P_out))
+            + ": no Tsat is reported; the phase change is priced at the COLD end "
+              "of the unit (cooling: the inlet's phases frozen from T_in to T_out, "
+              "then re-partitioned at T_out; heating: re-partitioned at T_in, "
+              "then the outlet's phases frozen from T_in to T_out), the rest "
+              "being sensible";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "phaseChangerNoDome:" + un, "validity", "info",
+                "phaseChanger '" + un + "'", msg))
+            std::cerr << "[phaseChanger] '" << un << "': " << msg << ".\n";
+    }
+    else
     {
         const scalar eps  = 1.0e-4;
         const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
@@ -614,8 +766,12 @@ int PhaseChanger::solve(const DictPtr& dict,
                   << "  P_out:           " << std::fixed << std::setprecision(4)
                   << (P_out / 1.0e5) << "  bar  ("
                   << (operDict->found("P") ? "set" : "held from inlet") << ")\n"
-                  << "  Tsat(P_out):     " << std::fixed << std::setprecision(3)
-                  << Tsat << "  K  ( " << (Tsat - 273.15) << " degC )\n"
+                  << "  Tsat(P_out):     " << std::fixed << std::setprecision(3);
+        if (TsatOut)
+            std::cout << Tsat << "  K  ( " << (Tsat - 273.15) << " degC )\n";
+        else
+            std::cout << "none (no dome: the dominant component is supercritical at this P, or a gas of the mixture)\n";
+        std::cout
                   << "  T_in:            " << std::fixed << std::setprecision(3)
                   << T_in  << "  K  ( " << (T_in  - 273.15) << " degC )\n"
                   << "  T_out:           " << std::fixed << std::setprecision(3)
@@ -661,7 +817,7 @@ int PhaseChanger::solve(const DictPtr& dict,
     kpis_["Q_sensible_kW"] = sensible_kW;
     kpis_["T_in"]        = T_in;
     kpis_["T_out"]       = T_out;
-    kpis_["Tsat"]        = Tsat;
+    if (TsatOut) kpis_["Tsat"] = Tsat;   // no dome, no Tsat (C256 (a))
     kpis_["vf_in"]       = vf_in_eff;
     kpis_["vf_out"]      = vf_out;
     kpis_["F"]           = F;
@@ -827,7 +983,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         pc->readParameters(operDict->subDict("condensation"));
 
     // -- saturation + latent heat (the existing idioms) ---------------------
-    const scalar Tsat = saturationT(thermo, P_out, z);
+    const std::optional<scalar> TsatOpt = saturationT(thermo, P_out, z);
+    if (!TsatOpt)
+        throw std::runtime_error("phaseChanger(geometry): film condensation "
+            "needs a saturation temperature, and "
+            + noDomeSentence(thermo, z, P_out) + " (DEV.md 4c C256).");
+    const scalar Tsat = *TsatOpt;
     if (T_cool >= Tsat)
         throw std::runtime_error("phaseChanger(geometry): coolant T_in (" +
             std::to_string(T_cool) + " K) is not below Tsat (" +
@@ -1275,7 +1436,12 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     auto chfHTC  = PhaseChangeHTC::New("ZuberCHF");
 
     // -- saturation + latent heat (the existing idioms) ---------------------
-    const scalar Tsat = saturationT(thermo, P_out, z);
+    const std::optional<scalar> TsatOpt = saturationT(thermo, P_out, z);
+    if (!TsatOpt)
+        throw std::runtime_error("phaseChanger(geometry,boiling): boiling "
+            "needs a saturation temperature, and "
+            + noDomeSentence(thermo, z, P_out) + " (DEV.md 4c C256).");
+    const scalar Tsat = *TsatOpt;
     if (T_med <= Tsat)
         throw std::runtime_error("phaseChanger(geometry,boiling): heatingMedium "
             "T_in (" + std::to_string(T_med) + " K) is not above Tsat (" +

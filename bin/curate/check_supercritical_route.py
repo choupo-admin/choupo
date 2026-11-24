@@ -31,6 +31,15 @@ WHAT THIS GATE CHECKS (choupoSolve, temporary cases built from flash09_n2ch4_str
      was thrown away).
  (c) a gamma-phi case above every Tc (ammonia03_quench_converter): the discard
      STILL happens and the advisory still names the correlations.
+ (d) a SINGLE LIQUID root above every Tc is discarded too (C256 (c), 2026-11-24).
+     REAL DEFECT: an ideal water + methanol isothermalFlash at 700 K and 2000 bar
+     (both critical temperatures, 647 and 513 K, are below 700 K) returned V/F = 0,
+     "subcooled liquid"; the same root made ammonia02's feed-effluent exchanger
+     read a liquid at 669.8 K when the continued NH3 vapour pressure was scaled.
+     Must give V/F = 1 with the "single LIQUID" advisory.  No shipped case reaches
+     this discard (373 steady/plant cases run), so without this arm nothing in the
+     suite would see it regress.  Sabotage S3 removes the single-liquid test and
+     (d) must FAIL.
 
 SABOTAGE ARMS (ENGINE sabotages, built by the gate itself).  The gate copies src/, make/,
 the Makefile and the object tree to a temporary directory, patches
@@ -67,6 +76,11 @@ P_PA = 3962103.535596157
 # gate's scratch tree) and the gate's own scratch copy.
 SCAN_ROOTS = ("build",)
 STRIP = ("expected", "converged", "constant/propertyManifest", "reports")
+WM_THERMO = """recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+components       ( water methanol );
+equilibrium { formulation gammaPhi; liquid { activityModel ideal; standardState pureLiquid; } vapour { fugacityModel idealGas; } }
+"""
 RECORD = """recordType  eosBinaryInteraction;
 schemaVersion 1;
 i           propane;
@@ -177,6 +191,39 @@ def main():
     elif not any("DISCARDED" in json.dumps(x) and "[psat]" in json.dumps(x) for x in j.get("advisories", [])):
         failures.append(f"(c) {GAMMA_PHI}: the gamma-phi discard advisory (naming [henry]/[psat]) is gone")
 
+    # (d) a single liquid root above every Tc (ideal water + methanol, 700 K, 2000 bar).
+    def single_liquid(exe_):
+        with gatekit.probe_copy(BASE, strip=STRIP) as c:
+            (c / "constant/thermoPhysPropDict").write_text(WM_THERMO)
+            (c / "constant/parameters").exists() and shutil.rmtree(c / "constant/parameters")
+            flows = "    water 50 kmol/h;\n    methanol 50 kmol/h;\n"
+            for name in ("feed", "liq", "vap"):
+                f = c / "0" / name
+                t = f.read_text()
+                t = re.sub(r"componentMolarFlows\s*\{[^}]*\}", "componentMolarFlows\n{\n" + flows + "}", t)
+                t = re.sub(r"^T\s+.*$", "T 700 K;", t, flags=re.M)
+                t = re.sub(r"^P\s+.*$", "P 2000 bar;", t, flags=re.M)
+                f.write_text(t)
+            fd = c / "system/flowsheetDict"
+            t = fd.read_text()
+            t = re.sub(r"operation \{[^}]*\}", "operation { T 700 K;  P 2000 bar; }", t)
+            fd.write_text(t)
+            rc_, out_ = gatekit.run(exe_, c)
+        j_ = result(out_) if rc_ == 0 else None
+        if j_ is None:
+            return None
+        return (j_["kpis"]["node"]["V_over_F"],
+                any("single LIQUID" in json.dumps(x) for x in j_.get("advisories", [])))
+
+    d = single_liquid(solve)
+    if d is None:
+        failures.append("(d) the water + methanol 700 K / 2000 bar witness did not run")
+    else:
+        if abs(d[0] - 1.0) > 1e-9:
+            failures.append(f"(d) a single liquid root above every Tc was published (V/F {d[0]}, expected 1)")
+        if not d[1]:
+            failures.append("(d) the 'single LIQUID ... DISCARDED' advisory is missing")
+
     # ENGINE sabotage arms: patch-build a private copy of the tree and rerun the arm.
     header = "src/unitOperations/flash/StreamEquilibrium.H"
     gate = 'if (phiPhiRoute && phiPhiSplitLowersGibbs(fs, T, P, z, thermo, &phiWhy))'
@@ -195,10 +242,17 @@ def main():
             failures.append("sabotage arms: the route test line is gone from the header -- the gate is stale")
         elif plat:
             exe = tree / "build" / plat / "choupoSolve"
-            for tag in ("S1 unconditional discard", "S2 no discard on any route"):
+            for tag in ("S1 unconditional discard", "S2 no discard on any route", "S3 no single-liquid discard"):
                 # S1 must make the split impossible to keep: the discard happens for phi-phi too.
-                patched = text.replace(gate, "if (true)" if tag.startswith("S2") else
-                                       gate.replace("if (", "if (false && ", 1))
+                if tag.startswith("S3"):
+                    sl = "&& !(singleLiquid && everyTcDeclared))"
+                    if sl not in text:
+                        failures.append("sabotage S3: the single-liquid test line is gone from the header -- the gate is stale")
+                        continue
+                    patched = text.replace(sl, "&& true)")
+                else:
+                    patched = text.replace(gate, "if (true)" if tag.startswith("S2") else
+                                           gate.replace("if (", "if (false && ", 1))
                 (tree / header).write_text(patched)
                 os.utime(tree / header, None)
                 r = subprocess.run(["make", "-j2", f"build/{plat}/choupoSolve"], cwd=tree,
@@ -215,6 +269,11 @@ def main():
                     if s1 is None or not split_ok(s1):
                         failures.append("sabotage S1: under the unconditional discard the witness still passed (a) "
                                         "-- (a) cannot see the defect")
+                elif tag.startswith("S3"):
+                    d3 = single_liquid(exe)
+                    if d3 is not None and abs(d3[0] - 1.0) <= 1e-9:
+                        failures.append("sabotage S3: with no single-liquid discard (d) still saw V/F 1 "
+                                        "-- (d) cannot see the defect")
                 else:
                     with gatekit.probe_copy(GAMMA_PHI, strip=("expected", "converged", "reports")) as c:
                         rc2, out2 = gatekit.run(exe, c)
@@ -227,7 +286,7 @@ def main():
         "check_supercritical_route", failures,
         f"above every pure Tc a phi-phi split stands when it lowers G (witness V/F {a['VF']:.4f}, x/y "
         f"{a['x']:.5f}/{a['y']:.5f}, |y-Kx| {fug:.1e}, mass {clos:.1e}); a single-phase phi-phi state stays "
-        "single-phase; the gamma-phi discard and its advisory are unchanged; two engine sabotages (built here) are seen",
+        "single-phase; the gamma-phi discard and its advisory are unchanged; a single liquid root above every Tc is discarded (d); three engine sabotages (built here) are seen",
     )
 
 

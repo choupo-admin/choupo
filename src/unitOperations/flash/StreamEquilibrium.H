@@ -244,8 +244,33 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
                             std::string*         deferTo = nullptr,
                             bool                 nameT   = true)
 {
-    if (!(fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9))
+    //  A SINGLE LIQUID ABOVE EVERY Tc IS THE SAME IMPOSSIBLE STATE (DEV.md 4c
+    //  C256 (c), 2026-11-24).  Measured on ammonia02's feed-effluent exchanger:
+    //  the cold outlet, every component above its Tc (669.8 K, 231 bar), is a gas
+    //  -- until the CONTINUED NH3 vapour pressure is scaled by 10, which makes
+    //  the dilute-solution (Henry) solutes' K collapse (K_N2 1.44 -> 0.0026,
+    //  they are referred to the solvent's saturation) and the flash returns
+    //  V/F = 0, "subcooled liquid" (the outlet then reads 619.0 K; K values measured in a
+    //  scratch flash of that stream at 690 K).  A liquid root and a two-phase
+    //  root above every Tc are one defect, a correlation read far outside its
+    //  window, and have one remedy: discard it.  Restricted to the gamma-phi
+    //  route (a phi-phi package judges its own roots), to a stream with no
+    //  electrolyte speciation or organic liquid, and to a stream whose every
+    //  present component declares a Tc -- a molten salt or a polymer has none,
+    //  and absence is not evidence.
+    const bool singleLiquid = (fs.V_over_F <= 1.0e-9) && !fs.threePhase
+                              && !fs.liquidLiquid && !fs.speciation
+                              && !fs.organicLiquid
+                              && thermo.vleWorld() != "phiPhi";
+    bool everyTcDeclared = true;
+    if (singleLiquid)
+        for (std::size_t i = 0; i < z.size() && i < thermo.n(); ++i)
+            if (z[i] > 1.0e-12 && !(thermo.comp(i).Tc() > 0.0))
+                everyTcDeclared = false;
+    if (!(fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
+        && !(singleLiquid && everyTcDeclared))
         return std::nullopt;
+    const bool liquidRoot = !(fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9);
     scalar TcMax = 0.0;
     if (!aboveEveryCriticalT(T, z, thermo, &TcMax))
         return std::nullopt;
@@ -264,7 +289,7 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
           " is the one fluid phase it can be, read on the vapour leg; a"
           " declared or produced state is priced as it is carried"
       :
-        std::string("resolved TWO-PHASE ")
+        std::string(liquidRoot ? "resolved a single LIQUID phase " : "resolved TWO-PHASE ")
         + (nameT ? "at T = " + std::to_string(T) + " K, which is"
                  : std::string("at a temperature"))
         + " above the highest critical temperature of any"
@@ -308,6 +333,7 @@ inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
                                            std::string&         discarded)
 {
     if (fs.threePhase) return false;
+    const bool wasLiquid = !(fs.V_over_F > 1.0e-9);
     std::string said;
     if (!supercriticalSplitDiscarded(fs, T, P, z, thermo, "", "", &said,
                                      /*nameT=*/false))
@@ -315,7 +341,8 @@ inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
     fs.V_over_F = 1.0;
     fs.x        = z;
     fs.y        = z;
-    fs.regime   = "single phase above every Tc (two-phase root discarded)";
+    fs.regime   = wasLiquid ? "single phase above every Tc (single-liquid root discarded)"
+                            : "single phase above every Tc (two-phase root discarded)";
     //  Nothing of the impossible liquid may survive the discard.
     fs.speciation.reset();
     fs.organicLiquid.reset();
