@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  acetone06_luyben_column_C1 -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: Luyben's C1 is a column built on a PREDICTION of the acetone/IPA/water
+  split; the figure is the composition the column actually built, stage by stage,
+  against which a reader can judge the prediction.
+
+  The plot: liquid mole fractions of acetone, water and isopropanol stage by stage on a
+  log axis (the distillate carries 5e-10 of the light key, so a linear axis would hide
+  the tails); the feed stage is marked.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "C1: liquid composition by stage (log axis)";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale log; }
+        note    "Stage 1 is the top (condenser) stage; the last is the reboiler. The marker is the feed stage (54). Read it: above the feed the acetone fraction stays between 0.95 and 0.97 (the distillate), the isopropanol fraction falls by about eight orders of magnitude from the feed to the top (it is almost absent from the distillate), and water stays near 0.03; the log axis is what makes the isopropanol tail visible. The figure shows the column Choupo solved on predictive UNIFAC; it carries no overlay of Luyben's numbers, because no table of them is shipped with the case.";
+        series
+        (
+            { name x_acetone; label "acetone"; unitOp C1; table profile; x stage; y x_acetone; style linesMarkers; }
+            { name x_water; label "water"; unitOp C1; table profile; x stage; y x_water; style linesMarkers; }
+            { name x_isopropanol; label "isopropanol"; unitOp C1; table profile; x stage; y x_isopropanol; style linesMarkers; }
+            { name x_acetone_54; label "feed stage (54)"; unitOp C1; table profile; select { stage 54; } x stage; y x_acetone; style markers; }
+        );
+    }
+);

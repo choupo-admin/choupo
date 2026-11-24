@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column07_naphtaliSandholm -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: Naphtali & Sandholm's Problem 2 (n-butane / isopentane / n-pentane, 20 plates):
+  the paper states a plate temperature from 272.0 K (top) to 298.2 K (reboiler) and 99.97 %
+  n-butane overhead.
+
+  The plot: temperature by stage and the three liquid mole fractions by stage.  The paper's
+  endpoints are quoted in the notes, not drawn: no table of measured stage values ships
+  with the case, and none is invented here (a parity needs one).
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    temperature_by_stage;
+        type    profile;
+        title   "Problem 2: temperature by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "stage temperature"; unit "K"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the marker is the feed plate (10). Read it: the two end values to hold against Naphtali and Sandholm (1971) are the top (the paper's text gives about 272.0 K) and the reboiler (about 298.2 K); the temperature is nearly flat over the rectifying plates and rises through the stripping plates. The paper gives only those two ends, so the figure does not overlay them.";
+        series
+        (
+            { name T; label "stage temperature"; unitOp column07; table profile; x stage; y T; style linesMarkers; }
+            { name T_10; label "feed plate (10)"; unitOp column07; table profile; select { stage 10; } x stage; y T; style markers; }
+        );
+    }
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Problem 2: liquid composition by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the marker is the feed plate (10). Read it: n-butane is almost pure on the top plates (the paper reports about 99.97 % in the combined top product) and falls through the feed region, while the two close-boiling pentanes build up toward the reboiler and stay close to each other.";
+        series
+        (
+            { name x_nButane; label "n-butane"; unitOp column07; table profile; x stage; y x_nButane; style linesMarkers; }
+            { name x_isopentane; label "isopentane"; unitOp column07; table profile; x stage; y x_isopentane; style linesMarkers; }
+            { name x_nPentane; label "n-pentane"; unitOp column07; table profile; x stage; y x_nPentane; style linesMarkers; }
+            { name x_nButane_10; label "feed stage (10)"; unitOp column07; table profile; select { stage 10; } x stage; y x_nButane; style markers; }
+        );
+    }
+);
