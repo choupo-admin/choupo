@@ -59,7 +59,7 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
     sVector Psat(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
     {
-        if (!p.condensable[i]) continue;
+        if (!canCondenseAt(p, i, T)) continue;     // above Tc: no pure liquid (C256 (b))
         Psat[i] = thermo.pureLiquidReference(p.compIdx[i], T, P);
         const scalar y_i = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat[i]) act.push_back(i);
@@ -77,7 +77,7 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
         sVector ratio(N, 0.0);
         scalar  sum = 0.0;
         for (std::size_t i = 0; i < N; ++i)
-            if (p.condensable[i] && eq.nGas[i] > 0.0)
+            if (canCondenseAt(p, i, T) && eq.nGas[i] > 0.0)
             {
                 Psat[i]  = thermo.pureLiquidReference(p.compIdx[i], T, P);
                 ratio[i] = eq.nGas[i] / eq.Ntotal_gas * P / Psat[i];

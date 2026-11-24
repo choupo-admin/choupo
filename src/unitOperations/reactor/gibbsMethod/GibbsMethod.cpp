@@ -541,7 +541,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     if (!(eq.Ntotal_gas > 0.0)) return m;
     for (std::size_t i = 0; i < p.N(); ++i)
     {
-        if (!p.condensable[i]) continue;
+        if (!canCondenseAt(p, i, T)) continue;       // above Tc: no pure liquid (C256 (b))
         if (i < condensed.size() && condensed[i]) continue;
         const scalar Psat = thermo.pureLiquidReference(p.compIdx[i], T, p.P);
         const scalar yP   = eq.nGas[i] / eq.Ntotal_gas * p.P;
@@ -565,7 +565,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     //  the per-species test above.
     std::vector<std::size_t> cand;
     for (std::size_t i = 0; i < p.N(); ++i)
-        if (p.condensable[i] && !(i < condensed.size() && condensed[i])
+        if (canCondenseAt(p, i, T) && !(i < condensed.size() && condensed[i])
             && eq.nGas[i] > 0.0)
             cand.push_back(i);
     if (cand.size() < 2) return m;

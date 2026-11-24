@@ -189,6 +189,24 @@ void refuseGibbsLogPath(const std::string& path);
 long writeGibbsLogCsv(const std::string& path,
                       const std::vector<GibbsLogRecord>& records);
 
+//  CAN SPECIES i FORM A PURE LIQUID AT T?  (DEV.md 4c C256 (b), 2026-11-24.)
+//  A species carrying a vapour-pressure model is `condensable`, but a pure
+//  liquid exists only BELOW its critical temperature: above Tc there is no
+//  vapour pressure, and the engine's continued Psat curve is a numerical
+//  surface, not a saturation state.  Every condensation test of the Gibbs
+//  methods (the supersaturation test, the active set, the liquid-fraction
+//  variables of directMin) asks THIS, so a supercritical species -- H2, N2,
+//  Ar, or NH3 itself in a converter at 800 K -- is never tested against, nor
+//  condensed on, a number nothing measures.  It passed before only because
+//  the continued Psat was large.  A species with no declared Tc is judged as
+//  it was (absence is not evidence).
+inline bool canCondenseAt(const GibbsProblem& p, std::size_t i, scalar T)
+{
+    if (!p.condensable[i]) return false;
+    const scalar Tc = p.thermo->comp(p.compIdx[i]).Tc();
+    return !(Tc > 0.0 && T >= Tc);
+}
+
 //  THE ONE TEST of "a condensable is left supersaturated" (C150 R07): every
 //  condensable of `p` not marked in `condensed` (empty: none is) whose
 //  y_i P exceeds Psat_i(T) by more than 1e-6 relative, in `eq`'s gas, named
