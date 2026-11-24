@@ -5565,6 +5565,27 @@ accepts today, and that is a policy call.
 > run first as a MEASUREMENT over the corpus; it becomes a gate only where it finds a real defect,
 > named in its header.  (1) first: it reaches every unit, like the closures.
 
+> **C492. THE PROOFS PANEL: GLOBAL, BY SECTOR AND BY UNIT (Vitor, 2026-11-24: "nas simulações devia
+> haver o /validation global, por sector e por operação unitária e isso devia agrupar toda esta info
+> no GUI"; and "se incluísses uma validação de unidades usadas nos dados e nos modelos?").**  Input:
+> the cloud's synthesis of 22 proofs (its board note with C490's READY).  REFLECTED, NOT BUILT (his
+> order: "reflete só").  The architect's reading: (a) this is what removes the fear of gates -- the
+> proofs are computed by the ENGINE per run, as the closures are, published per unit and summed by
+> sector and plant, and ONE gate reads the block; (b) three families: read from one run (closures,
+> admissible compositions, second law, isofugacity, stability of a single-phase outlet, phase rule,
+> the T,P -> h -> T round trip) go in the block; those needing a second run (scale, order, written
+> units, clock x10, a reaction split in two, tighter tolerance, more output points, dynamic to
+> steady) go in ONE transform-and-compare tool, nightly; those about DATA (Gibbs-Duhem, Cp = dH/dT,
+> Clapeyron, Hess, rest at equilibrium, and UNITS: a record's correlation states the units its
+> coefficients were fitted in -- today a comment, e.g. benzene.dat's Antoine -- held to the form the
+> engine evaluates) run once per record; (c) three states (holds, violated, not judged with its
+> reason), never a green tick for a refusal; (d) the panel separates PROOFS (verification) from
+> ANCHORS (the case's experiments), so "validation" is not claimed for logic; (e) T0 x S_gen per
+> unit is the lost work: the same panel is an exergy-destruction map.  No dimensional types inside
+> the C++ (SI doubles stay); units are checked at the three borders.  ORDER: the second-law
+> measurement (C491, running) and its diagnosis; verify-the-verifier for mass and elements; design
+> of the block and panel; BUILT AFTER 2 December.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
