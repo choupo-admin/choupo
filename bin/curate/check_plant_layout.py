@@ -520,8 +520,29 @@ _HITS = [0]
 _SKIP_DIRS = ("reports", "converged", "design", "iterations")
 
 
+def _ancestor_inputs(h, d):
+    """The folder cascade (choupoSolve main.cpp resolveUp; Flowsheet's child
+    loader) reads system/ and constant/ of up to six PARENT folders, so a case
+    run in place and a copy of the same files elsewhere are not the same input.
+    Hash those parents' files too: a run is replayed only when what the engine
+    can read is the same."""
+    p = Path(d).resolve()
+    for up in range(1, 7):
+        if p.parent == p:
+            break
+        p = p.parent
+        for sub in ("system", "constant"):
+            q = p / sub
+            if q.is_dir():
+                for f in sorted(q.rglob("*")):
+                    if f.is_file():
+                        h.update(("%d/%s" % (up, f.relative_to(p))).encode()
+                                 + b"\0" + f.read_bytes() + b"\0")
+
+
 def _input_key(d, extra):
     h = hashlib.sha256(repr(extra).encode())
+    _ancestor_inputs(h, d)
     for p in sorted(d.rglob("*")):
         rel = p.relative_to(d)
         if rel.parts[0] in _SKIP_DIRS or not p.is_file():
