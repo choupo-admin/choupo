@@ -18,7 +18,7 @@
 
   PLANE A, THE MEASURED ONE, IS THE ENGINE'S.  `recycleSolver Wegstein;` in a
   case's `system/solverDict` puts the flowsheet's recycle on the accelerator
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3564), and the engine publishes
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3570), and the engine publishes
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
@@ -33,7 +33,7 @@
   tear, since C22), and the iteration table's own `γ-info` column
   carries the energy-tear relative change instead
   (src/unitOperations/flowsheet/Flowsheet.cpp:3536, filled at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3716-3717).  So there is no run,
+  src/unitOperations/flowsheet/Flowsheet.cpp:3722-3723).  So there is no run,
   in this tree, from which a student can read the per-variable secant slope
   `s_i` or the coefficient `q_i` that it produces — and those two numbers ARE
   the method.  The page therefore drives the recursion over a DECLARED toy
@@ -76,13 +76,13 @@
   temperature in kelvin and a pressure in bar, with no per-variable scale.
   The Newton branch of the same function does NOT do this: it tears on
   component molar flows plus T and P
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3828-3837) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3835-3844) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3892-3911, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3934), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3899-3918, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3941), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3892-3896).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3899-3903).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -106,7 +106,7 @@ export const EPS_X = 1.0e-14;
 export const EPS_S = 1.0e-10;
 
 /** The engine's RECYCLE clamp defaults — read off the solverDict with these
- *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3572-3573.
+ *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3578-3579.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
  *  (src/solver/Wegstein.H:74-75) and which the Theory Guide quotes as
@@ -349,7 +349,7 @@ interface DriveOptions {
 }
 
 /** WEGSTEIN — the accelerator, driven exactly as `Flowsheet`'s recycle branch
- *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3570-3743): pack,
+ *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3576-3749): pack,
  *  sweep, measure `normL2(gx, x)`, test, then accelerate and unpack.  The
  *  test comes BEFORE the acceleration, which is why a converged run's last
  *  recorded step has no coefficients: the loop broke out of it. */
@@ -438,7 +438,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows plus
  *  T and P rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3828-3837).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3835-3844).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;
@@ -512,7 +512,7 @@ export const RECYCLE_DEFAULTS: RecycleKnobs = {
  *
  *  WHAT IS NOT HERE, and it is the knob a reader reaches for first: the clamp.
  *  `recycleWegsteinQmin` / `Qmax` are read by the engine
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3572-3573) but this witness
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3578-3579) but this witness
  *  carries them COMMENTED OUT, and an override replaces a declared value — it
  *  does not add a key.  Measured on the corpus (2026-09-12): of the cases
  *  that select `recycleSolver Wegstein` (seven on 2026-11-19), four declare the
