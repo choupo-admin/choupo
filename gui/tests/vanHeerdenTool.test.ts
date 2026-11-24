@@ -31,6 +31,8 @@ License
 // (verified against the REAL bundled witness raw text).  Pure layers only:
 // no DOM, no WASM run, and the tool imports no plotly seam (inline SVG), so
 // no mock is needed here.
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import type { ProfileMarker, UnitProfile } from "../src/adapters/SolverAdapter.js";
@@ -560,5 +562,19 @@ describe("crossing labels are placed, not just positioned", () => {
     expect(estimateTextWidth("405.9 K", 10))
       .toBeLessThan(estimateTextWidth("405.9 K — reported", 10));
     expect(estimateTextWidth("", 10)).toBe(0);
+  });
+});
+
+describe("the span and the middle root claim only what the page computes", () => {
+  const SRC_T = readFileSync(
+    resolve(__dirname, "../src/ui/methods/VanHeerdenTool.tsx"), "utf8");
+  it("the span is the gap at these conditions, not the ignition jump", () => {
+    expect(SRC_T).toContain("hot − cold = ");
+    expect(SRC_T).toContain("those happen at the limit points of a ");
+    expect(SRC_T).not.toContain("the jump the reactor makes when it lights");
+  });
+  it("the middle root reads 'stability not evaluated'", () => {
+    expect(SRC_T).toContain("stability not evaluated (middle of three roots)");
+    expect(SRC_T).not.toContain('" — unstable"');
   });
 });
