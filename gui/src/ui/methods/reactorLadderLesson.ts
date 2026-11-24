@@ -286,7 +286,8 @@ k_f = A\,\exp\!\left(-\frac{E_a}{R\,T}\right)`,
       { sym: "R", means: "the gas constant", unit: "J/(mol·K)" },
     ],
     needs: "A rate law somebody measured, on this catalyst, over this range: "
-      + "the most expensive fact on the page.",
+      + "the most expensive fact on the page.  (The case run here carries an "
+      + "illustrative one, not a measured one.)",
     check: {
       q: "Could a longer bed ever beat the equilibrium reactor's number?",
       a: "No.  At the limit the forward and reverse terms are equal, because "
