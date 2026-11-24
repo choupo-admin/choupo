@@ -123,6 +123,12 @@ TYPED = [
     (M + "syngasExercise.ts", "0.2485", "gibbs11_carbon_deposition", "kpi reformerLow F_solid_kmol_h"),
     (M + "syngasExercise.ts", "0.7358", "psa01_h2_psa", "kpi h2psa recovery_H2"),
     (M + "syngasExercise.ts", "0.9848", "psa01_h2_psa", "kpi h2psa purity_H2"),
+    (M + "OptimizersTool.tsx", "0.03479", "optim06_integer_stages", "kpi column01 V_strip"),
+    (M + "OptimizersTool.tsx", "2.8994", "optim06_integer_stages", "kpi column01 R"),
+    (M + "OptimizersTool.tsx", "0.979999", "optim06_integer_stages", "kpi column01 x_D_LK"),
+    (M + "optimizersLesson.ts", "0.03479", "optim06_integer_stages", "kpi column01 V_strip"),
+    (M + "optimizersLesson.ts", "2.8994", "optim06_integer_stages", "kpi column01 R"),
+    (M + "optimizersLesson.ts", "0.979999", "optim06_integer_stages", "kpi column01 x_D_LK"),
 ]
 
 NUM = re.compile(r"(?<![\w.])(\d+\.\d{3,}(?:e[+-]?\d+)?|\d\.\d+e[+-]?\d+)(?![\w])", re.I)

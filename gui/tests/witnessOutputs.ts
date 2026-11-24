@@ -99,6 +99,19 @@ export interface WitnessOutput {
 
 /** THE list.  Add an entry here, not a `readFileSync` in a test. */
 export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
+  //  The optimisers lesson (C494): the integer enumeration's table, and the
+  //  run's own log (the per-value reflux and Lagrange multiplier).
+  {
+    caseDir: "tutorials/steady/optimisation/optim06_integer_stages",
+    file: "integer_enumeration.csv",
+    readBy: ["optimizers.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/optimisation/optim06_integer_stages",
+    file: "log.choupoSolve",
+    readBy: ["optimizers.test.ts"],
+    stdout: true,
+  },
   {
     caseDir: "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     file: "ternary.csv",

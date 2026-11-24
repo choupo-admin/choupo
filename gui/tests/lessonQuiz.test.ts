@@ -126,7 +126,9 @@ import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
+import { OPT_QUIZ, OPT_STEPS } from "../src/ui/methods/optimizersLesson.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
+import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
 import { MethaneAssemblyTool } from "../src/ui/methods/MethaneAssemblyTool.js";
 import { LinearAlgebraTool } from "../src/ui/methods/LinearAlgebraTool.js";
@@ -302,6 +304,11 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  optimizers: {
+    quiz: OPT_QUIZ, quizName: "OPT_QUIZ",
+    lesson: OPT_STEPS, lessonName: "OPT_STEPS",
+    file: "src/ui/methods/OptimizersTool.tsx", tool: OptimizersTool,
+  },
   "stiff-chemistry": {
     quiz: SC_QUIZ, quizName: "SC_QUIZ",
     lesson: SC_STEPS, lessonName: "SC_STEPS",
