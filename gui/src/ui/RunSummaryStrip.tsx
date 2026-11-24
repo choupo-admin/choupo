@@ -141,10 +141,12 @@ export function RunSummaryStrip() {
       )}
       {s && phase === "done" && (
         <>
-          <Item label="converged" title="The engine's own verdict (converged in the result).">
+          <Item label="converged" title={s.inheritedFrom !== null
+            ? `${s.inheritedFrom} was solved inside the plant run, and this is that run's verdict.  The engine tests convergence once per run, over every unit and tear, not per sector, and the loops that carry the plant's recycles pass THROUGH this sector rather than belong to it.  Run the sector alone for a test of its own.`
+            : "The engine's own verdict (converged in the result)."}>
             {s.converged === null ? NOT_PUBLISHED
-              : s.converged ? "yes"
-              : <Badge size="xs" color="red" variant="filled">no</Badge>}
+              : s.converged ? (s.inheritedFrom !== null ? "yes (plant run)" : "yes")
+              : <Badge size="xs" color="red" variant="filled">{s.inheritedFrom !== null ? "no (plant run)" : "no"}</Badge>}
             {s.recycleLoops > 0 ? ` · ${s.recycleLoops} recycle loop${s.recycleLoops === 1 ? "" : "s"}` : ""}
           </Item>
           <Item label="mass" title={s.mass?.scope === "process"
@@ -154,8 +156,13 @@ export function RunSummaryStrip() {
               : s.mass.pct === null ? <Text span size="xs" c="dimmed" fs="italic">unavailable</Text>
               : `${formatSig(s.mass.pct, 6)} %${s.mass.scope === "process" ? " (process)" : ""}`}
           </Item>
-          <Item label="energy" title="The plant-boundary first law the engine published: its residual, and its percentage of the energy exchanged where the engine has that scale.">
-            {s.energy === null ? NOT_PUBLISHED
+          <Item label="energy" title={s.inheritedFrom !== null
+            ? `The engine closes the first law once, on the PLANT boundary (the plant run's energy balance); it publishes no energy balance for ${s.inheritedFrom} alone.  Run the sector alone for one over its own boundary.`
+            : "The plant-boundary first law the engine published: its residual, and its percentage of the energy exchanged where the engine has that scale."}>
+            {s.energy === null
+              ? (s.inheritedFrom !== null
+                ? <Text span size="xs" c="dimmed" fs="italic">closed on the plant boundary, not per sector</Text>
+                : NOT_PUBLISHED)
               : <>residual {formatDuty(s.energy.residualKW, duty, 4)} {dutyLabel(duty)}
                   {s.energy.pct === null ? " (no scale for a %)" : ` (${formatSig(s.energy.pct, 3)} %)`}</>}
           </Item>
