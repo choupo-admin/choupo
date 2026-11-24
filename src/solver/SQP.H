@@ -116,6 +116,12 @@ struct SQPTrace
     scalar  alpha       = 1.0; // Armijo step length accepted
     bool    watchdog    = false; // full step forced this iteration
     std::string note;
+    //  C496: filled only by the optional paths (adaptiveFd).  fdReport says
+    //  which differencing step each variable took and why; sigmaLam* are the
+    //  error bars the gradient noise puts on the multipliers (NaN = unknown).
+    std::string fdReport;
+    sVector sigmaLamEq;
+    sVector sigmaLamIneq;
 };
 
 struct SQPResult
@@ -144,6 +150,13 @@ struct SQPResult
     scalar  kktFeasIneq = 0.0;
     scalar  kktCompl    = 0.0;
     scalar  kktDualFeas = 0.0;   // max(0, -min lambda) over active ineqs
+
+    //  C496 (adaptiveFd only): error bars of the final multipliers, empty
+    //  otherwise; a bar larger than the multiplier means "not resolved".
+    sVector sigmaLamEq;
+    sVector sigmaLamIneq;
+    int     soc          = 0;    // second-order-correction steps accepted
+    int     restarts     = 0;    // BFGS restarts after a failed line search
 };
 
 struct SQPOptions
@@ -169,6 +182,21 @@ struct SQPOptions
 
     // The ONLY Maratos mitigation in v1: accept the full step every K iters.
     int     watchdogEvery = 5;
+
+    //  C496, OPTIONAL, both off by default (every shipped case byte-identical).
+    //  adaptiveFd (outerDict `fdMode auto;`): the step of each variable comes
+    //    from the response's own noise (estimated from points close together)
+    //    and curvature, forward or central per variable, never across a bound;
+    //    the Armijo test is relaxed by the merit's noise, gradients computed
+    //    for the BFGS update are reused by the next iteration, and a failed
+    //    line search restarts once from B = I with central differences before
+    //    stopping.  Sources: Shi, Xuan, Oztoprak & Nocedal (2021) eq. 2.13,
+    //    2.14, 2.19, Procedure I; More & Wild (2011) for the noise estimate.
+    bool    adaptiveFd   = false;
+    //  soc (outerDict `merit l1Soc;`): when the full step is rejected by the
+    //    L1 merit, a second-order correction (N&W 18.3, Maratos) is tried
+    //    before backtracking.
+    bool    soc          = false;
 
     // Per-iteration callback (logging / CSV).
     std::function<void(const SQPTrace&)> onIter;

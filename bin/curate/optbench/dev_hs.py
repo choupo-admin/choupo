@@ -70,7 +70,8 @@ def summary(path):
     ends = {}
     for r in rows:
         if r["code"].startswith("choupo"):
-            key = (r["code"], str(r.get("status", ""))[:60])
+            st = str(r.get("status", "")).split(" ", 3)
+            key = (r["code"], " ".join(st[3:] if len(st) > 3 else st)[:45])
             ends[key] = ends.get(key, 0) + 1
     for k, v in sorted(ends.items()):
         print("  end", k, v)

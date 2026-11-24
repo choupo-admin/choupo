@@ -59,6 +59,7 @@ Description
 #include "solver/SQP.H"
 
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -142,6 +143,24 @@ int main(int argc, char** argv)
             o.central = false;
             o.typX = typX;
             o.tolFeasEq = 1.0e-6;
+            //  C496 development: CHOUPO_SQP_OPTS="fdMode=auto merit=l1Soc" selects the
+            //  optional paths of solver::sqp; unset = the shipped defaults.
+            if (const char* e = std::getenv("CHOUPO_SQP_OPTS"))
+            {
+                std::istringstream is(e);
+                std::string kv;
+                while (is >> kv)
+                {
+                    const auto eq = kv.find('=');
+                    const std::string k = kv.substr(0, eq), v = kv.substr(eq + 1);
+                    if (k == "fdMode")
+                    {
+                        if (v == "auto") o.adaptiveFd = true;
+                        else if (v == "central") o.central = true;
+                    }
+                    else if (k == "merit" && v == "l1Soc") o.soc = true;
+                }
+            }
             auto R = solver::sqp(eval, xs0, los, his, nEq, nIneq, o);
             std::cout << "DONE " << (R.converged ? 1 : 0) << " " << R.iterations
                       << " " << R.reason << std::endl;
