@@ -29,19 +29,144 @@ License
 #include "IsentropicCore.H"
 #include "core/Constants.H"
 #include "solver/NewtonRaphson.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
+
+#include "core/Advisory.H"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
 namespace rotating {
 
+namespace {
+
+//  The equilibrium split of the discharge state, or nullopt when it is dry
+//  (single phase) or the working fluid is a pure-fluid package.
+std::optional<FlashSolution> outletSplit(const ThermoPackage& thermo,
+                                         scalar T, scalar P_Pa,
+                                         const sVector& y)
+{
+    std::size_t dom = 0;
+    for (std::size_t i = 1; i < y.size(); ++i) if (y[i] > y[dom]) dom = i;
+    if (thermo.hasPureFluid(dom) && ThermoPackage::isEffectivelyPure(y, dom))
+        return std::nullopt;
+    //  A DRY DISCHARGE SKIPS THE FLASH (C493 cost).  The flash's own first
+    //  question (`IsothermalFlash::solveCore`, the "incipient liquid" seed) is
+    //  the dew sum  S = sum z_i / K_i  on the package's ideal K (Psat/P, or the
+    //  Wilson estimate under phi-phi -- the very seeds that block builds).  A
+    //  state far on the dry side of it, S < kDryDewSum, cannot be a split, so
+    //  the flash is not run and the answer is the one it would have returned:
+    //  single-phase vapour.  Anything the screen cannot price (a K that is not
+    //  finite and positive, a refusal) falls through to the flash.
+    {
+        constexpr scalar kDryDewSum = 0.5;
+        bool   priced = true;
+        sVector K0(thermo.n(), 1.0);
+        try
+        {
+            if (thermo.vleWorld() == "phiPhi")
+            {
+                for (std::size_t i = 0; i < thermo.n(); ++i)
+                {
+                    if (y[i] <= 0.0) continue;
+                    const auto& c = thermo.comp(i);
+                    if (!(c.Tc() > 0.0 && c.Pc() > 0.0)) { priced = false; break; }
+                    K0[i] = (c.Pc() * 1.0e5 / P_Pa)
+                          * std::exp(5.373 * (1.0 + c.omega())
+                                     * (1.0 - c.Tc() / T));
+                }
+            }
+            else
+            {
+                K0 = thermo.Kvec_Raoult(T, P_Pa, &y);
+            }
+        }
+        catch (const std::exception&) { priced = false; }
+        if (priced)
+        {
+            scalar S = 0.0;
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+            {
+                if (y[i] <= 0.0) continue;
+                if (!(std::isfinite(K0[i]) && K0[i] > 0.0)) { priced = false; break; }
+                S += y[i] / K0[i];
+            }
+            if (priced && S < kDryDewSum) return std::nullopt;
+        }
+    }
+    std::string deferred;     // advisories belong to the converged state
+    return flashState::twoPhaseSplit(T, P_Pa, y, /*pinned=*/false,
+                                     /*vfCarried=*/1.0, thermo,
+                                     "rotating outlet", "model", &deferred);
+}
+
+} // namespace
+
+scalar outletH(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+               const sVector& y)
+{
+    if (auto sp = outletSplit(thermo, T, P_Pa, y))
+        return flashState::hOfState(*sp, T, P_Pa, y, thermo);
+    return thermo.H_real(T, P_Pa, y);
+}
+
+scalar outletS(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+               const sVector& y)
+{
+    if (auto sp = outletSplit(thermo, T, P_Pa, y))
+        return flashState::sOfState(*sp, T, P_Pa, y, thermo);
+    return thermo.S_real(T, P_Pa, y);
+}
+
+OutletPhase outletPhase(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+                        const sVector& y)
+{
+    OutletPhase ph;
+    if (auto sp = outletSplit(thermo, T, P_Pa, y))
+    {
+        ph.condenses = true;
+        ph.vf = sp->V_over_F;
+        scalar mw = 0.0, sx = 0.0;
+        for (std::size_t i = 0; i < sp->x.size() && i < thermo.n(); ++i)
+        {
+            mw += sp->x[i] * thermo.comp(i).MW();
+            sx += sp->x[i];
+        }
+        ph.condMW = sx > 0.0 ? mw / sx : 0.0;
+    }
+    return ph;
+}
+
+void announceCondensing(const std::string& machine, const std::string& unit,
+                        scalar F_kmol_s, scalar T, scalar P_Pa,
+                        const OutletPhase& ph)
+{
+    if (!ph.condenses) return;
+    const scalar kg_s = F_kmol_s * (1.0 - ph.vf) * ph.condMW;
+    std::ostringstream m;
+    m << "the discharge CONDENSES at " << std::fixed << std::setprecision(2)
+      << T << " K, " << std::setprecision(4) << (P_Pa / 1.0e5)
+      << " bar: V/F = " << ph.vf << ", condensate " << std::scientific
+      << std::setprecision(4) << kg_s << " kg/s (the values of the pass that"
+         " first raised this; a recycle re-solves them and the stream table"
+         " carries the converged state).  The outlet is priced on its"
+         " equilibrium phases, the surface the energy report uses, and"
+         " published as a two-phase stream (DEV.md 4c C493)";
+    if (AdvisoryLog::instance().addAnnouncedOnce(
+            "rotatingCondenses:" + machine + ":" + unit, "model", "info",
+            machine + " '" + unit + "'", m.str()))
+        std::cout << "  [" << machine << "] '" << unit << "': " << m.str()
+                  << ".\n";
+}
+
 scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
                     scalar P_Pa, const sVector& y, scalar T_guess)
 {
-    auto f  = [&](scalar T) { return thermo.S_real(T, P_Pa, y) - s_target; };
+    auto f  = [&](scalar T) { return outletS(thermo, T, P_Pa, y) - s_target; };
     auto df = [&](scalar T) {
         const scalar dT = 0.5;
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
@@ -66,7 +191,7 @@ scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
 scalar solveT_for_H(const ThermoPackage& thermo, scalar h_target,
                     scalar P_Pa, const sVector& y, scalar T_guess)
 {
-    auto f  = [&](scalar T) { return thermo.H_real(T, P_Pa, y) - h_target; };
+    auto f  = [&](scalar T) { return outletH(thermo, T, P_Pa, y) - h_target; };
     auto df = [&](scalar T) {
         const scalar dT = 0.5;
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
@@ -128,7 +253,7 @@ DischargeResult solveDischarge(const ThermoPackage& thermo,
 
     auto outerResidual = [&](scalar P_out) {
         T_isen_warm = solveT_for_S(thermo, s_in, P_out, y, T_isen_warm);
-        return thermo.H_real(T_isen_warm, P_out, y) - h_out_isen_target;
+        return outletH(thermo, T_isen_warm, P_out, y) - h_out_isen_target;
     };
     auto outerDeriv = [&](scalar P_out) {
         const scalar dP = std::max(P_out * 1.0e-4, 100.0);
@@ -180,6 +305,7 @@ DischargeResult solveDischarge(const ThermoPackage& thermo,
     res.T_out_isen = T_isen_warm;
     res.T_out      = solveT_for_H(thermo, h_out_real_target, res.P_out, y,
                                   T_isen_warm);
+    res.vf         = outletPhase(thermo, res.T_out, res.P_out, y).vf;
     res.converged  = true;
     return res;
 }

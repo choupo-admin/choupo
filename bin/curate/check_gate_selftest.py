@@ -291,8 +291,8 @@ SABOTAGES += [
         "gate": "check_golden_bands.py",
         "kind": "detection",
         "file": "tutorials/steady/flowsheets/proxy01_gas_loop/expected",
-        "find": "H_closure_gap_kW -1.26627597297e-11 abs:7.012e-08\n",
-        "replace": "H_closure_gap_kW -1.26627597297e-11 1e-4\n",
+        "find": "H_closure_gap_kW -1.20241594459e-11 abs:7.012e-08\n",
+        "replace": "H_closure_gap_kW -1.20241594459e-11 1e-4\n",
         "why": "a closure RESIDUAL with a relative band is a golden over "
                "round-off (C384): it must carry an absolute band written in "
                "the row, and the gate must fail the relative one.",

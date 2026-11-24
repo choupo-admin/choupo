@@ -151,7 +151,7 @@ int Compressor::solve(const DictPtr& dict,
         //  isentrope with k = 1.3 (a seed, never an answer).
         const scalar T_seed = T_in * std::pow(P_out / P_in, 0.3 / 1.3);
         T_out_isen = rotating::solveT_for_S(thermo, s_in, P_out, y, T_seed);
-        const scalar h_isen = thermo.H_real(T_out_isen, P_out, y);
+        const scalar h_isen = rotating::outletH(thermo, T_out_isen, P_out, y);
         const scalar w_isen_per_mol = h_isen - h_in;
         if (w_isen_per_mol <= 0.0)
             throw std::runtime_error(
@@ -171,7 +171,7 @@ int Compressor::solve(const DictPtr& dict,
     recordResidual(0.0);    // mark a converged pass for the GUI
 
     // ---- Diagnostics -----------------------------------------------------
-    const scalar s_out_real = thermo.S_real(T_out, P_out, y);
+    const scalar s_out_real = rotating::outletS(thermo, T_out, P_out, y);
     const scalar dS_gen     = s_out_real - s_in;
     const scalar ratio      = P_out / P_in;
 
@@ -212,7 +212,14 @@ int Compressor::solve(const DictPtr& dict,
     out.T    = T_out;
     out.P    = P_out;
     out.z    = y;
-    out.vf   = 1.0;     // gas-phase by construction
+    //  C493: the suction is a vapour (acceptance above), the discharge may
+    //  cross its dew point; resolved on the equilibrium state, a dry outlet
+    //  keeps vf 1 bit for bit.
+    const auto outPh = rotating::outletPhase(thermo, T_out, P_out, y);
+    out.vf   = outPh.vf;
+    if (outPh.condenses)
+        rotating::announceCondensing("compressor",
+            dict->name().empty() ? type() : dict->name(), F, T_out, P_out, outPh);
     produced_.push_back(out);
 
     // ---- KPIs -----------------------------------------------------------

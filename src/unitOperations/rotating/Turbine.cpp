@@ -60,8 +60,8 @@ int Turbine::solve(const DictPtr& dict,
 
     // ---- THE INLET MUST BE A VAPOUR (DEV.md 4c C188 item 5, slice D) ------
     //  The expansion below prices the inlet with `H_real` / `S_real`, which are
-    //  the VAPOUR root at the overall composition, and the outlet is published
-    //  as a vapour (`out.vf = 1`).  A liquid or two-phase inlet was therefore
+    //  the VAPOUR root at the overall composition (the OUTLET is priced on its
+    //  equilibrium state, C493).  A liquid or two-phase inlet was therefore
     //  expanded as if it were all vapour, in silence -- the compressor's
     //  wet-suction defect (2026-10-21) one machine along.  The rule is this
     //  unit's DECLARED acceptance (`Turbine::acceptance()` below), read on the
@@ -112,7 +112,7 @@ int Turbine::solve(const DictPtr& dict,
     recordResidual(0.0);
 
     // ---- Diagnostics -----------------------------------------------------
-    const scalar s_out_real = thermo.S_real(T_out, P_out, y);
+    const scalar s_out_real = rotating::outletS(thermo, T_out, P_out, y);
     const scalar dS_gen     = s_out_real - s_in;
     const scalar ratio      = P_in / P_out;            // expansion ratio
     const scalar W_gen_kW   = -W_shaft / 1000.0;        // positive: generated
@@ -154,7 +154,14 @@ int Turbine::solve(const DictPtr& dict,
     out.T    = T_out;
     out.P    = P_out;
     out.z    = y;
-    out.vf   = 1.0;
+    //  C493: the discharge is resolved on its equilibrium state; a dry outlet
+    //  keeps vf 1 (bit for bit), a condensing one is announced and published
+    //  with its vapour fraction.
+    const auto outPh = rotating::outletPhase(thermo, T_out, P_out, y);
+    out.vf   = outPh.vf;
+    if (outPh.condenses)
+        rotating::announceCondensing("turbine",
+            dict->name().empty() ? type() : dict->name(), F, T_out, P_out, outPh);
     produced_.push_back(out);
 
     // ---- KPIs -----------------------------------------------------------
@@ -197,8 +204,8 @@ UnitAcceptance Turbine::acceptance() const
     a.phases.liquid = false;
     a.phases.vapour = true;
     a.phases.why = "The turbine prices its inlet and its isentropic path with"
-        " the VAPOUR root of the package at the overall composition and publishes"
-        " its outlet as a vapour; a liquid or two-phase inlet would be expanded"
+        " the VAPOUR root of the package at the overall composition;"
+        " a liquid or two-phase inlet would be expanded"
         " as if it were all vapour, hiding the latent heat of its liquid.";
     a.phases.remedy = "superheat the stream (a `heater`) so it arrives as"
         " vapour, or separate the liquid first with a `flash` and expand only"
