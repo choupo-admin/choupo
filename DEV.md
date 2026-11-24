@@ -5652,6 +5652,26 @@ accepts today, and that is a policy call.
 > check_doc_references because a for-loop of gates does not stop the next command (the C485 item
 > "push refused when a gate failed" is therefore needed, not optional).
 
+> **C494. THE OPTIMIZER OF A REFERENCE SIMULATOR (Vitor, 2026-11-24, after reading that Dakota's
+> best constrained optimizers -- NPSOL/NLSSOL, DOT -- are commercial: "Para o Choupo ficar o simulador
+> internacional de referência, qual é o algoritmo de otimização que recomendas?").**  Checked: the
+> Dakota FAQ says its binaries must omit DOT and NPSOL (commercial extensions, licensed separately);
+> no evidence they were ever open and then closed (Dakota went open source as 3.0 under GPL in 2002,
+> LGPL from 5.0).  NPSOL's METHOD is published (Gill, Murray, Saunders, Wright), so an own
+> implementation from the papers is legitimate.  The architect first proposed an SQP with exact
+> sensitivities as the main path; Vitor's correction carried ("num simulador sequencial não podemos
+> ambicionar derivadas analíticas em todas as operações ... usa coisas às vezes um pouco fuzzy"):
+> tables, piecewise correlations, regime switches, integer stages and phase changes make many
+> problems non-smooth.  RULED: (1) MEASURE first -- Nelder-Mead against MADS and COBYLA on three or
+> four shipped optimisation cases, by simulations to the same optimum and failures (no engine
+> change); (2) MADS (Audet and Dennis; derivative-free, constraints, convergence on non-smooth
+> functions) becomes the main optimizer, an own short implementation beside Nelder-Mead, chosen
+> explicitly (no silent switch); (3) an SQP showing the active constraints and their Lagrange
+> multipliers as SHADOW PRICES, only for smooth problems, fed by implicit-function sensitivities on
+> the tear Jacobian with per-unit finite differences at tight unit tolerance (analytic where a unit
+> has them), and REFUSED by name when the engine's two-step gradient check says the gradients are
+> not good.  Nothing before 2 December except, if a slot is free, the measurement.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
