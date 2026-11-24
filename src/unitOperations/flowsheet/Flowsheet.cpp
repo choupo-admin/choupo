@@ -3539,73 +3539,28 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
-        //  EXACT TEAR RESTART (opt-in; `choupoSolve --restart-tears`, record
-        //  io/RestartTears.H).  The record holds x_k, the tear values the
-        //  converged run ENTERED its last pass with.  When it fits this
-        //  flowsheet the tears are seeded from it bit for bit, the iteration
-        //  is skipped and the same final pass below runs; when it does not fit
-        //  the reason is printed and the solve proceeds in full.  Everything a
-        //  unit may have carried from earlier sweeps starts cold -- see the
-        //  record's header for what that means for exactness.
+        //  EXACT TEAR RESTART (opt-in, `--restart-tears`; io/RestartTears.H): a
+        //  trusted record seeds the tears bit for bit and the iteration is
+        //  skipped; the final pass below is then the whole solve.
         tearRestartApplied_ = false;
         std::string restartSolverName;
         if (tearRestart_)
         {
-            std::string why;
-            const restartTears::Record& rec = *tearRestart_;
-            if (onInstant_)
-                why = "solutionControl writes the iteration instants, which a"
-                      " restart would not produce";
-            else if (rec.tears.size() != tears.size())
-                why = "the record holds " + std::to_string(rec.tears.size())
-                    + " tear(s), this flowsheet has "
-                    + std::to_string(tears.size());
-            else
-                for (const auto& t : tears)
-                {
-                    auto it = rec.tears.find(t);
-                    if (it == rec.tears.end() || !streams_.count(t))
-                    { why = "tear '" + t + "' is not in the record"; break; }
-                    const ProcessStream& cur = streams_.at(t);
-                    //  `s` is sized lazily by the first sweep, so the seed may
-                    //  hold none where the record holds zeros: only `z` must fit.
-                    if (it->second.z.size() != cur.z.size())
-                    { why = "tear '" + t + "' has another component count"; break; }
-                    if (cur.psd.onGrid())
-                    { why = "tear '" + t + "' carries a size distribution"
-                            " (not stored)"; break; }
-                }
+            const std::string why = restartTears::seed(*tearRestart_, tears, streams_, bool(onInstant_));
             if (!why.empty())
-                std::cout << "[restart] the record is not used: " << why
-                          << " -- the full recycle solve runs.\n";
+                std::cout << "[restart] the record is not used: " << why << " -- the full recycle solve runs.\n";
             else
             {
-                for (const auto& t : tears)
-                {
-                    const ProcessStream& r = rec.tears.at(t);
-                    ProcessStream& s = streams_.at(t);
-                    s.F = r.F; s.T = r.T; s.P = r.P; s.vf = r.vf;
-                    s.z = r.z; s.s = r.s;
-                }
                 tearRestartApplied_ = true;
-                restartSolverName = rec.solver;
-                finalConverged = rec.converged;
-                finalResidual  = rec.residual;
-                finalIteration = rec.iteration;
-                finalSolver    = restartSolverName.c_str();
-                std::cout << "Recycle restart: " << tears.size()
-                          << " tear stream(s) seeded EXACTLY from the record of"
-                             " a converged run (the values it entered its last"
-                             " pass with; build, inputs and package verified);"
-                             " the " << rec.solver << " iteration ("
-                          << rec.iteration << " counted) is skipped.\n";
+                restartSolverName = tearRestart_->solver;
+                finalConverged = tearRestart_->converged;  finalResidual = tearRestart_->residual;
+                finalIteration = tearRestart_->iteration;  finalSolver = restartSolverName.c_str();
+                std::cout << "Recycle restart: " << tears.size() << " tear stream(s) seeded EXACTLY from a converged"
+                             " run's record (the values it entered its last pass with; build, inputs and package"
+                             " verified); its " << restartSolverName << " iteration is skipped.\n";
             }
         }
-
-        if (tearRestartApplied_)
-        {
-            //  nothing to iterate: the final pass below is the whole solve
-        }
+        if (tearRestartApplied_) {}
         else if (recSolver == "Wegstein" || recDE || recDirect)
         {
             const std::string accName = recDE ? "DominantEigenvalue"
@@ -4135,19 +4090,10 @@ int Flowsheet::solve(const DictPtr& dict,
             if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
         if (onTearSnapshot_ && !tearRestartApplied_ && finalConverged)
         {
-            restartTears::Record rec;
-            bool storable = true;
-            for (const auto& kv : finalAssumedTears)
-                if (kv.second.psd.onGrid()) storable = false;
-            if (storable)
-            {
-                rec.solver    = finalSolver;
-                rec.converged = finalConverged;
-                rec.residual  = finalResidual;
-                rec.iteration = finalIteration;
-                rec.tears     = finalAssumedTears;
-                onTearSnapshot_(rec);
-            }
+            restartTears::Record rec;   // x_k, what the final sweep below is entered with
+            rec.solver = finalSolver; rec.converged = true; rec.residual = finalResidual;
+            rec.iteration = finalIteration; rec.tears = finalAssumedTears;
+            onTearSnapshot_(rec);
         }
         sweep(/*quiet=*/false);
         if (g_trialPressureClamps > 0)

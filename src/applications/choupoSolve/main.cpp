@@ -121,7 +121,7 @@ Description
 #include "unitOperations/separation/cycloneModel/CycloneModel.H"
 #include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
 #include "unitOperations/flowsheet/Flowsheet.H"
-#include "io/RestartTears.H"          // --restart-tears: the exact tear restart record
+#include "io/RestartTears.H"          // --restart-tears
 #include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <algorithm>
 #include <cctype>
@@ -149,17 +149,7 @@ namespace fs = std::filesystem;
 // or macro magic.  See bin/buildCode and CLAUDE.md §"case-local code".
 void registerUserTypes();
 
-// --------------------------------------------------------------------------
-//   `--restart-tears` (opt-in; record: io/RestartTears.H).  Set by main for a
-//   single direct pass only (never under an outerDict), read by the one
-//   runSimulation call that pass makes.  Absent => nothing here is touched.
-struct RestartRequest
-{
-    bool        enabled = false;
-    fs::path    caseDir;       // absolute, the case being solved
-};
-static RestartRequest g_restartRequest;
-
+static fs::path g_restartCase;   // --restart-tears, a single direct pass only (io/RestartTears.H)
 // --------------------------------------------------------------------------
 //   One simulator pass: load thermo + run flowsheet → SimulationResult.
 //   Reusable from the outer-driver layer (varies flowsheetDict each call).
@@ -300,73 +290,11 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
                 });
     }
 
-    //  ---- `--restart-tears` (opt-in) -------------------------------------
-    //  READ: a record is trusted only when the build, the inputs the solve
-    //  reads and the assembled package all equal this run's; any difference
-    //  is named and the run solves in full (a speed aid never fails a case).
-    //  WRITE: a converged full solve leaves the record for the next run.
-    restartTears::Record keptRecord;
-    bool haveKeptRecord = false;
-    if (g_restartRequest.enabled && !init0 && !lint && !manifest)
-    {
-        const std::string inputHash  = restartTears::hashInputs(g_restartRequest.caseDir);
-        const std::string binaryHash = restartTears::hashBinary();
-        if (inputHash.empty() || binaryHash.empty())
-            std::cout << "[restart] the inputs or the build cannot be hashed on"
-                         " this platform -- the full recycle solve runs and no"
-                         " record is written.\n";
-        else
-        {
-            const fs::path rp = restartTears::recordPath(g_restartRequest.caseDir);
-            if (fs::exists(rp))
-            {
-                auto rec = std::make_shared<restartTears::Record>();
-                std::string why;
-                if (!restartTears::read(rp, *rec, why))
-                    why = "the record is unreadable (" + why + ")";
-                else if (rec->binaryHash != binaryHash)
-                    why = "it was written by another build";
-                else if (rec->inputHash != inputHash)
-                    why = "an input the solve reads (flowsheetDict, 0/, constant/,"
-                          " solverDict, controlDict or a parent folder) differs from"
-                          " the run that wrote it";
-                else if (rec->packageIdentity != thermo.identity())
-                    why = "the thermophysical package assembled now is not the one"
-                          " it was written for";
-                else if (!rec->converged)
-                    why = "the run that wrote it had not converged";
-                if (why.empty())
-                    flowsheet.setTearRestart(rec);
-                else
-                    std::cout << "[restart] the record " << rp.filename().string()
-                              << " is not used: " << why
-                              << " -- the full recycle solve runs.\n";
-            }
-            else
-                std::cout << "[restart] no record yet (" << rp.filename().string()
-                          << ") -- the full recycle solve runs and writes one.\n";
-            flowsheet.setTearSnapshotHook(
-                [&, inputHash, binaryHash](restartTears::Record& r)
-                {
-                    r.binaryHash      = binaryHash;
-                    r.inputHash       = inputHash;
-                    r.packageIdentity = thermo.identity();
-                    keptRecord        = r;
-                    haveKeptRecord    = true;
-                });
-        }
-    }
-
+    restartTears::Session restart(g_restartCase, thermo.identity(), !init0 && !lint && !manifest);
+    if (restart.record()) flowsheet.setTearRestart(restart.record());
+    flowsheet.setTearSnapshotHook(restart.hook());
     int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);
-
-    if (haveKeptRecord && rc == 0 && !flowsheet.tearRestartApplied())
-    {
-        const fs::path rp = restartTears::recordPath(g_restartRequest.caseDir);
-        if (restartTears::write(rp, keptRecord))
-            std::cout << "[restart] record written: " << rp.filename().string()
-                      << " (" << keptRecord.tears.size()
-                      << " tear stream(s), the values the last pass entered with).\n";
-    }
+    restart.finish(rc == 0 && !flowsheet.tearRestartApplied());
 
     // Lint / --manifest: solve() returned at a validate-and-stop seam -- there
     // is no simulation result to assemble (and no T-x-y sweep to run).
@@ -637,15 +565,8 @@ try
         "  --layout-draft    solve, then write a DRAFT system/layoutDict from the\n"
         "                    sized items (flow order, one area per sector); never\n"
         "                    overwrites without --force (bin/choupo-layout --draft)\n"
-        "  --restart-tears   OPT-IN speed aid for a recycle case: after a converged\n"
-        "                    full solve, keep the exact tear values it entered its\n"
-        "                    last pass with (<case>/converged.restart, hexfloat);\n"
-        "                    a later run whose build, inputs (all but\n"
-        "                    system/layoutDict and system/postDict) and package\n"
-        "                    are unchanged seeds the tears from it, skips the\n"
-        "                    iteration and runs the final pass.  A record that\n"
-        "                    does not match is named and the full solve runs.\n"
-        "                    Not used under an outerDict.  Default: off\n"
+        "  --restart-tears   opt-in, recycle cases: keep/reuse the exact converged tears\n"
+        "                    (<case>/converged.restart); a stale record is named\n"
         "  --describe-units  print every unit type's declared acceptance as JSON\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
@@ -655,8 +576,7 @@ try
 
     bool init0Mode = false, init0Force = false, lintMode = false;
     bool manifestMode = false;
-    bool layoutDraftMode = false;
-    bool restartTearsMode = false;
+    bool layoutDraftMode = false, restartTearsMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
     {
@@ -902,17 +822,8 @@ try
     DictPtr outerDict;
     if (fs::exists("system/outerDict"))
         outerDict = Dictionary::fromFile("system/outerDict");
-    if (restartTearsMode)
-    {
-        if (outerDict)
-            std::cout << "[restart] --restart-tears is not used under an outerDict"
-                         " (many passes, no single final pass to restart).\n";
-        else
-        {
-            g_restartRequest.enabled = true;
-            g_restartRequest.caseDir = fs::current_path();
-        }
-    }
+    if (restartTearsMode)   // a single direct pass only: an outerDict runs many
+    { if (outerDict) std::cout << "[restart] --restart-tears is not used under an outerDict.\n"; else g_restartCase = fs::current_path(); }
 
     DictPtr postDict;
     if (fs::exists("system/postDict"))

@@ -40,6 +40,7 @@ Description
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 #include <set>
 #include <sstream>
 #include <vector>
@@ -281,6 +282,103 @@ bool read(const fs::path& path, Record& r, std::string& why)
     }
     if (!sawType || r.tears.empty()) { why = "not a restartTears record"; return false; }
     return true;
+}
+
+std::string seed(const Record& r, const std::vector<std::string>& tears,
+                 std::map<std::string, ProcessStream>& streams,
+                 bool instantsWritten)
+{
+    if (instantsWritten)
+        return "solutionControl writes the iteration instants, which a restart"
+               " would not produce";
+    if (r.tears.size() != tears.size())
+        return "the record holds " + std::to_string(r.tears.size())
+             + " tear(s), this flowsheet has " + std::to_string(tears.size());
+    for (const auto& t : tears)
+    {
+        auto it = r.tears.find(t);
+        auto cur = streams.find(t);
+        if (it == r.tears.end() || cur == streams.end())
+            return "tear '" + t + "' is not in the record";
+        //  `s` is sized lazily by the first sweep, so the seed may hold none
+        //  where the record holds zeros: only `z` must fit.
+        if (it->second.z.size() != cur->second.z.size())
+            return "tear '" + t + "' has another component count";
+        if (cur->second.psd.onGrid())
+            return "tear '" + t + "' carries a size distribution (not stored)";
+    }
+    for (const auto& t : tears)
+    {
+        const ProcessStream& x = r.tears.at(t);
+        ProcessStream& s = streams.at(t);
+        s.F = x.F; s.T = x.T; s.P = x.P; s.vf = x.vf;
+        s.z = x.z; s.s = x.s;
+    }
+    return std::string();
+}
+
+Session::Session(const fs::path& caseDir, const std::string& packageIdentity,
+                 bool eligible)
+{
+    if (caseDir.empty() || !eligible) return;
+    package_    = packageIdentity;
+    inputHash_  = hashInputs(caseDir);
+    binaryHash_ = hashBinary();
+    if (inputHash_.empty() || binaryHash_.empty())
+    {
+        std::cout << "[restart] the inputs or the build cannot be hashed on this"
+                     " platform -- the full recycle solve runs and no record is"
+                     " written.\n";
+        return;
+    }
+    dir_ = caseDir;
+    const fs::path rp = recordPath(dir_);
+    if (!fs::exists(rp))
+    {
+        std::cout << "[restart] no record yet (" << rp.filename().string()
+                  << ") -- the full recycle solve runs and writes one.\n";
+        return;
+    }
+    auto rec = std::make_shared<Record>();
+    std::string why;
+    if (!read(rp, *rec, why))
+        why = "the record is unreadable (" + why + ")";
+    else if (rec->binaryHash != binaryHash_)
+        why = "it was written by another build";
+    else if (rec->inputHash != inputHash_)
+        why = "an input the solve reads (flowsheetDict, 0/, constant/, solverDict,"
+              " controlDict or a parent folder) differs from the run that wrote it";
+    else if (rec->packageIdentity != package_)
+        why = "the thermophysical package assembled now is not the one it was"
+              " written for";
+    else if (!rec->converged)
+        why = "the run that wrote it had not converged";
+    if (why.empty()) { record_ = rec; return; }
+    std::cout << "[restart] the record " << rp.filename().string()
+              << " is not used: " << why << " -- the full recycle solve runs.\n";
+}
+
+std::function<void(Record&)> Session::hook()
+{
+    if (dir_.empty()) return nullptr;
+    return [this](Record& r)
+    {
+        r.binaryHash      = binaryHash_;
+        r.inputHash       = inputHash_;
+        r.packageIdentity = package_;
+        kept_             = r;
+        haveKept_         = true;
+    };
+}
+
+void Session::finish(bool converged)
+{
+    if (dir_.empty() || !haveKept_ || !converged) return;
+    const fs::path rp = recordPath(dir_);
+    if (write(rp, kept_))
+        std::cout << "[restart] record written: " << rp.filename().string()
+                  << " (" << kept_.tears.size() << " tear stream(s), the values the"
+                  << " last pass entered with).\n";
 }
 
 } // namespace restartTears

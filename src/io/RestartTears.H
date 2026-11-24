@@ -74,8 +74,11 @@ SourceFiles
 #include "streams/ProcessStream.H"
 
 #include <filesystem>
+#include <functional>
 #include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace Choupo
 {
@@ -111,6 +114,40 @@ bool write(const std::filesystem::path& path, const Record& r);
 
 /// Read `path`.  False with `why` if absent or malformed.
 bool read(const std::filesystem::path& path, Record& r, std::string& why);
+
+/// Seed `streams` (the flowsheet's tear streams, named in `tears`) from `r`,
+/// bit for bit.  Returns the reason the record does not fit, or "" when it was
+/// applied.  `instantsWritten`: the run writes iteration instants, which a
+/// restart would not produce, so it is refused.
+std::string seed(const Record& r, const std::vector<std::string>& tears,
+                 std::map<std::string, ProcessStream>& streams,
+                 bool instantsWritten);
+
+/// One run's use of the flag.  Inactive (a no-op) when `caseDir` is empty.
+/// Active: hashes the inputs and the build, reads the record next to the case
+/// and TRUSTS it only if build, inputs and package identity all equal this
+/// run's -- any difference is named on stdout (`[restart] ...`) and the run
+/// solves in full.  After a converged full solve `finish` writes the record
+/// the solver handed to `hook()`.
+class Session
+{
+public:
+    Session(const std::filesystem::path& caseDir,
+            const std::string& packageIdentity, bool eligible);
+    /// the trusted record, or null
+    std::shared_ptr<const Record> record() const { return record_; }
+    /// what the solver calls once at its final pass (empty when inactive)
+    std::function<void(Record&)> hook();
+    /// write the kept record (a converged FULL solve only)
+    void finish(bool converged);
+
+private:
+    std::filesystem::path         dir_;
+    std::string                   package_, inputHash_, binaryHash_;
+    std::shared_ptr<const Record> record_;
+    Record                        kept_;
+    bool                          haveKept_ = false;
+};
 
 } // namespace restartTears
 } // namespace Choupo

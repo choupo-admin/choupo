@@ -455,7 +455,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
   turbine keys ......... src/unitOperations/rotating/Turbine.cpp:78-86 (as read by the pressure-pack general)
   tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:342
   ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:835,1075
-  -init0 ............... src/applications/choupoSolve/main.cpp:156,209,536
+  -init0 ............... src/applications/choupoSolve/main.cpp:158,211,542
   material forms ....... src/streams/StreamStateIO.cpp:1069-1103
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
   heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79

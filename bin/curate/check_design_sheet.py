@@ -4801,8 +4801,9 @@ def main() -> int:
     atexit.register(lambda: [shutil.rmtree(x, ignore_errors=True) for x in _RUN_STASH])
     atexit.register(_RST.cleanup)
     if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
-        atexit.register(lambda: print("run-cache: %d engine runs, %d replayed"
-                                      % (len(_RUNS), _HITS[0]), file=sys.stderr))
+        atexit.register(lambda: print("run-cache: %d engine runs, %d replayed; restart: %d proofs, %d restarted, %d not exact"
+                                      % (len(_RUNS), _HITS[0], _RST.proofs, _RST.restarts,
+                                         _RST.refused), file=sys.stderr))
     problems, notes = [], []
 
     all_units = []
