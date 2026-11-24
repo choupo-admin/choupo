@@ -309,7 +309,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-0.22 kJ/mol (paper's 95% confidence at 0 K, 0.1, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 32 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = -45.5 +-0.1 kJ/mol (paper label CH2CO); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -3.099 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was -48.42 (website version, withdrawn as a source); the difference is 0.18 kJ/mol.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CH2CO, Table 1; +-0.1 kJ/mol)",
+      "value": "-45.5",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.3 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
    "uncertainty_Cp": "+-0.17 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -410,7 +418,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-0.82 kJ/mol (paper's 95% confidence at 0 K, 0.8, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 242.2 +-0.8 kJ/mol (paper label CH2N); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -3.656 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 238.44 (website version, withdrawn as a source); the difference is 0.10 kJ/mol. Miller & Bowman 1989, Table 1 (p. 289) lists 59.08 kcal/mol = 247.19 kJ/mol (+8.65 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CH2N, Table 1; +-0.8 kJ/mol)",
+      "value": "242.2",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
    "uncertainty_Cp": "+-0.20 J/(mol K) at 298 K, +-0.21 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -461,7 +477,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-0.54 kJ/mol (paper's 95% confidence at 0 K, 0.5, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = -12.2 +-0.5 kJ/mol (paper label NCOH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -2.671 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was -15.04 (website version, withdrawn as a source); the difference is 0.17 kJ/mol. Miller & Bowman 1989, Table 1 (p. 289) lists -2.28 kcal/mol = -9.54 kJ/mol (+5.33 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label NCOH, Table 1; +-0.5 kJ/mol)",
+      "value": "-12.2",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.9 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.8 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.11 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -512,7 +536,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-0.54 kJ/mol (paper's 95% confidence at 0 K, 0.5, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 170.9 +-0.5 kJ/mol (paper label CHNO); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -1.454 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 169.26 (website version, withdrawn as a source); the difference is 0.19 kJ/mol. The paper's label CHNO is the H-C-N-O connectivity (fulminic acid); NCOH is cyanic acid HOCN, CNOH isofulminic acid. Miller & Bowman 1989, Table 1 (p. 289) lists 38.4 kcal/mol = 160.67 kJ/mol (-8.78 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CHNO, Table 1; +-0.5 kJ/mol)",
+      "value": "170.9",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.4 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.5 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -569,7 +601,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-1.32 kJ/mol (paper's 95% confidence at 0 K, 1.3, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 32 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 94.9 +-1.3 kJ/mol (paper label CHCOH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -2.096 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 92.81 (website version, withdrawn as a source); the difference is 0.01 kJ/mol.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CHCOH, Table 1; +-1.3 kJ/mol)",
+      "value": "94.9",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.6 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.2 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.88 J/(mol K) at 298 K, +-0.53 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -626,7 +666,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
     "uncertainty": "+-1.6 kJ/mol (paper's 95% confidence at 0 K, 0.6, widened for the 0 K to 298.15 K conversion of a quasi-linear molecule, where this tool's harmonic soft bend is least reliable)",
     "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 31 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 543.4 +-0.6 kJ/mol (paper label triplet CHCCH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment +4.587 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 546.49 (website version, withdrawn as a source); the difference is 1.50 kJ/mol. The gap is larger than the paper's 0.6 because this record treats the quasi-linear HCCCH as a linear harmonic rotor in the conversion; the 0 K value is the paper's, the 298.15 K one carries the widened uncertainty.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label triplet CHCCH, Table 1; +-0.6 kJ/mol)",
+      "value": "543.4",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "biradical": "triplet biradical (propargylene)",
    "uncertainty_S": "+-5.1 J/(mol K) (propagated from the stated uncertainty of each frequency, 2.0 % on the rotational constants; plus 3.0 for large-amplitude motion treated as harmonic)",
@@ -696,7 +744,15 @@
     "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 2, manuscript PDF page 35 of the accepted manuscript at OSTI 1389058",
     "uncertainty": "+-2.2 kJ/mol (twice the 1.08 kJ/mol RMS error of the same ANL0 method against 150 ATcT species, Table 4 of the paper)",
     "notes": "n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is NOT in the ATcT species set of that paper: its Table 2 lists the ANL0 CALCULATED Delta_f H(0 K) = 547.4 kJ/mol for CHCHCCH, and this record uses that calculated value, not an ATcT value (the earlier record cited ATcT 1.124 by version only, which is no source). The 298.15 K value is DERIVED: Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py) - sum of the elements' increments (CODATA Key Values: C graphite 1.050, H2 8.468 kJ/mol), net increment -2.328 kJ/mol. The value held before 2026-11-23 (544.74, website version) lies 0.33 kJ/mol from it. The resonance-stabilised i-C4H3 (H2C=C=C=CH, 495.7 at 0 K in the same table) is lower in energy and is NOT used.",
-    "origin": "derived"
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ANL0 ab initio CALCULATED, not ATcT, paper label CHCHCCH, Table 2; +-2.2 kJ/mol)",
+      "value": "547.4",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.7 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.5 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.68 J/(mol K) at 298 K, +-0.55 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",

@@ -42,6 +42,10 @@ provenance
         origin        derived;
         method        "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas";
         methodVersion "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)";
+        inputs
+        (
+            { quantity "Delta_f H at 0 K (ATcT, paper label triplet CHCCH, Table 1; +-0.6 kJ/mol)"; value 543.4; unit kJ/mol; doi "10.1021/acs.jpca.7b05945"; }
+        );
         uncertainty   "+-1.6 kJ/mol (paper's 95% confidence at 0 K, 0.6, widened for the 0 K to 298.15 K conversion of a quasi-linear molecule, where this tool's harmonic soft bend is least reliable)";
         notes         "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 31 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 543.4 +-0.6 kJ/mol (paper label triplet CHCCH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment +4.587 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 546.49 (website version, withdrawn as a source); the difference is 1.50 kJ/mol. The gap is larger than the paper's 0.6 because this record treats the quasi-linear HCCCH as a linear harmonic rotor in the conversion; the 0 K value is the paper's, the 298.15 K one carries the widened uncertainty.";
     }
