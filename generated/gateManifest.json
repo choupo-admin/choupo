@@ -573,8 +573,8 @@
     },
     "check_mass_closure": {
       "exit": 0,
-      "claim": "check_mass_closure: OK -- 277 steady case(s) close their plant-boundary mass balance within 0.5 % of 100, read from the engine's own massBalance report and never recomputed here; of those, 3 publish a PROCESS scope (they DECLARE a utility circuit, and the process closure is the number held -- the total one is diluted by the circuit's own mass) and the rest are held on their total closure, which for them IS the whole balance.  4 invalid declarations were built and every one refused BY NAME (supply == return, a service outside the catalogue, a supply that is not a boundary inlet, a pair that does not conserve).  4 ran the report and state they have NO MATERIAL BOUNDARY (a closed cycle: their per-unit balances carry the verification), 1 are told ALOUD by the engine that their declared chain did not run under an outer driver (announced, so not silent), 7 exit non-zero and belong to the suite's exit-code check rather than this one, and 13 neither declare the report nor emit one.  Every one of those is LISTED rather than skipped, because an absence nobody counts is not a finding -- and a case that DECLARES the report and never gets it FAILS by name, which is how a 113 % closure shipped unseen until 2026-09-04.  THE ATOM BALANCE CARRIES THE SAME SEPARATION and is held here too: a plant that DECLARES a circuit must publish `process.<element>` rows, one that declares none must publish none, and the scope must ACTUALLY REMOVE something -- below 99 % of the total on at least one element, because a scope that reproduces the total removes nothing and is the failure that looks like success (judged on 1 plant(s) run in this pass that publish a process atom scope, each read through report files that pass says it wrote).  NOT CHECKED: whether those process figures are RIGHT (they are a derived view of streams the goldens already pin), energy closure, and PER-UNIT closure (two units can cancel and this arm would not see it).  CLOSURE BY CONSTRUCTION (C174) -- NOT EVIDENCE: 42 unit material closure(s) hold because the unit FILLED a term from the balance (spiralWoundModule: water in the retentate and the permeate), in 30 case(s) whose closure above therefore says nothing about that term; 42 are verified by the unit's own second route (every solute balanced on its own) and 0 are NOT VERIFIED (none); every in-scope witness among 1 was read.",
-      "seconds": 446.2
+      "claim": "check_mass_closure: OK -- 331 steady case(s) close their plant-boundary mass balance within 0.5 % of 100, read from the engine's own massBalance report and never recomputed here; of those, 3 publish a PROCESS scope (they DECLARE a utility circuit, and the process closure is the number held -- the total one is diluted by the circuit's own mass) and the rest are held on their total closure, which for them IS the whole balance.  4 invalid declarations were built and every one refused BY NAME (supply == return, a service outside the catalogue, a supply that is not a boundary inlet, a pair that does not conserve).  5 ran the report and state they have NO MATERIAL BOUNDARY (a closed cycle: their per-unit balances carry the verification), 1 are told ALOUD by the engine that their declared chain did not run under an outer driver (announced, so not silent), 13 exit non-zero and belong to the suite's exit-code check rather than this one, and 30 neither declare the report nor emit one.  Every one of those is LISTED rather than skipped, because an absence nobody counts is not a finding -- and a case that DECLARES the report and never gets it FAILS by name, which is how a 113 % closure shipped unseen until 2026-09-04.  THE ATOM BALANCE CARRIES THE SAME SEPARATION and is held here too: a plant that DECLARES a circuit must publish `process.<element>` rows, one that declares none must publish none, and the scope must ACTUALLY REMOVE something -- below 99 % of the total on at least one element, because a scope that reproduces the total removes nothing and is the failure that looks like success (judged on 1 plant(s) run in this pass that publish a process atom scope, each read through report files that pass says it wrote).  NOT CHECKED: whether those process figures are RIGHT (they are a derived view of streams the goldens already pin), energy closure, and PER-UNIT closure (two units can cancel and this arm would not see it).  CLOSURE BY CONSTRUCTION (C174) -- NOT EVIDENCE: 42 unit material closure(s) hold because the unit FILLED a term from the balance (spiralWoundModule: water in the retentate and the permeate), in 30 case(s) whose closure above therefore says nothing about that term; 42 are verified by the unit's own second route (every solute balanced on its own) and 0 are NOT VERIFIED (none); every in-scope witness among 1 was read.  ADMISSIBILITY (C498, review R-011/R-012): 5 probes were built on cstr01_first_order -- a reactant driven below zero, the same at 1e-5 scale through the reactions list, a non-conserving stoichiometry -- and each was refused or left NOT CONVERGED by name, while two admissible neighbours still solved.",
+      "seconds": 382.9
     },
     "check_mean_ionic": {
       "exit": 0,
@@ -1204,7 +1204,7 @@
     "check_reactor_limits": {
       "exit": 0,
       "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths, an expression law keeps its own refusal; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused, by component and at the mixture's dew point; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 7.88180818e-03 -> 8.77213733e-03; R8 cstr05 announces 0 failed scan points and keeps its one steady state; adiabaticFlash01 reports both flags and maxOuterIter 3 reports NOT converged; gibbs05 seeded at 5000 / 250 K converges with no penalty; R9 cstr08 with the glycol on its pureLiquid rung RUNS; with no liquid Cp it is refused naming pureLiquid and the missing liquid Cp; with no block the old message still stands; R10 the same case retyped pfr: gas-rung and pureLiquid glycol RUN; with no liquid Cp it is refused naming pureLiquid and the missing liquid Cp; with no block the old message stands (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
-      "seconds": 3.3
+      "seconds": 2.9
     },
     "check_pore_partition": {
       "exit": 0,
@@ -1494,7 +1494,7 @@
     "check_campaign_closure": {
       "exit": 0,
       "claim": "check_campaign_closure: OK -- 656 expected file(s) hold no closure above tolerance; 106 time-integrated case(s) run, every one's own mass/element/solute closure within 0.001 and every claimed energy closure within 0.01 (no declared-cause exemption exists); a run that creates mass exits non-zero (arm iv, ctrl16 with an emptying schedule).  3 case(s) carry a declared opt-out marker and produce no answer: batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4.",
-      "seconds": 430.4
+      "seconds": 248.9
     },
     "check_lesson_references": {
       "exit": 0,
@@ -1863,18 +1863,18 @@
     },
     "check_lesson_absence_claims": {
       "exit": 0,
-      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 0 KNOWN FALSE listed for the lesson's fixer, 820 unclassified sentence(s) in 169 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
-      "seconds": 1.4
+      "claim": "check_lesson_absence_claims: OK 13 absence claim(s) held by 17 probe(s) of the tree, 0 KNOWN FALSE listed for the lesson's fixer, 820 unclassified sentence(s) in 169 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
+      "seconds": 1.8
     },
     "check_lesson_typed_numbers": {
       "exit": 0,
-      "claim": "check_lesson_typed_numbers: OK 46 typed number(s) equal their golden row to half a unit of the last digit; 0 unregistered candidate(s) in 0 file(s) each at its pin (ratchet: may only fall, a fall may be DRIFT).  NOT checked: a number derived from several rows, a literal that already differs from every row, a case a lesson does not name.",
+      "claim": "check_lesson_typed_numbers: OK 52 typed number(s) equal their golden row to half a unit of the last digit; 0 unregistered candidate(s) in 0 file(s) each at its pin (ratchet: may only fall, a fall may be DRIFT).  NOT checked: a number derived from several rows, a literal that already differs from every row, a case a lesson does not name.",
       "seconds": 0.5
     },
     "check_lesson_knob_domains": {
       "exit": 0,
-      "claim": "check_lesson_knob_domains: OK 14 knob(s) held inside a declared validity, 0 KNOWN violation(s) still violating (the page fixer's list), 217 undeclared knob(s) in 56 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
-      "seconds": 0.2
+      "claim": "check_lesson_knob_domains: OK 17 knob(s) held inside a declared validity, 0 KNOWN violation(s) still violating (the page fixer's list), 217 undeclared knob(s) in 56 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
+      "seconds": 0.3
     },
     "check_dryer_arrangements": {
       "exit": 0,
