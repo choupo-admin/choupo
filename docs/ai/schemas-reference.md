@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*122 of 122 registered operations carry a schema and are documented below.*
+*126 of 126 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -99,6 +99,12 @@ Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure
 | `arealDustLoad` |   | number | kg/m2 | Cake mass per unit cloth area; drives the cake pressure drop. |
 | `penetration0` |   | number | - | Penetration of the finest particles in η(d) = 1 - P0·exp(-d/d_c). |
 | `dCharacteristic` |   | number | m | Size scale of the grade-efficiency rise. |
+
+## `batchAccumulator`  (batchAccumulator operation)
+
+A passive holdup of choupoBatch: a vessel that only collects what the recipe transfers into it (a dosing tank, a receiver, a place the interlock parks a stopped feed). It has NO `operation` block; its starting state is the unit's `initial {}` block -- T and P required, V optional (default 0), and optionally `totalMoles` with a composition (empty by convention) (BatchAccumulator.cpp:36-50).
+
+*(no operation-block fields)*
 
 ## `batchDiafilter`  (batchDiafilter operation)
 
@@ -427,6 +433,17 @@ The well-stirred tank of choupoCtrl / choupoSemiContinuous: a holdup with mole b
 | `energy` |   | string | — | `isothermal` holds T at its initial value (refused with a reaction, which would need a duty this unit does not compute). Omit it for the … |
 | `geometry` |   | object | — | The vertical cylinder of a variable-volume vessel (volumeMode variable). |
 | `outflow` |   | object | — | The declared outflow of a variable-volume vessel: `mode flow` with `F`, or `mode valve` with `opening` and a `valve {}` block. |
+
+## `dynamicTank`  (dynamicTank operation)
+
+A level-bearing storage tank of choupoCtrl / choupoSemiContinuous: a liquid holdup in a DECLARED vertical cylinder whose level integrates (or self-regulates) against a declared outflow. It reacts nothing (a `reaction` is refused by name -- the vessel with a reaction and a level is the variable-volume dynamicCSTR). The feed is the `in <stream>` of the unit and its `inlet {}` block (F, T, composition), the starting state the `initial {}` block (T, optional P, composition, and EITHER `level` OR `totalMoles`/`V`, never both); this `operation` block holds the geometry, the optional jacket and the outflow declaration (DynamicTank.cpp:63-135). No geometry and no outflow is assumed.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `geometry` | ✓ | object | — | The vertical cylinder the level is measured in (VariableVolumeHoldup.cpp:52-72). Required: none is assumed; refused when absent. A level … |
+| `outflow` | ✓ | object | — | The declared outflow (DynamicTank.cpp:80-107): `mode flow` (a manipulated molar flow F; the level integrates) or `mode valve` (a valve on… |
+| `UA` |   | number | W/K | U*A in W/K (raw SI). Heat to the holdup is UA (T_jacket - T). Defaults to 0: no jacket, adiabatic (DynamicTank.cpp:73). |
+| `T_jacket` |   | number | K | Jacket fluid temperature. Defaults to the initial temperature of the holdup (no heat flows) (DynamicTank.cpp:74). A controller's actuator… |
 
 ## `electricLoad`  (electricLoad operation)
 
@@ -1252,6 +1269,12 @@ Pure-component P-T phase diagram: the vapour-pressure curve from the component's
 | `solid` |   | object | — | Declares the solid so the diagram gains its two solid boundaries. Raw SI values. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
+## `quasiSteady`  (quasiSteady operation)
+
+The quasi-steady adapter of choupoCtrl / choupoSemiContinuous: a STEADY unit wrapped so that it is solved to steady state on its inlets at every accepted instant, holding no inventory of its own. It has NO `operation` block: the wrapped unit's whole declaration is the `unit { type <steadyType>; ... }` sub-block (its own keys, never `in`, `inputs`, `outputs` or `name`, and never another quasiSteady), and the t = 0 inlet states are `inlets { <stream> { F; T; P; composition } }`, one per declared inlet stream; topology (`in` or `inputs`, `outputs`) stays on the unit itself (QuasiSteadyUnit.cpp:55-115). This schema is empty on purpose: the wrapped unit's keys are described by THAT unit's own schema.
+
+*(no operation-block fields)*
+
 ## `rateLawBench`  (rateLawBench operation)
 
 A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: `reaction <name>;` names a reaction of constant/reactions whose kinetics are `type expression;`, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (`report`). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check_ammonia_rate.py for the ammonia law). It replaced the ammonia-only `ammoniaRateBench` on 2026-10-12 (DEV.md 4c C67), when the Dyson & Simon law left the engine for the case.
@@ -1580,4 +1603,15 @@ Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-com
 | `state` |   | object | — | `{ P ...; }` — the isobar the data was measured at. May also be given as a bare top-level `P`. |
 | `P` |   | number | Pa | The measurement isobar, when not given inside `state`. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `williamsOttoPlant`  (williamsOttoPlant operation)
+
+The Williams-Otto plant of choupoCtrl: a CSTR plus separator reduced to the paper's six-state model (eqs. (3.6)-(3.11) of arXiv:2004.07614, verbatim; klb, h and degR internally, converted at the boundary with 1 kmol == 1 klb). The starting inventory is the unit's `initial {}` block (T, optional P, totalMoles and a composition over the six species); this `operation` block holds the CONTROLS of the paper's eq. (3.16): the two feed rates, the recycle/purge flow and the reactor-temperature fraction (WilliamsOttoPlant.cpp:97-101). All four keys are read without a default.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `F_fA` | ✓ | number | kmol/s | Declared as a molar flow (`10 kmol/h` is accepted); the unit multiplies the SI value by 3600 to get klb/h. No default (WilliamsOttoPlant.… |
+| `F_fB` | ✓ | number | kmol/s | As F_fA, for reactant B (WilliamsOttoPlant.cpp:99). A controller's actuator may drive it. |
+| `mu` | ✓ | number | kmol/s | The paper's mu control, a molar flow, as F_fA (WilliamsOttoPlant.cpp:100). |
+| `eta` | ✓ | number | — | The paper's eta control; refused outside [0, 1] (WilliamsOttoPlant.cpp:101-104). |
 
