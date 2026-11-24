@@ -4823,6 +4823,7 @@
    "src/postProcessing/views/BatchPublications.H",
    "src/postProcessing/views/DynamicPublications.H",
    "src/postProcessing/views/Views.H",
+   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ComponentIdentity.H",
    "src/result/ResultEmitter.H",
@@ -22313,6 +22314,7 @@
    "src/propertyOps/Yang2020.cpp"
   ],
   "src/reporting/BalanceAlarm.H": [
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp"

@@ -35884,6 +35884,14 @@ derivative eq.~18.29) and for the inner active-set convex-QP solver
 The method is implemented from scratch in \code{solver::sqp} and
 \code{solver::activeSetQP}; this is not a port of any code.
 
+\bibitem{Powell1978} Powell, M. J. D., ``A fast algorithm for nonlinearly
+constrained optimization calculations'', in \emph{Numerical Analysis}
+(G.~A. Watson, ed.), Lecture Notes in Mathematics, vol.~630, 144--157,
+Springer, 1978. Source of the \emph{damped}-BFGS modification (the
+$\theta$ blend toward $\Bv\mathbf s$) that keeps the SQP Hessian
+approximation positive definite even when the Lagrangian curvature is
+indefinite.
+
 \bibitem{ShiXuanOztoprakNocedal2021} Shi, H.-J. M., Xuan, M. Q.,
 Oztoprak, F., \& Nocedal, J., ``On the numerical performance of
 derivative-free optimization methods based on finite-difference
@@ -35895,14 +35903,6 @@ curvature estimate), the relaxed Armijo condition eq.~2.19.
 computational noise'', SIAM J. Sci. Comput.~33 (2011) 1292--1314.  The
 ECnoise difference-table estimate, implemented from the description in
 \cite{ShiXuanOztoprakNocedal2021}, not from the paper itself.
-
-\bibitem{Powell1978} Powell, M. J. D., ``A fast algorithm for nonlinearly
-constrained optimization calculations'', in \emph{Numerical Analysis}
-(G.~A. Watson, ed.), Lecture Notes in Mathematics, vol.~630, 144--157,
-Springer, 1978. Source of the \emph{damped}-BFGS modification (the
-$\theta$ blend toward $\Bv\mathbf s$) that keeps the SQP Hessian
-approximation positive definite even when the Lagrangian curvature is
-indefinite.
 
 \bibitem{HockSchittkowski} Hock, W., \& Schittkowski, K., \emph{Test
 Examples for Nonlinear Programming Codes}, Lecture Notes in Economics and
