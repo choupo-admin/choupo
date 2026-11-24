@@ -399,13 +399,9 @@ int CSTR::solve(const DictPtr& dict,
             iOut   = j;
         }
     scalar xi_back = std::numeric_limits<scalar>::infinity();
-    std::size_t iBack = n;
     for (std::size_t j = 0; j < n; ++j)
         if (nu[j] > 0.0 && F_i_in[j] / nu[j] < xi_back)
-        {
             xi_back = F_i_in[j] / nu[j];
-            iBack   = j;
-        }
     if (!std::isfinite(xi_back)) xi_back = 0.0;
     auto rate = [&](scalar xi)
     {
