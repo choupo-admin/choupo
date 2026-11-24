@@ -5619,8 +5619,8 @@ accepts today, and that is a policy call.
 > C490 from the cloud, squashed: the thermoPackage schema's activityModel enum held to the registry,
 > schemas for batchAccumulator, dynamicTank, quasiSteady and williamsOttoPlant, the rest pinned in
 > debt_registry (may only shrink), the GUI start values audited.  No src/; reach: the schema and doc
-> gates, regen-llm-docs --check, gate manifest, --gui 49/0.  C477 survey (docs/audits/2026-11-24-
-> cases-answer-in-a-figure.md): of 678 cases, 68 answer in a declared figure, 84 by default views,
+> gates, regen-llm-docs --check, gate manifest, --gui 49/0.  C477 survey 
+> (docs/audits/2026-11-24-cases-answer-in-a-figure.md): of 678 cases, 68 answer in a declared figure, 84 by default views,
 > 23 by the sweep CSV, 292 are rightly a number or a table, 211 NEED A FIGURE (named per case).
 > RESTART, Vitor's request through the cloud ("não quero passar a vida a ver os gates a correr"):
 > the architect's objection of the morning was that a layout arm restarted from converged/ would
