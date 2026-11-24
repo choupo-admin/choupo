@@ -37,6 +37,10 @@ ARMS.
       input carries `S298_check` (an independent published S) the computed S
       is within `S298_check_tol` of it; every record's NASA fit is within
       1 % of the RRHO curve on 200-6000 K.
+  (e) COMPONENT RECORDS: an input of `component_records` (a species that must stay a
+      components/ record, e.g. vinylacetylene: Henry pair and sigma profile) has its
+      thermochemistry blocks in components/<name>.dat equal to the tool's output.
+      Real defect: C4H4 held another molecule's enthalpy (+135 kJ/mol) with no gate on it.
   (d) ONE HOME: no record's name or formula is also a components/ record or a
       NASA-TP-2002-211556 table record of the same formula and electronic
       state (the NASA table's CH2 is the TRIPLET; the singlet `1CH2` is not a
@@ -146,9 +150,9 @@ def arm_c(spec):
             continue
         t = p.read_text()
         m = re.search(r"dHf_298\s+([-\d.]+);", t)
-        if not m or abs(float(m.group(1)) - 1000.0 * sp["dHf_298"]["value_kJ"]) > 0.001:
+        if not m or abs(float(m.group(1)) - 1000.0 * T.dhf_298_kj(sp)) > 0.001:
             fails.append("(c) %s: dHf_298 in the record is not the input's %s kJ/mol"
-                         % (sp["name"], sp["dHf_298"]["value_kJ"]))
+                         % (sp["name"], T.dhf_298_kj(sp)))
         s = T.cp_s_h(sp, T.T0)[1]
         if "S298_check" in sp:
             tol = sp.get("S298_check_tol", 1.0)
@@ -179,6 +183,30 @@ def arm_d(spec):
                              % (sp["name"], sp["formula"], p.relative_to(ROOT)))
 
 
+def arm_e(spec):
+    """(e) COMPONENT RECORDS: a species that must stay a components/ record (it has a
+    liquid-side life: a Henry pair, a sigma profile) carries its RRHO blocks there; the
+    text of standardThermochemistry, idealGasHeatCapacity and provenance equals the tool's
+    output for the `component_records` entry, its dHf is the input's and its fit holds."""
+    comp = ROOT / "data" / "standards" / "components"
+    for sp in spec.get("component_records", []):
+        T.check_input(sp)
+        p = comp / (sp["name"] + ".dat")
+        if not p.is_file():
+            fails.append("(e) %s: components/%s.dat is missing" % (sp["name"], sp["name"]))
+            continue
+        if T.record_text(sp, spec, body_only=True) not in p.read_text():
+            fails.append("(e) %s: components/%s.dat does not carry the tool's blocks "
+                         "(bin/curate/rrho_thermo.py component %s)" % (sp["name"], sp["name"], sp["name"]))
+        fit = T.nasa_fit(sp)
+        if max(fit["err_low"], fit["err_high"]) > 0.01:
+            fails.append("(e) %s: the NASA fit is %.2f %% off the RRHO curve"
+                         % (sp["name"], 100 * max(fit["err_low"], fit["err_high"])))
+        if "S298_check" in sp and abs(T.cp_s_h(sp, T.T0)[1] - sp["S298_check"]) > sp.get("S298_check_tol", 1.0):
+            fails.append("(e) %s: computed S298 is off the independent value" % sp["name"])
+    return len(spec.get("component_records", []))
+
+
 def main():
     spec = T.load()
     for sp in spec["records"]:
@@ -187,13 +215,14 @@ def main():
     n = arm_b(spec)
     arm_c(spec)
     arm_d(spec)
+    ne = arm_e(spec)
     if fails:
         for f in fails:
             print("FAIL %s: %s" % (LABEL, f))
         return 1
     print("%s: OK  (a) %d validation species, S298 within 1 J/(mol K) and Cp within tolerance%s; "
-          "(b) %d records equal the tool's output; (c) anchors and fits held; (d) one home"
-          % (LABEL, len(rows), (" [SKIPPED: " + ", ".join(skipped) + "]") if skipped else "", n))
+          "(b) %d records equal the tool's output; (c) anchors and fits held; (d) one home; (e) %d component record(s) carry the tool's blocks"
+          % (LABEL, len(rows), (" [SKIPPED: " + ", ".join(skipped) + "]") if skipped else "", n, ne))
     return 0
 
 
