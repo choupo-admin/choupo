@@ -5588,6 +5588,19 @@ accepts today, and that is a policy call.
 > EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
+> **ONE OPTIMISER THAT EVOLVES (Vitor, 2026-11-24: "acho que vamos parar e ficar só com o SQP que eu acho
+> que do ponto de vista de Pareto e John Gall é um optimizador ótimo").**  Weighed with the bench on the
+> table (docs/audits of the cloud, C496): AGREED on the direction -- our four flowsheets are already
+> solved 12/12 at 1e-2 and 11/12 at 1e-4, and no method added to them has earned its simulations; a zoo of
+> optimisers is not a system that grew from one that worked.  NOT agreed on "optimal": on 18 clean
+> Hock-Schittkowski problems the SQP solves 0.67 / 0.61 / 0.39 at tau 1e-2 / 1e-4 / 1e-6 against IPOPT's
+> 0.94 / 0.89 / 0.78 and SLSQP's 0.89 / 0.83 / 0.72 (forward step fixed at 1e-5; line-search failures), and
+> with noise of 1e-8 to 1e-6 it is ahead of SLSQP, trust-constr and IPOPT.  RULED: the only method work
+> is making THE SQP robust (C496: adaptive difference step, merit/line search, both opt-in, judged once on
+> the bench); the evolutionary, CMA-ES and Bayesian additions stop; Nelder-Mead stays (cheapest without
+> constraints on our cases); MADS lands opt-in and is REMOVED if the bench finds no problem class where it
+> wins.  Two flowsheet cases are repaired and three added so the bench has something real to run on.
+
 > **C499. BAYESIAN OPTIMISATION, ON THE PAGE FIRST (Vitor, 2026-11-24, after asking what it is: "Que fixe!
 > E tem naturalmente que ficar nos guias e no Edutool!").**  WEIGHED: the EduTool yes, the guides only
 > when the engine has it (rule 4d documents what is implemented).  SCOPE: one card in the `optimizers`
