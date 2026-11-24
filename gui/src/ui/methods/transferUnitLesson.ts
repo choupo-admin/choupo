@@ -204,7 +204,7 @@ A = \frac{L}{mG},\qquad R = 1 - \frac{y_\mathrm{out}}{y_\mathrm{in}}`,
       + "at total reflux, so its two lines are not straight and the "
       + "Colburn closed form does not apply to it; the definition of N_OG "
       + "as the sum does.",
-    note: "RateBasedSegment.cpp:886 (the HOG column), :456 (lambda = m v/l), "
+    note: "RateBasedSegment.cpp:897 (the HOG column), :456 (lambda = m v/l), "
       + "PackingRBF.cpp:136-139 (H_OG and HETP of one point); the case is "
       + "tutorials/steady/distillation/ratebased01_schulz_0p10bar.",
   },

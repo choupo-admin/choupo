@@ -63,9 +63,11 @@ Description
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Choupo {
@@ -639,6 +641,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     int passes = 0, newtonIts = 0;
     scalar offBand = std::numeric_limits<scalar>::quiet_NaN();
     int auditedAt = 0;
+    int verifiedEarlierAt = 0;    // shape audited by an earlier solve of this run
     const scalar newtonTol = 1.0e-11;
 
     //  ---- Coefficients and the pressure profile from a profile ------------
@@ -718,10 +721,18 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             o.globalisation = solver::Globalisation::armijo;
             o.blockTri.nBlocks   = static_cast<std::size_t>(M);
             o.blockTri.blockSize = B;
-            //  The structure is a property of the code: audited on the first
-            //  Newton of the run when the dense Jacobian is affordable (the
-            //  audit builds it whole), declared on the others.
-            o.blockTri.audit = (passes == 1 && nUnknowns <= 3000);
+            //  The structure is a property of the code, not of the case: the
+            //  dense audit (about one column evaluation per unknown) runs ONCE
+            //  PER PROCESS for each (segments, block size) shape, on the first
+            //  Newton of its first solve, when the dense Jacobian is
+            //  affordable.  Later solves of the same shape (every point of a
+            //  sweep) declare it and say so in the report.
+            static std::map<std::pair<int, std::size_t>, scalar> auditedShapes;
+            const std::pair<int, std::size_t> shape{M, B};
+            const auto seen = auditedShapes.find(shape);
+            o.blockTri.audit = (passes == 1 && nUnknowns <= 3000 && seen == auditedShapes.end());
+            if (passes == 1 && seen != auditedShapes.end())
+            { verifiedEarlierAt = M; offBand = seen->second; }
             o.lower.assign(nUnknowns, -std::numeric_limits<scalar>::infinity());
             for (int k = 0; k < M; ++k)
             {
@@ -733,7 +744,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             o.upper.assign(nUnknowns, std::numeric_limits<scalar>::infinity());
             const solver::NDResult res = solver::newtonND(residual, X, o);
             newtonIts += res.iterations;
-            if (o.blockTri.audit && std::isfinite(res.offBandMax)) { offBand = res.offBandMax; auditedAt = M; }
+            if (o.blockTri.audit && std::isfinite(res.offBandMax)) { offBand = res.offBandMax; auditedAt = M; auditedShapes[shape] = offBand; }
             if (!res.converged)
                 throw std::runtime_error(who + "the Newton on the segments did not"
                     " converge (outer pass " + std::to_string(passes) + ", ||F|| "
@@ -969,8 +980,10 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         << " unknowns (" << B << " per segment), block-tridiagonal: "
         << (auditedAt ? "VERIFIED on the first Newton of the " + std::to_string(auditedAt)
                         + "-segment solve, max off-band |J| = "
+                      : verifiedEarlierAt ? "VERIFIED earlier in this run for this shape (" + std::to_string(verifiedEarlierAt)
+                        + " segments, " + std::to_string(B) + " per segment; audited once per process, not again on this solve), max off-band |J| = "
                       : std::string("declared, not audited (the dense audit runs at <= 3000 unknowns)"));
-    if (auditedAt) rep << std::scientific << std::setprecision(2) << offBand << std::defaultfloat;
+    if (auditedAt || verifiedEarlierAt) rep << std::scientific << std::setprecision(2) << offBand << std::defaultfloat;
     rep << "\n  outer passes on the " << M << "-segment solve (coefficients and pressures"
            " re-evaluated on the converged segments): " << passes
         << "; Newton iterations over both solves " << newtonIts << "\n"

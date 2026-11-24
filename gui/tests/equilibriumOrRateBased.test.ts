@@ -203,12 +203,12 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       "DistillationColumn.cpp:2400": "`murphreeEfficiency` is not ",
       "DistillationColumn.cpp:5103": "tray efficiency is implemented for a BINARY",
       "PackingDelft.cpp:131": "r.HETP = (std::abs(s.lambda - 1.0) < 1.0e-9) ? r.HOG",
-      "RateBasedSegment.cpp:884": "profile_.columns[\"V\"]",
-      "RateBasedSegment.cpp:885": "profile_.columns[\"L\"]",
-      "RateBasedSegment.cpp:886": "profile_.columns[\"HOG\"]",
-      "RateBasedSegment.cpp:887": "profile_.columns[\"HG\"]",
-      "RateBasedSegment.cpp:888": "profile_.columns[\"HL\"]",
-      "RateBasedSegment.cpp:889": "profile_.columns[\"m\"]",
+      "RateBasedSegment.cpp:895": "profile_.columns[\"V\"]",
+      "RateBasedSegment.cpp:896": "profile_.columns[\"L\"]",
+      "RateBasedSegment.cpp:897": "profile_.columns[\"HOG\"]",
+      "RateBasedSegment.cpp:898": "profile_.columns[\"HG\"]",
+      "RateBasedSegment.cpp:899": "profile_.columns[\"HL\"]",
+      "RateBasedSegment.cpp:900": "profile_.columns[\"m\"]",
     };
     const files: Record<string, string[]> = {};
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
