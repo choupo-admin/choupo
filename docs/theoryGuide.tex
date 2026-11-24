@@ -19135,24 +19135,34 @@ transit sees a finite, smooth surface (announced \code{[psatContinued]}), but
 that continued curve is not a saturation state, and a bisection on it returned
 a number that is the temperature of nothing: $150$\,K, the lower end of the
 bracket, for a hydrogen-rich stream ($T_c=33$\,K), with a ``latent'' duty
-priced there.  The dome exists at $P_{\mathrm{out}}$ only if the curve reaches
-$P_{\mathrm{out}}$ on or below $T_c$, i.e.\ $\Psat_{\mathrm{dom}}(T_c)\ge
-P_{\mathrm{out}}$; otherwise (the dominant component's $T_c$ is below the
-bracket, or $P_{\mathrm{out}}$ is above its critical pressure) the unit reports
-\emph{no} $T^{\mathrm{sat}}$ and says so once.  Each spec then does the honest
-thing: \code{Q} and \code{outletT} are solved on the single-phase branch (no
-plateau test); \code{superheat}, \code{subcool}, \code{outletState},
-\code{outletQuality} on a pure dome, and the film-condensation / boiling
-geometry models, which \emph{are} distances from $T^{\mathrm{sat}}$, are
-refused by name; a vapour-fraction target on a multicomponent mixture searches
-below the feed temperature (it has no dome centre); and the latent share of the
-duty is split without a saturation temperature: the sensible part is the
-heat the inlet's own phases (their compositions and split frozen) would take
-from $T_{\mathrm{in}}$ to $T_{\mathrm{out}}$,
-$Q_{\mathrm{sens}}=F\,[H^{\mathrm{fr}}(T_{\mathrm{out}})-H^{\mathrm{fr}}(T_{\mathrm{in}})]$,
-and the latent part is the rest, $Q-Q_{\mathrm{sens}}$ --- exactly the effect of
-the re-partitioning between the phases at $T_{\mathrm{out}}$ (ammonia condensing
-out of a hydrogen-rich gas); a cooler that changes no phase has latent zero.  Source:
+priced there.  The dome exists at $P_{\mathrm{out}}$ if and only if
+(i) $P_{\mathrm{out}}<P_c$ of the dominant component \emph{and} (ii) its
+$\Psat$ curve reaches $P_{\mathrm{out}}$ at or below $T_c$.  Condition (i) is
+not implied by (ii): CO$_2$'s Antoine fit sits on the sublimation range and
+reaches 100~bar below $T_c$ although $P_c=73.8$~bar.  The root is searched
+from a lower bracket taken from the component, $\min(150\,\mathrm{K},0.4\,T_c)$
+(the records carry no triple point in general), so N$_2$, H$_2$, CO and Ar get
+their real $T^{\mathrm{sat}}$ below $T_c$ (N$_2$ at 1~bar: 77.2~K); for
+$T_c\ge375$~K the bracket is the old 150~K and the bisection the old one.  When
+there is no dome the unit reports no $T^{\mathrm{sat}}$ and says so once, with
+the true reason (above its critical point at this pressure, or the saturation
+temperature below the search bracket).  A mixture whose dominant component has
+$T_c\le150$~K (an N$_2$-rich gas with a condensing vapour) is a gas of the
+mixture: it has no dome centre either, and takes the same no-dome handling.
+Each spec then does the honest thing: \code{Q} and \code{outletT} are solved on
+the single-phase branch (no plateau test); \code{superheat}, \code{subcool},
+\code{outletState}, \code{outletQuality} on a pure dome, and the
+film-condensation / boiling geometry models, which \emph{are} distances from
+$T^{\mathrm{sat}}$, are refused by name; a vapour-fraction target on a
+multicomponent mixture searches below the feed temperature.  The duty is split
+without a saturation temperature, pricing the phase change at the \emph{cold}
+end of the unit so that no liquid is carried past its $T_c$: cooling ---
+$Q_{\mathrm{sens}}=F\,[H^{\mathrm{fr}}(T_{\mathrm{out}})-H^{\mathrm{fr}}(T_{\mathrm{in}})]$
+with the inlet's phases (compositions and split) frozen, the latent part being
+the rest, the re-partitioning at $T_{\mathrm{out}}$; heating --- the latent part
+is the re-partitioning at $T_{\mathrm{in}}$ (the liquid vaporises where it is
+cold), the sensible part the outlet's phases frozen from $T_{\mathrm{in}}$ to
+$T_{\mathrm{out}}$.  A unit that changes no phase has latent zero.  Source:
 \file{PhaseChanger.cpp}, \code{saturationT} (DEV.md 4c C256 (a)).
 
 \subsection{Dome-aware enthalpy and the vf closure}

@@ -829,16 +829,18 @@ operation
     subcool      <K>;           // T = Tsat(P) − ΔK (liquid side) → Q
 }
 ```
-**A supercritical dominant component has no Tsat** (C256 (a)): above its Tc
-(or above its critical pressure) there is no saturation dome, and the continued
-Psat curve is a numerical surface, not a temperature -- it used to return the
-150 K bracket.  The unit then reports no `Tsat` (no KPI, `none` in the result
-block), says so once, solves `Q` / `outletT` on the single-phase branch, books
-the latent part of the duty as the re-partitioning between the phases at the
-outlet T (duty minus the heat the inlet's frozen phases would take; zero when vf
-does not change), and REFUSES by name the specs that are
-a distance from Tsat (`superheat`, `subcool`, `outletState`, `outletQuality` on
-a pure dome, the geometry condensation / boiling models).  Theory: `sec:pc-no-dome`.
+**A dominant component above its critical point has no Tsat** (C256 (a)): a dome exists
+iff P < Pc of the dominant component AND its Psat curve reaches P at or below Tc (CO2's
+Antoine reaches 100 bar below Tc, so the second test alone is not enough); the root is
+searched from min(150 K, 0.4 Tc), so N2/H2/CO/Ar get their real Tsat below Tc.  A mixture
+dominated by a gas with Tc <= 150 K has no dome centre either.  Without a dome the unit
+reports no `Tsat` (no KPI, `none` in the result block), says so once with the true reason,
+solves `Q` / `outletT` on the single-phase branch, prices the phase change at the COLD end
+(cooling: inlet phases frozen T_in -> T_out, then re-partitioned at T_out; heating:
+re-partitioned at T_in, then the outlet's phases frozen; zero when vf does not change), and
+REFUSES by name the specs that are a distance from Tsat (`superheat`, `subcool`,
+`outletState`, `outletQuality` on a pure dome, the geometry condensation / boiling models).
+Theory: `sec:pc-no-dome`.
 
 For an area/HTC **rating** (duty EMERGES from geometry + a coolant/heating
 medium) use `model geometry;` with a `geometry{}` + `coolant{}` block (Nusselt
