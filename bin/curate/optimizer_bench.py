@@ -776,6 +776,271 @@ def report(workdir, outdir):
     print("\n".join(md))
 
 
+# ----------------------------------------------------------------------------
+#  Set B: the four Choupo flowsheets as a black box through choupoSolve
+# ----------------------------------------------------------------------------
+import re
+import shutil
+
+OPTDIR = ROOT / "tutorials" / "steady" / "optimisation"
+SOLVE = os.environ.get("OPTBENCH_SOLVE", str(ROOT / "build" / "linux64Gcc" / "choupoSolve"))
+SCRATCH = ROOT / "build" / "optbench" / "steady" / "optimisation"   # inside the tree, four levels below the root like the tutorials: the data root and the catalogue references resolve
+
+#  Each variable: file, regex whose group 1 is the text before the value, SI formatter, bounds, tutorial start.
+#  Each constraint is written g >= 0 and scaled by max(|rhs|, 1) (protocol amendment A2).
+FLOW = {
+    "optim01_column_reflux": dict(
+        vars=[("system/flowsheetDict", r"(refluxRatio\s+)[^;]+;", "%.12g;", 3.0, 5.0, 4.0),
+              ("system/flowsheetDict", r"(feedStage\s+)[^;]+;", "%.12g;", 6.0, 12.0, 8.0)],
+        obj=("kpi", "column01.V_strip"), sense=+1, cons=[]),
+    "optim02_process_cost": dict(
+        vars=[("system/flowsheetDict", r"(operation\s*\{\s*V_R\s+)[^;]+;", "%.12g;", 0.002, 0.010, 0.005),
+              ("system/flowsheetDict", r"(operation\s*\{\s*Q\s+)[^;]+;", "%.12g W;", 0.0, 500.0, 150.0)],
+        obj=("costTotal", "totalModuleCost"), sense=+1, cons=[]),
+    "optim04_membrane_recovery_scaling": dict(
+        vars=[("0/feed", r"(?m)^(P\s+)[^;]+;", "%.12g Pa;", 10e5, 30e5, 14e5),
+              ("system/flowsheetDict", r"(?m)^(\s*nMods\s+)[^;]+;", "%.12g;", 3.0, 9.0, 5.0)],
+        obj=("kpi", "vessel.water_recovery"), sense=-1,
+        cons=[("vessel.maxSI_gypsum_wall", "atMost", 0.0), ("vessel.maxSI_calcite_wall", "atMost", 0.0)]),
+    "optim05_reactor_npv": dict(
+        vars=[("system/flowsheetDict", r"(?m)^(\s*V_R\s+)[^;]+;", "%.12g;", 1.0, 30.0, 4.0),
+              ("system/flowsheetDict", r"(?m)^(\s*T_feed\s+)[^;]+;", "%.12g K;", 348.0, 352.5, 350.0)],
+        obj=("kpi", "economics.NPV"), sense=-1,
+        cons=[("reactor.V_R", "atMost", 12.0), ("economics.FCI", "atMost", 1.0e6)]),
+}
+
+
+class FlowProblem:
+    """A flowsheet as a black box.  raw(x) -> (f, g >= 0 scaled, h)."""
+
+    def __init__(self, name, tag="w"):
+        self.name = name
+        self.spec = FLOW[name]
+        self.n = len(self.spec["vars"])
+        self.lo = np.array([v[3] for v in self.spec["vars"]])
+        self.hi = np.array([v[4] for v in self.spec["vars"]])
+        self.x0_tutorial = np.array([v[5] for v in self.spec["vars"]])
+        self.mi, self.me = len(self.spec["cons"]), 0
+        self.dir = SCRATCH / ("%s_%s" % (name, tag))
+        self.fscale = 1.0
+        self.nsim = 0
+        self.nfail = 0
+        self._prepare()
+
+    def _prepare(self):
+        if self.dir.exists():
+            shutil.rmtree(self.dir)
+        SCRATCH.mkdir(parents=True, exist_ok=True)
+        sys.path.insert(0, str(HERE))
+        import case_records           # the copy is materialised: pinned catalogue records come along
+        case_records.copytree(OPTDIR / self.name, self.dir)
+        od = self.dir / "system" / "outerDict"
+        if od.exists():
+            od.rename(self.dir / "system" / "outerDict.off")      # a single pass: the wrapper is the driver
+        self.orig = {}
+        for (f, pat, fmt, lo, hi, x0) in self.spec["vars"]:
+            self.orig[f] = (self.dir / f).read_text()
+
+    def _write(self, x):
+        texts = dict(self.orig)
+        for xi, (f, pat, fmt, lo, hi, x0) in zip(x, self.spec["vars"]):
+            new, k = re.subn(pat, lambda m: m.group(1) + (fmt % xi), texts[f], count=1)
+            if k != 1:
+                raise RuntimeError("pattern %r not found in %s" % (pat, f))
+            texts[f] = new
+        for f, t in texts.items():
+            (self.dir / f).write_text(t)
+
+    def simulate(self, x):
+        self._write(x)
+        self.nsim += 1
+        p = subprocess.run([SOLVE, str(self.dir)], capture_output=True, text=True, timeout=300)
+        out = p.stdout
+        if "<<<Choupo:result-begin>>>" not in out:
+            raise RuntimeError("no result block: " + p.stderr[-200:])
+        js = json.loads(out.split("<<<Choupo:result-begin>>>")[1].split("<<<Choupo:result-end>>>")[0])
+        if not js.get("converged", False):
+            raise RuntimeError("flowsheet did not converge")
+        return js
+
+    @staticmethod
+    def _get(js, path):
+        a, b = path.split(".", 1)
+        if a in js.get("kpis", {}) and b in js["kpis"][a]:
+            return float(js["kpis"][a][b])
+        raise KeyError(path)
+
+    def objective_of(self, js):
+        kind, path = self.spec["obj"]
+        if kind == "kpi":
+            v = self._get(js, path)
+        else:                      # costTotal: the sum over the sized items of cost.totalModule
+            v = sum(float(e["cost"][path[0].lower() + path[1:] if False else "totalModule"])
+                    for e in js["equipment"] if e.get("cost"))
+        return self.spec["sense"] * v
+
+    def raw(self, x):
+        try:
+            js = self.simulate(x)
+            f = self.objective_of(js) / self.fscale
+            g = []
+            for path, op, rhs in self.spec["cons"]:
+                v = self._get(js, path)
+                sc = max(abs(rhs), 1.0)
+                g.append((rhs - v) / sc if op == "atMost" else (v - rhs) / sc)
+            return f, np.array(g), np.zeros(0)
+        except Exception:
+            self.nfail += 1
+            return np.nan, np.full(self.mi, np.nan), np.zeros(0)
+
+
+def flow_start(P, which):
+    if which == "A":
+        return P.x0_tutorial.copy()
+    fr = {"B": (0.2, 0.8), "C": (0.8, 0.2)}[which]
+    return P.lo + np.array(fr) * (P.hi - P.lo)
+
+
+def flow_noise():
+    """Section 3 of the protocol (as amended by A2): repeatability and finite-difference slope against offset."""
+    out = []
+    offs = [10 ** (-k / 2.0) for k in range(6, 19)]       # 1e-3 ... 1e-9 in half decades
+    for name in FLOW:
+        P = FlowProblem(name, "noise")
+        x0 = P.x0_tutorial
+        base = P.raw(x0)
+        P.fscale = max(1.0, abs(base[0]))
+        rep = [P.raw(x0) for _ in range(5)]
+        names = ["f"] + [c[0] for c in P.spec["cons"]]
+        vals = lambda r: [r[0] * 1.0] + list(r[1])
+        repeat = [max(abs(vals(r)[j] - vals(base)[j]) for r in rep) for j in range(len(names))]
+        out.append(dict(case=name, kind="repeat", names=names, base=vals(base), repeatSpread=repeat,
+                        fscale=P.fscale))
+        for i in range(P.n):
+            span = P.hi[i] - P.lo[i]
+            for d in offs:
+                row = {}
+                for sgn in (+1, -1):
+                    x = x0.copy()
+                    x[i] = np.clip(x0[i] + sgn * d * span, P.lo[i], P.hi[i])
+                    row[sgn] = (x[i] - x0[i], vals(P.raw(x)))
+                dx = row[+1][0] - row[-1][0]
+                slopes = [(row[+1][1][j] - row[-1][1][j]) / dx if dx != 0 else np.nan
+                          for j in range(len(names))]
+                fwd = [(row[+1][1][j] - vals(base)[j]) / row[+1][0] if row[+1][0] != 0 else np.nan
+                       for j in range(len(names))]
+                out.append(dict(case=name, kind="offset", var=i, offset=d, dx=dx, names=names,
+                                central=slopes, forward=fwd,
+                                change=[abs(row[+1][1][j] - vals(base)[j]) for j in range(len(names))]))
+        out.append(dict(case=name, kind="count", sims=P.nsim, failures=P.nfail))
+        print(name, "noise measured:", P.nsim, "simulator runs,", P.nfail, "failed", flush=True)
+    (WORK / "flow_noise.json").write_text(json.dumps(out, default=float, indent=1))
+
+
+def run_flow(codes=None):
+    out = WORK / "flow_runs.jsonl"
+    done = set()
+    if out.exists():
+        for ln in open(out):
+            r = json.loads(ln)
+            done.add((r["problem"], r["code"], r["start"]))
+    for name in FLOW:
+        P = FlowProblem(name, "run")
+        base = P.raw(P.x0_tutorial)
+        P.fscale = max(1.0, abs(base[0]))
+        for st in "ABC":
+            x0 = flow_start(P, st)
+            for code in (codes or CODES):
+                if code in ("choupoNM",) and P.mi:
+                    pass
+                if (name, code, st) in done:
+                    continue
+                cnt = Counter(P.raw, P.n, P.lo, P.hi, x0, 100)
+                cnt.xs = []
+                orig_call = cnt.raw
+
+                def rec(x, _o=orig_call, _c=cnt):
+                    _c.xs.append([float(v) for v in x])
+                    return _o(x)
+                cnt.raw = rec
+                span_own = P.hi - P.lo
+                info = one_run(code, cnt, x0.copy(), P.lo, P.hi, P.mi, P.me, span_own, 0, limit=900)
+                rec_ = dict(problem=name, code=code, start=st, count=cnt.count, fail=cnt.fail,
+                            fscale=P.fscale, f_true=[float(v) for v in cnt.f_true],
+                            cv_true=[float(v) for v in cnt.cv_true], xs=cnt.xs, **info)
+                with open(out, "a") as fh:
+                    fh.write(json.dumps(rec_, default=str) + "\n")
+                print(name, st, code, cnt.count, "evals", info["status"][:50], flush=True)
+
+
+def run_flow_choupo_own():
+    """Choupo's own sqp / nelderMead through their own outerDict (the shipped one, only `initial` and
+    the method changed), run by choupoSolve itself.  The count is the driver's own."""
+    out = WORK / "flow_own.jsonl"
+    done = set()
+    if out.exists():
+        for ln in open(out):
+            r = json.loads(ln)
+            done.add((r["problem"], r["method"], r["start"]))
+    for name in FLOW:
+        P = FlowProblem(name, "own")
+        for method in ("sqp", "nelderMead"):
+            if method == "nelderMead" and P.mi:
+                continue
+            for st in "ABC":
+                if (name, method, st) in done:
+                    continue
+                x0 = flow_start(P, st)
+                shutil.copytree  # (kept for clarity: the case dir is reused)
+                src = (OPTDIR / name / "system" / "outerDict").read_text()
+                txt = src
+                #  the start: write `initial` of each variable block, in the units the dict is written in
+                blocks = list(re.finditer(r"\{[^{}]*path[^{}]*\}", txt))
+                new, last = [], 0
+                for b, xi in zip(blocks, x0):
+                    body = b.group(0)
+                    body = re.sub(r"\s*initial\s+[^;]+;", "", body)
+                    unit = ""
+                    pm = re.search(r"path\s+(\S+);", body).group(1)
+                    if pm.startswith("streams.") and pm.endswith(".P"):
+                        val = "%.12g" % (xi / 1e5) + " bar"
+                    elif pm.endswith("T_feed"):
+                        val = "%.12g K" % xi
+                    else:
+                        val = "%.12g" % xi
+                    body = body.rstrip("}").rstrip() + "\n        initial  %s;\n    }" % val
+                    new.append(txt[last:b.start()])
+                    new.append(body)
+                    last = b.end()
+                new.append(txt[last:])
+                txt = "".join(new)
+                if method == "nelderMead":
+                    txt = re.sub(r"method\s+\w+;", "method nelderMead;", txt)
+                    txt = re.sub(r"constraints\s*\(.*?\n\);", "", txt, flags=re.S)
+                    txt = re.sub(r"\n\s*fdStep[^\n]*", "", txt)
+                    txt = re.sub(r"\n\s*fdMode[^\n]*", "", txt)
+                (P.dir / "system" / "outerDict").write_text(txt)
+                t0 = time.time()
+                p = subprocess.run([SOLVE, str(P.dir)], capture_output=True, text=True, timeout=1800)
+                o = p.stdout
+                info = dict(problem=name, method=method, start=st, wall=time.time() - t0,
+                            rc=p.returncode, tail=(o[-600:] if p.returncode else ""))
+                m = re.search(r"evaluations:\s*(\d+)", o)
+                info["evaluations"] = int(m.group(1)) if m else None
+                if "<<<Choupo:result-begin>>>" in o:
+                    js = json.loads(o.split("<<<Choupo:result-begin>>>")[1].split("<<<Choupo:result-end>>>")[0])
+                    info["converged_flowsheet"] = js.get("converged")
+                    try:
+                        info["f"] = P.objective_of(js)
+                        info["g"] = [(P._get(js, c[0]), c[1], c[2]) for c in P.spec["cons"]]
+                    except Exception as e:
+                        info["extract_error"] = str(e)
+                info["optimum_block"] = o[o.find("====  Optimum") - 5:][:1500] if "Optimum" in o else ""
+                with open(out, "a") as fh:
+                    fh.write(json.dumps(info, default=str) + "\n")
+                print(name, method, st, "evaluations", info["evaluations"], flush=True)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "help"
     if cmd == "build-hs":
@@ -788,6 +1053,15 @@ if __name__ == "__main__":
         only = set(int(a) for a in sys.argv[3:]) if len(sys.argv) > 3 else None
         codes = sys.argv[2].split(",") if len(sys.argv) > 2 and sys.argv[2] != "all" else None
         run_hs(codes, only)
+    elif cmd == "flow-noise":
+        WORK.mkdir(parents=True, exist_ok=True)
+        flow_noise()
+    elif cmd == "flow":
+        WORK.mkdir(parents=True, exist_ok=True)
+        run_flow(sys.argv[2].split(",") if len(sys.argv) > 2 and sys.argv[2] != "all" else None)
+    elif cmd == "flow-own":
+        WORK.mkdir(parents=True, exist_ok=True)
+        run_flow_choupo_own()
     elif cmd == "report":
         report(sys.argv[2] if len(sys.argv) > 2 else WORK,
                sys.argv[3] if len(sys.argv) > 3 else WORK / "out")
