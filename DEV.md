@@ -5708,6 +5708,28 @@ accepts today, and that is a policy call.
 > name with the time and the holdup, instead of clamping.  Candidates of the same shape, unmeasured:
 > BatchDiafilter.cpp:486, BatchCrystalliser.cpp:364.  Slice (a) first; it reaches every time-integrated
 > case, all of which close today (C258).
+> CORRECTION the same evening: "as a steady run does" was wrong -- a steady run whose balance fails
+> prints the alarm and still exits 0 with `converged` true (C498).
+
+> **C498. A REACTOR PUBLISHES A NEGATIVE FLOW, OR HIDES IT BY CLIPPING, AND THE RUN SAYS CONVERGED
+> (external review handed over by Vitor, 2026-11-24, its R-011 and R-012; BOTH REPRODUCED by the
+> architect on the current build before registering).**  R-011: cstr01_first_order with acetic acid
+> 0.5 -> 0.1 kmol/h (inside the Levenspiel page's own slider, 0.1 to 2): X = 0.6288 against a
+> stoichiometric ceiling of 0.2, acid mole fraction -0.357, exit 0, `converged` true.  Cause:
+> CSTR.cpp:384, the extent is bounded by the NAMED limiting reactant only and the rate is zero order in
+> the acid.  R-012: the same case through `reactions ( ... )` with every flow and the volume x1e-5: the
+> probe tolerance `-1e-6 * max(F_in, 1.0)` mol/s (CSTR.cpp ~826) is absolute, the negative is clipped to
+> zero and 44 % of mass is created; at x1 the same problem is refused.  AND, found here: at x1e-5 the
+> engine prints ELEMENT BALANCE FAILED and exits 0.  SLICE: (a) ONE admissibility guard where every
+> unit's outlets pass (runUnit, beside the negative-pressure refusal): an accepted outlet with a
+> component flow below zero by more than a RELATIVE roundoff is refused by name; (b) the CSTR's extent
+> bounded by every consumed species, its final state checked before any clip, the probe tolerance
+> relative; a rate law with no root in the domain is refused, never cut; (c) a steady run whose MASS or
+> ELEMENT balance breaks the gates' band is not converged and exits non-zero (an energy closure stays an
+> alarm: KNOWN_OPEN).  It reaches every steady case: full sweep alone.  The review's harness proposal
+> (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
+> closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
+> lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
 
 > **C497. THE GIBBS ELEMENT-POTENTIAL NEWTON CONVERGES ON AN ABSOLUTE mol/s RESIDUAL (found 2026-11-24 by
 > the cloud's homogeneity measurement, C491 (2)).**  FASTSET's 36 steady entries with every feed x2: 17
