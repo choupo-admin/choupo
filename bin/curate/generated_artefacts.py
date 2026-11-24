@@ -176,6 +176,12 @@ ENTRIES = [
     _e("schemasReference", ["docs/ai/schemas-reference.md"],
        [PY, "bin/regen-llm-docs"],
        [PY, "bin/regen-llm-docs", "--check"], "pre"),
+    _e("registryReference", ["docs/ai/registry-reference.md"],
+       [PY, "bin/regen-llm-docs"],
+       [PY, "bin/regen-llm-docs", "--check"], "pre",
+       note="C200 phase D: the one-line-per-key lookup, read from the "
+            "registerBuiltins() bodies and the operation schemas; the same "
+            "generator as schemas-reference.md, never a second one"),
     _e("componentsTable", ["docs/ai/components.md"],
        [PY, "bin/regen-llm-docs"],
        [PY, "bin/regen-llm-docs", "--check"], "pre", conflict="human",
