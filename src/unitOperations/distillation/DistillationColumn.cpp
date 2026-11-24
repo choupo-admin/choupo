@@ -45,6 +45,7 @@ License
 #include "PackingDelft.H"
 #include "core/Constants.H"
 #include "ColumnTypedProperties.H"
+#include "ColumnDiagnosis.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
@@ -1454,7 +1455,7 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     const scalar B  = F - D;
     if (B <= 0.0)
-        throw InfeasibleTrial("DistillationColumn: bottoms B = F - D <= 0 (infeasible trial)");
+        throw InfeasibleTrial(columnDiagnosis::noBottomsSentence(dict->name(), F, D, 0.0) + "  (B = F - D <= 0, infeasible trial)");
 
     //  SUBCOOLED REFLUX (`refluxTemperature`, total condenser).  A plant's
     //  condenser usually returns its reflux BELOW the bubble point.  The cold
@@ -2105,6 +2106,34 @@ int DistillationColumn::solve(const DictPtr& dict,
         hydraulicsPass(operDict, dict->name(), thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
+    //  WHY IT DID NOT CONVERGE (DEV.md 4c C184 slice 1): the Wang-Henke
+    //  method is a bubble-point sweep, not a simultaneous Newton, so only the
+    //  declared specification and the final balances can be read.
+    if (!converged)
+    {
+        columnDiagnosis::Layout lay;
+        lay.N = N;  lay.n = n;  lay.partialCondenser = partialCond;
+        lay.feedStage = NFint - 1;
+        for (std::size_t i = 0; i < n; ++i) lay.comp.push_back(thermo.comp(i).name());
+        columnDiagnosis::Facts fa;
+        fa.unit = dict->name();  fa.model = "WangHenke";
+        fa.totalFeed = F;  fa.distillate = D;  fa.reflux = R;
+        fa.feedComponent.assign(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i) fa.feedComponent[i] = F * z[i];
+        fa.iterations = outerIt;
+        fa.residual = std::max(resStage, resPort);
+        fa.stopReason = "the outer bubble-point sweep ran out of iterations (max|dx| = "
+                        + std::to_string(maxDx) + ", bubble-point residual " + std::to_string(resBubble) + ")";
+        const columnDiagnosis::Verdict vd = columnDiagnosis::diagnose(
+            fa, lay, columnDiagnosis::ResidualFn(), sVector());
+        std::cerr << columnDiagnosis::render(vd, dict->name());
+        AdvisoryLog::instance().add("solver", "warning", "distillationColumn",
+            "column '" + dict->name() + "' did not converge: "
+            + (vd.cause == columnDiagnosis::Cause::couldNotTell
+                   ? std::string("could not tell why")
+                   : std::string("(") + columnDiagnosis::letter(vd.cause) + ") " + vd.headline));
+    }
+
     return converged ? 0 : 1;
 }
 
@@ -2382,6 +2411,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  heat-of-reaction term -- the energy rows price on the elements datum,
     //  which already holds it), or, for a `kinetics {}` block, the extent
     //  COMPUTED per reactive stage from the rate and the catalyst mass.
+    //  Where this column's advisories begin (the failure diagnosis reads
+    //  only what THIS solve raised, ColumnDiagnosis.H).
+    const std::size_t advisoryMark = AdvisoryLog::instance().entries().size();
     const bool fullMeshWord = [&] {
         const std::string m = dict->lookupWordOrDefault(
             "model", operDict->lookupWordOrDefault("method", "WangHenke"));
@@ -2756,7 +2788,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     for (std::size_t j = 0; j < N; ++j) { totFeed += Ffeed[j]; totDraw += Udraw[j] + Wdraw[j]; }
     scalar Bf = totFeed - D - totDraw;             // bottoms by overall balance
     if (Bf <= 0.0)
-        throw InfeasibleTrial("DistillationColumn(simultaneous): B = sumF - D - sumDraws <= 0 (infeasible trial)");
+        throw InfeasibleTrial(columnDiagnosis::noBottomsSentence(dict->name(), totFeed, D, totDraw) + "  (B = sumF - D - sumDraws <= 0, infeasible trial)");
     for (std::size_t j = 1; j < N; ++j)
         if (V[j] <= 0.0 || L[j] < 0.0)
             throw std::runtime_error("DistillationColumn(simultaneous): a stage vapour/liquid "
@@ -3801,6 +3833,52 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     scalar sumNuAll = 0.0;
     for (auto v : nu) sumNuAll += v;
 
+    //  WHY A COLUMN DID NOT CONVERGE (DEV.md 4c C184 slice 1).  Called ONLY
+    //  when a Newton below has returned NOT converged; it reads the residual,
+    //  the best iterate and what the run raised, writes its verdict to the log
+    //  and the advisory list, and moves no number (ColumnDiagnosis.H).
+    auto diagnoseFailure = [&](const std::function<sVector(const sVector&)>& Fn, const solver::NDResult& r,
+                               bool full, bool distillateUnknown, bool seedFailed)
+    {
+        columnDiagnosis::Layout lay;
+        lay.kind = full ? columnDiagnosis::Layout::Kind::fullMESH
+                        : columnDiagnosis::Layout::Kind::simultaneous;
+        lay.N = N;  lay.n = n;
+        lay.block = full ? n + 2 : n;
+        lay.nExtents = reactive ? nRx : 0;
+        lay.distillateUnknown = full && distillateUnknown;
+        lay.partialCondenser = partialCond;
+        for (std::size_t j = 0; j < N; ++j) if (Ffeed[j] > 0.0) { lay.feedStage = static_cast<int>(j); break; }
+        for (std::size_t i = 0; i < n; ++i) lay.comp.push_back(thermo.comp(i).name());
+        columnDiagnosis::Facts fa;
+        fa.unit = dict->name();
+        fa.model = full ? "fullMESH" : "simultaneous";
+        fa.totalFeed = totFeed;  fa.totalDraws = totDraw;
+        fa.distillate = D;  fa.reflux = R;  fa.rateIsUnknown = specBoil;
+        fa.feedComponent.assign(n, 0.0);
+        for (std::size_t j = 0; j < N; ++j)
+            for (std::size_t i = 0; i < n; ++i) fa.feedComponent[i] += Ffeed[j] * zfeed[j][i];
+        fa.iterations = r.iterations;  fa.residual = r.residual;  fa.stopReason = r.stopReason;
+        fa.stalledSteps = r.stalledSteps;  fa.lmSteps = r.lmSteps;
+        fa.trialRefusals = r.trialRefusals;  fa.boundedSteps = r.boundedSteps;
+        fa.seedFailed = seedFailed;
+        {
+            std::lock_guard<std::mutex> lk(trialRefusalLock);
+            fa.trialRefusal = trialRefusal;
+        }
+        const auto adv = AdvisoryLog::instance().entries();
+        for (std::size_t k = advisoryMark; k < adv.size(); ++k)
+            fa.advisories.emplace_back(adv[k].category, adv[k].locus + ": " + adv[k].message);
+        const columnDiagnosis::Verdict vd = columnDiagnosis::diagnose(fa, lay, Fn, r.x);
+        std::cerr << columnDiagnosis::render(vd, dict->name());
+        AdvisoryLog::instance().add("solver", "warning", "distillationColumn",
+            "column '" + dict->name() + "' did not converge: "
+            + (vd.cause == columnDiagnosis::Cause::couldNotTell
+                   ? std::string("could not tell why")
+                   : std::string("(") + columnDiagnosis::letter(vd.cause) + ") " + vd.headline)
+            + (vd.lines.empty() ? std::string() : " -- " + vd.lines.front()));
+    };
+
 
     // ===== FULL-MESH refinement (Naphtali-Sandholm) =========================
     // `model fullMESH`: promote V_j, L_j to UNKNOWNS and add the per-stage TOTAL-
@@ -4250,6 +4328,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         if (specBoil) R = L[0] / D;
         if (cmoSeedFailed) { res.converged = resF.converged; res.residual = resF.residual; }
         else if (!resF.converged) res.converged = false;
+        if (!resF.converged)
+            diagnoseFailure(residualF, resF, true, specBoil, cmoSeedFailed);
         if (resF.stalledSteps > 0 && verbosity >= 2)
             std::cerr << "  [solver] full-MESH: " << resF.stalledSteps
                       << " floor-damped line-search step(s) were taken"
@@ -4260,6 +4340,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                       << " in " << resF.iterations << " iters, ||F|| = " << resF.residual
                       << "  (V,L now energy-consistent, not CMO)\n";
     }
+    else if (!res.converged)
+        diagnoseFailure(residual, res, false, false, false);
     // ========================================================================
 
     // Distillate: x_D = y_1 = K_1·x_1, normalised -- the condensate of stage
