@@ -111,7 +111,6 @@ kpi     preheater              Q_latent_kW      0                1e-4
 kpi     preheater              Q_sensible_kW    1423.84266641    1e-4
 kpi     preheater              T_in             320              1e-4
 kpi     preheater              T_out            460              1e-4
-kpi     preheater              Tsat             150              1e-4
 kpi     preheater              vf_in            1                1e-4
 kpi     preheater              vf_out           1                1e-4
 kpi     reactor                F_condensate_kmol_h 78.8708645192    1e-4

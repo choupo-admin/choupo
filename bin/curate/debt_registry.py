@@ -128,8 +128,8 @@ SOURCE_LICENCE = {
 #  REMEDY, the same for every entry and already established in the tree:
 #  bin/curate/import_gibbs_nasa.py names NASA TM-4513 (McBride, Gordon &
 #  Reno 1993 -- a US government work, public domain) as the clean route for
-#  dHf_298/s_298/Cp, and ATcT (DOE, versioned OSTI DOI, no NC clause) for
-#  dHf.  Re-import each species from there and the pin goes.
+#  dHf_298/s_298/Cp, and, for dHf, an ATcT JOURNAL PAPER (not the ATcT website or
+#  dataset version: see the RULING ON ATcT below).  Re-import each species from there and the pin goes.
 #  PARTLY DISCHARGED 2026-11-01 (DEV.md 4c C170 item 4).  Sixteen records
 #  were re-sourced from NASA/TP-2002-211556 (US government work, public
 #  domain; `bin/curate/nasa_tp2002_to_choupo.py`) because the report carries
@@ -155,18 +155,52 @@ SOURCE_LICENCE = {
 #  is kept, marked interim with that reason.  No shipped case reads any of the
 #  twenty, so no golden moved.  2026-11-19 (C335): C3H5, C5H5, CH3O2, HSO, HSO3
 #  and N2H3 were REMOVED (no tutorial, curation batch, fixture or GUI test reads
-#  them); C4H4 stays because Henry/C4H4-water.dat reads it.  ATcT was NOT used: neither its site nor its
-#  OSTI dataset records (DOI 10.17038/CSE/3703591) state any licence, and the
-#  authors are contractor staff, so 17 U.S.C. 105 does not apply -- silence is
-#  not a grant (CLAUDE.md 6, the sigma-profile rule).  The one left was C4H4, below:
-#  LAST ENTRY DISCHARGED 2026-11-24 (DEV.md 4c C335): C4H4 was VINYLACETYLENE
-#  carrying a cyclobutadiene-class enthalpy (431.7 kJ/mol, about 135 kJ/mol too
-#  high).  It is re-sourced: dHf from the ab initio ANL0 value of Klippenstein,
-#  Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2 (0 K, converted to
-#  298.15 K), s_298 and Cp(T) computed by bin/curate/rrho_thermo.py from the measured
-#  rotational constants and calculated vibrations (component_records, gate arm e).
+#  them); C4H4 stays because Henry/C4H4-water.dat reads it.
+#  RULING ON ATcT (the coordinator, 2026-11-23, SESSIONS.md; C335).  ATcT
+#  (Active Thermochemical Tables, Ruscic et al.) is acceptable as a primary
+#  source ONLY when the value is READ FROM A PEER-REVIEWED ATcT JOURNAL PAPER
+#  and cited by table and page.  The website / dataset version alone ("ATcT
+#  1.124", atct.anl.gov, the OSTI dataset DOI 10.17038/CSE/3703591) is NOT a
+#  source: it states no licence and the authors are contractor staff, so
+#  17 U.S.C. 105 does not apply and silence is not a grant (CLAUDE.md 6, the
+#  sigma-profile rule).  This is the authority-vs-route rule: the value comes
+#  from the journal, the database is the route.  check_source_licence now
+#  FAILS a file citing ATcT by version or site with no journal paper
+#  (ATCT_VERSION_ONLY below is the pin list; empty).
+#  WHAT C335 DID PER RECORD, 2026-11-23 (all nine RRHO-computed dHf_298 and
+#  the two named records; values read in the papers, never from the website):
+#    * 1CH2: Ruscic & Bross, Mol. Phys. 119 (2021) e1969046, Table 1, 298 K
+#      429.125 +-0.105 (OSTI 1854511); equals the website value to its digits.
+#    * NNH: Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust.
+#      Sci. 67 (2018) 31, Table 1 (TN 1.122b), 59.70 kcal/mol (read by another
+#      general from the page image); KHR 2017 0 K cross-check.
+#    * ketene, ethynol (HCCOH), H2CN, HOCN, HCNO, triplet HCCCH (C3H2):
+#      Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580,
+#      Table 1 (ATcT 1.122b, 0 K, OSTI 1389058), converted to 298.15 K by
+#      the record's own RRHO enthalpies and the CODATA element increments
+#      (a DERIVED value, with its widened uncertainty, in each record).
+#    * n-C4H3: the same paper's Table 2 -- an ab initio value, NOT an ATcT
+#      one (the species is not in ATcT's set there); no ATcT journal paper
+#      printing it was readable here.  Discharge of an ATcT value: the
+#      ATcT chapter of Ruscic & Bross (Comprehensive Chemical Kinetics, 2019)
+#      or an ATcT paper tabulating C4H3, supplied as a PDF.
+#    * heavyWater.dat: holds NO ATcT value (it enters neither dHf nor s_298;
+#      its header only says the ATcT server was not read), nothing to change.
+#    * C4H4 (vinylacetylene), 2026-11-24: DISCHARGED.  dHf is the ab initio ANL0 0 K value
+#      295.7 +-1.4 kJ/mol of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017)
+#      6580, Table 2 (a species not in the ATcT set), converted to 298.15 K by the record's
+#      own RRHO enthalpy (289.04 kJ/mol; the old 431.7 was a cyclobutadiene-class value);
+#      s_298 and Cp(T) computed by rrho_thermo.py (component_records, check_rrho_thermo arm e).
 #  No record cites a NonCommercial compilation as the origin of a value any more.
 NC_COMPILATION = {}
+
+#  ATCT_VERSION_ONLY -- files that cite ATcT by database version or website
+#  and name no journal paper (RULING ON ATcT, 2026-11-23, C335).  EMPTY: the
+#  nine RRHO records and their input file, the only ones, were re-sourced from
+#  papers in the same commit as the arm.  Kept as an empty dict rather than
+#  deleted because an empty pin list is a claim -- "nothing is excused" -- and
+#  the gate's stale arm fails a pin that outlives its subject.
+ATCT_VERSION_ONLY = {}
 
 #  basis01_two_unit_chain LEFT 2026-11-12 (C335): the importer's validator
 #  read `energyClosures` as a dict; fixed, re-imported, no row moved.

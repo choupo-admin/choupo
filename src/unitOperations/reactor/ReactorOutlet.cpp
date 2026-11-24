@@ -124,7 +124,7 @@ OutletState outletState(scalar               T,
     }
     else if (r.route == Route::discarded)
         o.origin = "the one fluid phase above every present Tc"
-                   " (a two-phase root was discarded)";
+                   " (an impossible two-phase or single-liquid root was discarded)";
     else
     {
         o.origin = "the inlet's vf, CARRIED: the outlet's own equilibrium"

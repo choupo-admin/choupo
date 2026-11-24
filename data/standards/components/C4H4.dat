@@ -49,9 +49,13 @@ provenance
 {
     dHf_298
     {
-        origin        literature;
+        origin        derived;
         method        "ab initio ANL0 composite (CCSD(T) with higher-order, core-valence, relativistic and anharmonic-ZPE corrections), enthalpy of formation at 0 K, ideal gas; Table 2 lists species NOT in the ATcT data set; 0 K value converted to 298.15 K as dHf(0) + [H(298.15)-H(0)] of the molecule (this tool's RRHO) - sum of the element increments (CODATA Key Values: graphite C 1.050, H2 8.468 kJ/mol)";
         methodVersion "J. Phys. Chem. A 121, 6580 (2017); accepted manuscript OSTI 1389058, Table 2, row CH2CHCCH, read 2026-11-24";
+        inputs
+        (
+            { quantity "Delta_f H at 0 K (ab initio ANL0, paper label CH2CHCCH, Table 2; 2 sigma +-1.4 kJ/mol)"; value 295.7; unit kJ/mol; doi "10.1021/acs.jpca.7b05945"; }
+        );
         uncertainty   "+-1.4 kJ/mol (2 sigma, the ANL0 scheme's estimate, Sec. 4.1); the same row's ANL0-F12 and ANL1 values differ by -0.3 and -0.1 kJ/mol";
         notes         "Replaces 431.7 kJ/mol, which belonged to a cyclobutadiene-class C4H4, not to vinylacetylene (C335, 2026-11-24). A computed value, no measurement was read; the NIST WebBook lists 295 kJ/mol (298.15 K, Roth et al. 1991, a force-field resonance-energy paper, not independent) for the same species.";
     }

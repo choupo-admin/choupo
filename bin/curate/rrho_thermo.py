@@ -433,9 +433,18 @@ def record_text(sp, spec, body_only=False):
     L.append("{")
     L.append("    dHf_298")
     L.append("    {")
-    L.append("        origin        literature;")
+    L.append("        origin        %s;" % sp["dHf_298"].get("origin", "literature"))
     L.append('        method        "%s";' % sp["dHf_298"]["method"])
     L.append('        methodVersion "%s";' % sp["dHf_298"]["version"])
+    # A dHf DERIVED from a printed 0 K value names that value as its input
+    # (check_origin_census (d); found at the C335 integration, 2026-11-24).
+    if sp["dHf_298"].get("inputs"):
+        L.append("        inputs")
+        L.append("        (")
+        for x in sp["dHf_298"]["inputs"]:
+            L.append('            { quantity "%s"; value %s; unit %s; doi "%s"; }'
+                     % (x["quantity"], x["value"], x["unit"], x["doi"]))
+        L.append("        );")
     L.append('        uncertainty   "%s";' % sp["dHf_298"]["uncertainty"])
     L.append('        notes         "%s";' % sp["dHf_298"]["notes"])
     L.append("    }")

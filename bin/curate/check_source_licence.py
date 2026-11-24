@@ -67,7 +67,10 @@ SABOTAGES, 2026-09-01, all five behave:
       this is the arm that distinguishes the two rules, and the one an
       aggregator-shaped implementation would have got wrong)
   S3  "from ATcT, cross-checked with Burcat"          -> stays compliant, so
-      the allow-branch is real rather than permanently-true
+      the allow-branch is real rather than permanently-true.  (Amended
+      2026-11-23, C335: the sentence "from ATcT" is compliant ONLY when the
+      record cites an ATcT journal paper -- see THE ATcT ARM below; the
+      version or the website alone is no source.)
   S4  a pin for a file that does not mention Burcat   -> STALE, naming the
       registry constant it lives in
   S5  the detector regex disarmed                     -> all 36 pins go stale,
@@ -140,6 +143,30 @@ restored and the gate re-run to OK:
       does not name ['Michael F. Hutt'] for the vendored NanoFiltran";
   S2  one word added to LICENSE-LAPACK.txt -> FAILED, "is missing or is not
       the licence text the acceptance was made on".
+
+THE ATcT ARM (2026-11-23, C335; the coordinator's RULING ON ATcT in
+SESSIONS.md).  ATcT (Active Thermochemical Tables, Ruscic et al.) is
+acceptable as a primary source ONLY when the value is READ FROM A
+PEER-REVIEWED ATcT JOURNAL PAPER and cited by table.  The database version
+("ATcT 1.124"), the website (atct.anl.gov) and the OSTI dataset DOI
+(10.17038/CSE/...) state no licence and their authors are contractor staff,
+so 17 U.S.C. 105 does not apply and silence is not a grant: they are the
+ROUTE, never the authority (the aggregator rule, applied to a database).
+THE REAL DEFECT it would have caught: the nine records under
+data/standards/thermoTables/RRHO-computed/ landed on 2026-11-22 citing
+"ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)" and nothing else; the gate
+was green because ATcT was on nobody's list.  A file (record or the input
+file that writes them) that names ATcT by version or site and carries no
+journal-paper citation (a journal abbreviation of the ATcT literature plus
+"Table") FAILS by name; a file citing the paper passes.  Fired by hand on
+2026-11-23, each restored and the gate re-run to OK:
+  A1  NNH.dat with its provenance as it stood on 2026-11-22
+      (`ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)`, no paper) -> FAILED,
+      naming the file and the line;
+  A2  the same record with the website words kept and
+      `Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580,
+      Table 1` added -> OK, so the allow-branch is real;
+  A3  an entry in ATCT_VERSION_ONLY for a file that cites a paper -> STALE.
 """
 import re
 import sys
@@ -150,7 +177,7 @@ from pathlib import Path
 #  tolerating?" is a fact with exactly one home.
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
-from debt_registry import SOURCE_LICENCE, NC_COMPILATION, NO_GRANT_CASE_LOCAL
+from debt_registry import SOURCE_LICENCE, NC_COMPILATION, NO_GRANT_CASE_LOCAL, ATCT_VERSION_ONLY
 from tracked_tree import all_tracked
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -273,6 +300,43 @@ def no_grant_mechanism():
                              f"{line.strip()[:110]}")
                 break
     return found, nscan
+
+#  THE ATcT ARM (see the header).  A file names ATcT by version or site...
+ATCT_VERSION_OR_SITE = re.compile(
+    r'ATcT\s*(?:TN\s*)?(?:ver\.?|version|v)?\s*1\.\d+|atct\.anl\.gov|10\.17038/CSE', re.I)
+#  ...and a journal paper of the ATcT literature is what makes it compliant:
+#  a journal abbreviation AND a table number in the same file.
+ATCT_JOURNAL = re.compile(
+    r'J\.\s*Phys\.\s*Chem\.|J\.\s*Chem\.\s*Phys\.|Mol\.\s*Phys\.|Phys\.\s*Chem\.\s*Chem\.\s*Phys\.|'
+    r'Int\.\s*J\.\s*Chem\.\s*Kinet|Prog\.\s*Energy\s*Combust|Theor\.\s*Chem\.\s*Acc|'
+    r'Faraday\s*Discuss|Combust\.\s*Flame|J\.\s*Am\.\s*Chem\.\s*Soc', re.I)
+ATCT_TABLE = re.compile(r'\bTable\s+\w+', re.I)
+ATCT_EXTRA = ("bin/curate/rrho_species.json",)   # the input that writes the RRHO records
+
+
+def atct_version_only():
+    """Files naming ATcT by version/site with no journal-paper citation, the
+    number of files scanned, and the files that name ATcT at all."""
+    found, nscan, seen = [], 0, set()
+    files = list(_tracked_under(ROOT / "data/standards", ".dat"))
+    files += [ROOT / e for e in ATCT_EXTRA if (ROOT / e).is_file()]
+    for p in files:
+        try:
+            text = p.read_text(errors="ignore")
+        except OSError:
+            continue
+        nscan += 1
+        hit = ATCT_VERSION_OR_SITE.search(text)
+        if not hit:
+            continue
+        rel = p.relative_to(ROOT).as_posix()
+        seen.add(rel)
+        if ATCT_JOURNAL.search(text) and ATCT_TABLE.search(text):
+            continue
+        n = text[:hit.start()].count("\n") + 1
+        found.append((rel, n, hit.group(0), text.splitlines()[n - 1].strip()[:110]))
+    return found, nscan, seen
+
 
 #  Markers that make a mention a CHECK rather than an origin.  Deliberately
 #  narrower than VIA below: `via` is not among them.
@@ -941,6 +1005,28 @@ def main() -> int:
               "surface has collapsed.")
         return 1
 
+    #  THE ATcT ARM: a version or a website is a route, not a source.
+    at_found, at_nscan, at_seen = atct_version_only()
+    at_pinned = set()
+    for rel, n, what, text in at_found:
+        if rel in ATCT_VERSION_ONLY:
+            at_pinned.add(rel)
+        else:
+            violations.append(
+                f"{rel}:{n}  ATcT cited by version/site only ({what}); the "
+                "database is the route -- cite the ATcT JOURNAL PAPER that "
+                "prints the value, with its table (RULING ON ATcT, "
+                f"2026-11-23)\n        {text}")
+    for rel in sorted(set(ATCT_VERSION_ONLY) - at_pinned):
+        violations.append(f"STALE ATCT PIN: {rel} now cites an ATcT journal paper "
+                          "(or no ATcT at all) -- remove it from "
+                          "debt_registry.ATCT_VERSION_ONLY")
+    if at_nscan < 1000:
+        print(f"check_source_licence: FAILED -- only {at_nscan} file(s) scanned "
+              "for the ATcT arm against a floor of 1000; the scan surface has "
+              "collapsed.")
+        return 1
+
     std_found, std_nscan = standard_table_violations()
     if std_found or std_nscan < 1000:
         print("check_source_licence: FAILED")
@@ -1059,6 +1145,9 @@ def main() -> int:
           f"{gri_nscan} catalogue records and case-local constant/ files "
           f"names GRI-Mech as a value's origin (none pinned; a cross-check "
           f"marker before the name is allowed).  "
+          f"ATcT arm (C335, ruling 2026-11-23): {len(at_seen)} file(s) name ATcT, every one "
+          f"cites a journal paper with its table ({len(ATCT_VERSION_ONLY)} pinned for a version/site-only "
+          f"citation of {at_nscan} scanned); a database version or website is no source.  "
           f"Engineering Toolbox and REFPROP (C65) are among the "
           f"names refused, and they alone are also sought in the {cl_nscan} "
           f"case-local records under tutorials/**/constant/: "

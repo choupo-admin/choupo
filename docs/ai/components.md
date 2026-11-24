@@ -128,7 +128,7 @@ speciesTables ( NASA-TP-2002-211556 RRHO-computed );
 ```
 
 Resolution is the same rule (case > `components/` > the declared tables, announced
-`[thermoTable]`).  Each record states its enthalpy-of-formation source (ATcT 1.124),
+`[thermoTable]`).  Each record states its enthalpy-of-formation source (an ATcT or ab initio JOURNAL PAPER, cited by table; the ATcT website version alone is no source),
 whether each frequency is measured or calculated, an uncertainty and
 `reviewStatus interim`.  The tool is validated on seven species the NASA report
 holds (S298 within 1 J/(mol K), Cp within 2 % to 1000 K), and `bin/curate/check_rrho_thermo.py`

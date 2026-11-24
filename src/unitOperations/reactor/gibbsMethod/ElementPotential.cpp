@@ -57,7 +57,7 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
     scalar PsatC = 0.0;
     for (std::size_t i = 0; i < N; ++i)
     {
-        if (!p.condensable[i]) continue;
+        if (!canCondenseAt(p, i, T)) continue;     // above Tc: no pure liquid (C256 (b))
         const scalar Psat = thermo.pureLiquidReference(p.compIdx[i], T, P);
         const scalar y_i  = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat) { ++nSuper; cond = static_cast<int>(i); PsatC = Psat; }

@@ -17,7 +17,7 @@ reviewStatus   interim;
 reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
 standardThermochemistry
 {
-    dHf_298    249230.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.45 kJ/mol
+    dHf_298    249785.000;   // J/mol  -- ideal gas; Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31, Table 1 (ATcT TN ver. 1.122b), 298.15 K, +-0.5 kJ/mol
     s_298      224.276;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
 }
 
@@ -40,10 +40,10 @@ provenance
     dHf_298
     {
         origin        literature;
-        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
-        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
-        uncertainty   "+-0.45 kJ/mol (ATcT, 95% confidence)";
-        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 58.5 kcal/mol = 244.76 kJ/mol (-4.47 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.";
+        method        "enthalpy of formation at 298.15 K as printed in the cited journal table (from ATcT TN ver. 1.122b), 1 kcal = 4184 J";
+        methodVersion "Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, doi:10.1016/j.pecs.2018.01.002, Table 1, journal page 33";
+        uncertainty   "+-0.5 kJ/mol (the 95% confidence the ATcT paper of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 prints for NNH at 0 K; the Glarborg table prints none)";
+        notes         "Value 59.70 kcal/mol = 249.785 kJ/mol read in Table 1 (journal page 33) of Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, whose caption cites ATcT TN ver. 1.122b; the number was read from the page image by another general of this project, not by the curator of this record. Cross-check 1: the same table prints S298 = 53.65 cal/(mol K) = 224.47 J/(mol K); this record's S298 (RRHO, rrho_thermo.py) is 224.28, difference -0.20; S298 stays the computed value. Cross-check 2: Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 prints Delta_f H(0 K) = 252.2 +-0.5 kJ/mol (OSTI 1389058), which converts to 249.29 kJ/mol at 298.15 K with this tool's thermal enthalpies, 0.50 below the table value. The value held before 2026-11-23 was 249.23 (website version, withdrawn as a source). Miller & Bowman 1989, Table 1 (p. 289) lists 58.5 kcal/mol = 244.76 kJ/mol (-4.47 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.";
     }
     s_298
     {

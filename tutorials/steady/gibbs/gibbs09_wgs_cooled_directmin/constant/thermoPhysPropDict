@@ -21,9 +21,11 @@
   Henry solutes and the water the solvent.
   WHAT THE DECLARATION REACHES, MEASURED: the two-phase FEED's resolution,
   which prices the dissolved gas on these pairs.  The Gibbs reactor's OWN
-  condensate does not: it condenses by y_i P against Psat_i (an engine gap
-  reported under C256), so the gas it leaves in the condensate still rests
-  on the continued vapour pressure.
+  condensate does not dissolve a gas: a species above its Tc is never
+  condensed by y_i P against a continued Psat_i (C256 (b), 2026-11-24;
+  before, CO, CO2 and H2 sat in this condensate at x = 6e-8, 2.6e-4 and
+  3.7e-4 on that numerical surface), so the condensate is pure water and
+  the Henry solubility is not modelled inside the reactor.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -245,12 +245,13 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 249.23,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.45 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.45 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 58.5 kcal/mol = 244.76 kJ/mol (-4.47 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+    "value_kJ": 249.785,
+    "source_short": "Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31, Table 1 (ATcT TN ver. 1.122b), 298.15 K, +-0.5 kJ/mol",
+    "method": "enthalpy of formation at 298.15 K as printed in the cited journal table (from ATcT TN ver. 1.122b), 1 kcal = 4184 J",
+    "version": "Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, doi:10.1016/j.pecs.2018.01.002, Table 1, journal page 33",
+    "uncertainty": "+-0.5 kJ/mol (the 95% confidence the ATcT paper of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 prints for NNH at 0 K; the Glarborg table prints none)",
+    "notes": "Value 59.70 kcal/mol = 249.785 kJ/mol read in Table 1 (journal page 33) of Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, whose caption cites ATcT TN ver. 1.122b; the number was read from the page image by another general of this project, not by the curator of this record. Cross-check 1: the same table prints S298 = 53.65 cal/(mol K) = 224.47 J/(mol K); this record's S298 (RRHO, rrho_thermo.py) is 224.28, difference -0.20; S298 stays the computed value. Cross-check 2: Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 prints Delta_f H(0 K) = 252.2 +-0.5 kJ/mol (OSTI 1389058), which converts to 249.29 kJ/mol at 298.15 K with this tool's thermal enthalpies, 0.50 below the table value. The value held before 2026-11-23 was 249.23 (website version, withdrawn as a source). Miller & Bowman 1989, Table 1 (p. 289) lists 58.5 kcal/mol = 244.76 kJ/mol (-4.47 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
+    "origin": "literature"
    },
    "same_formula_ok": "N2H radical; no other record of this formula and state",
    "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
@@ -302,12 +303,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": -48.42,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.11 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+    "value_kJ": -48.6,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-0.22 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-0.22 kJ/mol (paper's 95% confidence at 0 K, 0.1, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 32 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = -45.5 +-0.1 kJ/mol (paper label CH2CO); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -3.099 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was -48.42 (website version, withdrawn as a source); the difference is 0.18 kJ/mol.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CH2CO, Table 1; +-0.1 kJ/mol)",
+      "value": "-45.5",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.3 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
    "uncertainty_Cp": "+-0.17 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -349,12 +359,13 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 429.13,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.11 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 101.46 kcal/mol = 424.51 kJ/mol (-4.62 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+    "value_kJ": 429.125,
+    "source_short": "ATcT, Ruscic & Bross, Mol. Phys. 119 (2021) e1969046, Table 1, 298.15 K, ideal gas, +-0.105 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation of CH2 (singlet), 298.15 K, ideal gas, as printed in the cited journal paper",
+    "version": "Ruscic & Bross, Mol. Phys. 119 (2021) e1969046, doi:10.1080/00268976.2021.1969046, Table 1 (ATcT TN ver. 1.124)",
+    "uncertainty": "+-0.105 kJ/mol (paper, 95% confidence)",
+    "notes": "Value read in Table 1 of Ruscic & Bross, Mol. Phys. 119 (2021) e1969046 (doi:10.1080/00268976.2021.1969046), row CH2 (singlet), 298.15 K column: 429.125 +-0.105 kJ/mol (0 K: 428.713); read in the accepted manuscript at OSTI 1854511, manuscript PDF page 11. It equals, to the printed digits, the value held before 2026-11-23 (429.13, from the ATcT website version), which is withdrawn as a source. Cross-check: Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31, Table 1 (journal page 33, TN ver. 1.122b) prints 102.54 kcal/mol = 429.03 kJ/mol (number read from the page image by another general), 0.10 kJ/mol lower, inside the uncertainty; its S298 45.25 cal/(mol K) = 189.33 J/(mol K) against this record's RRHO value, which stays.",
+    "origin": "literature"
    },
    "biradical": "singlet carbene, the transient singlet state of methylene",
    "same_formula_ok": "the NASA table's CH2 is the TRIPLET X 3B1; this is the singlet a 1A1",
@@ -401,12 +412,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 238.44,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.55 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.55 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 59.08 kcal/mol = 247.19 kJ/mol (+8.75 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+    "value_kJ": 238.54,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-0.82 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-0.82 kJ/mol (paper's 95% confidence at 0 K, 0.8, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 242.2 +-0.8 kJ/mol (paper label CH2N); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -3.656 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 238.44 (website version, withdrawn as a source); the difference is 0.10 kJ/mol. Miller & Bowman 1989, Table 1 (p. 289) lists 59.08 kcal/mol = 247.19 kJ/mol (+8.65 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CH2N, Table 1; +-0.8 kJ/mol)",
+      "value": "242.2",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
    "uncertainty_Cp": "+-0.20 J/(mol K) at 298 K, +-0.21 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -451,12 +471,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": -15.04,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.43 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.43 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists -2.28 kcal/mol = -9.54 kJ/mol (+5.50 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+    "value_kJ": -14.87,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-0.54 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-0.54 kJ/mol (paper's 95% confidence at 0 K, 0.5, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = -12.2 +-0.5 kJ/mol (paper label NCOH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -2.671 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was -15.04 (website version, withdrawn as a source); the difference is 0.17 kJ/mol. Miller & Bowman 1989, Table 1 (p. 289) lists -2.28 kcal/mol = -9.54 kJ/mol (+5.33 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label NCOH, Table 1; +-0.5 kJ/mol)",
+      "value": "-12.2",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.9 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.8 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.11 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -501,12 +530,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 169.26,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.44 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.44 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 38.4 kcal/mol = 160.67 kJ/mol (-8.59 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose. ATcT labels the HCNO connectivity 'fulminic acid' in its 1.124 table (earlier versions swapped the names of HCNO and HONC); the formula H-C-N-O is what is used."
+    "value_kJ": 169.45,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-0.54 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-0.54 kJ/mol (paper's 95% confidence at 0 K, 0.5, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 33 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 170.9 +-0.5 kJ/mol (paper label CHNO); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -1.454 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 169.26 (website version, withdrawn as a source); the difference is 0.19 kJ/mol. The paper's label CHNO is the H-C-N-O connectivity (fulminic acid); NCOH is cyanic acid HOCN, CNOH isofulminic acid. Miller & Bowman 1989, Table 1 (p. 289) lists 38.4 kcal/mol = 160.67 kJ/mol (-8.78 kJ/mol from the paper's value); the ATcT value of the paper is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CHNO, Table 1; +-0.5 kJ/mol)",
+      "value": "170.9",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.4 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.5 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -557,12 +595,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 92.81,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.78 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.78 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+    "value_kJ": 92.8,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-1.32 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-1.32 kJ/mol (paper's 95% confidence at 0 K, 1.3, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 32 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 94.9 +-1.3 kJ/mol (paper label CHCOH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -2.096 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 92.81 (website version, withdrawn as a source); the difference is 0.01 kJ/mol.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label CHCOH, Table 1; +-1.3 kJ/mol)",
+      "value": "94.9",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.6 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.2 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.88 J/(mol K) at 298 K, +-0.53 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -613,12 +660,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 546.49,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.65 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.65 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+    "value_kJ": 547.99,
+    "source_short": "ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-1.60 kJ/mol",
+    "method": "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)",
+    "uncertainty": "+-1.6 kJ/mol (paper's 95% confidence at 0 K, 0.6, widened for the 0 K to 298.15 K conversion of a quasi-linear molecule, where this tool's harmonic soft bend is least reliable)",
+    "notes": "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 31 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = 543.4 +-0.6 kJ/mol (paper label triplet CHCCH); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment +4.587 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was 546.49 (website version, withdrawn as a source); the difference is 1.50 kJ/mol. The gap is larger than the paper's 0.6 because this record treats the quasi-linear HCCCH as a linear harmonic rotor in the conversion; the 0 K value is the paper's, the 298.15 K one carries the widened uncertainty.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ATcT, paper label triplet CHCCH, Table 1; +-0.6 kJ/mol)",
+      "value": "543.4",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "biradical": "triplet biradical (propargylene)",
    "uncertainty_S": "+-5.1 J/(mol K) (propagated from the stated uncertainty of each frequency, 2.0 % on the rotational constants; plus 3.0 for large-amplitude motion treated as harmonic)",
@@ -682,12 +738,21 @@
     ]
    ],
    "dHf_298": {
-    "value_kJ": 544.74,
-    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.87 kJ/mol",
-    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
-    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
-    "uncertainty": "+-0.87 kJ/mol (ATcT, 95% confidence)",
-    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. The mechanism's C4H3 is not an isomer-resolved species; n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is taken because ATcT lists it with a measured-quality enthalpy (the resonance-stabilised i-C4H3 H2C=C=C=CH is lower in energy and is NOT used)."
+    "value_kJ": 545.07,
+    "source_short": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2 (ANL0 ab initio, NOT an ATcT value), 298.15 K derived, +-2.2 kJ/mol",
+    "method": "ab initio composite (ANL0) enthalpy of formation at 0 K, as printed in the cited journal paper for n-C4H3 (CHCHCCH), converted to 298.15 K with this tool's own thermal enthalpies",
+    "version": "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 2, manuscript PDF page 35 of the accepted manuscript at OSTI 1389058",
+    "uncertainty": "+-2.2 kJ/mol (twice the 1.08 kJ/mol RMS error of the same ANL0 method against 150 ATcT species, Table 4 of the paper)",
+    "notes": "n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is NOT in the ATcT species set of that paper: its Table 2 lists the ANL0 CALCULATED Delta_f H(0 K) = 547.4 kJ/mol for CHCHCCH, and this record uses that calculated value, not an ATcT value (the earlier record cited ATcT 1.124 by version only, which is no source). The 298.15 K value is DERIVED: Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py) - sum of the elements' increments (CODATA Key Values: C graphite 1.050, H2 8.468 kJ/mol), net increment -2.328 kJ/mol. The value held before 2026-11-23 (544.74, website version) lies 0.33 kJ/mol from it. The resonance-stabilised i-C4H3 (H2C=C=C=CH, 495.7 at 0 K in the same table) is lower in energy and is NOT used.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ANL0 ab initio CALCULATED, not ATcT, paper label CHCHCCH, Table 2; +-2.2 kJ/mol)",
+      "value": "547.4",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-1.7 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.5 for large-amplitude motion treated as harmonic)",
    "uncertainty_Cp": "+-0.68 J/(mol K) at 298 K, +-0.55 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
@@ -933,7 +998,16 @@
     "method": "ab initio ANL0 composite (CCSD(T) with higher-order, core-valence, relativistic and anharmonic-ZPE corrections), enthalpy of formation at 0 K, ideal gas; Table 2 lists species NOT in the ATcT data set; 0 K value converted to 298.15 K as dHf(0) + [H(298.15)-H(0)] of the molecule (this tool's RRHO) - sum of the element increments (CODATA Key Values: graphite C 1.050, H2 8.468 kJ/mol)",
     "version": "J. Phys. Chem. A 121, 6580 (2017); accepted manuscript OSTI 1389058, Table 2, row CH2CHCCH, read 2026-11-24",
     "uncertainty": "+-1.4 kJ/mol (2 sigma, the ANL0 scheme's estimate, Sec. 4.1); the same row's ANL0-F12 and ANL1 values differ by -0.3 and -0.1 kJ/mol",
-    "notes": "Replaces 431.7 kJ/mol, which belonged to a cyclobutadiene-class C4H4, not to vinylacetylene (C335, 2026-11-24). A computed value, no measurement was read; the NIST WebBook lists 295 kJ/mol (298.15 K, Roth et al. 1991, a force-field resonance-energy paper, not independent) for the same species."
+    "notes": "Replaces 431.7 kJ/mol, which belonged to a cyclobutadiene-class C4H4, not to vinylacetylene (C335, 2026-11-24). A computed value, no measurement was read; the NIST WebBook lists 295 kJ/mol (298.15 K, Roth et al. 1991, a force-field resonance-energy paper, not independent) for the same species.",
+    "origin": "derived",
+    "inputs": [
+     {
+      "quantity": "Delta_f H at 0 K (ab initio ANL0, paper label CH2CHCCH, Table 2; 2 sigma +-1.4 kJ/mol)",
+      "value": "295.7",
+      "unit": "kJ/mol",
+      "doi": "10.1021/acs.jpca.7b05945"
+     }
+    ]
    },
    "uncertainty_S": "+-0.7 J/(mol K) (every frequency moved by its 1.7 % rms scale error; the measured rotational constants add less than 0.1); plus 1.0 for the two lowest bends treated as harmonic (judgement, as for the other computed records)",
    "uncertainty_Cp": "+-0.9 J/(mol K) at 298 K and at 1000 K from the same propagation; plus 0.5 for the two lowest bends; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
