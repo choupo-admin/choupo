@@ -841,3 +841,11 @@ from it, published only if verified (fugacities equal, no phase at the search
 floor) and otherwise REFUSED (converged = false).  The run announces the
 re-solve on stderr and in the advisory log.  The absent port carries F = 0.
 Theory Guide, `sec:vlle-drop-phase`; gate `check_vlle_fallback` arm (k).
+
+### A time-integrated run that creates mass now fails (C495)
+`choupoCtrl` / `choupoSemiContinuous` used to print `[balance] material: ... (NOT closed)`
+and exit 0 (ctrl16 with a hand-written schedule: closure 0.984, 4.3e6 kg created).  A run
+whose own mass or element ledger exceeds 1e-3 now raises the conservation alarm, reports
+NOT CONVERGED and exits non-zero; under `outerDict` that evaluation is a failed point.
+`williamsOttoPlant` refuses by name when a holdup goes negative beyond roundoff
+(1e-6 of the plant holdup) instead of clamping it to zero.

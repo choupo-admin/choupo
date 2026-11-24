@@ -37801,6 +37801,20 @@ invalid, naming the datum-less species, with no partial integral
 emitted.
 \end{tutoriallink}
 
+\paragraph{A time-integrated run whose ledger does not close fails.}
+\code{choupoCtrl} and \code{choupoSemiContinuous} close the same total-mass
+ledger over the domain boundary,
+$\varepsilon = |(M(t)-M(0))-\int(\dot m_{\mathrm{in}}-\dot m_{\mathrm{out}})\,dt|
+/\max(M(0),M(t),m_{\mathrm{in}},m_{\mathrm{out}})$, and the element ledger
+beside it.  Up to $10^{-6}$ the printed line says \emph{closed}; between
+$10^{-6}$ and the conservation band $10^{-3}$ (the steady reports' and the
+gates' band) the line is printed as it stands; beyond the band the run raises
+the steady run's conservation alarm (which ledger, the residual, what entered
+and what left), is reported \emph{not converged} and exits non-zero.  Under
+an \code{outerDict} the point is a failed evaluation, not a crash of the
+sweep.  The reason is that a state clamped at zero, or a unit whose ODE does
+not conserve, creates matter without any other symptom.
+
 The material ledger has an energy twin.  Each vessel contributes
 \emph{energy records}: one per segment of constant physics --- a recipe
 \code{setParameter} or a material charge closes the running segment,

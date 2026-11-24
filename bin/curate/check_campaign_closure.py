@@ -37,6 +37,13 @@ que isto JAMAIS volta a acontecer sem que a suite diga que o caso falhou"):
         tolerance on the live run.  Under --fast / --scope it judges the cases
         that pass ran and says so.
 
+  (iv)  A RUN THAT CREATES MASS MUST FAIL (C495, the real defect: ctrl16 with
+        a hand-written schedule closed at 0.984, 4.3e6 kg created, and the
+        run printed "(NOT closed)", kept `converged` and exited 0).  The arm
+        copies ctrl16 to a scratch directory, drops its outerDict, writes
+        that schedule, runs it, and requires a NON-ZERO exit with the refusal
+        or the conservation alarm named in the output.
+
 NO DECLARED-CAUSE EXEMPTION (the owner's ruling, same day: "Mesmo que haja
 arraste, tem de se criar uma corrente extra para apanhar a massa").  A
 modelling assumption that creates or destroys matter is a NAMED STREAM that
@@ -235,6 +242,46 @@ def run_arm():
     return findings, judged, none_pub, skipped, optout
 
 
+REPRO_F = ["0.000706", "0", "0", "0", "0.015073"]       # kmol/s
+REPRO_T = ["247.67", "334.34", "334.28", "348.51", "362.75"]   # K
+
+
+def unclosed_arm():
+    """(iv): a schedule that empties the plant must not exit 0."""
+    import tempfile
+    import case_records
+    src = ROOT / "tutorials/ctrl/ctrl16_williams_otto_optimal"
+    binary = ROOT / "choupoCtrl"
+    if not src.is_dir() or not binary.exists():
+        return ["ctrl16 or choupoCtrl is missing: the unclosed-run arm has "
+                "no subject"]
+    with tempfile.TemporaryDirectory(prefix="c495_") as td:
+        case = Path(td) / "c"
+        case_records.copytree(src, case)
+        (case / "system/outerDict").unlink()
+        fd = case / "system/flowsheetDict"
+        txt = fd.read_text()
+        for name, vals in (("FfBprof", REPRO_F), ("Tprof", REPRO_T)):
+            i = txt.index("name         " + name)
+            j = txt.index(");", i)
+            it = iter(vals)
+            seg = re.sub(r"value [^;]+;", lambda m: "value %s;" % next(it),
+                         txt[i:j])
+            txt = txt[:i] + seg + txt[j:]
+        fd.write_text(txt)
+        p = subprocess.run([str(binary), str(case)], capture_output=True,
+                           text=True, timeout=900, cwd=td)
+        out = p.stdout + p.stderr
+    if p.returncode == 0:
+        return ["ctrl16 with a schedule that empties the plant EXITED 0 "
+                "(the run creates mass and says converged): a run whose "
+                "ledger does not close must be reported not converged"]
+    if "below zero" not in out and "BALANCE FAILED" not in out:
+        return ["the failing run exited %d without naming why (neither the "
+                "holdup refusal nor the conservation alarm)" % p.returncode]
+    return []
+
+
 def main(argv):
     if len(argv) >= 2 and argv[1] == "--check-expected":
         bad = judge(read_expected(argv[2]),
@@ -274,6 +321,7 @@ def main(argv):
                 return 1
             return rc
     runf, judged, none_pub, skipped, optout = run_arm()
+    runf = runf + unclosed_arm()
     fails = static + runf
     for s in fails:
         print("FAIL " + s)
@@ -283,7 +331,8 @@ def main(argv):
              "closure above tolerance; %d time-integrated case(s) run, every "
              "one's own mass/element/solute closure within %.3g and every "
              "claimed energy closure within %.3g (no declared-cause "
-             "exemption exists)."
+             "exemption exists); a run that creates mass exits non-zero "
+             "(arm iv, ctrl16 with an emptying schedule)."
              % (nfiles, judged, CAMPAIGN_TOL, ENERGY_TOL))
     if none_pub:
         claim += ("  %d case(s) publish no closure key and were not judged: "

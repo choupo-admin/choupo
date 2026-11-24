@@ -1493,8 +1493,8 @@
     },
     "check_campaign_closure": {
       "exit": 0,
-      "claim": "check_campaign_closure: OK -- 517 expected file(s) hold no closure above tolerance; 80 time-integrated case(s) run, every one's own mass/element/solute closure within 0.001 and every claimed energy closure within 0.01 (no declared-cause exemption exists).  3 case(s) carry a declared opt-out marker and produce no answer: batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4.",
-      "seconds": 83.9
+      "claim": "check_campaign_closure: OK -- 656 expected file(s) hold no closure above tolerance; 106 time-integrated case(s) run, every one's own mass/element/solute closure within 0.001 and every claimed energy closure within 0.01 (no declared-cause exemption exists); a run that creates mass exits non-zero (arm iv, ctrl16 with an emptying schedule).  3 case(s) carry a declared opt-out marker and produce no answer: batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4.",
+      "seconds": 430.4
     },
     "check_lesson_references": {
       "exit": 0,
