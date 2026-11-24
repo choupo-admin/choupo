@@ -56,10 +56,10 @@ export const OFMU_ENGINE_SCOPE = "The engine computes none of the numbers on thi
   + "The rate-based packed segment (model rateBased) takes its film coefficients from the packing correlation in "
   + "velocity units: the gas coefficient k_G in m/s (PackingRBF.cpp:127), the liquid one k_L in m/s "
   + "(PackingRBF.cpp:129), and the effective area a_e in m²/m³ (PackingRBF.cpp:133).  It multiplies each by its "
-  + "phase's molar density (RateBasedSegment.cpp:467), which is the conversion to the mole-fraction form k_y = "
+  + "phase's molar density (RateBasedSegment.cpp:469), which is the conversion to the mole-fraction form k_y = "
   + "c_G k_c of step 1, then by a_e and the segment's volume A_T Δz, and divides by a reference boil-up V_ref: "
   + "its β_V = c_G k_G a_e A_T Δz/V_ref is k_y a times the segment's volume, made dimensionless by V_ref "
-  + "(RateBasedSegment.cpp:468; β_L the same for the liquid, RateBasedSegment.cpp:469).  The Henry records store "
+  + "(RateBasedSegment.cpp:470; β_L the same for the liquid, RateBasedSegment.cpp:471).  The Henry records store "
   + "a pressure (HenrysLaw.cpp:50) that is p/x, and a Henry solute's K-value is that pressure over the total "
   + "pressure (ThermoPackage.cpp:1327): the slope m of step 3.";
 
@@ -161,7 +161,7 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       { sym: "x_\\mathrm{B,LM}", means: "log mean of the mole fraction of B across the liquid film" },
     ],
     note: "Choupo's rate-based segment uses the low-flux coefficient and writes the bulk-flow term explicitly, with "
-      + "the film-average composition (RateBasedSegment.cpp:603 for the vapour film, RateBasedSegment.cpp:604 for "
+      + "the film-average composition (RateBasedSegment.cpp:605 for the vapour film, RateBasedSegment.cpp:606 for "
       + "the liquid): the same split as the first line of the derivation, with no high-flux correction.",
   },
   {
@@ -240,11 +240,11 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "9.2-14, p. 241), and with velocity coefficients and the ratio of the two molar densities (Taylor and "
       + "Kooijman Eq. 3.68, p. 115).  Choupo's rate-based segment does NOT use an overall coefficient: it solves "
       + "both films with the interface compositions as unknowns, and the interface in equilibrium "
-      + "(RateBasedSegment.cpp:585), except in the limit mode that checks it against the transfer-unit bed, where the "
-      + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:597).  The sum is used as the first guess of the profile, "
-      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:679; again at RateBasedSegment.cpp:690), and its HEIGHT form "
-      + "H_OG = H_G + λ H_L is evaluated on every segment (RateBasedSegment.cpp:471 and RateBasedSegment.cpp:854), where the liquid-film share "
-      + "m(V/L)H_L/H_OG is exactly this step's share; it is published as the profile column HOG (RateBasedSegment.cpp:886), "
+      + "(RateBasedSegment.cpp:587), except in the limit mode that checks it against the transfer-unit bed, where the "
+      + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:599).  The sum is used as the first guess of the profile, "
+      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:691; again at RateBasedSegment.cpp:702), and its HEIGHT form "
+      + "H_OG = H_G + λ H_L is evaluated on every segment (RateBasedSegment.cpp:473 and RateBasedSegment.cpp:877), where the liquid-film share "
+      + "m(V/L)H_L/H_OG is exactly this step's share; it is published as the profile column HOG (RateBasedSegment.cpp:909), "
       + "as a diagnostic: the solution itself never uses it.",
     derivation: [
       { step: "Steady state: the flux through the gas film equals the flux through the liquid film (Treybal Eq. 5.1):",
@@ -385,11 +385,11 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "segment, takes k_G and k_L from the packing correlation as velocities, turns them into the mole-fraction "
       + "form with each phase's molar density, multiplies by the effective area and the segment's volume, and divides "
       + "by a reference boil-up V_ref, so its β_V and β_L are k_y a and k_x a times the segment's volume made "
-      + "dimensionless (RateBasedSegment.cpp:468, RateBasedSegment.cpp:469).  It solves the two films with the "
-      + "interface as an unknown, in equilibrium at the interface's own K-values (RateBasedSegment.cpp:585), so it "
+      + "dimensionless (RateBasedSegment.cpp:470, RateBasedSegment.cpp:471).  It solves the two films with the "
+      + "interface as an unknown, in equilibrium at the interface's own K-values (RateBasedSegment.cpp:587), so it "
       + "needs no overall coefficient and is not hurt by a curved equilibrium line (step 5); only its limit mode, "
       + "kept to compare with the transfer-unit bed, linearises the interface about the bulk liquid with one slope "
-      + "(RateBasedSegment.cpp:597), which is step 4's straight line.  It "
+      + "(RateBasedSegment.cpp:599), which is step 4's straight line.  It "
       + "carries the bulk flow explicitly with low-flux coefficients (step 2).  It has no reaction in the film: the "
       + "rate-based segment is a binary at total reflux, and the engine's absorbers are equilibrium stages with "
       + "Henry's law.  The Theory Guide section on the rate-based segment writes its film equations in full.",
@@ -426,7 +426,7 @@ export const NOTATION_ROWS: readonly NotationRow[] = [
     page: "k_y", treybal: "k_y (stagnant B), k′_y (equimolar) = F; Eqs. 3.3, 3.5, Table 3.1",
     seader: "k_y (equimolar), k′_y (stagnant B); Eqs. 3-193, 3-203",
     missen: "—", taylorKooijman: "c_t k (Eq. 3.44)",
-    choupo: "c_G k_G, inside β_V (RateBasedSegment.cpp:468)",
+    choupo: "c_G k_G, inside β_V (RateBasedSegment.cpp:470)",
   },
   {
     quantity: "gas film, per concentration (m/s)",
@@ -447,7 +447,7 @@ export const NOTATION_ROWS: readonly NotationRow[] = [
     page: "k_x", treybal: "k_x (stagnant B), k′_x (equimolar) = F; Eqs. 3.4, 3.6, Table 3.1",
     seader: "k_x (equimolar), k′_x (stagnant B); Eqs. 3-193, 3-202",
     missen: "—", taylorKooijman: "c_t k (Eq. 3.44)",
-    choupo: "c_L k_L, inside β_L (RateBasedSegment.cpp:469)",
+    choupo: "c_L k_L, inside β_L (RateBasedSegment.cpp:471)",
   },
   {
     quantity: "Henry's-law constant",
