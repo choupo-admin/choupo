@@ -5709,6 +5709,21 @@ accepts today, and that is a policy call.
 > BatchDiafilter.cpp:486, BatchCrystalliser.cpp:364.  Slice (a) first; it reaches every time-integrated
 > case, all of which close today (C258).
 
+> **C497. THE GIBBS ELEMENT-POTENTIAL NEWTON CONVERGES ON AN ABSOLUTE mol/s RESIDUAL (found 2026-11-24 by
+> the cloud's homogeneity measurement, C491 (2)).**  FASTSET's 36 steady entries with every feed x2: 17
+> homogeneous, 0 violations, 18 not judged (a declared size or duty, each named), 1 refused by design;
+> the control (a declared Q) is seen.  Far from x2 one defect shows: at 1e6 of scale aceticAcid01 and
+> ammoniaReactor02 do not converge, at 1e-6 trace fractions move up to 8 % -- GibbsMethod.cpp:76-92, :128
+> (tolerance 1e-8 on an unscaled norm).  Flat from 1e-3 to 1e4, so latent for shipped cases.  Remedy: a
+> relative residual (the one convergence home).  After 2 December.
+
+> **relTol / Final TOLERANCES (Vitor through the cloud, 2026-11-24: "quero o RelFinal já, porque isso
+> ajuda a acelerar a convergência").**  Weighed: inside the rate-based segment the speed is already
+> taken (inexact inner Newton, 102 -> 26 s).  Where it could still pay is one level up: units solved to
+> full tolerance on every recycle pass.  RULED: the measurement first and now (time in inner solves on
+> the ten slowest recycle cases, with an upper bound on the gain); the solverDict grammar after 2
+> December; the recycle-level inexact solve decided on the number.
+
 > **C496. A NOISE-AWARE SQP WITH ERROR BARS ON ITS SHADOW PRICES (Vitor, 2026-11-24: "Escolhe o melhor
 > método top notch para o Choupo ficar o simulador de referência! Naturalmente, fazemos tudo from blank
 > slate e comparamos com o state of the art open source!").**  CHOSEN, for smooth constrained problems
