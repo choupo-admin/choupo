@@ -5588,6 +5588,17 @@ accepts today, and that is a policy call.
 > EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
+> **C499. BAYESIAN OPTIMISATION, ON THE PAGE FIRST (Vitor, 2026-11-24, after asking what it is: "Que fixe!
+> E tem naturalmente que ficar nos guias e no Edutool!").**  WEIGHED: the EduTool yes, the guides only
+> when the engine has it (rule 4d documents what is implemented).  SCOPE: one card in the `optimizers`
+> EduTool -- a one-variable curve, the points evaluated, a Gaussian-process mean and band computed in the
+> page, the next point by expected improvement, the student stepping it and watching the band shrink --
+> saying that Choupo's engine has no such method; a sentence in the guides' "what the optimiser is not".
+> The method itself, when the bench says it earns its place on a case of ours (an expensive plant, few
+> variables); multi-start of the SQP and the evolutionary columns come with it (cloud, C496 re-run).  An
+> own Gaussian process, short and legible, is the only route that keeps the glass box.  No claim before
+> the measurement.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
