@@ -13079,23 +13079,6 @@ accepts today, and that is a policy call.
 > with no sized item stops the run (a building-only case cannot be checked).
 > The packs state the first, the second and the fourth as limitations.
 
-> **C200 PHASE D, THE GENERATED REFERENCE (a general, 2026-11-24):**
-> `docs/ai/registry-reference.md`, written by `bin/regen-llm-docs` (one
-> generator, one `--check`, already wired as `generated-doc-gate` and listed in
-> `bin/curate/generated_artefacts.py`): one line per key with unit, bounds, enum
-> and default, for 61 steady units, 9 batch vessels, 4 time-integrated units and
-> 57 property operations, plus the `model` / `type` words of 50 factory
-> registries, all read from the `registerBuiltins()` bodies and the operation
-> schemas.  About 53 KB (13 k tokens), a lookup indexed from `brief.md` section 9
-> and `start-here.md`.  Record: `docs/design/an-llm-learns-choupo-from-a-brief.md`,
-> "C200 phase D".  Real defect held: `coolingTower` and `williamsOttoPlant` named
-> in no hand-written assistant document; 43 of 709 schema keys likewise.  FOUND,
-> not fixed: schema `default` values are the GUI's starting values, not the
-> engine's (`nStages` default 20, engine requires it) -- the reference prints
-> `ui=` for those; `thermoPackage.schema.json` hand-keeps a stale three-word
-> `activityModel` enum; nine registered types have no schema.  Phase E (the
-> second harness measurement) is still open and is the only paid step.
-
 > **C198 ROUTE FOR SEAWATER (the architect, 2026-11-02, after the measurement
 > study `docs/design/boron-in-seawater-apparent-pka-study.md`, Vitor having
 > asked whether Stage 1 is good practice):**  Stage 1 stays as LANDED -- the
