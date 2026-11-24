@@ -6135,6 +6135,10 @@ accepts today, and that is a policy call.
 > and "pedido" are retired as names for it, in files and in conversation;
 > DEV.md 4c is the item's HISTORY (the narrative), never its status; PLAN.md
 > and the page are VIEWS of the backlog by horizon.
+> COMPLETENESS SHOWN (Vitor, 2026-11-24: "Podes por a % estimada de completude no backlog?"):
+> `bin/curate/backlog_progress.tsv`, one estimate per open item with its basis, shown by the page and
+> the views; the rule is in its header; an estimate, never a status.  Only the laptop's items: the
+> cloud manages its own progress (Vitor, same evening).
 
 > **C435 (Vitor, 2026-11-18 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before

@@ -37,8 +37,11 @@ def day_balance(rows, today):
                          capture_output=True, text=True).stdout.splitlines()
     before = {r["item"]: r["status"] for r in csv.DictReader(old, delimiter="\t")}
     live = ("OPEN", "PARTIAL")
-    closed = sum(1 for r in rows if r["status"] not in live and before.get(r["item"]) in live)
-    opened = sum(1 for r in rows if r["status"] in live and before.get(r["item"]) not in live)
+    # an item opened and closed the same day counts on both sides
+    closed = sum(1 for r in rows if r["status"] not in live and
+                 (before.get(r["item"]) in live or (r["item"] not in before and r["status"] == "DONE")))
+    opened = sum(1 for r in rows if (r["item"] not in before and r["status"] in live + ("DONE",)) or
+                 (r["status"] in live and r["item"] in before and before[r["item"]] not in live))
     return f"hoje: {closed} fechados, {opened} abertos"
 
 
@@ -70,6 +73,20 @@ def themes():
     return t
 
 
+
+def progress():
+    """item -> [percent, basis], the architect's estimate (bin/curate/backlog_progress.tsv);
+    an item with no line shows no percentage, never a zero."""
+    t = {}
+    f = ROOT / "bin" / "curate" / "backlog_progress.tsv"
+    if f.exists():
+        for line in f.read_text().splitlines():
+            if line and not line.startswith("#"):
+                k, pct, why = line.split("\t", 2)
+                t[k] = [int(pct), why]
+    return t
+
+
 THEME_ORDER = ["Para 2 de dezembro", "Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
@@ -82,6 +99,7 @@ def main():
     open_.sort(key=lambda r: (int(r["rank"]), int(r["item"][1:])))
     count = {s: sum(1 for r in rows if r["status"] == s) for s in ("DONE", "PARTIAL", "OPEN", "DROPPED", "ROADMAP")}
     th = themes()
+    pg = progress()
     week = week_closed(rows, datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d"))
     e = html.escape
     now = datetime.now(timezone.utc)
@@ -90,7 +108,8 @@ def main():
     if sys.argv[1].endswith(".json"):
         doc = {"ranks": {r["item"]: [r["rank"], r["why_pt"]] for r in open_},
                "themes": {r["item"]: th.get(r["item"], "Outros") for r in open_},
-               "themeOrder": THEME_ORDER, "week": week, "roadmap": count["ROADMAP"],
+               "themeOrder": THEME_ORDER, "progress": {r["item"]: pg[r["item"]] for r in open_ if r["item"] in pg},
+               "week": week, "roadmap": count["ROADMAP"],
                "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day}
         Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
         print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
@@ -103,7 +122,8 @@ def main():
         return (f'<tr><td class="k">{rank}</td><td><b>{e(r["item"])}</b> {e(r["title_pt"])}'
                 f'<div class="y">{e(r["why_pt"])}</div>'
                 + (f'<div class="n">Falta: {e(r["open_pt"])}</div>' if r["open_pt"] else "")
-                + f'</td><td><span class="p" style="color:{col}">{sz}</span><br><span class="s">{st}</span></td></tr>')
+                + f'</td><td><span class="p" style="color:{col}">{sz}</span><br><span class="s">{st}'
+                + (f' ≈ {pg[r["item"]][0]} %' if r["item"] in pg else "") + '</span></td></tr>')
 
     now = [r for r in open_ if r["rank"] == "0"]
     nxt = [r for r in open_ if 1 <= int(r["rank"]) <= 15]
@@ -116,21 +136,22 @@ def main():
     if sys.argv[1].endswith(".md"):
         ico = {"S": "🟢", "M": "🟡", "L": "🔴"}
         def mdrow(r):
-            return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} |"
+            return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} | " \
+                   + (f"{pg[r['item']][0]} %" if r["item"] in pg else "") + " |"
         dec = [r for r in open_ if r["rank"] != "0" and th.get(r["item"]) == "Para 2 de dezembro"]
         nxt10 = dec if dec else [r for r in open_ if r["rank"] != "0"][:10]
         md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
-              f"\n### ▶ A andar agora ({len(now)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in now) + "\n"
-              f"\n### {'Para 2 de dezembro' if dec else 'A seguir'} ({len(nxt10)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
+              f"\n### ▶ A andar agora ({len(now)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in now) + "\n"
+              f"\n### {'Para 2 de dezembro' if dec else 'A seguir'} ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
               f"\n### {'Lista de desejos (depois de 2 de dezembro), por tema' if dec else 'O resto, por tema'}\n\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
         for t in [x for x in THEME_ORDER if x != "Para 2 de dezembro"]:
             lst = [r for r in rest if th.get(r["item"], "Outros") == t]
             if lst:
-                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] for r in lst) + "\n"
-        md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
+                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] + (f" ({pg[r['item']][0]} %)" if r["item"] in pg else "") for r in lst) + "\n"
+        md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Feito: estimativa, partes no main.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
         Path(sys.argv[1]).write_text(md)
         print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")
         return 0

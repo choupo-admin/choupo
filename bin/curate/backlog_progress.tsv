@@ -1,0 +1,68 @@
+# item	percent	basis -- the architect's ESTIMATE of how complete each open backlog item is
+# (Vitor, 2026-11-24: "Podes por a % estimada de completude no backlog?").  A VIEW aid for
+# bin/curate/backlog_view.py and the backlog page; BACKLOG.tsv stays the one home of state.
+# RULE: the share of the item's named parts that are on main, rounded to 5; work finished on a
+# branch and not landed counts, capped at 90; 0 = nothing built.  Where the parts cannot be
+# counted it is a judgement.  Only the laptop's items: the cloud session keeps the progress of its own
+# (C184, C477, C499 on 2026-11-24; Vitor: "não ponhas da outra porque ele é que gere").  It moves in the commit that moves the item's row.
+C110	75	faltam três peças
+C124	70	faltam permutadores laterais e pumparounds
+C135	0	nada construído
+C154	75	falta um ponto
+C159	0	nada construído
+C199	70	faltam três peças
+C205	30	faltam cinco unidades
+C209	0	nada construído
+C214	70	faltam 2 dos 7 pontos
+C217	50	falta o caso
+C218	40	faltam o EduTool e a eficiência do extrator
+C226	65	6 das 9 propostas
+C227	35	1 das 3 partes
+C238	60	planta e caminho em curso; falta ensaiar
+C240	50	meio caminho, pelo desenho da planta
+C241	75	falta a dieta do CLAUDE.md
+C245	45	faltam cerca de metade das 12 fatias
+C261	10	só o desenho
+C263	45	tipo e andares feitos
+C267	50	faltam três peças
+C270	50	prensa feita; faltam o plano e o EduTool
+C274	0	nada construído
+C278	60	falta o perfil de pressão
+C288	25	1 das 4 fatias
+C296	25	só o gate sem symlinks
+C306	30	faltam três partes
+C308	0	nada construído
+C309	40	lotes restantes bloqueados por dados
+C319	0	nada construído
+C323	0	nada construído
+C329	65	falta a coluna de crude completa
+C339	25	falta a pelota nos reatores e o ajuste
+C403	80	faltam os aniões orgânicos e tampões
+C405	0	as leis por rever
+C406	0	nada construído
+C408	65	faltam cinco peças
+C409	50	auditoria feita; faltam as correções
+C411	0	seis defeitos por corrigir
+C415	40	piloto feito; falta alargar a todas as lições
+C416	0	nada construído
+C424	60	faltam três pontos
+C425	15	só o estudo
+C428	30	falta a lente no Explorer
+C437	15	diagnosticado
+C445	40	2 dos 5 pontos
+C452	0	nada construído
+C454	35	cerca de 6 das 18 famílias
+C456	60	4 fatias no main, 5 seguem
+C457	0	depois do C456
+C473	85	falta passar à frente
+C475	0	nada construído
+C479	85	falta o enquadramento económico
+C482	35	1 das 3 partes
+C485	75	faltam três das máquinas
+C491	40	2 das 5 provas medidas
+C492	10	desenhado; a ferramenta de medida está escrita, sem medições
+C494	90	pronto num ramo, por aterrar
+C495	80	alarme e recusa num ramo; falta ver dois vasos parecidos
+C496	70	passo adaptativo medido; faltam a revisão e aterrar
+C497	0	remédio identificado, por fazer
+C498	75	escrito num ramo; falta a regressão completa
