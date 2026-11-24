@@ -5680,6 +5680,22 @@ accepts today, and that is a policy call.
 > the NON-SMOOTH constrained problem, and Vitor chose to build MADS NOW ("Então vamos já atacar
 > isso!"): a third method beside the two, opt-in, no existing case moves, so the demonstration is
 > safe by construction.  What remains of (3) is only the gradient-quality check.
+> MEASURED 2026-11-24 (the optimizer comparison audit, on the MADS branch), AND THE RULING
+> "MADS BECOMES THE MAIN OPTIMIZER" IS WITHDRAWN: on every shipped case where it runs, MADS reached the
+> same optimum with MORE simulations than the method beside it (optim01 42 against 8 and 25; optim04
+> 138 against 25; optim05 271 against 16; optim07 126 against optim06's 74), and no shipped case has a
+> non-smooth response, which is the problem it is for.  It lands as a third, opt-in method.  The
+> architect had recommended it to Vitor as the main one, with "a convergence guarantee", before the
+> measurement his own plan put first; the variant built projects onto the bounds and claims no
+> theorem.  FINDING, worth more than the method: on ctrl16 MADS, unconstrained, returned J = 6497
+> against a published 551.8 at a point where the plant's mass closure is 0.98 -- an optimizer accepted
+> a run that CREATES MASS (rule 4b).  Guard commissioned for all three methods (an evaluation that
+> breaks conservation is a failed evaluation; an optimum that breaks it is not an optimum), and C495.
+
+> **C495. A DYNAMIC RUN THAT CREATES MASS (found 2026-11-24 by MADS on ctrl16).**  4.3e6 kg of residual
+> against 0.97e6 kg fed, objective 12 times the published optimum.  Open: which schedule values and
+> which unit, and whether the run ends at exit 0 with no announcement.  Diagnosis first (the C494
+> general, one forward run); a fix is its own slice.
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
