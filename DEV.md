@@ -5617,6 +5617,12 @@ accepts today, and that is a policy call.
 > variables); multi-start of the SQP and the evolutionary columns come with it (cloud, C496 re-run).  An
 > own Gaussian process, short and legible, is the only route that keeps the glass box.  No claim before
 > the measurement.
+> GROWN THE SAME EVENING (Vitor, asked whether he meant the card or the optimiser: "Eu também quero isso!
+> Ficava já feito!").  WEIGHED: it is one more method ninety minutes after the ruling for one; ACCEPTED as
+> an opt-in in new files, on the cloud, because its niche is distinct (expensive simulations, few
+> variables) and it reaches no existing case, with an acceptance rule written first: offered to main only
+> if it needs fewer simulations than `sqp` on an expensive shipped plant at 1e-2, median of five seeds;
+> otherwise it stays on its branch with the table.  One measurement, not the large bench (stopped).
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
