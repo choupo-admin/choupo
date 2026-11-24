@@ -225,3 +225,43 @@ say.
   packages are external to Choupo.
 * One optimisation process runs at a time on the machine; no suite is run.
 * No analytic derivative of any problem is ever supplied to any code.
+
+## 10. Amendment A1 (2026-11-24, still before any result of the bench was taken)
+
+Written after the codes were smoke-tested on problems 7 and 10 in a scratch
+directory (those test runs are not results: they are not in the data the
+results file reads).  They showed six things the first text did not say; each is
+fixed here, and the problem list, the budgets, the levels, the seeds, the
+tolerances and the winner rule above are unchanged.
+
+1. **IPOPT.**  The system IPOPT library (3.11.9, Ubuntu package) has no internal
+   finite-difference approximation (`gradient_approximation` is refused as an
+   option).  IPOPT therefore receives forward differences supplied by the bench
+   (`scipy.optimize._numdiff.approx_derivative`, `2-point`, SciPy's default
+   relative step of the square root of machine epsilon, the same step SLSQP and
+   trust-constr use), each perturbed point one counted evaluation; the Hessian
+   is IPOPT's limited-memory approximation.  Section 1's phrase "IPOPT's own
+   finite-difference approximation" is replaced by this.
+2. **COBYQA** is called through its own package with SciPy-style
+   `Bounds`/`NonlinearConstraint` objects (the interface of version 1.1.4).
+3. **OpenSQP** needs a quadratic-programming back end; `qpsolvers`, `quadprog`
+   and `highspy` were added to the virtual environment for it.  Its finite
+   differences are `modOpt`'s `ProblemLite` defaults (step 1e-6).
+4. **Equalities.**  COBYLA and NOMAD have no equality constraints; each
+   equality is given to them as two opposite inequalities (stated in the
+   results; this is the usual practice and it is the codes' defaults that
+   decide how well it works).
+5. **Choupo's Nelder-Mead** has no constraints (the driver refuses them,
+   `OptimizationDriver.cpp` constructor).  On a constrained problem it is
+   recorded N/A and counts as UNSOLVED in the pooled profiles; the results
+   also give the profiles on the unconstrained problems alone, where it takes
+   part fully.
+6. **Choupo's `sqp` scaling.**  The driver solves in x/s with s = max(|x0|,
+   0.25 (hi - lo)) over the variable's own bounds.  Where the problem leaves a
+   variable unbounded the box start +- 1e5 would make that scale meaningless, so
+   the pipe driver uses s = max(|x0|, 1) for a variable whose own span is
+   infinite or above 1e4, and the driver's formula otherwise.
+
+Interpretation fixed here: a code that returns, errors or times out (180 s per
+run) before the budget keeps the best-so-far history it made; a run that ends
+early with a wrong answer is not repeated.
