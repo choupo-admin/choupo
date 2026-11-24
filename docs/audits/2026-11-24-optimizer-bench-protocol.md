@@ -265,3 +265,49 @@ tolerances and the winner rule above are unchanged.
 Interpretation fixed here: a code that returns, errors or times out (180 s per
 run) before the budget keeps the best-so-far history it made; a run that ends
 early with a wrong answer is not repeated.
+
+## 11. Amendment A2 (2026-11-24, still before any result the results file will read)
+
+The first run of set A, launched under A1 with the every-third thinning, was
+STOPPED after 62 runs (problems 1 and 4 only, in the order of the list) because
+the shared machine ran at a load of about 14 on four cores, at 15 runs per
+minute, which projected to hours.  Those 62 runs are DISCARDED (kept outside the
+repository, never read by the report) and no conclusion was drawn from them.
+Changes, all taken before any result is read:
+
+1. **Thinning.**  Selection rule item 5 becomes "every SIXTH surviving problem
+   in order of number, starting with the first".  The 106 survivors yield 18
+   problems: HS1, 7, 13, 19, 25, 31, 37, 43, 49, 55, 62, 68, 74, 80, 88, 95, 102,
+   110.  Everything else in section 2 stands (levels, seeds, three tolerances,
+   budget 100 (n + 1)).
+2. **Set B, exact design.**
+   * Variables are written into the scratch copy by text substitution of the
+     case's own value line (`refluxRatio`, `feedStage`; `V_R` and `Q` in the unit
+     blocks; `variables.nMods`, `variables.V_R`, `variables.T_feed`; the feed
+     pressure in `0/feed` for the channel `streams.feed.P`), in SI.
+   * The objective handed to every code is `sense * value / s_f` with `s_f =
+     max(1, |value at the tutorial start|)`, a fixed rescaling of the same
+     physical objective; the constraints are the case's own (`atMost` /
+     `atLeast` on the same KPIs, same right-hand sides), handed as `g >= 0`
+     scaled by `max(|rhs|, 1)`; constraint violation `cv` is the largest
+     violation of these scaled constraints, tolerance 1e-4.  The cost
+     objective of `optim02` is the sum over costed units of `totalModuleCost`;
+     the economics objective of `optim05` is `economics.NPV`, both as the
+     case's own driver reads them.
+   * The noise measurement is made at the tutorial start of each case:
+     offsets of 1e-3, 10^-3.5, 1e-4, ..., 1e-9 of each variable's range (13
+     values), both signs (26 points per variable), plus 5 repeated evaluations
+     at the point; the table gives the repeat spread, the central
+     finite-difference slope against offset, and the change of each response.
+     (The 25 points of section 3 are replaced by these 26 per variable.)
+   * Set B is run with ALL nine codes through the wrapper (one counter
+     outside every code, budget 100), three starts, one run each (the flowsheets
+     are deterministic at a given point; noise is only what the simulator
+     itself shows), AND Choupo's two codes are run again through their own
+     `outerDict` (shipped file, the start and the method changed only; the
+     driver's own evaluation count; Nelder-Mead only on the cases without
+     constraints), reported as their own rows.
+   * Because the reference of a flowsheet problem is the best feasible value
+     found by any run, `t` for set B is computed from the stored histories
+     after all runs finish; the three tolerances of section 6 apply to
+     `|f - f_ref| <= tau * max(1, |f_ref|)` in the rescaled objective.

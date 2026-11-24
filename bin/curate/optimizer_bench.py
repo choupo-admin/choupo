@@ -49,6 +49,7 @@ SEEDS = [11, 22, 33]
 TAUS = [1e-2, 1e-4, 1e-6]
 CV_TOL = 1e-4
 BIG = 1e20
+THIN = 6                      # protocol amendment A2: every sixth survivor
 SKIP_AUTHOR = {58, 82, 94, 115}
 CODES = ["choupoSqp", "choupoNM", "slsqp", "trustConstr", "cobyla", "cobyqa",
          "ipopt", "nomad", "opensqp"]
@@ -216,7 +217,7 @@ class HSProblem:
 
 def select():
     """The protocol's rule (section 2): 1..119, n <= 10, not skipped by the
-    author's frame, source optimum reproduced to 1e-6, every third."""
+    author's frame, source optimum reproduced to 1e-6, every sixth."""
     survivors, excluded = [], []
     for k in range(1, 120):
         P = HSProblem(k)
@@ -227,7 +228,7 @@ def select():
             excluded.append((k, rel, viol))
             continue
         survivors.append(k)
-    return survivors[::3], survivors, excluded
+    return survivors[::THIN], survivors, excluded
 
 
 # ----------------------------------------------------------------------------
@@ -572,6 +573,209 @@ def run_hs(codes=None, only=None):
         print("problem", k, "done", flush=True)
 
 
+# ----------------------------------------------------------------------------
+#  Report: profiles, bootstrap, winner rule (protocol sections 6-8)
+# ----------------------------------------------------------------------------
+def load_runs(path):
+    return [json.loads(ln) for ln in open(path)]
+
+
+def tmatrix(rows, tau_i):
+    """cells keyed (problem, sigma, seed): {n, constrained, t: {code: evaluations or inf}}."""
+    cells = {}
+    for r in rows:
+        key = (r["problem"], r["sigma"], r["seed"])
+        t = r["t"][tau_i]
+        cells.setdefault(key, {"n": r["n"], "constrained": (r["mi"] + r["me"]) > 0, "t": {}})
+        cells[key]["t"][r["code"]] = np.inf if t is None else float(t)
+    return cells
+
+
+def kappa_of(cell, code):
+    return cell["t"].get(code, np.inf) / (cell["n"] + 1)
+
+
+def fraction_solved(cells, code, sigma, kappa=100.0, seed=None, problems=None):
+    sel = [c for (p, s, sd), c in cells.items()
+           if s == sigma and (seed is None or sd == seed) and (problems is None or p in problems)]
+    if not sel:
+        return float("nan")
+    return float(np.mean([kappa_of(c, code) <= kappa for c in sel]))
+
+
+def _per_problem(cells, code, sigma, kappa):
+    probs = sorted({p for (p, s, sd) in cells if s == sigma})
+    return np.array([np.mean([kappa_of(c, code) <= kappa for (p, s, sd), c in cells.items()
+                              if p == q and s == sigma]) for q in probs])
+
+
+def bootstrap_diff(cells, a, b, sigma, kappa=100.0, nboot=10000, seed=7):
+    d = _per_problem(cells, a, sigma, kappa) - _per_problem(cells, b, sigma, kappa)
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, len(d), size=(nboot, len(d)))
+    boots = d[idx].mean(axis=1)
+    return float(d.mean()), float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))
+
+
+def seed_range(cells, codes, sigma, kappa=100.0):
+    seeds = sorted({sd for (p, s, sd) in cells if s == sigma})
+    out = {}
+    for c in codes:
+        if len(seeds) > 1:
+            fr = [fraction_solved(cells, c, sigma, kappa, seed=sd) for sd in seeds]
+            out[c] = max(fr) - min(fr)
+        else:
+            out[c] = 0.0
+    return out
+
+
+def winner(cells, codes, sigma, kappa=100.0):
+    """Protocol section 7: positive difference against EVERY other code, bootstrap 95 % interval
+    excluding zero, and the difference larger than the largest seed-to-seed range of the pair
+    (on the clean condition: larger than one problem of the set)."""
+    nprob = len({p for (p, s, sd) in cells if s == sigma})
+    noisy = sigma > 0
+    rng_of = seed_range(cells, codes, sigma, kappa)
+    for a in codes:
+        ok = True
+        for b in codes:
+            if a == b:
+                continue
+            m, lo, hi = bootstrap_diff(cells, a, b, sigma, kappa)
+            floor = max(rng_of[a], rng_of[b]) if noisy else 1.0 / nprob
+            if not (m > 0 and lo > 0 and m > floor):
+                ok = False
+                break
+        if ok:
+            return a, rng_of
+    return None, rng_of
+
+
+def report(workdir, outdir):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    rows = load_runs(Path(workdir) / "hs_runs.jsonl")
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    codes = [c for c in CODES if any(r["code"] == c for r in rows)]
+    sigmas = [0.0] + LEVELS
+    head = "| code | " + " | ".join("clean" if s == 0 else "sigma %g" % s for s in sigmas) + " |"
+    rule = "|---|" + "---|" * len(sigmas)
+    md = []
+    colour = {"choupoSqp": "#000000", "choupoNM": "#7f7f7f", "slsqp": "#0072B2", "trustConstr": "#56B4E9",
+              "cobyla": "#009E73", "cobyqa": "#B8A400", "ipopt": "#D55E00", "nomad": "#CC79A7",
+              "opensqp": "#E69F00"}
+    probs = sorted({r["problem"] for r in rows})
+    pinfo = {r["problem"]: (r["n"], r["mi"], r["me"]) for r in rows}
+    md.append("Problems run (%d): %s.\n" % (len(probs), ", ".join("HS%d" % p for p in probs)))
+    md.append("Runs read: %d (codes: %s).\n" % (len(rows), ", ".join(codes)))
+    for ti, tau in enumerate(TAUS):
+        cells = tmatrix(rows, ti)
+        md.append("\n#### Fraction of cells solved within the full budget (kappa = 100), tau = %g\n" % tau)
+        md.append(head)
+        md.append(rule)
+        for c in codes:
+            md.append("| %s | " % c + " | ".join("%.3f" % fraction_solved(cells, c, s) for s in sigmas) + " |")
+        md.append("| **winner (protocol section 7)** | " + " | ".join(
+            str(winner(cells, codes, s)[0]) for s in sigmas) + " |")
+    cells = tmatrix(rows, 1)
+    md.append("\n#### Seed-to-seed range of the fraction solved (tau = 1e-4, kappa = 100)\n")
+    md.append("| code | " + " | ".join("sigma %g" % s for s in LEVELS) + " |")
+    md.append("|---|" + "---|" * len(LEVELS))
+    for c in codes:
+        md.append("| %s | " % c + " | ".join("%.3f" % seed_range(cells, codes, s)[c] for s in LEVELS) + " |")
+    md.append("\n#### Choupo sqp against every other code: difference in fraction solved (sqp minus other) with the 95 % bootstrap interval over problems, kappa = 100\n")
+    for ti, tau in enumerate(TAUS):
+        cells = tmatrix(rows, ti)
+        md.append("\ntau = %g\n" % tau)
+        md.append("| other code | " + " | ".join("clean" if s == 0 else "sigma %g" % s for s in sigmas) + " |")
+        md.append(rule)
+        for c in codes:
+            if c == "choupoSqp":
+                continue
+            cv = []
+            for s in sigmas:
+                m, lo, hi = bootstrap_diff(cells, "choupoSqp", c, s)
+                flag = "" if lo <= 0 <= hi else (" (sqp ahead)" if m > 0 else " (sqp behind)")
+                cv.append("%+.2f [%+.2f, %+.2f]%s" % (m, lo, hi, flag))
+            md.append("| %s | " % c + " | ".join(cv) + " |")
+    uncon = {p for p in probs if pinfo[p][1] + pinfo[p][2] == 0}
+    cells = tmatrix(rows, 1)
+    md.append("\n#### Unconstrained problems only (%d: %s), tau = 1e-4, kappa = 100\n" % (
+        len(uncon), ", ".join("HS%d" % p for p in sorted(uncon))))
+    md.append(head)
+    md.append(rule)
+    for c in codes:
+        md.append("| %s | " % c + " | ".join("%.3f" % fraction_solved(cells, c, s, problems=uncon)
+                                                for s in sigmas) + " |")
+    con = set(probs) - uncon
+    md.append("\n#### Constrained problems only (%d), tau = 1e-4, kappa = 100\n" % len(con))
+    md.append(head)
+    md.append(rule)
+    for c in codes:
+        md.append("| %s | " % c + " | ".join("%.3f" % fraction_solved(cells, c, s, problems=con)
+                                                for s in sigmas) + " |")
+    md.append("\n#### Median evaluations / (n + 1) to reach tau = 1e-4, over the cells the code solved (count solved in brackets)\n")
+    md.append(head)
+    md.append(rule)
+    for c in codes:
+        cv = []
+        for s in sigmas:
+            ts = [cl["t"][c] / (cl["n"] + 1) for (p, ss, sd), cl in cells.items()
+                  if ss == s and np.isfinite(cl["t"].get(c, np.inf))]
+            cv.append("%.1f (%d)" % (np.median(ts), len(ts)) if ts else "-")
+        md.append("| %s | " % c + " | ".join(cv) + " |")
+    md.append("\n#### Run endings: errors, timeouts, N/A, and non-finite evaluations\n")
+    md.append("| code | runs | errors | timeouts | N/A | non-finite evaluations |")
+    md.append("|---|---|---|---|---|---|")
+    for c in codes:
+        rr = [r for r in rows if r["code"] == c]
+        md.append("| %s | %d | %d | %d | %d | %d |" % (
+            c, len(rr), sum(1 for r in rr if r.get("error")), sum(1 for r in rr if r.get("timeout")),
+            sum(1 for r in rr if r.get("na")), sum(r["fail"] for r in rr)))
+    kap = np.geomspace(1, 100, 60)
+    for ti in range(3):
+        cells = tmatrix(rows, ti)
+        fig, axes = plt.subplots(1, 4, figsize=(13, 3.2), sharey=True)
+        for ax, s in zip(axes, sigmas):
+            for c in codes:
+                sel = [cl for (p, ss, sd), cl in cells.items() if ss == s]
+                ax.plot(kap, [np.mean([kappa_of(cl, c) <= k for cl in sel]) for k in kap],
+                        color=colour[c], lw=1.6, ls="-" if c.startswith("choupo") else "--", label=c)
+            ax.set_xscale("log")
+            ax.set_title("clean" if s == 0 else "noise sigma = %g" % s, fontsize=9)
+            ax.set_xlabel("evaluations / (n + 1)", fontsize=8)
+            ax.grid(alpha=.3)
+        axes[0].set_ylabel("fraction solved, tau = %g" % TAUS[ti], fontsize=8)
+        axes[0].set_ylim(0, 1)
+        axes[-1].legend(fontsize=6, loc="lower right")
+        fig.tight_layout()
+        fig.savefig(Path(outdir) / ("data_profile_tau%g.png" % TAUS[ti]), dpi=80)
+        plt.close(fig)
+    cells = tmatrix(rows, 1)
+    alphas = np.geomspace(1, 1000, 80)
+    fig, axes = plt.subplots(1, 4, figsize=(13, 3.2), sharey=True)
+    for ax, s in zip(axes, sigmas):
+        sel = [cl for (p, ss, sd), cl in cells.items() if ss == s]
+        sel = [cl for cl in sel if any(np.isfinite(v) for v in cl["t"].values())]
+        for c in codes:
+            r = np.array([cl["t"].get(c, np.inf) / min(v for v in cl["t"].values() if np.isfinite(v))
+                          for cl in sel])
+            ax.plot(alphas, [np.mean(r <= a) for a in alphas], color=colour[c], lw=1.6,
+                    ls="-" if c.startswith("choupo") else "--", label=c)
+        ax.set_xscale("log")
+        ax.set_title("clean" if s == 0 else "noise sigma = %g" % s, fontsize=9)
+        ax.set_xlabel("ratio to the best code", fontsize=8)
+        ax.grid(alpha=.3)
+    axes[0].set_ylabel("fraction of cells, tau = 1e-4", fontsize=8)
+    axes[-1].legend(fontsize=6, loc="lower right")
+    fig.tight_layout()
+    fig.savefig(Path(outdir) / "performance_profile_tau1e-4.png", dpi=80)
+    plt.close(fig)
+    (Path(outdir) / "hs_tables.md").write_text("\n".join(md) + "\n")
+    print("\n".join(md))
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "help"
     if cmd == "build-hs":
@@ -584,5 +788,8 @@ if __name__ == "__main__":
         only = set(int(a) for a in sys.argv[3:]) if len(sys.argv) > 3 else None
         codes = sys.argv[2].split(",") if len(sys.argv) > 2 and sys.argv[2] != "all" else None
         run_hs(codes, only)
+    elif cmd == "report":
+        report(sys.argv[2] if len(sys.argv) > 2 else WORK,
+               sys.argv[3] if len(sys.argv) > 3 else WORK / "out")
     else:
         sys.exit(__doc__)
