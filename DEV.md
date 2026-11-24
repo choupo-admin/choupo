@@ -5589,6 +5589,32 @@ accepts today, and that is a policy call.
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
 
+> **C491 (1) MEASURED (2026-11-24): the second law over the steady and plant corpus.**  An opt-in
+> ledger (CHOUPO_ENTROPY_LEDGER=1, EnergyBalanceReport, branch worktree-agent-acb5ee81503f2c160 at
+> 3063ad718a, NOT landed; byte-identical without the variable on five cases): S_gen = sum(F s)_out -
+> sum(F s)_in - sum(Q/T_b), T_b bounded by the unit's hottest stream for heat in and coldest for heat
+> out, so a violation is definite.  753 unit rows, 375 cases: 429 OK, 22 VIOLATION, 302 NOT JUDGED
+> (141 no elements-datum enthalpy; 46 precipitated solid, no crystal entropy rung; 25 dissolved sucrose
+> and 12 electrolyte liquids refused by the entropy rung; 42 cases with no ledger; the rest by name).
+> Read by the architect: (a) SPECS that break the second law, a finding for the case header, not the
+> engine: cavett01 FL1/FL2/FL3 (the recycle rises 49 -> 270 -> 800 psia with no compressor: the
+> benchmark's drums stand for compressor plus flash; checked in the case), ammoniaRoutes01
+> electrolytic and waterSplitting (water split by heat from a source at <= 298 K: the electrical work
+> is either missing or published as Q).  (b) ENGINE candidates, each a slice of its own: proxy01 T1
+> turbine, where the turbine's own dS_gen (+0.33 W/K) and the package's stream entropy (-2.78 W/K)
+> disagree on the same states (two routes, one state: the strongest); flash13 (acetic acid, vacuum
+> flash: G_out > G_in on the engine's own H and S); stripper01/02 sour water (the dissolved-solute
+> entropy rung suspected); the fixed-conversion reactors process05/recycle02 cstr and screen01
+> stoichA/B (past equilibrium, or the formation H and S rungs disagree on dG_rxn: needs the Gibbs
+> reactor at the same T, P).  (c) ARTEFACTS: shortcutColumn publishes no duty (NOT JUDGED);
+> column13's recombine mixer writes a fictitious superheated liquid and the next unit returns the
+> exact entropy; four separators at 1e-6..2e-5 relative (solve noise); acetone05, stripper01_NH3 and
+> the cooling tower carry an undeclared first-law residual, positive with the first-law heat.  (d)
+> The entropy rung is missing exactly where the enthalpy rung is special (crystals, solutes,
+> electrolytes): about 100 units unmeasured, itself a finding for C492's "not judged" state.
+> DECISION: no gate yet; the ledger lands with C492's block, not alone.  Next, on Vitor's word: the
+> turbine-vs-package disagreement first.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
