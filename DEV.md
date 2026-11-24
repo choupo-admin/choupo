@@ -5584,7 +5584,10 @@ accepts today, and that is a policy call.
 > unit is the lost work: the same panel is an exergy-destruction map.  No dimensional types inside
 > the C++ (SI doubles stay); units are checked at the three borders.  ORDER: the second-law
 > measurement (C491, running) and its diagnosis; verify-the-verifier for mass and elements; design
-> of the block and panel; BUILT AFTER 2 December.
+> of the block and panel; BUILT AFTER 2 December.  AND AN EDUTOOL (Vitor, the same hour: "Isso merece um
+> EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
+> broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
+> before it is dispatched (CLAUDE.md section 10).
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
