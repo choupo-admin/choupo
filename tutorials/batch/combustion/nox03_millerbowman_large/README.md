@@ -17,6 +17,10 @@ N2O (A203-A207), NO2 (A188-A191).
 
 ## What it shows
 
+Read at commit cec127f1562d (2026-11-24); the times below are not all write points of the shipped log grid (91 points, 20 per decade from 1 us),
+so they are taken from a scratch copy of the case on a uniform 1 ms write grid (the same dense output; at 1, 10 and 30 ms, which the
+shipped grid also writes, the values are identical).
+
 | t / ms | 0 | 1 | 2 | 3 | 5 | 10 | 30 |
 |---|---|---|---|---|---|---|---|
 | T / K | 1300 | 1307 | 1354 | 2612 | 2603 | 2595 | 2594 |
@@ -26,26 +30,37 @@ N2O (A203-A207), NO2 (A188-A191).
 * **Induction** (0-2.4 ms): the methane starts to break down and the radical pool builds, and part of the
   initial NO becomes NO2 (17 ppm at 1 ms; the mechanism's route to it is HO2 + NO = NO2 + OH, A188 --
   not checked here by a rate-of-production report).
-* **Ignition at 2.4 ms** (Cantera: maximum dT/dt; the write grid of 1 ms says "3 ms"): T jumps to 2612 K,
+* **Ignition at 2.4 ms** (`tauIgnition` = 2.380 ms, maximum dT/dt on the integrator's dense output; Cantera 3.2.0, maximum dT/dt of its own steps: 2.3802 ms; a 1 ms write grid alone would say "3 ms"): T jumps to 2612 K,
   P from 1.0 to 2.0 atm.
 * **Thermal NO** then grows in the burned gas, 90 % of its final value within 9 ms of the ignition, to
   15008 ppm of NO (NO2 10 ppm) at 30 ms: 99.997 % of the constant-volume adiabatic equilibrium Cantera
   computes from the same charge (NOx 15019.0 ppm, 2593.63 K, 2.0457 bar; here 2593.63 K and 2.0457 bar).
 
-## Held to Cantera, strictly
+## Held to Cantera
 
 Same CHEMKIN transcription, the same NASA-9 coefficients Choupo reads (written into the Cantera
-input), Cantera 3.2.0 `IdealGasReactor`, adiabatic, constant volume:
+input by `cantera_mech.py`), Cantera 3.2.0 `IdealGasReactor`, adiabatic, constant volume, CVODES rtol 1e-10, atol 1e-20,
+compared by `docs/reviews/2026-11-22-miller-bowman/compare_cantera.py large` at the write times of the Choupo run (deviation
+max |x - x_Cantera| / max(x_Cantera, 1e-9) over all times and species).
 
-| | Choupo (shipped, rtol 1e-8) | Choupo (rtol 1e-11) |
-|---|---|---|
-| NOx at 30 ms | 15018.5503 ppm | 15018.5476 ppm (Cantera 15018.5475) |
-| T at 30 ms, largest T difference over all times | 0.044 K | 2e-5 K |
-| every species above x = 1e-6, every write time | 1.8e-3 relative | 8.6e-7 relative |
+**Current (2026-11-24, commit cec127f1562d, Cantera 3.2.0, atol 1e-15 kmol).**  The agreement depends on the write grid, because since C471
+the trajectory between the integrator's steps is its dense output (a stage polynomial, not error-controlled):
 
-The 1.8e-3 sits at the 2 ms write, in the induction, where the radical pool grows by decades per
-millisecond; it is the integration error of the second-order Rosenbrock method and shrinks with the
-tolerance (`docs/reviews/2026-11-22-miller-bowman/compare_cantera.py large`).  All 235 reactions
+| | shipped, rtol 1e-8, log grid (91 points) | rtol 1e-8, uniform 1 ms (31 points) | rtol 1e-11, uniform 1 ms | rtol 1e-11, log grid |
+|---|---|---|---|---|
+| NOx at 30 ms / ppm (Cantera 15018.5475) | 15018.5509 | 15018.5509 | 15018.5481 | 15018.5481 |
+| largest T difference over all times | 0.35 K | 0.044 K | 0.013 K | 0.11 K |
+| species above x = 1e-6, every write time | 7.0e-3 | 1.8e-3 | 5.7e-4 | 2.2e-3 |
+| every species above 1e-9, every write time | 6.3e-2 (HCHO at 16 us) | 2.6e-3 (CH2CO at 2 ms) | 8.0e-4 | 6.2e-2 |
+
+The final state is unaffected (NOx within 4e-4 ppm of Cantera, T_final and P_final to the printed digits); what the grid changes is the
+interpolated points inside the induction, where the radical pool grows by decades per millisecond.  The shipped log grid puts many points
+there, so its worst deviation (7.0e-3 on the species above 1e-6) is larger than the 1.8e-3 quoted before, and tightening the tolerance no
+longer shrinks it to 1e-6 as it did when the step was tied to the write interval: the interpolation, not the step control, sets it.
+
+**Historical (2026-11-22, before C471 free stepping, uniform 1 ms grid, Cantera 3.2.0):** NOx at 30 ms 15018.5503 ppm at rtol 1e-8
+(15018.5476 at rtol 1e-11, Cantera 15018.5475); T difference 0.044 K (2e-5 K at 1e-11); species above 1e-6: 1.8e-3 (8.6e-7 at 1e-11).  The rtol 1e-8
+column is reproduced today on the uniform grid (1.8e-3, 0.044 K); the rtol 1e-11 column is not (5.7e-4, 0.013 K).  All 235 reactions
 balance in elements (Cantera refuses an unbalanced reaction on loading; it loaded all of them).
 
 ## Solver
@@ -54,18 +69,19 @@ balance in elements (Cantera refuses an unbalanced reaction on loading; it loade
 `jacobian analytic`, Rosenbrock23, adaptive: 12 audits of the analytic Jacobian against the dense
 finite difference, worst column 1.0e-7 of the column's scale (tolerance 1e-4).
 
-**The dense solve cannot start this charge, and says so.**  With `linearSolver dense` (or `auto`,
-which is dense below 100 rows) the integration stops at t = 0: "Rosenbrock23 gave up at t = 0 s (0 %
-of the interval) -- hMin: the step fell below the floor after a rejected step (a positive row driven
-negative) -- the row driven negative is row 15 of unit 'vessel' (n_CH2OH)".  The same with the finite
-difference Jacobian, with Rodas4, with rtol 1e-4 ... 1e-6, with a seed of every absent species from
-1e-20 to 1e-8 (a seed of 1e-6 runs 98 % of the first millisecond and then fails the same way at
-n_C2H5).  The sparse path completes and equals Cantera, so the sparse and dense results
-could not be compared to 1e-10 on this case; they were compared (identical to the 9 printed
-digits) on a single 73-reaction vessel of `nox02`.  Recorded as an engine finding, not worked
-around: the case ships the path that runs.
+**The dense solve now starts and finishes (corrected 2026-11-24).**  This README used to say that with `linearSolver dense` (or `auto`,
+which is dense below 100 rows) the integration stopped at t = 0, "Rosenbrock23 gave up at t = 0 s ... row 15 of unit 'vessel' (n_CH2OH)",
+driven negative by the first rejected step.  That was true on 2026-11-22; since the C474 slice of batch stiff integration (`0efd215206`,
+"dense clean-charge start", with the positivity fixes of `7434d6bd9c`) it is not: at commit cec127f1562d `linearSolver dense`, `auto`,
+the finite-difference Jacobian with dense, and Rodas4 with dense all run to 30 ms (about 0.8 s each), and the dense run agrees with the sparse
+one (T_final 2593.63412794 K and P_final 204569.7303 Pa as printed, tauIgnition 2.380 ms; the NO route closure differs in the eighth digit).  The shipped case keeps `linearSolver sparse`, which is the faster path for 52 rows with 235 reactions' pattern
+(2530 entries in L+U); the dense/sparse comparison to 1e-10 was made on the 73-reaction vessel of `nox02` (identical to 9 printed digits).
 
-## Wall time (before C471; Choupo's step is still tied to `writeInterval`)
+## Wall time
+
+Current: the shipped case takes 0.69 s for the whole process (one run at commit cec127f1562d, 2026-11-24, this machine; not best of three) and 0.8 s with `linearSolver dense`; the table below is HISTORICAL.
+
+### Historical (2026-11-22, before C471; the step was tied to `writeInterval`)
 
 Same mechanism, thermochemistry, charge and machine; the reference is Cantera at rtol 1e-12.
 Best of three, `docs/reviews/2026-11-22-miller-bowman/timing.py`:
