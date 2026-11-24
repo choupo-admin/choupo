@@ -14694,6 +14694,12 @@ accepts today, and that is a policy call.
 > the two defects first, reproduce, minimal fixes, suite, then
 > initialisation/recovery, then the full DME plant with its recycle.
 > STATUS: SCHEDULED for Saturday; A and B are small and come first.
+> DISPATCHED TO THE CLOUD 2026-11-24 (Vitor: "Passa isso hoje à outra sessão!", after finding it
+> PARTIAL when a November commit title had read "C184 done"; only A and B were).  Order: the A-D
+> feasibility diagnosis, the thermodynamic initial profile, adaptive CMO -> MESH -> fullMESH recovery,
+> then his DME plant (origin/claude/c184-distillation, branch only).  The architect had proposed to wait
+> for after 2 December; what carries of that is the landing rule: (2) and (3) land before only if
+> column14, column19, column20 and the PEQ plant do not move.
 
 > DONE 2026-11-02, defects A and B (126fc9b98, a general): B -- NewtonND
 > took non-improving steps at the line-search floor and returned a worse
