@@ -33912,7 +33912,15 @@ $1\,\%$ the run is refused with the segment count that would pass.  Fewer than
 $\beta$, $\gamma$ and the pressure profile depend on the loads and the
 compositions.  They are evaluated on a converged profile and held fixed in the
 next Newton; the loop stops when none moves by more than $10^{-10}$ relative,
-and the count is printed.  The pressure falls up the bed by the packing
+and the count is printed.  The inner Newton is \emph{inexact} while the
+coefficients are still moving: pass $p$ solves the segment rows to
+$\max(\varepsilon_N,\,10^{-3}\Delta_{p-1})$, capped at $10^{-6}$, with
+$\Delta_{p-1}$ the largest relative coefficient change of the previous pass and
+$\varepsilon_N=10^{-11}$ the full tolerance.  The loop ends only on a pass
+solved at $\varepsilon_N$ (a pass whose change is below $10^{-10}$ on a loose
+solve is repeated at $\varepsilon_N$), so the converged profile satisfies the
+same criteria as an exact inner solve; the saving is the Newton iterations the
+early passes would spend on rows the next pass rewrites.  The pressure falls up the bed by the packing
 model's own drop, built down from the declared top pressure (the transfer-unit
 bed finds the same profile by bisection).
 
@@ -33924,6 +33932,9 @@ Jacobian (about $3(5n+5)$ residual evaluations per iteration, whatever $M$)
 and solves by block-Thomas; the declaration is \emph{audited} on the first
 iteration against the dense Jacobian (when that has at most 3000 unknowns)
 and the largest off-band entry is printed: $0$ exactly on every case below.
+The structure belongs to the code, not to the case, so the audit runs once per
+process for each (segments, block size) shape; later solves of that shape, such
+as the other points of a sweep, say that it was verified earlier in the run.
 
 \paragraph{The limit, and its proof.}
 \code{limit transferUnits;} replaces three groups of rows and keeps every

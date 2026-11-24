@@ -196,11 +196,11 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     formula: String.raw`\begin{aligned} \mathrm{HETP} &= H_{OG}\,\frac{\ln\lambda}{\lambda - 1}, \qquad \lambda = \frac{m\,V}{L} \\ H_{OG} &= H_G + \lambda\,H_L \end{aligned}`,
     where: [
       { sym: "\\mathrm{HETP}", means: "height equivalent to a theoretical plate (the engine's relation: PackingDelft.cpp:131)", unit: "m" },
-      { sym: "H_{OG}", means: "height of an overall gas-phase transfer unit; the rate-based bed publishes it per segment (RateBasedSegment.cpp:886)", unit: "m" },
-      { sym: "H_G, H_L", means: "heights of a gas-film and of a liquid-film transfer unit (RateBasedSegment.cpp:887 and RateBasedSegment.cpp:888)", unit: "m" },
+      { sym: "H_{OG}", means: "height of an overall gas-phase transfer unit; the rate-based bed publishes it per segment (RateBasedSegment.cpp:909)", unit: "m" },
+      { sym: "H_G, H_L", means: "heights of a gas-film and of a liquid-film transfer unit (RateBasedSegment.cpp:910 and RateBasedSegment.cpp:911)", unit: "m" },
       { sym: "\\lambda", means: "m V / L, the slope of the equilibrium line times the vapour flow over the liquid flow" },
-      { sym: "m", means: "local slope dy/dx of the equilibrium curve, per segment (RateBasedSegment.cpp:889)" },
-      { sym: "V, L", means: "vapour and liquid molar flows in a segment (RateBasedSegment.cpp:884 and RateBasedSegment.cpp:885)", unit: "kmol/s" },
+      { sym: "m", means: "local slope dy/dx of the equilibrium curve, per segment (RateBasedSegment.cpp:912)" },
+      { sym: "V, L", means: "vapour and liquid molar flows in a segment (RateBasedSegment.cpp:907 and RateBasedSegment.cpp:908)", unit: "kmol/s" },
     ],
     note: "The relation needs straight lines.  In a bed whose lambda changes, the page "
       + "applies it segment by segment: the local HETP of the second panel is the page's "
