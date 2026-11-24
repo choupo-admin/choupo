@@ -25,8 +25,8 @@
   with B symmetric positive definite — Nocedal & Wright, Numerical
   Optimization 2nd ed. (2006), Algorithm 16.3, §16.5, a public-domain method
   and explicitly NOT a port of any code.  It has three real callers: the inner
-  QP of every SQP iteration (src/solver/SQP.cpp:329), the constrained
-  optimisation driver (src/outerDriver/OptimizationDriver.cpp:976), and the
+  QP of every SQP iteration (src/solver/SQP.cpp:614), the constrained
+  optimisation driver (src/outerDriver/OptimizationDriver.cpp:977), and the
   laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 
   WHY THE TRANSCRIPTION EXISTS, and it is the same argument as the Wegstein
@@ -36,7 +36,7 @@
   because its multiplier went negative.  The engine returns the answer and the
   final active set; it does not publish the sequence.  So the sequence is
   recomputed here, from `activeSetQP`'s own loop
-  (src/solver/ActiveSetQP.cpp:189-436, headed by the algorithm's own name at
+  (src/solver/ActiveSetQP.cpp:191-438, headed by the algorithm's own name at
   src/solver/ActiveSetQP.cpp:152), and every entry of the returned trace is
   one working-set change.
 
@@ -258,7 +258,7 @@ export const rowTol = (
 };
 
 /** ACTIVE-SET QP, transcribed from `activeSetQP`
- *  (src/solver/ActiveSetQP.cpp:120-442), recording the working set at every
+ *  (src/solver/ActiveSetQP.cpp:122-444), recording the working set at every
  *  change.  Same order of operations, same tolerances, same LICQ recovery,
  *  the same running-point formulation starting at x = 0, and since C178
  *  (2026-10-27) the same treatment of an INFEASIBLE start (the most violated
