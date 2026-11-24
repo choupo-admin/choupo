@@ -88,7 +88,7 @@ provenance
             { quantity "electronic level 1 degeneracy (cited state table)"; value 1; unit 1; doi "10.18434/T47C7Z"; }
         );
         uncertainty   "+-0.7 J/(mol K) (every frequency moved by its 1.7 % rms scale error; the measured rotational constants add less than 0.1); plus 1.0 for the two lowest bends treated as harmonic (judgement, as for the other computed records)";
-        notes         "constants: rotational constants A, B, C: NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-24, source listed there as NISThydrocarbon (microwave); NO measured fundamental is tabulated there or in the WebBook (the fundamentals of Stamm 1949, J. Chem. Phys. 17, 104, were not readable): the 18 vibrations are CALCULATED: B3LYP/def2-TZVP (density fitted, DFT grid level 3) harmonic frequencies (PySCF, bin/curate/rrho_abinitio_constants.py C4H4) x 0.9642 (the single factor fitted on 23 measured fundamentals, the scale_calibration block of rrho_species.json, rms 1.7 %), raw harmonic frequencies 228.4, 322.6, 560.9, 647.6, 675.3, 706.6, 894.0, 961.1, 1009.2, 1114.6, 1325.4, 1449.8, 1669.0, 2203.3, 3140.5, 3152.9, 3240.4, 3471.0 cm-1; the B3LYP equilibrium rotational constants 1.742, 0.1584, 0.1452 cm-1 agree with the measured ones to 3.9, 0.1, 0.5 %";
+        notes         "constants: rotational constants A, B, C: NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-24, source listed there as NISThydrocarbon (microwave); taken from CCCBDB as the ROUTE, the microwave paper itself was NOT read; NO measured fundamental is tabulated there or in the WebBook (the fundamentals of Stamm 1949, J. Chem. Phys. 17, 104, were not readable): the 18 vibrations are CALCULATED: B3LYP/def2-TZVP (density fitted, DFT grid level 3) harmonic frequencies (PySCF, bin/curate/rrho_abinitio_constants.py C4H4) x 0.9642 (the single factor fitted on 23 measured fundamentals, the scale_calibration block of rrho_species.json, rms 1.7 %), raw harmonic frequencies 228.4, 322.6, 560.9, 647.6, 675.3, 706.6, 894.0, 961.1, 1009.2, 1114.6, 1325.4, 1449.8, 1669.0, 2203.3, 3140.5, 3152.9, 3240.4, 3471.0 cm-1; the B3LYP equilibrium rotational constants 1.742, 0.1584, 0.1452 cm-1 agree with the measured ones to 3.9, 0.1, 0.5 %";
     }
     idealGasHeatCapacity
     {
@@ -126,7 +126,7 @@ provenance
         notes         "Cp(298.15) = 72.786, Cp(1500) = 156.844 J/(mol K) from the RRHO curve; fit error 2.7e-04 (<1000 K) and 4.7e-05 (>=1000 K), relative. Approximations: rigid rotor, harmonic oscillator, all 18 vibrations calculated and scaled; Cs, sigma 1; the two lowest modes (about 220 and 311 cm-1, CCC and CCH bends) are large-amplitude; cross-check, information only and not an origin: the NIST WebBook lists Cp 73.18 J/(mol K) at 298.15 K and 138.74 at 1000 K (Stamm 1949 and the Glushko Thermocenter, a statistical calculation whose compiler warns of 4-7 J/(mol K)), against 72.79 and 138.61 here";
     }
     source   "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance";
-    licence  publicDomain;    // inputs: a cited computed enthalpy (Klippenstein, Harding & Ruscic 2017), NIST rotational constants; the computation is Choupo's own
+    licence  publicDomain;    // the computation is Choupo's own; the 0 K enthalpy is a number cited from a peer-reviewed paper (a fact, not its text); rotational constants are NIST (US government) CCCBDB values, the microwave paper itself not read
 }
 
 cosmo
