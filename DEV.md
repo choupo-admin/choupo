@@ -5537,6 +5537,21 @@ accepts today, and that is a policy call.
 > layout arm from converged/ (the big lever for the slow gates) -- it changes what each arm proves;
 > weighed after 2 December.
 
+> **VALIDATION IS MINMAX, AND NO PLANT IS THE TARGET (Vitor, 2026-11-24, correcting the architect, who
+> had named "a plant held to measurement" as the test of Gall's law: "Planta real não, porque isso são
+> dados proprietários e em escala! ... onde chega a lógica impecável, elegante e irrepreensível, não
+> precisa de chegar a validação a martelo! A validação tem de ser usada com muita parcimónia no
+> espírito MinMax: o número mínimo de validações experimentais que dá o máximo de confiança a toda a
+> arquitetura!").**  Weighed and AGREED, with the line drawn where it holds: what logic can prove --
+> conservation, identities (G = H - TS, K = exp(-dG/RT)), a published check value reproduced, a closed
+> form recomputed -- is proved by the gates and needs no experiment.  What logic cannot reach is the
+> CHOICE of a model and its parameters for a physics (C239 found the ideal vapour at 16 bar by physics
+> reasoning, not by a measurement).  There an experiment is spent only where one anchor covers the
+> most shared path (one per model family: the column14 MESH, a reactive equilibrium, a membrane
+> polarisation already in hand), chosen for reach, never a plant: plant data is proprietary and
+> confounds every model at once.  The "plant held to measurement" rows in BRAIN.md (Validation,
+> Risks) are retired as targets.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
