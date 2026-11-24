@@ -5721,6 +5721,18 @@ accepts today, and that is a policy call.
 > OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
 > Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
 
+> **THE 11-24 AFTERNOON STACK LANDED (C493, and the cloud's afternoon).**  Full sweep alone, reason
+> written before launch (restart-tears edits Flowsheet.cpp and main.cpp): 16:58-17:54, 2032 PASS / 1
+> FAIL / 296 REUSED, no case failed; --gui 49/0.  The FAIL was check_negative_pressure arm (e), a SOURCE
+> arm that wanted the trial-pressure announcement adjacent to the accepted pass; restart-tears put its
+> last guard between them.  The arm now allows exactly that one block and still fails when the
+> announcement is removed or renamed.  Second landing of the day where a cloud slice had not run the
+> gates that read the file it edited: before a READY that touches src/ the cloud runs every gate
+> `bin/integrate --plan` lists.  The laptop rebooted at 16:41 mid-integration; nothing was lost, the
+> integration's own logs survived under .git/worktrees, /tmp did not (sweep logs now go to
+> ~/.cache/choupo).  The C493 integration had read two red gates (BRAIN's facts, a selftest sabotage
+> aimed at a re-recorded row): fixed.  C493 DONE: the 20 rotating cases 25/0, proxy01 the only one moved.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
