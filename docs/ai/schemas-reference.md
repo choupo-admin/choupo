@@ -1470,8 +1470,8 @@ Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Compu
 |---|:-:|---|---|---|
 | `wheelDiameter` |   | number | m | Rotary-wheel atomiser only, and only in the flat form — inside an `atomiser { model rotaryWheel; }` block it lives there instead. A press… |
 | `wheelSpeed` |   | number | rpm | Rotational speed of the atomiser wheel; faster spinning gives smaller droplets (d32 ~ N^-0.6, Friedman correlation). |
-| `liquidViscosity` |   | number | Pa.s | Dynamic viscosity of the feed liquid, used in the atomisation correlation. |
-| `surfaceTension` |   | number | N/m | Surface tension of the feed liquid, used in the atomisation correlation. |
+| `liquidViscosity` |   | number | Pa.s | NOT READ by the engine (checked 2026-11-24, C490): the atomiser takes the feed liquid viscosity from the property layer, mu_L(T_feed, x_f… |
+| `surfaceTension` |   | number | N/m | NOT READ by the engine (checked 2026-11-24, C490): the atomiser takes the feed surface tension from the property layer, sigma(T_feed, x_f… |
 | `spreadParameter` |   | number | - | Width of the powder particle-size distribution; the droplet sizes follow a Rosin-Rammler Q(d) = 1 - exp(-(d/d')^n), larger n giving a nar… |
 | `chamberDiameter` |   | number | m | Diameter of the drying chamber; sets the gas superficial velocity v_gas = Q_gas/(pi D^2/4) and hence the residence time. |
 | `chamberHeight` |   | number | m | Height the particle falls through; residence time = chamberHeight / particle fall velocity, which sets the residual moisture. |
