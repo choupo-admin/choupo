@@ -468,6 +468,41 @@ runs the SM loop:
         the result emitter.
 \end{enumerate}
 
+\subsection{An outlet must be a state --- the admissibility guard}\label{sec:flowsheet-admissibility}
+
+Between ``register outputs'' and the next unit, \code{runUnit()} asks of
+every produced stream the three things a stream must be: a
+\emph{finite} total flow, temperature and vapour fraction; every
+component flow $F\,z_i$ and the total flow \emph{non-negative}; and a
+vapour fraction in $[0,1]$.  A unit that publishes anything else has not
+computed a state that exists, and the run is refused instead of reported
+as converged --- by unit, stream, component and value on an accepted
+pass, and as an infeasible trial (the Newton line search shortens its
+step, Wegstein falls back to direct substitution) on a trial sweep, as for
+a negative pressure.
+
+The threshold is \emph{relative}, never a floor in mol/s.  A component
+flow is admitted down to $-10^{-6}\,\dot n_{\mathrm{thr}}$, where
+$\dot n_{\mathrm{thr}}=\sum_k |F_k|$ over the unit's own inlets (the
+unit's own outlet total for a unit with no inlet, so a zero-feed unit
+divides by nothing).  Roundoff and the inner solvers' stopping tests are
+relative to the size of what flows; a mol/s floor would hide a real fault
+in exactly the small-scale problem it was set for.
+
+Second, a steady run whose \emph{mass} or \emph{element} balance at the
+plant boundary leaves the conservation band ($0.1\,\%$, the band of the
+red alarm) is \emph{not converged}: the reports raise their alarm, the run
+says so, exits non-zero and writes no \file{converged/}.  The energy
+closure stays an alarm (some shipped cases pin an open one by name).
+Under an \code{outerDict} the reports run once, on the driver's
+representative pass, and that pass carries the verdict.
+
+Source: \code{Flowsheet.cpp} (\code{outletInadmissible}, called in
+\code{runUnit}), \code{reporting/BalanceAlarm.H},
+\code{applications/choupoSolve/main.cpp}.  Gate:
+\code{check\_mass\_closure}, admissibility arm.  Found by an external
+review (cases R-011 and R-012, \S\ref{sec:cstr-feasible-extent}).
+
 \subsection{The outer layer --- DesignSpec, SweepDriver,
             OptimizationDriver}\label{sec:outer-layer}
 
@@ -19560,6 +19595,61 @@ equation in one number.}
 
 A single non-linear equation in a single unknown $\xi$: \textbf{Newton-1D
 in one variable}, with damping. Convergence is typically 3--5 iterations.
+
+\subsection{The feasible interval of the extent, and a law with no root}\label{sec:cstr-feasible-extent}
+
+The extent $\xi$ is not free.  Every outlet flow
+$F_i=F_{i,\mathrm{in}}+\nu_i\xi$ must be non-negative, so
+\begin{equation}
+  -\min_{\nu_i>0}\frac{F_{i,\mathrm{in}}}{\nu_i}\;\le\;\xi\;\le\;
+  \xi_{\max}=\min_{\nu_i<0}\frac{F_{i,\mathrm{in}}}{-\nu_i},
+  \label{eq:cstr-extent-interval}
+\end{equation}
+the minimum taken over \emph{every} consumed species (and, for the lower
+bound, every product, where the reaction may run backwards).  The named
+\code{limitingReactant} is only the reference of the reported conversion
+$X$; it does not bound the extent.  Bounding by the named reactant alone
+let the pseudo-first-order esterification (zero order in the acid) run
+past the acid it was fed: with $0.1$ kmol/h of acid against $0.5$ of
+ethanol the outlet carried an acid mole fraction of $-0.357$ at
+$X=62.9\,\%$ against a ceiling of $20\,\%$, and the run said converged.
+
+The converged extent is checked \emph{before} anything is clipped: the
+extent equation $\xi=r(\xi)V_R$ must hold there to a tolerance relative to
+the extent's own scale ($10^{-9}\xi_{\max}$, not $10^{-9}$ mol/s) and
+every outlet flow must be non-negative.  If the interval holds no root
+--- a reactant is exhausted while the law still asks for more: a rate
+\emph{zero order} in it, or a volume too large for the feed --- the
+reactor has no steady state at these feeds and this volume, and the run is
+refused by name (which reactant ran out, whether the order in it is
+zero), never cut at the bound and reported as a conversion.  In the
+multi-reaction path the finite-difference probe of the Newton iteration
+may step a relative $10^{-6}$ of the feed past a vertex of the feasible
+set (the $A\to B\to C$ chain fed pure $A$ needs it); that room is never a
+licence to accept a final state with a negative flow, which is checked
+with the Newton's own tolerance.  Before this check an absolute probe
+tolerance of $\max(F_{\mathrm{in}},1)$ mol/s clipped the negative flow of
+a $10^{-5}$-scaled case to zero and created $44\,\%$ of the mass.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lll}
+\hline
+case & before & now\\\hline
+acid $0.1$ vs ethanol $0.5$ kmol/h (single reaction) & $X=62.9\,\%$, acid $-0.357$, exit 0 & refused, acid runs out\\
+same through \code{reactions ( ... )}, all $\times10^{-5}$ & $+44\,\%$ mass, exit 0 & refused, no root\\
+acid $0.3,0.4,0.5$; equimolar at $\times1,\dots,10^{-6}$ & solved & solved, unchanged\\\hline
+\end{tabular}
+\caption{Reproduced on the shipped \texttt{cstr01\_first\_order}
+(acid/ethanol feeds in kmol/h) and held by the admissibility arm of
+\texttt{check\_mass\_closure}.}
+\end{table}
+
+Source: \code{CSTR.cpp} (the single-reaction extent interval and
+\code{g(xi)} check; the multi-reaction probe, \code{refuseNoRoot} and the
+pre-clip check).  The PFR integrates until the reactant is gone and stops
+there (probed: a $0.1$ kmol/h acid feed gives $X=20\,\%$, mass closing);
+\code{batchReactor} and \code{dynamicCSTR} announce the fixed-step clip
+and their ledgers fail the run.
 
 \subsection{The volumetric flow, by the phase of the feed}\label{sec:cstr-volumetric-basis}
 
