@@ -465,6 +465,140 @@ def merge(wt: Path, label: str, br_sha: str, slug: str, reg):
 
 
 # --------------------------------------------------------------------------
+#  2b. machines for the INTEGRATION HYGIENE rules (CLAUDE.md section 10, C485)
+# --------------------------------------------------------------------------
+
+MIN_FREE_GB = 15
+
+
+def free_gb(path: Path) -> float:
+    """Free space of the filesystem holding `path`, in GB.  The environment
+    variable is a TEST override only (the sabotage of the free-space refusal)."""
+    fake = os.environ.get("CHOUPO_INTEGRATE_FREE_GB_FAKE")
+    if fake:
+        return float(fake)
+    return shutil.disk_usage(path).free / 1e9
+
+
+def check_free_space(wt: Path):
+    """Rule 7: no long validation under 15 GB free (the cloud's disk filled
+    mid-`--gui` on 2026-11-23; the laptop fell to 23 GB on 11-22)."""
+    gb = free_gb(wt)
+    if gb < MIN_FREE_GB:
+        raise Stop(f"REFUSED: only {gb:.1f} GB free on the filesystem of {wt}, "
+                   f"under the {MIN_FREE_GB} GB a validation needs (CLAUDE.md "
+                   "section 10, integration hygiene rule 7).  Remove landed "
+                   "branches' build/, gui/node_modules and gui/public/wasm/, "
+                   "then run again (or --no-validate).")
+
+
+def unmanaged_citations(wt: Path, touched):
+    """Rule 2: `<file>:<line>` citations, in gui/ and docs/, of a src/ or
+    tutorials/ file the branch touches, that repoint_lesson_citations.py does
+    NOT manage (it keeps the TypeScript claims; everything else goes stale
+    silently).  -> [(path, token)]."""
+    names = {Path(p).name for p in touched
+             if p.startswith(("src/", "tutorials/"))}
+    if not names:
+        return []
+    out = []
+    mod = curate_module(wt, "repoint_lesson_citations")
+    tree = mod.Tree(str(wt))
+    items, _problems = mod.scan(tree)
+    ts = set(tree.ts_files)
+    for rel, tok in mod.unmanaged_tokens(tree, items):
+        if Path(tok.split(":")[0]).name in names:
+            out.append((rel, tok))
+    for top in ("gui", "docs"):
+        for dp, dn, fn in os.walk(wt / top):
+            dn[:] = [d for d in dn if d not in
+                     ("node_modules", "wasm", "dist", "_dist", "build", ".git")]
+            for f in fn:
+                if f.endswith((".pdf", ".png", ".wasm", ".ico", ".svg", ".gz")):
+                    continue
+                full = Path(dp) / f
+                rel = str(full.relative_to(wt))
+                if rel in ts:
+                    continue
+                try:
+                    text = full.read_text(encoding="utf-8")
+                except (UnicodeDecodeError, OSError):
+                    continue
+                for m in mod.TOKEN_RE.finditer(text):
+                    if Path(m.group("f")).name in names:
+                        out.append((rel, m.group(0)))
+    return sorted(set(out))
+
+
+def _items(obj, path=()):
+    """Every key path and every list item of a JSON value, as hashable tags."""
+    tags = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            tags.add(("key", path + (k,)))
+            tags |= _items(v, path + (k,))
+    elif isinstance(obj, list):
+        for v in obj:
+            tags.add(("item", path, json.dumps(v, sort_keys=True)))
+            if isinstance(v, (dict, list)):
+                tags |= _items(v, path + ("[]",))
+    return tags
+
+
+def structured_tags(kind, text):
+    if text is None:
+        return set()
+    if kind == "json":
+        return _items(json.loads(text))
+    return {("row", ln) for ln in text.splitlines() if ln.strip()}  # tsv
+
+
+def lost_in_merge(kind, base, a, b, result):
+    """Rule 1: tags (keys, list items, TSV rows) present in one parent and
+    absent from the result, unless the OTHER parent deleted them from the merge
+    base.  A key a parent added, or one both parents kept, must survive."""
+    tb, ta, tc, tr = (structured_tags(kind, x) for x in (base, a, b, result))
+    lost = []
+    for mine, other in ((ta, tc), (tc, ta)):
+        for t in mine - tr:
+            if t in tb and t not in other:
+                continue          # the other parent removed it on purpose
+            lost.append(t)
+    return sorted(set(lost), key=repr)
+
+
+def check_structured_merge(wt: Path, reg):
+    """After a merge: every JSON/TSV both sides changed must keep what each
+    parent brought.  Generated files are skipped (they are regenerated)."""
+    p1, p2 = (git(wt, "rev-parse", f"HEAD^{i}", check=False) for i in (1, 2))
+    if not p1 or not p2:
+        return
+    mb = git(wt, "merge-base", p1, p2)
+    side = [set((git(wt, "diff", "--name-only", mb, p) or "").split())
+            for p in (p1, p2)]
+    for f in sorted(side[0] & side[1]):
+        kind = "json" if f.endswith(".json") else "tsv" if f.endswith(".tsv") else None
+        if kind is None or reg.entry_for(f, wt) is not None:
+            continue
+        txt = []
+        for rev in (mb, p1, p2, "HEAD"):
+            r = git(wt, "show", f"{rev}:{f}", check=False)
+            txt.append(r)
+        try:
+            lost = lost_in_merge(kind, *txt)
+        except ValueError:
+            continue              # not parseable JSON on a side: git's own merge stands
+        if lost:
+            names = "; ".join(repr(t[1:]) if t[0] != "key" else "key " + "/".join(map(str, t[1]))
+                              for t in lost[:8])
+            raise Stop(f"REFUSED: the merge of {f} LOST {len(lost)} key(s)/item(s) a "
+                       f"parent carries: {names}"
+                       + (f"; ... (+{len(lost) - 8})" if len(lost) > 8 else "")
+                       + ".  Union the two sides by hand in the integration "
+                       "worktree (CLAUDE.md section 10, integration hygiene rule 1).")
+
+
+# --------------------------------------------------------------------------
 #  3. regeneration
 # --------------------------------------------------------------------------
 
@@ -1223,6 +1357,8 @@ def main(argv):
     code = 0
     try:
         prepare_worktree(repo, wt, slug, base_sha, o["discard"])
+        if o["validate"]:
+            check_free_space(wt)
         logdir = Path(git(wt, "rev-parse", "--absolute-git-dir")) / "integrate"
         if logdir.exists():
             shutil.rmtree(logdir)
@@ -1232,8 +1368,20 @@ def main(argv):
         resolved = merge(wt, label, br_sha, slug, reg)
         verdict["merged"] = git(wt, "rev-parse", "--short", "HEAD")
         conflicted = {n for _, n in resolved}
+        check_structured_merge(wt, reg)
         touched = (git(wt, "diff", "--name-only", base_sha, "HEAD") or
                    "").split()
+        cites = unmanaged_citations(wt, touched)
+        if cites:
+            say(f"  WARNING: {len(cites)} `<file>:<line>` citation(s) of a touched "
+                "src/ or tutorials/ file are NOT managed by "
+                "repoint_lesson_citations.py (check they still point at the claimed "
+                "line):")
+            for rel, tok in cites[:15]:
+                say(f"    {rel}  {tok}")
+            if len(cites) > 15:
+                say(f"    ... (+{len(cites) - 15})")
+            verdict["notes"].append(f"{len(cites)} unmanaged file:line citation(s) of touched files")
 
         verdict["regenerated"] += regenerate(
             wt, reg, ("pre", "node"), conflicted, touched, logdir,

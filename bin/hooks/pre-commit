@@ -1,0 +1,30 @@
+#!/bin/sh
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# pre-commit: refuse a commit whose STAGED files carry a finding of the three
+# cheap gates, at the moment of the mistake (CLAUDE.md section 10, INTEGRATION
+# HYGIENE rule 3; backlog C485).  Install once per clone:
+#
+#     git config core.hooksPath bin/hooks
+#
+# THE REAL DEFECT IT WOULD HAVE CAUGHT: a file whose NAME carried a future date
+# (2026-11-19-*.md, written on 11-18) reached main and spread for a day (DEV.md
+# 4c C446); and three general branches reached integration without the licence
+# header on new files (C477, C479, C482).  Each gate runs in --files mode (only
+# the staged paths, seconds); the full-tree gates in bin/runTests are
+# unchanged.  A deliberate exception: git commit --no-verify.
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$files" ] && exit 0
+rc=0
+for g in check_future_dates check_doctrine check_source_headers; do
+    out=$(printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 python3 "bin/curate/$g.py" --files 2>&1) || {
+        echo "pre-commit: $g refused the commit:" >&2
+        echo "$out" >&2
+        rc=1
+    }
+done
+[ $rc -ne 0 ] && echo "pre-commit: fix the findings above (or git commit --no-verify for a deliberate exception)." >&2
+exit $rc

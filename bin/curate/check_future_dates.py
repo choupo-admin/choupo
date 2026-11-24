@@ -4,6 +4,7 @@
 """Gate: no tracked text carries a date later than the clock, unless the date is declared deliberate.
 
     bin/curate/check_future_dates.py
+    bin/curate/check_future_dates.py --files F...   # only those paths (pre-commit hook, bin/hooks/pre-commit)
 
 THE DEFECT THIS WOULD HAVE CAUGHT (DEV.md 4c C446, found 2026-11-18).  From the night of
 11-17/18 the registers were stamped with the NEXT day: 2026-11-19 was written for everything
@@ -92,14 +93,19 @@ def main():
     found = {}   # (path, date) -> first line number, 0 for a file name
     files = subprocess.run(["git", "-C", str(ROOT), "ls-files"], capture_output=True,
                            text=True, check=True).stdout.splitlines()
+    only = None
+    if "--files" in sys.argv:
+        only = set(sys.argv[sys.argv.index("--files") + 1:])
+        files = [f for f in files + sorted(only) if f in only]
+        files = sorted(set(files))
     for f in files:
         if f.startswith("data/groupEstimative/") or f in SELF:
             continue
         for d in dates_in(f):
             found.setdefault((f, d), 0)
     g = subprocess.run(["git", "-C", str(ROOT), "grep", "-I", "-n", "-o", "-E",
-                        r"20[0-9]{2}-[01][0-9]-[0-3][0-9]", "--", ".",
-                        ":(exclude)data/groupEstimative"],
+                        r"20[0-9]{2}-[01][0-9]-[0-3][0-9]", "--"] + (sorted(only) if only is not None else ["."])
+                       + [":(exclude)data/groupEstimative"],
                        capture_output=True, text=True)
     # git grep -o loses the neighbours, so re-read each hit line for the bounded match.
     lines = {}
@@ -125,7 +131,7 @@ def main():
             used.add((f, d))
             continue
         bad.append("%s:%s  %s is after %s" % (f, n or "(file name)", d, ref))
-    stale = [("%s %s" % k) for k in allow if k not in used]
+    stale = [] if only is not None else [("%s %s" % k) for k in allow if k not in used]
     if bad:
         print("check_future_dates: FAIL -- a date later than %s (the clock, or HEAD's commit if later):" % ref)
         for b in bad:
