@@ -262,7 +262,7 @@ QPResult activeSetQP(const QPProblem&         qp,
                         for (std::size_t j = 0; j < n; ++j) v[j] -= c * q[j];
                     }
                 const scalar nv = rowNorm(v);
-                if (n0 > 0.0 && nv > 1.0e-10 * n0)
+                if (n0 > 0.0 && nv > (qp.robust ? 1.0e-5 : 1.0e-10) * n0)
                 {
                     for (auto& e : v) e /= nv;
                     basis.push_back(v);
@@ -323,8 +323,10 @@ QPResult activeSetQP(const QPProblem&         qp,
 
         const scalar pnorm =
             std::sqrt(std::inner_product(p.begin(), p.end(), p.begin(), 0.0));
-
-        if (pnorm < 1.0e-12)
+        const scalar stepZero = qp.robust
+            ? 1.0e-9 * (1.0 + std::sqrt(std::inner_product(x.begin(), x.end(), x.begin(), 0.0)))
+            : 1.0e-12;
+        if (pnorm < stepZero)
         {
             // p == 0: x minimises over the current working set.  Check the
             // inequality multipliers.  Rows are eq first then active ineqs.

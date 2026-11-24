@@ -155,7 +155,6 @@ struct SQPResult
     //  otherwise; a bar larger than the multiplier means "not resolved".
     sVector sigmaLamEq;
     sVector sigmaLamIneq;
-    int     soc          = 0;    // second-order-correction steps accepted
     int     restarts     = 0;    // BFGS restarts after a failed line search
 };
 
@@ -193,10 +192,6 @@ struct SQPOptions
     //    stopping.  Sources: Shi, Xuan, Oztoprak & Nocedal (2021) eq. 2.13,
     //    2.14, 2.19, Procedure I; More & Wild (2011) for the noise estimate.
     bool    adaptiveFd   = false;
-    //  soc (outerDict `merit l1Soc;`): when the full step is rejected by the
-    //    L1 merit, a second-order correction (N&W 18.3, Maratos) is tried
-    //    before backtracking.
-    bool    soc          = false;
 
     // Per-iteration callback (logging / CSV).
     std::function<void(const SQPTrace&)> onIter;
@@ -220,5 +215,9 @@ SQPResult sqp(const SQPEvaluator& eval,
 // (merge-blocking gate).  These isolate the SQP algorithm from simulator
 // noise.
 scalar verifySQP(int verbosity = 0);
+
+// C496: the same problems under the noise-aware differences (adaptiveFd), clean
+// and with 1e-7 noise; throws on a miss.  Run by cases that select fdMode auto.
+scalar verifySQPAdaptive(int verbosity = 0);
 
 } // namespace Choupo::solver

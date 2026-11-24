@@ -143,7 +143,7 @@ int main(int argc, char** argv)
             o.central = false;
             o.typX = typX;
             o.tolFeasEq = 1.0e-6;
-            //  C496 development: CHOUPO_SQP_OPTS="fdMode=auto merit=l1Soc" selects the
+            //  C496 development: CHOUPO_SQP_OPTS="fdMode=auto " selects the
             //  optional paths of solver::sqp; unset = the shipped defaults.
             if (const char* e = std::getenv("CHOUPO_SQP_OPTS"))
             {
@@ -158,9 +158,15 @@ int main(int argc, char** argv)
                         if (v == "auto") o.adaptiveFd = true;
                         else if (v == "central") o.central = true;
                     }
-                    else if (k == "merit" && v == "l1Soc") o.soc = true;
                 }
             }
+            if (std::getenv("CHOUPO_SQP_TRACE"))
+                o.onIter = [](const solver::SQPTrace& t) {
+                    std::cerr << "it " << t.iteration << " f " << t.f << " stat " << t.kktStat
+                              << " feas " << t.kktFeasEq << "/" << t.kktFeasIneq << " alpha "
+                              << t.alpha << " mu " << t.mu << " | " << t.note << "\n    "
+                              << t.fdReport << "\n";
+                };
             auto R = solver::sqp(eval, xs0, los, his, nEq, nIneq, o);
             std::cout << "DONE " << (R.converged ? 1 : 0) << " " << R.iterations
                       << " " << R.reason << std::endl;

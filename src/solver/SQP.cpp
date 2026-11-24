@@ -581,6 +581,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         qp.beq = base.h;                 // Jh d + h = 0
         qp.Aineq = Jg;
         qp.bineq = base.g;               // Jg d + g <= 0
+        if (opts.adaptiveFd) qp.robust = true;   // C496: near-parallel rows are dependent
 
         // Box bounds on the step folded in as inequality rows.  Remember,
         // per bound row, the variable index and the sign of e_j it carries
@@ -849,7 +850,6 @@ SQPResult sqp(const SQPEvaluator& eval,
         SQPResponse rTrial;
         bool accepted = false;
         bool fullRejectedThoughFeasImproved = false;
-        bool socUsed = false;
         //  C496: under noise the merit is only known to +- epsMerit; the
         //  Armijo test of a shortened step is relaxed by 2 epsMerit (Shi et
         //  al. 2021, eq. 2.19), so a step is not refused for a decrease the
@@ -888,37 +888,6 @@ SQPResult sqp(const SQPEvaluator& eval,
                 for (scalar hv : rTrial.h) feasTrial += std::abs(hv);
                 for (scalar gv : rTrial.g) feasTrial += std::max(0.0, gv);
                 if (feasTrial < feasNow) fullRejectedThoughFeasImproved = true;
-
-                //  C496: SECOND-ORDER CORRECTION (N&W 18.3, the Maratos
-                //  remedy).  The linearisation at x predicts the constraints
-                //  at x + d wrongly by their curvature; re-solve the QP with
-                //  the constraint values AT the rejected trial point, so the
-                //  step is d + the correction that removes that error, and
-                //  test the corrected point against the same merit.  One more
-                //  response evaluation, no new gradient.
-                if (opts.soc && relaxTheta == 1.0 && !watchdog)
-                {
-                    QPProblem q2 = qp;
-                    for (std::size_t i = 0; i < nEq; ++i)
-                        q2.beq[i] = rTrial.h[i] - dotv(Jh[i], d);
-                    for (std::size_t k = 0; k < mUser; ++k)
-                        q2.bineq[k] = rTrial.g[k] - dotv(Jg[k], d);
-                    QPResult Q2; bool q2ok = true;
-                    try { Q2 = activeSetQP(q2); } catch (const std::exception&) { q2ok = false; }
-                    if (q2ok && Q2.converged)
-                    {
-                        sVector xs(n);
-                        for (std::size_t j = 0; j < n; ++j) xs[j] = R.x[j] + Q2.d[j];
-                        const SQPResponse rs = E(xs);
-                        if (usable(rs)
-                            && merit(rs, mu) <= phi0 + opts.armijoC1 * Dphi + 2.0 * epsMerit)
-                        {
-                            xTrial = xs; rTrial = rs; alpha = 1.0;
-                            accepted = true; socUsed = true; ++R.soc;
-                            break;
-                        }
-                    }
-                }
             }
             alpha *= 0.5;
         }
@@ -972,7 +941,7 @@ SQPResult sqp(const SQPEvaluator& eval,
 
         // gradL at the new point uses the new gradients there.
         failStreak = 0;
-        if (opts.adaptiveFd && alpha < 0.5 && !socUsed)
+        if (opts.adaptiveFd && alpha < 0.5)
             estimate(xTrial, rTrial);       // the model changed: re-estimate (Procedure I, step 2)
         sVector gradFnew;
         std::vector<sVector> JhNew, JgNew;
@@ -1046,9 +1015,7 @@ SQPResult sqp(const SQPEvaluator& eval,
             t.theta = theta; t.bfgsSkipped = skipped;
             t.mu = mu; t.alpha = alpha; t.watchdog = watchdog;
             if (opts.adaptiveFd) { t.fdReport = fdReportStr; t.sigmaLamEq = sigEq; t.sigmaLamIneq = sigIneq; }
-            if (socUsed)
-                t.note = "second-order correction accepted (the full step was rejected: Maratos)";
-            else if (skipped)
+            if (skipped)
                 t.note = "BFGS skipped -- curvature condition violated,"
                          " likely gradient noise";
             else if (fullRejectedThoughFeasImproved)
@@ -1102,15 +1069,24 @@ struct HSProblem
     sVector xStar;        // published optimum point (for reporting)
 };
 
-scalar solveHS(const HSProblem& p, int verbosity)
+//  noise > 0 adds a deterministic pseudo-random perturbation of that size to
+//  every returned value (a fixed LCG, so the check is reproducible).
+scalar solveHS(const HSProblem& p, int verbosity, bool adaptive = false,
+               scalar noise = 0.0, scalar fTol = 1.0e-4)
 {
+    unsigned long long lcg = 88172645463325252ULL;
+    auto xi = [&]() -> scalar {
+        lcg = lcg * 6364136223846793005ULL + 1442695040888963407ULL;
+        return noise * (static_cast<scalar>((lcg >> 11) & 0xFFFFFFFFFFFFULL)
+                        / 140737488355328.0 - 1.0);       // uniform in [-noise, noise]
+    };
     auto eval = [&](const sVector& x) -> SQPResponse {
         SQPResponse r;
-        r.f = p.f(x);
+        r.f = p.f(x) + (noise > 0.0 ? xi() : 0.0);
         r.h.reserve(p.h.size());
-        for (const auto& hj : p.h) r.h.push_back(hj(x));
+        for (const auto& hj : p.h) r.h.push_back(hj(x) + (noise > 0.0 ? xi() : 0.0));
         r.g.reserve(p.g.size());
-        for (const auto& gk : p.g) r.g.push_back(gk(x));
+        for (const auto& gk : p.g) r.g.push_back(gk(x) + (noise > 0.0 ? xi() : 0.0));
         r.ok = std::isfinite(r.f);
         return r;
     };
@@ -1119,6 +1095,8 @@ scalar solveHS(const HSProblem& p, int verbosity)
     o.maxIter = 100;
     o.central = true;          // tight analytic FD for the self-check
     o.fdStep  = 1.0e-6;
+    o.adaptiveFd = adaptive;   // C496: the noise-aware differences (fdMode auto)
+    if (adaptive) o.maxIter = 300;
 
     SQPResult R = sqp(eval, p.x0, p.lo, p.hi, p.h.size(), p.g.size(), o);
 
@@ -1137,11 +1115,12 @@ scalar solveHS(const HSProblem& p, int verbosity)
                   << "\n";
     }
 
-    if (!(fErr < 1.0e-4))
+    if (!(fErr < fTol))
         throw std::runtime_error(
-            "verifySQP FAILED on " + p.name + ": optimum f=" + std::to_string(R.f)
+            "verifySQP FAILED on " + p.name + (adaptive ? " (fdMode auto)" : "")
+            + ": optimum f=" + std::to_string(R.f)
             + " vs published " + std::to_string(p.fStar) + " (|df|="
-            + std::to_string(fErr) + " > 1e-4).  The SQP (BFGS/merit/"
+            + std::to_string(fErr) + " > " + std::to_string(fTol) + ").  The SQP (BFGS/merit/"
             "active-set) has a bug -- FIX it, do NOT loosen the tolerance.");
 
     return fErr;
@@ -1149,7 +1128,8 @@ scalar solveHS(const HSProblem& p, int verbosity)
 
 } // anonymous namespace
 
-scalar verifySQP(int verbosity)
+namespace {
+scalar runHS3(int verbosity, bool adaptive, scalar noise, scalar fTol)
 {
     scalar worst = 0.0;
 
@@ -1174,7 +1154,7 @@ scalar verifySQP(int verbosity)
         p.x0 = {0.5, 0.5, 0.5};
         p.fStar = 1.0/9.0;
         p.xStar = {4.0/3.0, 7.0/9.0, 4.0/9.0};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     // ---- HS21: min  0.01 x1^2 + x2^2 - 100
@@ -1195,7 +1175,7 @@ scalar verifySQP(int verbosity)
         p.x0 = {2.0, 0.5};          // a benign in-bounds start
         p.fStar = -99.96;
         p.xStar = {2.0, 0.0};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     // ---- HS71: min  x1 x4 (x1 + x2 + x3) + x3
@@ -1222,10 +1202,27 @@ scalar verifySQP(int verbosity)
         p.x0 = {1.0, 5.0, 5.0, 1.0};   // the classic HS71 start
         p.fStar = 17.0140173;
         p.xStar = {1.0, 4.743, 3.821, 1.379};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     return worst;
+}
+} // anonymous namespace
+
+scalar verifySQP(int verbosity)
+{
+    return runHS3(verbosity, false, 0.0, 1.0e-4);
+}
+
+//  C496: the same three problems under fdMode auto, clean to 1e-4 as the
+//  shipped check, then with 1e-7 uniform noise on every response (the
+//  noise-aware differences must still land within 1e-3 of the published
+//  optimum).  Called only when a case asks for fdMode auto.
+scalar verifySQPAdaptive(int verbosity)
+{
+    const scalar clean = runHS3(verbosity, true, 0.0, 1.0e-4);
+    const scalar noisy = runHS3(verbosity, true, 1.0e-7, 1.0e-3);
+    return std::max(clean, noisy);
 }
 
 } // namespace Choupo::solver
