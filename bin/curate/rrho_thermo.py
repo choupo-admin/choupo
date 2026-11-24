@@ -7,6 +7,7 @@ constants: rigid rotor, harmonic oscillator, electronic levels.
     bin/curate/rrho_thermo.py validate             # the tool against species the NASA report holds
     bin/curate/rrho_thermo.py records              # print the computed records (what the home holds)
     bin/curate/rrho_thermo.py write                # (re)write data/standards/thermoTables/RRHO-computed/
+    bin/curate/rrho_thermo.py component NAME       # the blocks a `component_records` entry splices into components/NAME.dat
     bin/curate/rrho_thermo.py curve NAME [T ...]   # Cp, H-H298, S of one species at given T
 
 WHY THIS EXISTS.  The Miller & Bowman (1989) mechanism uses nine species that
@@ -152,6 +153,26 @@ def cp_s_h(sp, T):
     s += math.log(q) + eav / T
     h += eav
     return R * cp, R * s, R * h
+
+
+#  CODATA Key Values for Thermodynamics, H(298.15 K) - H(0 K), kJ/mol: graphite C 1.050,
+#  H2 (gas) 8.468 -- the element increments that convert a 0 K enthalpy of formation to
+#  298.15 K (codata.info key1).  A record whose cited dHf is a 0 K value carries
+#  `dHf_298.from_0K = {value_kJ, ...}`; the 298.15 K value is then COMPUTED here, from the
+#  record's own H(298.15) - H(0) of the RRHO model, so the gate holds the arithmetic.
+ELEMENT_H298_H0_KJ = {"C": 1.050, "H": 8.468 / 2.0}
+
+
+def dhf_298_kj(sp):
+    d = sp["dHf_298"]
+    if "from_0K" not in d:
+        return d["value_kJ"]
+    comp = parse_formula(sp["formula"])
+    if set(comp) - set(ELEMENT_H298_H0_KJ):
+        raise SystemExit("rrho_thermo: %s: no element increment for %s" % (sp["name"], sorted(comp)))
+    h_mol = cp_s_h(sp, T0)[2] / 1000.0          # H(298.15) - H(0), thermal, kJ/mol
+    h_el = sum(n * ELEMENT_H298_H0_KJ[e] for e, n in comp.items())
+    return d["from_0K"]["value_kJ"] + h_mol - h_el
 
 
 def delta_h(sp, T):
@@ -353,12 +374,15 @@ def inputs_block(sp, indent):
     return L
 
 
-def record_text(sp, spec):
-    """The text of data/standards/thermoTables/RRHO-computed/<name>.dat."""
+def record_text(sp, spec, body_only=False):
+    """The text of data/standards/thermoTables/RRHO-computed/<name>.dat; with
+    body_only, only the blocks from standardThermochemistry to the end of
+    provenance, which a `component_records` entry splices into its
+    data/standards/components/<name>.dat (check_rrho_thermo arm e)."""
     check_input(sp)
     fit = nasa_fit(sp)
     s298 = cp_s_h(sp, T0)[1]
-    dhf = sp["dHf_298"]["value_kJ"] * 1000.0
+    dhf = dhf_298_kj(sp) * 1000.0
     mw = mass_u(sp["formula"])
     role = role_of(sp)
     nm = sp["name"]
@@ -382,6 +406,8 @@ def record_text(sp, spec):
     L.append("tags           ( gasPhase thermoTable rrhoComputed );")
     L.append("reviewStatus   interim;")
     L.append('reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; ')
+    if body_only:
+        L = []
     L.append("standardThermochemistry")
     L.append("{")
     L.append("    dHf_298    %.3f;   // J/mol  -- ideal gas; %s" % (dhf, sp["dHf_298"]["source_short"]))
@@ -442,7 +468,7 @@ def record_text(sp, spec):
              (cp298, cp1500, fit["err_low"], fit["err_high"], sp["approximations"]))
     L.append("    }")
     L.append('    source   "%s";' % sp["source"])
-    L.append("    licence  publicDomain;    // inputs: NIST (US government) data and published spectroscopy; the computation is Choupo's own")
+    L.append("    licence  publicDomain;    // %s" % sp.get("licence_note", "inputs: NIST (US government) data and published spectroscopy; the computation is Choupo's own"))
     L.append("}")
     return "\n".join(L) + "\n"
 
@@ -487,11 +513,15 @@ def main(argv):
         for sp in spec["records"]:
             print(record_text(sp, spec))
         return 0
+    if cmd == "component":
+        sp = next(s for s in spec.get("component_records", []) if s["name"] == argv[2])
+        print(record_text(sp, spec, body_only=True), end="")
+        return 0
     if cmd == "write":
         print("wrote", ", ".join(write_all(spec)))
         return 0
     if cmd == "curve":
-        sp = next(s for s in spec["records"] + spec["validation"] if s["name"] == argv[2])
+        sp = next(s for s in spec["records"] + spec.get("component_records", []) + spec["validation"] if s["name"] == argv[2])
         Ts = [float(x) for x in argv[3:]] or [298.15, 500, 1000, 1500, 2000, 3000]
         for T in Ts:
             cp, s, _ = cp_s_h(sp, T)

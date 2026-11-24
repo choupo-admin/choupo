@@ -5355,6 +5355,36 @@ C4H3 & 545.07 & 282.87 & 72.93 & 138.3 & 3e-04\\
 \end{tabular}
 \end{center}
 
+\paragraph{A computed record that stays in \file{components/}: vinylacetylene.}
+\label{sec:rrho-component}
+A species with a liquid-side life --- a Henry pair, a sigma profile --- cannot
+move to the table home.  Vinylacetylene (H$_2$C=CH--C$\equiv$CH, CAS 689-97-4, the
+\code{C4H4} record) is one: the Henry constant in water reads it.  Its record used to
+carry 431.7~kJ/mol, an enthalpy about 135~kJ/mol too high for this molecule
+(that of a cyclobutadiene-class C$_4$H$_4$), taken from a compilation Choupo may not
+redistribute.  It is now written by the same tool from an input of the file's
+\code{component\_records} list, and the gate holds its three blocks
+(\code{standardThermochemistry}, \code{idealGasHeatCapacity}, \code{provenance}) equal to
+the tool's output (\code{check\_rrho\_thermo}, arm~e).  The enthalpy is the
+\emph{0~K} value of the ab initio ANL0 scheme, 295.7~kJ/mol with a $2\sigma$ of
+1.4~kJ/mol (Klippenstein, Harding \& Ruscic, J.~Phys.\ Chem.\ A 121 (2017) 6580,
+Table~2, a species not in the ATcT set), so the tool converts it to 298.15~K,
+\begin{equation}
+  \Delta_f h^{\circ}_{298} = \Delta_f h^{\circ}_{0}
+    + \big[h_{298}-h_0\big]_{\mathrm{mol}}
+    - \sum_{\mathrm{el}} \nu_{\mathrm{el}}\big[h_{298}-h_0\big]_{\mathrm{el}},
+  \label{eq:rrho-dhf-0K}
+\end{equation}
+with $[h_{298}-h_0]_{\mathrm{mol}}=14.47$~kJ/mol from the model itself (translation and
+rotation $4RT$ plus the vibrations) and the CODATA Key Values increments of the
+elements (graphite 1.050, H$_2$ 8.468~kJ/mol), giving 289.04~kJ/mol.  The rotational
+constants are the measured ones (microwave, as listed by CCCBDB); no measured
+fundamental was readable, so the 18 vibrations are B3LYP/def2-TZVP values scaled by
+0.9642 and are marked \emph{calc}.  $s^{\circ}_{298}=278.49$ and
+$c_p(298)=72.79$~J/(mol\,K), within 0.5\,\% of the WebBook's statistical values (73.18 at 298.15~K, 138.74 against 138.61 here at 1000~K; a cross-check, not an origin).  The \emph{uncertainty} of the enthalpy is the paper's; the entropy and heat
+capacity carry $\pm$0.7 and $\pm$0.9 from the scaled-frequency error plus the two
+large-amplitude bends treated as harmonic.
+
 \begin{intuition}
 \textbf{What is approximate.}  The formulas are exact for a rigid rotor and a
 harmonic oscillator; a real molecule is neither.  Observed fundamentals stand

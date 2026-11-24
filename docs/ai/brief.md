@@ -393,7 +393,10 @@ The same files are served at `https://www.choupo.org/llm/packs/<name>.md`
 `https://www.choupo.org/llms.txt`).
 
 Reference lookups (do not read end to end): `data/standards/components/`
-(names); each unit's accepted keys are in its source file (see SOURCES).
+(names); `docs/ai/registry-reference.md` (generated: every unit type, props
+operation, key with its unit, and the `model` words each factory accepts;
+served at `https://www.choupo.org/llm/reference/registry-reference.md`).
+Name no unit type or key that is not there.
 
 ## 10. Revising a case from feedback (round 2 and later)
 

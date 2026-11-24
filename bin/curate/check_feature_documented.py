@@ -180,6 +180,12 @@ def guide_mentions():
 def catalogue_mentions():
     toks = set()
     for p in sorted((DOCS / "ai").rglob("*.md")):
+        #  The registry reference is READ FROM THE REGISTRIES (C200 phase D):
+        #  it lists every registered name by construction, so counting it
+        #  would make this arm vacuously true for every name -- a generated
+        #  list of the names is not a catalogue entry that explains one.
+        if p.name == "registry-reference.md":
+            continue
         infence = False
         for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
             if line.lstrip().startswith("```"):

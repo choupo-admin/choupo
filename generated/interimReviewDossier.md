@@ -406,6 +406,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
     * L11: literature value, primary re-citation pending (IST review).
     * L43: // distribution; INTERIM pending primary review (Vitor))
 * `components/C4H2.dat` -- **reviewStatus interim**
+* `components/C4H4.dat` -- **reviewStatus interim**
 * `components/CH4.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L9: literature value, primary re-citation pending (IST review).
 * `components/CO.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
@@ -4229,4 +4230,4 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `thermoTables/RRHO-computed/HOCN.dat` -- **reviewStatus interim**
 * `thermoTables/RRHO-computed/NNH.dat` -- **reviewStatus interim**
 
-Totals: 3920 record(s) with structured review metadata, 31 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 3921 record(s) with structured review metadata, 31 detected by text marker only (legacy fallback -- migrate on touch/review).
