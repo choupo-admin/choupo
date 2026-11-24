@@ -5600,6 +5600,12 @@ accepts today, and that is a policy call.
 > the bench); the evolutionary, CMA-ES and Bayesian additions stop; Nelder-Mead stays (cheapest without
 > constraints on our cases); MADS lands opt-in and is REMOVED if the bench finds no problem class where it
 > wins.  Two flowsheet cases are repaired and three added so the bench has something real to run on.
+> STOPPED, the same evening (Vitor to the cloud): the large comparison (the 106-problem re-run and its
+> extra columns, 969 runs made) does not run; the runs and the protocol stay unread on the cloud's local
+> branch.  CONSEQUENCE, accepted: the improved SQP is judged ONCE on the 18 problems of the v1 protocol
+> against its published table, no externals re-run; and MADS is decided on the evidence that exists
+> (more simulations on every case measured, no class found where it wins): KEPT, FROZEN, opt-in,
+> described as such.  The condition "removed if the bench finds no class" is withdrawn with the bench.
 
 > **C499. BAYESIAN OPTIMISATION, ON THE PAGE FIRST (Vitor, 2026-11-24, after asking what it is: "Que fixe!
 > E tem naturalmente que ficar nos guias e no Edutool!").**  WEIGHED: the EduTool yes, the guides only
