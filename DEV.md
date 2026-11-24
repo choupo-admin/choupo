@@ -5615,6 +5615,22 @@ accepts today, and that is a policy call.
 > DECISION: no gate yet; the ledger lands with C492's block, not alone.  Next, on Vitor's word: the
 > turbine-vs-package disagreement first.
 
+> **C490 LANDED (79c4312d0b) with the C477 corpus survey; RESTART FROM converged/ AUTHORISED (2026-11-24).**
+> C490 from the cloud, squashed: the thermoPackage schema's activityModel enum held to the registry,
+> schemas for batchAccumulator, dynamicTank, quasiSteady and williamsOttoPlant, the rest pinned in
+> debt_registry (may only shrink), the GUI start values audited.  No src/; reach: the schema and doc
+> gates, regen-llm-docs --check, gate manifest, --gui 49/0.  C477 survey (docs/audits/2026-11-24-
+> cases-answer-in-a-figure.md): of 678 cases, 68 answer in a declared figure, 84 by default views,
+> 23 by the sweep CSV, 292 are rightly a number or a table, 211 NEED A FIGURE (named per case).
+> RESTART, Vitor's request through the cloud ("não quero passar a vida a ver os gates a correr"):
+> the architect's objection of the morning was that a layout arm restarted from converged/ would
+> prove something else; the cloud measured why (converged/ at 10 significant figures) and proposed
+> 17 figures plus zero iterations when the tears already hold.  AUTHORISED on four conditions sent
+> to the cloud: opt-in and keyed on every input but layoutDict/postDict (a flowsheet edit re-solves,
+> with a sabotage); converged/ holds the INPUT of the last unit pass, so the identity is exact by
+> construction; the 34 gates and 5 GUI test files that read converged/ re-run; every layout and
+> design-sheet arm byte-identical by diff.  It changes SolutionWriter: a full sweep ALONE at landing.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
