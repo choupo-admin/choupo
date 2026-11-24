@@ -14,6 +14,8 @@
 #
 # Style precedent: the check_*.py family (check_ion_pins, check_estimates).
 # Usage:  bin/curate/check_doctrine.py     (exit 1 on violations)
+#         bin/curate/check_doctrine.py --files F...   (only those paths: the pre-commit hook,
+#                                    bin/hooks/pre-commit; the full-tree run stays the gate)
 
 import re
 import subprocess
@@ -279,6 +281,9 @@ BARE_FILENAME = re.compile(
 
 
 def main() -> int:
+    only = None
+    if "--files" in sys.argv:
+        only = {a for a in sys.argv[sys.argv.index("--files") + 1:]}
     for r in SCAN_ROOTS:
         if not (ROOT / r).is_dir():
             print(f"check_doctrine: FAILED -- scan root '{r}' does not "
@@ -292,6 +297,8 @@ def main() -> int:
         if not path.exists():
             continue
         rel = path.relative_to(ROOT).as_posix()
+        if only is not None and rel not in only:
+            continue
         if rel in ALLOW:
             continue
         lines = blank_comparison(rel, path.read_text(errors="replace").splitlines())
@@ -368,6 +375,8 @@ def main() -> int:
     #  ban undone through the back door.
     leaks = []
     for rel in rels:
+        if only is not None and rel not in only:
+            continue
         if rel.startswith(all_trees):
             continue
         if not (rel.startswith("docs/") and rel.endswith(".tex")
@@ -389,6 +398,8 @@ def main() -> int:
     scanned = 0
     pinned_seen = set()
     for rel in rels:
+        if only is not None and rel not in only:
+            continue
         if rel in COMPETITOR_EXEMPT:
             continue
         if rel.startswith(tuple(COMPETITOR_EXEMPT_TREES)):
@@ -434,7 +445,7 @@ def main() -> int:
                 "zero) in the same commit -- a ledger that does not notice a "
                 "debt closing cannot tell the next one from a regression.")
         pinned_seen.add(rel)
-    gone = sorted(set(COMPETITOR_PINNED) - pinned_seen)
+    gone = [] if only is not None else sorted(set(COMPETITOR_PINNED) - pinned_seen)
     if gone:
         for rel in gone:
             violations.append(
@@ -442,7 +453,7 @@ def main() -> int:
                 "unreadable, or excluded by a skip prefix.  A pin over a file "
                 "nobody reads is a permanently-green waiver; remove the pin "
                 "in the same commit that removed the file.")
-    if scanned < TRACKED_FLOOR // 2:
+    if only is None and scanned < TRACKED_FLOOR // 2:
         print(f"check_doctrine: FAILED -- the repo-wide competitor pass read "
               f"only {scanned} files; the scan has collapsed and a green "
               "verdict over it would describe nothing.")
@@ -461,6 +472,9 @@ def main() -> int:
               "open-source process simulator`).  Ruling and the three "
               "exemptions: docs/design/no-competitor-is-named-here.md.")
         return 1
+    if only is not None:
+        print(f"check_doctrine: --files OK -- {len(only)} staged path(s) checked ({read_surfaces} teaching surfaces, {scanned} files in the competitor pass)")
+        return 0
     if read_surfaces < SURFACE_FLOOR:
         print(f"check_doctrine: FAILED -- only {read_surfaces} teaching "
               f"surfaces read against a floor of {SURFACE_FLOOR}; the scan "

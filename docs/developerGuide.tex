@@ -1929,6 +1929,30 @@ Description
 Don't omit this on new files --- it doubles as licence notice.
 
 % =====================================================================
+\section{Git conventions and the pre-commit hook}\label{sec:git-hook}
+
+Stage files one by one (never the whole tree at once); the author of a commit
+is the copyright holder, the committer whoever applied it (see
+\file{CLAUDE.md}, \emph{Git \& release conventions}).  Three mistakes that
+reached \code{main} more than once are refused at the moment of the commit by a
+tracked hook, \file{bin/hooks/pre-commit}: a date later than the clock in a file
+or in its \emph{name} (\code{check\_future\_dates}), a forbidden teaching
+surface or a banned name (\code{check\_doctrine}), and a code file without the
+holder and licence header (\code{check\_source\_headers}).  Each gate has a
+\code{--files} mode that reads only the staged paths, so the hook takes about a
+second on 5 or 50 files; the full-tree gates in \code{bin/runTests} are
+unchanged.  Install it once per clone:
+
+\begin{lstlisting}[language=bash]
+git config core.hooksPath bin/hooks
+\end{lstlisting}
+
+A deliberate exception is \code{git commit --no-verify}, and a deliberate
+future date belongs in \file{bin/curate/future\_dates\_allowed.tsv} with its
+reason.  After a push to \code{main}, \code{bin/curate/after\_push.sh} prints
+the latest CI run of \code{main}; red is a backlog item the same day.
+
+% =====================================================================
 \section{Regression testing}\label{sec:regression}
 
 Regression is run with \code{bin/runTests}.
