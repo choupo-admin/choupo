@@ -195,9 +195,13 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
     //  ATOMS ARE NOT CREATED.  An element that does not close is the gravest
     //  error this diagnostic exists to catch (a chemically wrong operation),
     //  and until now it was reported as an informational aside on stdout.
+    //  A PARTIAL ledger (a declared composition with unaccounted mass) cannot
+    //  close better than its data: it alarms under its own name, which
+    //  choupoSolve does not read as a broken run (C498); the mass balance,
+    //  which needs no composition, still judges it.
     if (worst > reporting::elementBandPct)
         reporting::balanceAlarm(
-            "ELEMENT", "the plant boundary, element " + worstSym,
+            eb.partial ? "PARTIAL-DATA ELEMENT" : "ELEMENT", "the plant boundary, element " + worstSym,
             "in " + std::to_string(worstIn) + " kmol-atom/h, out "
             + std::to_string(worstOut) + " kmol-atom/h  (off by "
             + std::to_string(worst) + " %)",

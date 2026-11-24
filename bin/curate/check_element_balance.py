@@ -189,8 +189,13 @@ def main():
         overlay3 += '\ndistinctFrom CH4;\nvariationReason "gate fixture: chloromethane under methane\'s name";\n'
         case, r = run_case(tmp, "outputOnly", overlay=overlay3,
                            overlay_name="CH4.dat")
-        if r.returncode != 0:
-            bad.append("output-only case failed to run")
+        #  C498: a run that creates atoms is not a converged run -- it must
+        #  say so, exit non-zero, and still write the ledger judged below.
+        if r.returncode == 0 or "RUN NOT CONVERGED: the ELEMENT" not in r.stderr:
+            bad.append(f"output-only: rc = {r.returncode}; a run that creates"
+                       " chlorine must exit non-zero saying RUN NOT CONVERGED")
+        if not (case / "reports" / "balances" / "elementBalance.csv").exists():
+            bad.append("output-only: no element ledger was written")
         else:
             cl_row = None
             with open(case / "reports" / "balances"
