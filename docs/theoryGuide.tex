@@ -19615,9 +19615,10 @@ ethanol the outlet carried an acid mole fraction of $-0.357$ at
 $X=62.9\,\%$ against a ceiling of $20\,\%$, and the run said converged.
 
 The converged extent is checked \emph{before} anything is clipped: the
-extent equation $\xi=r(\xi)V_R$ must hold there to a tolerance relative to
-the extent's own scale ($10^{-9}\xi_{\max}$, not $10^{-9}$ mol/s) and
-every outlet flow must be non-negative.  If the interval holds no root
+extent equation $\xi=r(\xi)V_R$ must hold there to $10^{-6}$ of the
+extent's own scale $\xi_{\max}$ (a Newton that stopped looser, as an
+absolute $10^{-9}$ mol/s does on a flow of $10^{-6}$ mol/s, is polished to a
+relative $10^{-9}$) and every outlet flow must be non-negative.  If the interval holds no root
 --- a reactant is exhausted while the law still asks for more: a rate
 \emph{zero order} in it, or a volume too large for the feed --- the
 reactor has no steady state at these feeds and this volume, and the run is

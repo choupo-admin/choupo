@@ -469,12 +469,16 @@ int CSTR::solve(const DictPtr& dict,
         return (g(xi + h) - g(xi - h)) / (2.0 * h);
     };
 
-    //  The residual tolerance is RELATIVE to the extent's own scale (the
-    //  largest the reaction can go), never an absolute mol/s: a 1e-9 mol/s
-    //  floor is a 1e-3 relative error on a flow of 1e-6 mol/s (C498, R-012).
+    //  The extent's own scale (the largest the reaction can go).  The stopping
+    //  tolerance below is the historical one (an absolute floor of 1 mol/s in
+    //  max(), which every shipped case at ordinary scale converges well past);
+    //  what makes the answer RELATIVE is the check after the solve, which
+    //  holds the residual to 1e-6 of this scale and polishes with a relative
+    //  1e-9 when the first stop was too loose for a small flow (C498, R-012: a
+    //  1e-9 mol/s residual is 1e-3 of a flow of 1e-6 mol/s).
     const scalar xiScale = (xi_max > 0.0) ? xi_max : std::max(F_in, 1.0e-300);
     solver::NROptions nro;
-    nro.tolerance          = 1.0e-9 * xiScale;
+    nro.tolerance          = 1.0e-9 * std::max(xi_max, 1.0);
     nro.maxIter            = 80;
     nro.lower              = 0.0;
     nro.upper              = 0.9999 * xi_max;
@@ -509,6 +513,14 @@ int CSTR::solve(const DictPtr& dict,
     };
 
     auto r = solver::newton1D(g, dg, 0.5 * xi_max, nro);
+    if (std::abs(g(r.x)) > 1.0e-6 * xiScale)
+    {
+        //  A stop that was loose for this flow: polish with a relative
+        //  tolerance from where it stopped (one extra pass at ordinary
+        //  scale never happens: the test above is 1e-6 of the extent).
+        nro.tolerance = 1.0e-9 * xiScale;
+        r = solver::newton1D(g, dg, r.x, nro);
+    }
     const scalar xi = r.x;
 
     //  THE CONVERGED STATE IS CHECKED BEFORE ANYTHING IS CLIPPED OR PRINTED
