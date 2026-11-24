@@ -45,8 +45,9 @@
 
     waterSplitting      H2O -> H2 + 1/2 O2            H2 O1 = H2 O1
                         the electrolyser alone: its reaction enthalpy at
-                        298.15 K is the least energy a thermoneutral
-                        electrolyser can be supplied with per mole of H2.
+                        298.15 K is the electricity a THERMONEUTRAL
+                        electrolyser takes per mole of H2; the second-law
+                        floor is the lower dG (see the flowsheetDict header).
 
     methaneCombustion   CH4 + 2 O2 -> CO2 + 2 H2O     C1 H4 O4 = C1 H4 O4
                         the fuel: its heat of reaction on the ideal-gas rung
