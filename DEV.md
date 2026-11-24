@@ -5588,6 +5588,17 @@ accepts today, and that is a policy call.
 > EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
+> PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
+> "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
+> acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
+> optimizer walking out of the physical region, C498 admissibility) is the evidence rule 4e(4) asks
+> for.  Order, once the cloud's running work and the C498 landing are in: (1) admissibility (C498, in
+> flight) and failed closure = failed run, steady and dynamic; (2) the closures recomputed outside the
+> engine (the cloud's verify-the-verifier) and homogeneity, run nightly by one transform-and-compare
+> tool; (3) the second-law ledger as the engine's block, three states; (4) component and reaction
+> order, rest at equilibrium, isofugacity and the forgotten phase.  The GUI PANEL and the EduTool stay
+> after 2 December: a red row on the reference plant in front of colleagues is the one risk the proofs
+> add, so each proof is read on the demonstration cases before it is shown.
 
 > **C491 (1) MEASURED (2026-11-24): the second law over the steady and plant corpus.**  An opt-in
 > ledger (CHOUPO_ENTROPY_LEDGER=1, EnergyBalanceReport, branch worktree-agent-acb5ee81503f2c160 at
