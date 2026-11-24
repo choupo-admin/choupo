@@ -59,6 +59,7 @@ Description
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "core/Advisory.H"
+#include "reporting/BalanceAlarm.H"
 #include "core/AdvisorySummary.H"
 #include "core/DivergenceSummary.H"
 #include "result/SimulationResult.H"
@@ -1065,6 +1066,30 @@ try
         return r;
     };
 
+    //  A STEADY RUN WHOSE MASS OR ELEMENT BALANCE BREAKS THE BAND IS NOT
+    //  CONVERGED (C498, review R-012).  The reports have just raised their red
+    //  alarm (reporting::balanceAlarm records the law); a state that creates
+    //  or loses matter or atoms is not a solution, whatever the unit solvers
+    //  said, so the run says so, exits non-zero and writes no converged/.  The
+    //  ENERGY closure stays an alarm: shipped cases pin an open one by name.
+    //  Under an outerDict the reports run once, on the driver's representative
+    //  pass, so this verdict is that pass's; the evaluations before it are not
+    //  closure-checked for steady cases (OptimizationDriver::closureViolated
+    //  says so once).
+    auto conservationBroken = [&](SimulationResult& result) -> bool {
+        const auto& laws = reporting::alarmedLaws();
+        if (!result.converged) return false;
+        if (!laws.count("MASS") && !laws.count("ELEMENT")) return false;
+        result.converged = false;
+        std::cerr << "\n  RUN NOT CONVERGED: the"
+                  << (laws.count("MASS") ? " MASS" : "")
+                  << (laws.count("ELEMENT") ? " ELEMENT" : "")
+                  << " balance at the plant boundary breaks the conservation band"
+                     " (alarm above); a state that creates or loses matter is not"
+                     " a solution.\n";
+        return true;
+    };
+
     // ---- controlDict reports{} chain (reusable by both paths) ----------
     // Chemical-engineering report objects writing the per-domain tree +
     //.ods into reports/.  Runs on the direct pass AND on an outer
@@ -1426,6 +1451,7 @@ try
                              " pass's result block before the check, so the"
                              " layout block is NOT in it\n";
             runReports(r);
+            if (conservationBroken(r)) finalRc = 1;
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
             writeDesignSheets(r);
@@ -1640,6 +1666,7 @@ try
 
         // Layer 3b: controlDict `reports {... }` chain.
         runReports(result);
+        if (conservationBroken(result)) finalRc = 1;
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
         writeDesignSheets(result);

@@ -28,6 +28,7 @@ License
 
 #include "core/Advisory.H"
 #include "MassBalanceReport.H"
+#include "BalanceAlarm.H"
 #include "BalanceMath.H"
 #include "ClosureByConstruction.H"
 #include "Topology.H"
@@ -274,6 +275,21 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             gm.utility_excluded_kg_per_h = utilityMass;
             gm.utility_fraction_pct = (totIn > 0.0) ? 100.0 * utilityMass / totIn
                                                     : 0.0;
+            //  THE PLANT BOUNDARY'S MASS CLOSURE HAS ITS ALARM, like the
+            //  elements' and the energy's (C498, R-012: a reactor that
+            //  created 44 % of the mass printed only the element alarm).  The
+            //  PROCESS scope -- what the plant processes, utilities
+            //  excluded -- against the engine's own band.
+            if (gm.process_closure_available
+                && std::abs(gm.process_closure_pct - 100.0) > reporting::massBandPct)
+                reporting::balanceAlarm(
+                    "MASS", "the plant boundary",
+                    "in " + std::to_string(procIn) + " kg/h, out "
+                    + std::to_string(procOut) + " kg/h  (closure "
+                    + std::to_string(gm.process_closure_pct) + " %)",
+                    "Matter is neither created nor destroyed by a unit: a"
+                    " closure outside the band means a unit published a state"
+                    " it did not compute.  Ledger: reports/balances/massBalance.csv");
         }
 
         //  ANNOUNCED, never discovered.  A student must SEE that a scope was
