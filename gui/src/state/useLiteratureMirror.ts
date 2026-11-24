@@ -63,6 +63,15 @@ let probe: Promise<MirrorState> | null = null;
  *  /vYYMM/app/ copy probes its own prefix and never the site root). */
 export function probeLiteratureMirror(): Promise<MirrorState> {
   if (!probe) {
+    // The mirror is served ONLY by the dev server's middleware
+    // (scripts/thermomlIndexPlugin.ts: `configureServer`, no preview or build
+    // hook), so a production build has nothing to probe: it answers "absent"
+    // without a request, and the published site's console carries no 404
+    // (browser pass 2026-11-24).
+    if (!import.meta.env.DEV) {
+      probe = Promise.resolve<MirrorState>({ kind: "absent" });
+      return probe;
+    }
     probe = fetch(`${import.meta.env.BASE_URL}__thermoml/index.json`)
       .then(async (r): Promise<MirrorState> => {
         if (!r.ok) throw new Error(String(r.status));
