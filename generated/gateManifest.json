@@ -1935,6 +1935,11 @@
       "exit": 0,
       "claim": "check_dynamic_views: OK -- 27 time-integrated cases declare views; 40 views, 117 series, every series carries points inside its declared axis windows; a window beyond the run's end is seen; 2 case(s) with an outerDict draw nothing by design (ctrl16_williams_otto_optimal, ctrl20_bode_cstr); NOT CHECKED: that a figure answers its question or that a note's numbers equal the run's",
       "seconds": 35.6
+    },
+    "check_column_diagnosis": {
+      "exit": 0,
+      "claim": "check_column_diagnosis: OK -- a column that does not converge names (A) an infeasible specification, (B) a stage that could not be priced, (C) a singular or ill-conditioned system with its stage, equation and physics, (D) a faulty equation, or says it could not tell and what it tried (probe holds each, no text carries a row number, extrapolation notices alone are not a cause); a distillate equal to the feed is refused as (A); the hard 50-stage column is diagnosed (-); a converged column prints none.  NOT covered: the letter for a real column beyond these; an infeasibility only the equilibrium reach shows; failures before the first Newton iterate",
+      "seconds": 20.7
     }
   }
 }

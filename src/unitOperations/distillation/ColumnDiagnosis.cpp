@@ -40,7 +40,7 @@ namespace Choupo::columnDiagnosis {
 namespace {
 
 constexpr std::size_t kMaxUnknownsAnalysed = 1500;   // the dense analysis is O(n^3)
-constexpr double      kIllConditioned      = 1.0e10;  // of the ROW-EQUILIBRATED Jacobian
+constexpr double      kIllConditioned      = 1.0e9;   // of the ROW-EQUILIBRATED Jacobian
 
 std::string num(double v, int digits = 4)
 {
@@ -252,9 +252,9 @@ Spectrum spectrum(const std::vector<sVector>& A)
     if (S.exactlySingular) S.sigmaMin = 0.0;
     S.cond = (S.sigmaMin > 0.0) ? S.sigmaMax / S.sigmaMin : std::numeric_limits<double>::infinity();
     S.v = v;
-    S.u.assign(n, 0.0);
-    for (std::size_t i = 0; i < n; ++i)
-        for (std::size_t j = 0; j < n; ++j) S.u[i] += A[i][j] * v[j];
+    //  left vector: A^-T v = u / sigma_min, so one more transposed solve gives the
+    //  equations that carry the weakest direction (A v itself is round-off at a null)
+    S.u = luT.solve(v);
     { const double nu = norm2(S.u); if (nu > 0.0) for (auto& e : S.u) e /= nu; }
     return S;
 }
@@ -378,7 +378,7 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
     // ------------------------------------------------------------------
     std::vector<std::string> specLines;
     bool specHard = false;
-    v.tried.push_back("(A) the declared rates against the feed, and the best iterate's component flows");
+    v.tried.push_back("(A) the declared distillate rate, bottoms and reflux against the feed");
     const double bottoms = f.totalFeed - f.distillate - f.totalDraws;
     if (!f.rateIsUnknown)
     {
@@ -396,49 +396,13 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
     if (f.reflux < 0.0)
     { specLines.push_back("the reflux ratio is " + num(f.reflux) + ": it cannot be negative"); specHard = true; }
 
-    //  The best iterate's bottoms against what each component is fed with
-    //  (without reaction a component cannot leave in the bottoms more than it
-    //  entered; a MESH that is asked for the impossible pushes it there).
-    bool stateInfeasible = false;
-    if (L.nExtents == 0 && L.N >= 2 && L.block > 0 && x.size() >= L.N * L.block && f.feedComponent.size() == L.n)
-    {
-        const std::size_t jb = L.N - 1;
-        double B = bottoms;
-        if (L.kind == Layout::Kind::fullMESH) B = x[jb * L.block + L.n + 1];
-        double s = 0.0;
-        sVector xb(L.n, 0.0);
-        for (std::size_t i = 0; i + 1 < L.n; ++i) { xb[i] = x[jb * L.block + i]; s += xb[i]; }
-        xb[L.n - 1] = 1.0 - s;
-        for (std::size_t i = 0; i < L.n; ++i)
-        {
-            const double bi = B * xb[i];
-            //  a material excess: beyond 5 % of what the component is fed AND 1 % of the whole feed
-            //  (a near-converged iterate overshoots by far less, and is not an infeasible column)
-            if (bi - f.feedComponent[i] > 0.05 * f.feedComponent[i] && bi - f.feedComponent[i] > 0.01 * f.totalFeed)
-            {
-                specLines.push_back("at the best iterate the bottoms would carry " + num(bi)
-                    + " kmol/s of " + compName(L, i) + ", but the column is fed only "
-                    + num(f.feedComponent[i]) + " kmol/s of it, so its distillate would have to be negative:"
-                    " the distillate rate (" + num(f.distillate) + " kmol/s of a " + num(f.totalFeed)
-                    + " kmol/s feed) and the reflux cannot be met with this feed's composition");
-                stateInfeasible = true;
-            }
-        }
-    }
-    if (L.kind == Layout::Kind::fullMESH && L.block > 0 && x.size() >= L.N * L.block)
-    {
-        for (std::size_t j = 0; j < L.N; ++j)
-        {
-            const double V = x[j * L.block + L.n], Lq = x[j * L.block + L.n + 1];
-            const bool vTop = (j == 0 && L.partialCondenser) || (j + 1 == L.N);
-            if (!vTop && V <= 1.0e-9 * std::max(f.totalFeed, 1.0e-12))
-            { specLines.push_back("the vapour rising through " + stageWord(L, j)
-                    + " has gone to zero at the best iterate: the specified reflux and rates leave this stage dry"); stateInfeasible = true; break; }
-            if (j + 1 < L.N && Lq <= 1.0e-9 * std::max(f.totalFeed, 1.0e-12))
-            { specLines.push_back("the liquid leaving " + stageWord(L, j)
-                    + " has gone to zero at the best iterate: the specified reflux and rates leave this stage dry"); stateInfeasible = true; break; }
-        }
-    }
+    //  WHAT IS DELIBERATELY NOT READ HERE: the best iterate's component flows and
+    //  stage flows.  A first version called the specification "probably infeasible"
+    //  when the unconverged iterate had a negative distillate component or a dry
+    //  stage; measured on a 50-stage benzene/toluene column at R = 60 (a feasible,
+    //  merely hard column) the same signs appear at |F| = 0.7, so an iterate that
+    //  has not converged cannot testify to the specification.  Only the DECLARED
+    //  numbers can show an infeasible one.
 
     // ------------------------------------------------------------------
     //  (B) the data: refusals the stage pricing raised, extrapolation notices
@@ -469,7 +433,7 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
     // ------------------------------------------------------------------
     //  (C)/(D) the Jacobian at the best iterate
     // ------------------------------------------------------------------
-    v.tried.push_back("(C)/(D) the Jacobian at the best iterate: finiteness, empty equations and unknowns, row-equilibrated conditioning");
+    v.tried.push_back("(C)/(D) the Jacobian at the best iterate: finiteness, empty equations and unknowns, equilibrated conditioning");
     std::vector<std::string> faultLines, condLines;
     bool faultHard = false, condBad = false;
     double cond = std::numeric_limits<double>::quiet_NaN();
@@ -531,7 +495,7 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
                         condBad = true;
                         condLines.push_back(std::string("the Jacobian at the best iterate is ")
                             + (S.exactlySingular ? "singular" : "ill-conditioned")
-                            + " (row-equilibrated condition number "
+                            + " (equilibrated condition number "
                             + (std::isfinite(S.cond) ? num(S.cond, 3) : std::string("infinite")) + ")");
                         const auto eq = topIndices(S.u, 2);
                         const auto uk = topIndices(S.v, 2);
@@ -579,12 +543,6 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
         v.headline = "the model's own equations are faulty at the best iterate (an implementation fault, not the case)";
         v.lines = faultLines;
     }
-    else if (stateInfeasible)
-    {
-        v.cause = Cause::infeasibleSpecification;
-        v.headline = "the specification is probably infeasible: the best iterate shows it asks for the impossible";
-        v.lines = specLines;
-    }
     else if (!thermoLines.empty())
     {
         v.cause = Cause::thermoData;
@@ -604,8 +562,8 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
         v.cause = Cause::couldNotTell;
         v.headline = "could not tell why the column did not converge";
         if (std::isfinite(cond))
-            v.lines.push_back("the Jacobian at the best iterate is well conditioned (condition number "
-                              + num(cond, 3) + "), so the failure is not a singularity");
+            v.lines.push_back("the Jacobian at the best iterate is not singular (equilibrated condition number "
+                              + num(cond, 3) + ", below the 1e9 above which a Newton direction is lost): the failure is not a singularity");
         if (f.seedFailed)
             v.lines.push_back("the constant-molal-overflow seed had not converged either");
     }

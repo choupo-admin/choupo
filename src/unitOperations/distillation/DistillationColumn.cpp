@@ -2791,8 +2791,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         throw InfeasibleTrial(columnDiagnosis::noBottomsSentence(dict->name(), totFeed, D, totDraw) + "  (B = sumF - D - sumDraws <= 0, infeasible trial)");
     for (std::size_t j = 1; j < N; ++j)
         if (V[j] <= 0.0 || L[j] < 0.0)
-            throw std::runtime_error("DistillationColumn(simultaneous): a stage vapour/liquid "
-                "flow went non-positive (a feed/draw combination starves the column).");
+            throw std::runtime_error("DistillationColumn(simultaneous): column '" + dict->name()
+                + "': (A) the specification is physically infeasible: the constant-molal-overflow flows"
+                " leave stage " + std::to_string(j + 1) + " with a vapour rate of "
+                + std::to_string(V[j] * 3600.0) + " kmol/h and a liquid rate of "
+                + std::to_string(L[j] * 3600.0) + " kmol/h -- a feed/draw combination starves the column"
+                " there.  Lower the side draws or the distillate rate, or raise the reflux.");
 
     // ---- Optional reaction: equilibrium reactive distillation ----------
     //  Mole-conserving (Σν = 0) reactions only (esterification, transester.):

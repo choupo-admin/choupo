@@ -5910,6 +5910,21 @@ PYEOF
     fi
     rm -f /tmp/distseed.$$
 
+    # column-diagnosis gate (2026-11-24, DEV.md 4c C184 slice 1).  A column
+    # that does not converge says WHICH of (A) infeasible specification,
+    # (B) a stage that could not be priced, (C) a singular or ill-conditioned
+    # system, (D) a faulty equation -- or that it could not tell -- in the words
+    # of the column, never a row number; a converged column prints none.
+    if gate_exec "$ROOT/bin/curate/check_column_diagnosis.py" > /tmp/coldiag.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "column-diagnosis-gate" "$(head -1 /tmp/coldiag.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_column_diagnosis.py)\n" "column-diagnosis-gate"
+        cat /tmp/coldiag.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/coldiag.$$
+
     # optimiser-converged gate (2026-10-31, DEV.md 4c C186 (4)).  An
     # unconverged simulation is a FAILED evaluation on every optimiser path
     # (Nelder-Mead, SQP, the integer enumeration), counted by cause and

@@ -1474,6 +1474,27 @@ outer pass (exact at convergence).  Default `1` = the ideal stage, byte-exact.  
 `E` is DECLARED (O'Connell, a chart, or plant data); the engine never invents it.
 Example: `column11_murphree` (E = 0.70 → distillate 98.12 % → 95.05 %).
 
+**A column that does not converge says which of four things it is** (C184 slice 1;
+Theory Guide `sec:column-diagnosis`).  When a Newton returns NOT converged the run prints
+a `[diagnosis]` block, on failure only (a converged column prints nothing of it and no
+number moves): **(A)** the specification is physically infeasible -- the declared
+distillate plus side draws is not less than the feed (B <= 0), a negative reflux ratio, or
+constant-molal-overflow flows that starve a stage; **(B)** a stage could not be priced at
+a state the solve reached (the stage pricing's own refusal is quoted); **(C)** the Jacobian
+at the best iterate is singular or ill-conditioned (row- and column-scaled
+condition number above 1e9) -- the weakest equations and least-determined unknowns are
+NAMED as stage, component and kind of equation, with the physics when it is readable (a
+component all but absent from a stage); **(D)** a residual or derivative that is not
+finite, an empty equation, an unknown in no equation -- a defect of the engine, not the
+case.  Else it says it could not tell and lists what it tried.  It never prints a row
+number of the flattened system.  Extrapolation notices (a vapour pressure outside its
+declared `Trange`) are listed as notes, never as a cause by themselves.  Limits: a purity
+the feed cannot reach is NOT detected (`distillateRate` with `refluxRatio` declares no
+purity, and an unconverged iterate cannot testify to the specification); `WangHenke` has
+no Jacobian and reports (A) or could-not-tell only; failures thrown before the first
+Newton iterate (the seed cannot be priced) keep the thrower's own refusal.  Held by gate
+`check_column_diagnosis`.
+
 **Total reflux** (`model totalReflux;`, C329): no feed, no products, no `in`/`outputs`
 wires.  The c degrees of freedom a closed column leaves open (how much of each
 component circulates) are closed by `operation { totalReflux { boilupRate <kmol/h> |
