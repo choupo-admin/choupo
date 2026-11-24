@@ -835,7 +835,8 @@ P* n [Pa] >0
 ## Batch vessels (choupoBatch)
 
 ### batchAccumulator
-No schema; keys are in `src/unitOperations/batch/BatchAccumulator.H`.
+A passive holdup of choupoBatch: a vessel that only collects what the recipe transfers into it (a dosing... [`src/unitOperations/batch/BatchAccumulator.H`]
+(no operation-block keys)
 
 ### batchAdsorber
 No schema; keys are in `src/unitOperations/batch/BatchAdsorber.H`.
@@ -935,13 +936,35 @@ outflow o
 ```
 
 ### dynamicTank
-No schema; keys are in `src/unitOperations/dynamic/DynamicTank.H`.
+A level-bearing storage tank of choupoCtrl / choupoSemiContinuous: a liquid holdup in a DECLARED vertical... [`src/unitOperations/dynamic/DynamicTank.H`]
+```
+geometry* o
+geometry.shape* s {verticalCylinder}
+geometry.diameter* n [m] >0
+geometry.height* n [m] >0
+outflow* o
+outflow.mode* s {flow|valve}
+outflow.F n [kmol/s] >=0
+outflow.opening n >=0 <=1
+outflow.valve o
+outflow.valve.Cv* n [m2] >0
+outflow.valve.downstreamPressure* n [Pa]
+UA n [W/K] >=0
+T_jacket n [K] >0
+```
 
 ### quasiSteady
-No schema; keys are in `src/unitOperations/dynamic/QuasiSteadyUnit.H`.
+The quasi-steady adapter of choupoCtrl / choupoSemiContinuous: a STEADY unit wrapped so that it is solved to... [`src/unitOperations/dynamic/QuasiSteadyUnit.H`]
+(no operation-block keys)
 
 ### williamsOttoPlant
-No schema; keys are in `src/unitOperations/dynamic/WilliamsOttoPlant.H`.
+The Williams-Otto plant of choupoCtrl: a CSTR plus separator reduced to the paper's six-state model (eqs [`src/unitOperations/dynamic/WilliamsOttoPlant.H`]
+```
+F_fA* n [kmol/s]
+F_fB* n [kmol/s]
+mu* n [kmol/s]
+eta* n >=0 <=1
+```
 
 ## Property operations (choupoProps `type`)
 
@@ -1958,7 +1981,7 @@ output.file* s
 
 ## Gaps (read from the tree, not typed)
 
-- Registered with no schema: `batchAccumulator`, `batchAdsorber`, `batchCrystalliser`, `batchReactor`, `batchStill`, `dynamicTank`, `fixedBedAdsorber`, `quasiSteady`, `williamsOttoPlant`.
+- Registered with no schema: `batchAdsorber`, `batchCrystalliser`, `batchReactor`, `batchStill`, `fixedBedAdsorber`.
 - Schema with no registered type: none.
 - Registries whose names the scanner cannot read: none (they register by another form; read the class).
 - Which unit reads which sub-model registry above, and `model` words a unit tests by string comparison, are in no registry or schema: read `unit-ops.md` or the unit's source.

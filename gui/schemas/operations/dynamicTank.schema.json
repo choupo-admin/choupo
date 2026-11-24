@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/dynamicTank.schema.json",
+  "title": "dynamicTank operation",
+  "description": "A level-bearing storage tank of choupoCtrl / choupoSemiContinuous: a liquid holdup in a DECLARED vertical cylinder whose level integrates (or self-regulates) against a declared outflow. It reacts nothing (a `reaction` is refused by name -- the vessel with a reaction and a level is the variable-volume dynamicCSTR). The feed is the `in <stream>` of the unit and its `inlet {}` block (F, T, composition), the starting state the `initial {}` block (T, optional P, composition, and EITHER `level` OR `totalMoles`/`V`, never both); this `operation` block holds the geometry, the optional jacket and the outflow declaration (DynamicTank.cpp:63-135). No geometry and no outflow is assumed.",
+  "type": "object",
+  "required": ["geometry", "outflow"],
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "title": "Vessel geometry",
+      "description": "The vertical cylinder the level is measured in (VariableVolumeHoldup.cpp:52-72). Required: none is assumed; refused when absent. A level above `height` aborts the run as an overflow, refused rather than clamped.",
+      "required": ["shape", "diameter", "height"],
+      "properties": {
+        "shape": { "type": "string", "enum": ["verticalCylinder"], "description": "The one shape the vessel reads." },
+        "diameter": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "Inside diameter; the cross-section is pi D^2 / 4." },
+        "height": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "Overflow height of the vessel." }
+      },
+      "additionalProperties": false
+    },
+    "outflow": {
+      "type": "object",
+      "title": "Outflow",
+      "description": "The declared outflow (DynamicTank.cpp:80-107): `mode flow` (a manipulated molar flow F; the level integrates) or `mode valve` (a valve on the outlet; the level self-regulates). No default mode.",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["flow", "valve"] },
+        "F": { "type": "number", "minimum": 0, "unit": "kmol/s", "description": "mode flow: the outflow, >= 0. A controller's actuator may overwrite it every step." },
+        "opening": { "type": "number", "minimum": 0, "maximum": 1, "description": "mode valve: valve opening in [0, 1]." },
+        "valve": {
+          "type": "object",
+          "description": "mode valve: the valve block (VariableVolumeHoldup.cpp:149-160). Q = Cv x opening x sqrt(dP / rho), dP from the vessel pressure plus the liquid head to the downstream pressure.",
+          "required": ["Cv", "downstreamPressure"],
+          "properties": {
+            "Cv": { "type": "number", "exclusiveMinimum": 0, "unit": "m2", "description": "Effective flow area (Cd A)." },
+            "downstreamPressure": { "type": "number", "unit": "Pa", "description": "Pressure the valve discharges to." }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "UA": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Jacket conductance",
+      "description": "U*A in W/K (raw SI). Heat to the holdup is UA (T_jacket - T). Defaults to 0: no jacket, adiabatic (DynamicTank.cpp:73).",
+      "unit": "W/K"
+    },
+    "T_jacket": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Jacket temperature",
+      "description": "Jacket fluid temperature. Defaults to the initial temperature of the holdup (no heat flows) (DynamicTank.cpp:74). A controller's actuator may overwrite it every step.",
+      "unit": "K"
+    }
+  },
+  "additionalProperties": false
+}

@@ -24,7 +24,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Feed liquid viscosity",
-      "description": "Dynamic viscosity of the feed liquid, used in the atomisation correlation.",
+      "description": "NOT READ by the engine (checked 2026-11-24, C490): the atomiser takes the feed liquid viscosity from the property layer, mu_L(T_feed, x_feed) (SprayDryer.cpp:128-148); a missing viscosity model refuses by name (`operation` carries no property). Kept so older dicts still validate.",
       "unit": "Pa.s",
       "default": 0.001
     },
@@ -32,7 +32,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Feed surface tension",
-      "description": "Surface tension of the feed liquid, used in the atomisation correlation.",
+      "description": "NOT READ by the engine (checked 2026-11-24, C490): the atomiser takes the feed surface tension from the property layer, sigma(T_feed, x_feed) (SprayDryer.cpp:389-404). Kept so older dicts still validate.",
       "unit": "N/m",
       "default": 0.072
     },
