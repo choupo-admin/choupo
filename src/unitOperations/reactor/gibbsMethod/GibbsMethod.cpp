@@ -532,6 +532,24 @@ GibbsPrimalSeed gibbsPrimalSeed(const std::vector<std::vector<scalar>>& A,
     return out;
 }
 
+bool canCondenseAt(const GibbsProblem& p, std::size_t i, scalar T)
+{
+    if (!p.condensable[i]) return false;
+    const Component& c = p.thermo->comp(p.compIdx[i]);
+    const scalar Tc = c.Tc();
+    if (!(Tc > 0.0 && T >= Tc)) return true;
+    const std::string msg = c.name() + " is above its critical temperature ("
+        + std::to_string(Tc) + " K) at the reactor's T: it is never tested for, nor "
+          "given, a pure-liquid phase here (a pure liquid does not exist above Tc, and "
+          "the continued Psat is a numerical surface), so any liquid this reactor "
+          "forms carries none of it -- a Henry solubility the package declares is "
+          "not read inside the Gibbs reactor (DEV.md 4c C256 (b))";
+    if (AdvisoryLog::instance().addAnnouncedOnce("gibbsAboveTc:" + c.name(), "validity",
+            "info", "gibbsReactor, species " + c.name(), msg))
+        std::cerr << "[gibbsReactor] " << msg << ".\n";
+    return false;
+}
+
 std::string supersaturatedCondensables(const GibbsProblem& p,
                                        const GibbsEquilibrium& eq, scalar T,
                                        const std::vector<bool>& condensed)

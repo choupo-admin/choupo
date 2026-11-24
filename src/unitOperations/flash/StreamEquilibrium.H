@@ -246,11 +246,12 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
 {
     //  A SINGLE LIQUID ABOVE EVERY Tc IS THE SAME IMPOSSIBLE STATE (DEV.md 4c
     //  C256 (c), 2026-11-24).  Measured on ammonia02's feed-effluent exchanger:
-    //  the cold outlet, every component above its Tc (690 K, 231 bar), is a gas
+    //  the cold outlet, every component above its Tc (669.8 K, 231 bar), is a gas
     //  -- until the CONTINUED NH3 vapour pressure is scaled by 10, which makes
     //  the dilute-solution (Henry) solutes' K collapse (K_N2 1.44 -> 0.0026,
     //  they are referred to the solvent's saturation) and the flash returns
-    //  V/F = 0, "subcooled liquid", at 690 K.  A liquid root and a two-phase
+    //  V/F = 0, "subcooled liquid" (the outlet then reads 619.0 K; K values measured in a
+    //  scratch flash of that stream at 690 K).  A liquid root and a two-phase
     //  root above every Tc are one defect, a correlation read far outside its
     //  window, and have one remedy: discard it.  Restricted to the gamma-phi
     //  route (a phi-phi package judges its own roots), to a stream with no
@@ -332,6 +333,7 @@ inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
                                            std::string&         discarded)
 {
     if (fs.threePhase) return false;
+    const bool wasLiquid = !(fs.V_over_F > 1.0e-9);
     std::string said;
     if (!supercriticalSplitDiscarded(fs, T, P, z, thermo, "", "", &said,
                                      /*nameT=*/false))
@@ -339,7 +341,8 @@ inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
     fs.V_over_F = 1.0;
     fs.x        = z;
     fs.y        = z;
-    fs.regime   = "single phase above every Tc (two-phase root discarded)";
+    fs.regime   = wasLiquid ? "single phase above every Tc (single-liquid root discarded)"
+                            : "single phase above every Tc (two-phase root discarded)";
     //  Nothing of the impossible liquid may survive the discard.
     fs.speciation.reset();
     fs.organicLiquid.reset();

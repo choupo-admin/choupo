@@ -200,12 +200,10 @@ long writeGibbsLogCsv(const std::string& path,
 //  condensed on, a number nothing measures.  It passed before only because
 //  the continued Psat was large.  A species with no declared Tc is judged as
 //  it was (absence is not evidence).
-inline bool canCondenseAt(const GibbsProblem& p, std::size_t i, scalar T)
-{
-    if (!p.condensable[i]) return false;
-    const scalar Tc = p.thermo->comp(p.compIdx[i]).Tc();
-    return !(Tc > 0.0 && T >= Tc);
-}
+//  When it drops a condensable it SAYS so once per species (an advisory and a
+//  line on stderr): the reactor's condensate is then pure of that species, and
+//  a Henry solubility the package declares is not read inside the reactor.
+bool canCondenseAt(const GibbsProblem& p, std::size_t i, scalar T);
 
 //  THE ONE TEST of "a condensable is left supersaturated" (C150 R07): every
 //  condensable of `p` not marked in `condensed` (empty: none is) whose

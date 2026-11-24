@@ -63,7 +63,7 @@ stream  wetMass                F                0.000949591810794 1e-4
 stream  wetMass                T                298.15           1e-4
 kpi     binderPrep             F_out            0.000739383846794 1e-4
 kpi     binderPrep             P_out            101325           1e-4
-kpi     binderPrep             Q_kW             -8.03822786111e-10                1e-4
+kpi     binderPrep             Q_kW             0                  1e-4
 kpi     binderPrep             T_out            298.15           1e-4
 kpi     binderPrep             n_in             2                1e-4
 kpi     binderPrep             vf               0                1e-4
