@@ -59,6 +59,8 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 
+#include <string>
+
 namespace Choupo {
 namespace rotating {
 
@@ -67,15 +69,49 @@ struct DischargeResult
     scalar P_out      = 0.0;   // discharge pressure  [Pa]   (RESULT)
     scalar T_out      = 0.0;   // real discharge T    [K]    (RESULT)
     scalar T_out_isen = 0.0;   // isentropic discharge T [K] (diagnostic)
+    scalar vf         = 1.0;   // vapour fraction of the discharge (C493)
     int    outerIters = 0;
     bool   converged  = false;
 };
 
-// Newton-1D in T such that S_real(T, P, y) = s_target  (warm-seeded).
+//  ---- THE OUTLET IS PRICED ON THE SURFACE THE ENERGY REPORT USES (C493) -----
+//
+//  A machine's discharge is priced at (T, P, y) on the EQUILIBRIUM state of
+//  that point: when the gas crosses its dew point the state is a vapour plus
+//  a condensate, and its enthalpy and entropy are those of the two phases
+//  (`flashState::hOfState` / `sOfState`), exactly what the balance report and
+//  the second-law ledger re-flash the published stream to.  Before C493 the
+//  discharge was priced on `H_real` / `S_real` -- the all-vapour root -- and
+//  published as vf 1, so a wet outlet carried a fictitious supersaturated
+//  vapour and the report found the latent heat missing (proxy01's turbine:
+//  3927 J/mol).  A DRY outlet (no second phase) returns `H_real` / `S_real`
+//  themselves, bit for bit; so does a pure-fluid (IF97) working fluid, which
+//  has its own saturation handling.
+scalar outletH(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+               const sVector& y);
+scalar outletS(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+               const sVector& y);
+
+struct OutletPhase
+{
+    scalar vf        = 1.0;   // vapour fraction of the equilibrium state
+    scalar condMW    = 0.0;   // mean molar mass of the condensate [kg/kmol]
+    bool   condenses = false; // true when a second phase exists
+};
+OutletPhase outletPhase(const ThermoPackage& thermo, scalar T, scalar P_Pa,
+                        const sVector& y);
+
+// Announce, once, that the discharge condenses (unit, V/F, condensed mass).
+void announceCondensing(const std::string& machine, const std::string& unit,
+                        scalar F_kmol_s, scalar T, scalar P_Pa,
+                        const OutletPhase& ph);
+
+// Newton-1D in T such that S(T, P, y) = s_target  (warm-seeded), S on the
+// outlet surface above.
 scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
                     scalar P_Pa, const sVector& y, scalar T_guess);
 
-// Newton-1D in T such that H_real(T, P, y) = h_target.
+// Newton-1D in T such that H(T, P, y) = h_target, H on the outlet surface.
 scalar solveT_for_H(const ThermoPackage& thermo, scalar h_target,
                     scalar P_Pa, const sVector& y, scalar T_guess);
 

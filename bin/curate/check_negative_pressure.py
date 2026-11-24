@@ -267,6 +267,28 @@ def strip_comments(src: str) -> str:
     return re.sub(r"//[^\n]*", "", src)
 
 
+def announced_after_final_sweep(fl: str) -> bool:
+    """The accepted pass, then the trial-count announcement.  Between the two
+    only the `--restart-tears` last guard may stand (2026-11-24: one whole
+    `if (tearRestartApplied_) {...}` block; a restart runs no trial sweep)."""
+    for m in re.finditer(r"sweep\(false\);\s*", fl):
+        i = m.end()
+        if fl.startswith("if (tearRestartApplied_)", i):
+            j = fl.index("{", i)
+            depth = 0
+            while True:
+                depth += (fl[j] == "{") - (fl[j] == "}")
+                j += 1
+                if depth == 0:
+                    break
+            i = j + len(fl[j:]) - len(fl[j:].lstrip())
+        if re.match(r"if \(g_trialPressureClamps > 0\).{0,1500}?"
+                    r"AdvisoryLog::instance\(\)\.add\(\"pressure\"",
+                    fl[i:], re.S):
+            return True
+    return False
+
+
 def arm_source():
     fl = strip_comments((SRC / "unitOperations" / "flowsheet"
                          / "Flowsheet.cpp").read_text())
@@ -301,9 +323,7 @@ def arm_source():
     if len(re.findall(r"\n {8}g_trialPressureClamps = 0;", fl)) != 1:
         fails.append("(e) the trial counter must be reset exactly once "
                      "(start of the recycle solve)")
-    if not re.search(r"sweep\(false\);\s*if \(g_trialPressureClamps"
-                     r" > 0\).*?AdvisoryLog::instance\(\)\.add\(\"pressure\"",
-                     fl, re.S):
+    if not announced_after_final_sweep(fl):
         fails.append("(e) the recycle branch does not announce the trial "
                      "count after the final sweep")
 

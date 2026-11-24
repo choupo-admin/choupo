@@ -5652,6 +5652,87 @@ accepts today, and that is a policy call.
 > check_doc_references because a for-loop of gates does not stop the next command (the C485 item
 > "push refused when a gate failed" is therefore needed, not optional).
 
+> **C494. THE OPTIMIZER OF A REFERENCE SIMULATOR (Vitor, 2026-11-24, after reading that Dakota's
+> best constrained optimizers -- NPSOL/NLSSOL, DOT -- are commercial: "Para o Choupo ficar o simulador
+> internacional de referência, qual é o algoritmo de otimização que recomendas?").**  Checked: the
+> Dakota FAQ says its binaries must omit DOT and NPSOL (commercial extensions, licensed separately);
+> no evidence they were ever open and then closed (Dakota went open source as 3.0 under GPL in 2002,
+> LGPL from 5.0).  NPSOL's METHOD is published (Gill, Murray, Saunders, Wright), so an own
+> implementation from the papers is legitimate.  The architect first proposed an SQP with exact
+> sensitivities as the main path; Vitor's correction carried ("num simulador sequencial não podemos
+> ambicionar derivadas analíticas em todas as operações ... usa coisas às vezes um pouco fuzzy"):
+> tables, piecewise correlations, regime switches, integer stages and phase changes make many
+> problems non-smooth.  RULED: (1) MEASURE first -- Nelder-Mead against MADS and COBYLA on three or
+> four shipped optimisation cases, by simulations to the same optimum and failures (no engine
+> change); (2) MADS (Audet and Dennis; derivative-free, constraints, convergence on non-smooth
+> functions) becomes the main optimizer, an own short implementation beside Nelder-Mead, chosen
+> explicitly (no silent switch); (3) an SQP showing the active constraints and their Lagrange
+> multipliers as SHADOW PRICES, only for smooth problems, fed by implicit-function sensitivities on
+> the tear Jacobian with per-unit finite differences at tight unit tolerance (analytic where a unit
+> has them), and REFUSED by name when the engine's two-step gradient check says the gradients are
+> not good.  Nothing before 2 December except, if a slot is free, the measurement.
+> CORRECTION, the same hour, read in the tree before dispatching: Choupo ALREADY HAS the SQP of
+> point (3) -- `method sqp;` in OptimizationDriver (src/solver/SQP.cpp, ActiveSetQP.cpp), with
+> constraints, the active set and the Lagrange multipliers printed as SHADOW PRICES
+> (OptimizationDriver.cpp:961), and a self-check against Hock-Schittkowski HS35/HS21/HS71 before every
+> run (:623); Nelder-Mead is the unconstrained method, integers are enumerated.  The architect had
+> told Vitor the optimizer was Nelder-Mead alone without reading the driver.  So the gap is exactly
+> the NON-SMOOTH constrained problem, and Vitor chose to build MADS NOW ("Então vamos já atacar
+> isso!"): a third method beside the two, opt-in, no existing case moves, so the demonstration is
+> safe by construction.  What remains of (3) is only the gradient-quality check.
+> MEASURED 2026-11-24 (the optimizer comparison audit, on the MADS branch), AND THE RULING
+> "MADS BECOMES THE MAIN OPTIMIZER" IS WITHDRAWN: on every shipped case where it runs, MADS reached the
+> same optimum with MORE simulations than the method beside it (optim01 42 against 8 and 25; optim04
+> 138 against 25; optim05 271 against 16; optim07 126 against optim06's 74), and no shipped case has a
+> non-smooth response, which is the problem it is for.  It lands as a third, opt-in method.  The
+> architect had recommended it to Vitor as the main one, with "a convergence guarantee", before the
+> measurement his own plan put first; the variant built projects onto the bounds and claims no
+> theorem.  FINDING, worth more than the method: on ctrl16 MADS, unconstrained, returned J = 6497
+> against a published 551.8 at a point where the plant's mass closure is 0.98 -- an optimizer accepted
+> a run that CREATES MASS (rule 4b).  Guard commissioned for all three methods (an evaluation that
+> breaks conservation is a failed evaluation; an optimum that breaks it is not an optimum), and C495.
+
+> **C495. A DYNAMIC RUN THAT CREATES MASS (found 2026-11-24 by MADS on ctrl16).**  4.3e6 kg of residual
+> against 0.97e6 kg fed, objective 12 times the published optimum.  Open: which schedule values and
+> which unit, and whether the run ends at exit 0 with no announcement.  Diagnosis first (the C494
+> general, one forward run); a fix is its own slice.
+
+> **C496. A NOISE-AWARE SQP WITH ERROR BARS ON ITS SHADOW PRICES (Vitor, 2026-11-24: "Escolhe o melhor
+> método top notch para o Choupo ficar o simulador de referência! Naturalmente, fazemos tudo from blank
+> slate e comparamos com o state of the art open source!").**  CHOSEN, for smooth constrained problems
+> with numerical derivatives: an active-set quasi-Newton SQP (the family of SNOPT and of the published
+> OpenSQP, which tied it at 479 of 575 CUTEst problems in its authors' own test, arXiv 2512.05392;
+> read through a page summary, not the tables), with the two things a simulator needs and that test
+> does not measure: (a) the response NOISE is estimated from points close to each other (not the same
+> point twice, as OptimizationDriver's probe does today, which a deterministic engine answers with
+> zero) and sets the differencing step (Shi, Xuan, Oztoprak & Nocedal, arXiv 2102.09762); (b) the line
+> search and the QP are relaxed by that noise (Oztoprak & Byrd, arXiv 2604.14368).  Smooth augmented
+> Lagrangian merit, damped BFGS, elastic QP.  GLASS BOX: each gradient prints its step and its
+> uncertainty; each SHADOW PRICE is printed with the error bar the noise gives it, and is not printed
+> as a number when the bar is larger than the value.  MADS stays the candidate for non-smooth or
+> integer problems, unproven.
+> HOW: written from the published papers, no line of another code; a NEW method beside `sqp`, which
+> stays until the comparison retires one of them (the old one already passes Hock-Schittkowski and
+> prints multipliers: it is the baseline, not waste).  THE BENCHMARK COMES FIRST, with its rule written
+> before any result: the same problems, starts, bounds, tolerances and evaluation counter for every
+> code; (i) the Hock-Schittkowski set with finite differences, clean and with noise added at known
+> levels; (ii) Choupo flowsheets driven as a black box.  Against the open state of the art run as
+> EXTERNAL programs, never linked: SLSQP and COBYLA (SciPy), COBYQA, IPOPT with finite differences, NOMAD,
+> OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
+> Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
+
+> **THE 11-24 AFTERNOON STACK LANDED (C493, and the cloud's afternoon).**  Full sweep alone, reason
+> written before launch (restart-tears edits Flowsheet.cpp and main.cpp): 16:58-17:54, 2032 PASS / 1
+> FAIL / 296 REUSED, no case failed; --gui 49/0.  The FAIL was check_negative_pressure arm (e), a SOURCE
+> arm that wanted the trial-pressure announcement adjacent to the accepted pass; restart-tears put its
+> last guard between them.  The arm now allows exactly that one block and still fails when the
+> announcement is removed or renamed.  Second landing of the day where a cloud slice had not run the
+> gates that read the file it edited: before a READY that touches src/ the cloud runs every gate
+> `bin/integrate --plan` lists.  The laptop rebooted at 16:41 mid-integration; nothing was lost, the
+> integration's own logs survived under .git/worktrees, /tmp did not (sweep logs now go to
+> ~/.cache/choupo).  The C493 integration had read two red gates (BRAIN's facts, a selftest sabotage
+> aimed at a re-recorded row): fixed.  C493 DONE: the 20 rotating cases 25/0, proxy01 the only one moved.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,

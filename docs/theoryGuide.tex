@@ -28310,6 +28310,28 @@ gas the two levels decouple and it converges in one outer step; for a
 real gas they couple (4--10 steps).  The expansion branch simply
 searches $P_{\text{out}}<P_{\text{in}}$.
 
+\paragraph{The outlet is an equilibrium state (C493).}
+The discharge is priced at $(T,P,\mathbf{y})$ on the \emph{equilibrium}
+state of that point, the surface the energy report uses.  If the gas
+stays single-phase, $H$ and $S$ are exactly the expressions above (the
+result is bit-identical to the all-vapour pricing).  If the discharge
+crosses its dew point, the state is a vapour fraction
+$\beta=V/F$ plus a condensate, and
+\begin{equation}
+   h_{\text{out}} = \beta\,h^{V}(T,P,\mathbf{y}_V) +
+   (1-\beta)\,h^{L}(T,P,\mathbf{x}),\qquad
+   s_{\text{out}} \text{ likewise},
+\end{equation}
+with no mixing term between the two phases; both the isentropic target
+($s_{\text{out}}=s_{\text{in}}$, inner Newton) and the real discharge
+($h_{\text{out}}=h_{\text{in}}+w_{\text{real}}$) are solved on that
+surface, so the latent heat released by condensation warms the gas
+($T_{\text{out}}$ is higher than the all-vapour value).  The unit
+announces the condensation once (V/F and the condensed mass flow) and
+publishes the outlet with its vapour fraction.  The inlet must still be
+a vapour (the acceptance rule above); a pure-fluid (IF97) working fluid
+keeps its own saturation handling.
+
 \begin{example}[Air compressor, \file{compressor01\_air}]
 $10$\,kW of shaft work, $\eta=0.75$, on $1$\,mol/s of air: the nested
 solve returns $P_{\text{out}}=8.90$\,bar and $T_{\text{out}}=633$\,K,

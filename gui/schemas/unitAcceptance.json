@@ -417,7 +417,7 @@
     "Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused."
    ],
    "refuses": [
-    "A feed that is not a vapour -- The turbine prices its inlet and its isentropic path with the VAPOUR root of the package at the overall composition and publishes its outlet as a vapour; a liquid or two-phase inlet would be expanded as if it were all vapour, hiding the latent heat of its liquid."
+    "A feed that is not a vapour -- The turbine prices its inlet and its isentropic path with the VAPOUR root of the package at the overall composition; a liquid or two-phase inlet would be expanded as if it were all vapour, hiding the latent heat of its liquid."
    ],
    "needs": []
   },

@@ -617,7 +617,11 @@ def ratchet_kW(pin: float) -> float:
 #  the new curve; neither was paid.
 KNOWN_OPEN = {
     "tutorials/steady/flowsheets/esterification2sector": 288.9940,
-    "tutorials/steady/flowsheets/proxy01_gas_loop": 51.4890,
+    #  proxy01_gas_loop LEFT THIS LIST ON 2026-11-24 (DEV.md 4c C493): its turbine
+    #  priced a condensing outlet (V/F 0.91 at the old fixed point) as dry vapour
+    #  while the report re-flashed it, a gap of 3927 J/mol = 1.02 kW.  The
+    #  rotating machines now price the discharge on its equilibrium state, and the
+    #  plant closes at 0.0000 % (residual -4e-6 kW).  PAID, not waived.
     #  FOUR ENTRIES LEFT THIS LIST ON 2026-11-18 (DEV.md 4c C390): pump01_water,
     #  pump02_pressure_spec (65.0000 %) and the C378 pilot's two demonstrations
     #  liquidDensity01_water, liquidDensity02_waterEthanol (70.0000 %).  The

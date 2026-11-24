@@ -1364,7 +1364,7 @@
     "check_negative_pressure": {
       "exit": 0,
       "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a loop whose seed is infeasible is refused by name under Newton and Wegstein, never reported on P = P_in, and the same loop from a feasible seed converges cleanly (2 solvers); P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
-      "seconds": 0.1
+      "seconds": 1.8
     },
     "check_boron_split": {
       "exit": 0,
