@@ -40,6 +40,7 @@ License
     - streams "<prefix>.x" / "<prefix>/x"  ->  "x"   (prefix stripped)
     - parent streams whose name appears UNPREFIXED in the sub-case's own dicts
       pass through unchanged (the boundary / frozen-inlet streams)
+    - the parent's `converged` verdict travels, marked `inheritedFrom`
     - kpis / convergence / profiles / utilityAllocation renamed the same way
     - advisories kept only when they MENTION the scope (mention stripped)
     - modelBoundaries kept only when stream/producer/consumer is in scope
@@ -299,7 +300,13 @@ export function sliceRunResult(
     log: inheritedNote(prefix),
     streams,
     convergence,
+    inheritedFrom: prefix,
   };
+  //  The parent's verdict travels, LABELLED by `inheritedFrom`: the sector's
+  //  numbers are part of the solution that converged (or did not).  The
+  //  engine publishes no convergence test and no first law for a sector as such
+  //  (`converged` and `globalEnergyBoundary` are one per run, ResultEmitter.cpp).
+  if (typeof parent.converged === "boolean") out.converged = parent.converged;
   if (Object.keys(kpis).length > 0) out.kpis = kpis;
   if (profiles.length > 0) out.profiles = profiles;
   if (utilityAllocation.length > 0) out.utilityAllocation = utilityAllocation;

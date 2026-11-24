@@ -201,6 +201,15 @@ describe("sliceRunResult: synthesized run shape", () => {
     expect(r.componentMolarMass).toEqual({ water: 18.015 });
   });
 
+  it("carries the parent's convergence verdict, marked as inherited (the engine tests it once per run)", () => {
+    const r = sliceRunResult({ ...parent, converged: true }, "SECTOR");
+    expect(r.converged).toBe(true);
+    expect(r.inheritedFrom).toBe("SECTOR");
+    //  no verdict in the parent: none invented
+    expect(sliceRunResult(parent, "SECTOR").converged).toBeUndefined();
+    expect(sliceRunResult({ ...parent, converged: false }, "SECTOR").converged).toBe(false);
+  });
+
   it("does not mutate the parent result", () => {
     const before = JSON.stringify(parent);
     sliceRunResult(parent, "SECTOR", { localStreamNames: ["Feed"] });
