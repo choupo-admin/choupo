@@ -44,6 +44,20 @@
   from the source differed in 2 edges out of 11 -- worth remembering when
   citing anything from memory.
 
+  READ THIS AS A BENCHMARK, NOT AS A PLANT (second-law note, 2026-11-24).
+  The recycle vapour climbs from FL4 (13 psia) to FL3 (49 psia), from FL3 to
+  FL2 (270 psia) and from FL2 to FL1 (800 psia) with no compressor and no
+  pump on any of those lines, only the heat each drum exchanges.  A gas
+  cannot be raised to a higher pressure by heat alone: the second law says
+  that rise needs shaft work, and this flowsheet shows none.  The entropy
+  ledger of the run says the same, by name: FL1, FL2 and FL3 generate
+  NEGATIVE entropy (about -1.4e5, -3.2e5 and -6.9e4 W/K, 1-2 % of the
+  ledger's scale), which no real unit can.  The classic problem's drums stand
+  for a compression step plus a flash.  The case keeps the published
+  topology because it is a recycle and tear-stream benchmark (what it
+  reproduces is the PROBLEM, see below), and a student must not read it as
+  a process that could be built.
+
   THE MISSING ANCHOR, named rather than implied (2026-08-10).  This case's
   controlDict used to advertise "SRK vs published APR/FLOWTRAN products".  It
   carries NO such comparison: no published product table is staged anywhere in
