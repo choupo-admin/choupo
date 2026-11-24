@@ -155,6 +155,21 @@ describe("3. the run summary is read off the result, never computed", () => {
     expect(runSummarySentence(runSummary(r), "done")).toMatch(/^Run complete: converged; 1 advisory\.$/);
     expect(runSummarySentence(null, "error")).toMatch(/^Run failed/);
   });
+  it("a drilled-in sector says whose verdict it shows, never 'not published' (the converter tab)", () => {
+    const inh = { ...r, converged: true, inheritedFrom: "CONVERTER" } as RunResult;
+    const s = runSummary(inh);
+    expect(s.inheritedFrom).toBe("CONVERTER");
+    expect(s.converged).toBe(true);
+    const sentence = runSummarySentence(s, "done");
+    expect(sentence).toBe("Sector CONVERTER: numbers from the plant run (the plant run converged); 1 advisory.");
+    expect(sentence).not.toMatch(/not published/);
+    expect(runSummarySentence(runSummary({ ...inh, converged: false }), "done"))
+      .toMatch(/the plant run did NOT converge/);
+    expect(runSummarySentence(runSummary({ ...inh, converged: undefined }), "done"))
+      .toMatch(/no convergence verdict was carried over/);
+    //  a real run of the sector has no marker and keeps the plain wording
+    expect(runSummary(r).inheritedFrom).toBeNull();
+  });
 });
 
 describe("4. before a run, a phase is drawn only where 0/ declares one", () => {

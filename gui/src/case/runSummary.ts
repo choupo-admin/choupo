@@ -55,6 +55,9 @@ export interface RunSummary {
   /** The plant-boundary first law the engine published, or null. */
   energy: { residualKW: number; pct: number | null } | null;
   advisories: number;
+  /** The sector name when this is a drilled-in sector's INHERITED result
+   *  (the numbers come from the parent run); null for a real run. */
+  inheritedFrom: string | null;
   /** How many views the CASE declared (system/postDict, C271) the run drew. */
   declaredViews: number;
   modelBoundaries: { total: number; refused: number };
@@ -101,6 +104,7 @@ export function runSummary(r: RunResult): RunSummary {
     mass,
     energy,
     advisories: r.advisories?.length ?? 0,
+    inheritedFrom: r.inheritedFrom ?? null,
     declaredViews: (r.postProcessing?.items ?? []).filter((i) => i.origin === "declared").length,
     modelBoundaries: { total: mb.length, refused: mb.filter((b) => b.refused).length },
     products: r.streams.filter((s) => s.role === "product" && !s.utilityCircuit
@@ -130,9 +134,18 @@ export function runSummarySentence(s: RunSummary | null, phase: "idle" | "runnin
   if (phase === "running") return "Running…";
   if (phase === "error") return "Run failed — the Log has the engine's message.";
   if (!s) return "Not run yet.";
+  const adv = `${s.advisories} advisor${s.advisories === 1 ? "y" : "ies"}`;
+  //  A drilled-in sector shows the numbers of the PLANT run it was cut from; the
+  //  engine tests convergence and closes the first law once per run, not per
+  //  sector, so the sentence says whose verdict it is.
+  if (s.inheritedFrom !== null) {
+    const v = s.converged === null ? "no convergence verdict was carried over"
+      : s.converged ? "the plant run converged" : "the plant run did NOT converge";
+    return `Sector ${s.inheritedFrom}: numbers from the plant run (${v}); ${adv}.`;
+  }
   const conv = s.converged === null ? "convergence not published"
     : s.converged ? "converged" : "NOT converged";
-  return `Run complete: ${conv}; ${s.advisories} advisor${s.advisories === 1 ? "y" : "ies"}.`;
+  return `Run complete: ${conv}; ${adv}.`;
 }
 
 /** THE PRODUCTS A RUN PUBLISHED NO STATE FOR (C481, walk finding 8).  A

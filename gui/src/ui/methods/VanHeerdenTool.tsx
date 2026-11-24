@@ -182,8 +182,9 @@ export interface SteadyState {
   reported: boolean;
   /** Position in ascending temperature order, 0-based. */
   order: number;
-  /** The MIDDLE of exactly three crossings — the state no start-up
-   *  procedure can hold.  False for every root of any other count: with
+  /** The MIDDLE of exactly three crossings, marked by ORDERING alone: its stability is not evaluated
+   *  here (the field name is kept; the label says "stability not
+   *  evaluated").  False for every root of any other count: with
    *  one crossing there is nothing to be unstable about, and beyond three
    *  the tool would be asserting more than the ordering supports. */
   unstable: boolean;
@@ -214,9 +215,10 @@ export function reportedState(states: readonly SteadyState[]): SteadyState | nul
   return states.find((s) => s.reported) ?? null;
 }
 
-/** Ignited − extinguished [K]: the difference of the highest and lowest
- *  engine-published root temperatures — how far the reactor jumps when it
- *  lights.  Null unless there are at least two roots (one root is one
+/** Hot − cold [K]: the difference of the highest and lowest
+ *  engine-published root temperatures at the CURRENT conditions — the gap
+ *  between the outer steady states, NOT the ignition or extinction jump
+ *  (those are at the limit points of a parameter sweep).  Null unless there are at least two roots (one root is one
  *  branch, and a span of zero would read as a measurement). */
 export function ignitionSpan(states: readonly SteadyState[]): number | null {
   if (states.length < 2) return null;
@@ -437,7 +439,7 @@ const PROVENANCE =
 // whose horizontal extent reaches into the legend's column is pushed BELOW the
 // legend block, and any label that would run past the frame's right edge is
 // anchored on its other side instead.  Both are decided from the text's own
-// estimated width, so a longer label (a longer number, the " — unstable"
+// estimated width, so a longer label (a longer number, the " — middle of three"
 // clause) moves too.
 
 /** Advance width of a string at `fontSize`, in viewBox units.
@@ -667,7 +669,7 @@ function VanHeerdenSvg(
           const gy = interpolateAt(T, G, s.T);
           const text = `${fmtTick(s.T)} K`
             + (s.reported ? " — reported" : "")
-            + (s.unstable ? " — unstable" : "");
+            + (s.unstable ? " — middle of three" : "");
           const spot = placeCrossingLabel(
             toX(s.T), estimateTextWidth(text, 10), i, legendBlock,
             { right: FX1, top: FY0 });
@@ -688,7 +690,7 @@ function VanHeerdenSvg(
               {s.unstable && (
                 <text x={spot.x} y={spot.y + 12} textAnchor={spot.anchor}
                   fontSize={9} fill={color}>
-                  no start-up procedure can hold it
+                  stability not evaluated (middle of three roots)
                 </text>
               )}
             </g>
@@ -824,7 +826,7 @@ export function VanHeerdenTool(): JSX.Element {
       </Title>
       <Text size="sm" c="dimmed" mt={4}>
         The same equipment and the same feed can have three steady states — one
-        of which no start-up procedure can hold, and two which stop existing
+        the middle one, by ordering, with its stability not evaluated here, and two which stop existing
         altogether if you push a parameter far enough.
       </Text>
     </Box>
@@ -932,16 +934,20 @@ export function VanHeerdenTool(): JSX.Element {
 
         {view.states.length === 3 && view.span !== null && (
           <Tooltip withArrow multiline w={450}
-            label={"Ignited minus extinguished: the difference of the "
-              + "highest and lowest root temperatures the engine published "
-              + "as markers — arithmetic on two of its numbers, no model of "
-              + "its own.  This is the practical meaning of multiplicity: "
-              + "the jump the reactor makes when it lights, and the drop it "
-              + "makes when it goes out.  The middle crossing between them "
-              + "is a steady state no start-up procedure can hold."}>
+            label={"Hot minus cold: the difference of the highest and "
+              + "lowest root temperatures the engine published as markers "
+              + "at THESE conditions — arithmetic on two of its numbers, no "
+              + "model of its own.  It is the gap between the two outer "
+              + "steady states here, not the ignition jump or the "
+              + "extinction drop: those happen at the limit points of a "
+              + "sweep of one parameter (feed temperature, residence time), "
+              + "where they differ from each other and from this gap.  Here "
+              + "the only knob that moves is T_guess, so the limit points "
+              + "are outside what this page shows.  The middle crossing is marked by ordering alone: "
+              + "its stability is not evaluated here."}>
             <Badge variant="light" color="orange" tt="none"
               styles={{ root: { cursor: "help" } }}>
-              ignited − extinguished = {fmt(view.span)} K
+              hot − cold = {fmt(view.span)} K
               {" "}({fmt(view.states[2]!.T)} K vs {fmt(view.states[0]!.T)} K)
             </Badge>
           </Tooltip>
