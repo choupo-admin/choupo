@@ -119,6 +119,10 @@ std::optional<scalar> saturationT(const ThermoPackage& thermo, scalar P_Pa,
         if (why) *why = DomeWhy::BelowBracket;
         return std::nullopt;
     }
+    //  The root lies on the real dome, at or below Tc (tested above): never search
+    //  the continued curve past it, so the answer cannot depend on where that
+    //  curve sits.
+    if (Tc > 0.0) hi = Tc;
     for (int it = 0; it < 90; ++it)
     {
         const scalar mid = 0.5 * (lo + hi);

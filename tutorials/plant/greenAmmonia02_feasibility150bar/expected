@@ -191,6 +191,7 @@ kpi     N2Cooler               Q_latent_kW      0                1e-4
 kpi     N2Cooler               Q_sensible_kW    -1975.49332092   1e-4
 kpi     N2Cooler               T_in             473.769161677    1e-4
 kpi     N2Cooler               T_out            313.15           1e-4
+kpi     N2Cooler               Tsat             126.108934357    1e-4
 kpi     N2Cooler               vf_in            1                1e-4
 kpi     N2Cooler               vf_out           1                1e-4
 kpi     RecycleComp            F                3.80207716587    1e-4
