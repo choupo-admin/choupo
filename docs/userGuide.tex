@@ -864,11 +864,11 @@ so you can confirm the graph says what you think it says before
 spending a solve.  Roles are never declared in Choupo; the topology is
 the single source of truth, and the lint report is where you read it.
 
-\subsection{Restarting a recycle solve from its converged tears: \code{choupoSolve --restart-tears}}\label{sec:restart-tears}
+\subsection{Restarting a recycle solve from its converged tears: \code{choupoSolve -{}-restart-tears}}\label{sec:restart-tears}
 
 A recycle plant spends nearly all of its run time in the tear iteration,
 and the iteration is repeated whenever you change something that does not
-act on it.  \code{--restart-tears} is an \emph{opt-in speed aid} for
+act on it.  \code{-{}-restart-tears} is an \emph{opt-in speed aid} for
 exactly that: it keeps the answer of the iteration and skips it when the
 answer is still the answer.  Without the flag nothing changes, byte for
 byte.
