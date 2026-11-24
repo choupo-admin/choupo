@@ -198,10 +198,10 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? "", ...(s.where ?? []).map((w) => w.means)])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
-      "DistillationColumn.cpp:1601": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
-      "DistillationColumn.cpp:1733": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
-      "DistillationColumn.cpp:2432": "`murphreeEfficiency` is not ",
-      "DistillationColumn.cpp:5189": "tray efficiency is implemented for a BINARY",
+      "DistillationColumn.cpp:1602": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
+      "DistillationColumn.cpp:1734": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
+      "DistillationColumn.cpp:2433": "`murphreeEfficiency` is not ",
+      "DistillationColumn.cpp:5190": "tray efficiency is implemented for a BINARY",
       "PackingDelft.cpp:131": "r.HETP = (std::abs(s.lambda - 1.0) < 1.0e-9) ? r.HOG",
       "RateBasedSegment.cpp:907": "profile_.columns[\"V\"]",
       "RateBasedSegment.cpp:908": "profile_.columns[\"L\"]",
@@ -218,8 +218,8 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       files[file] ??= tree(`src/unitOperations/distillation/${file}`).split("\n");
       expect(files[file]![Number(ln) - 1], c).toContain(want);
     }
-    //  The refusal at 2430 is the MESH one, two lines on.
-    expect(files["DistillationColumn.cpp"]!.slice(2432, 2435).join("\n")).toContain("implemented for `method simultaneous`");
+    //  The refusal at 2431 is the MESH one, two lines on.
+    expect(files["DistillationColumn.cpp"]!.slice(2433, 2436).join("\n")).toContain("implemented for `method simultaneous`");
   });
   it("names the four witnesses it runs, and each exists in the tree", () => {
     for (const w of [MURPHREE_WITNESS, HETP_BED_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])

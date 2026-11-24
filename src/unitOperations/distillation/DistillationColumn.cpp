@@ -55,6 +55,7 @@ License
 #include "unitOperations/reactor/ReactionHeat.H"
 #include <algorithm>
 #include <atomic>
+#include <functional>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
