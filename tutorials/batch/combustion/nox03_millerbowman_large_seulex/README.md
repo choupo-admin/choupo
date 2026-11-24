@@ -114,8 +114,8 @@ a factor of 17 per step and 1.4 in the count.
 * **Thermochemistry.**  NASA/TP-2002-211556 (stable species as case-local NASA-9 overrides,
   radicals from the NASA table) and, for the nine species the table lacks (NNH, CH2CO, 1CH2, H2CN, HOCN,
   HCNO, HCCOH, C3H2, C4H3), RRHO-computed records anchored to ATcT (Theory Guide `sec:rrho-thermo`).  The paper's Table 1 (p. 289) prints heats of
-  formation that differ from ATcT for five of them (paper minus ATcT, kJ/mol): 1CH2 -4.6, NNH -4.5,
-  H2CN +8.7, HOCN +5.5, HCNO -8.6.  The case keeps one thermochemistry per run and does not switch.
+  formation that differ from ATcT for five of them (paper minus ATcT, kJ/mol): 1CH2 -4.6, NNH -5.0,
+  H2CN +8.7, HOCN +5.3, HCNO -8.8.  The case keeps one thermochemistry per run and does not switch.
 * **Reading of the Troe footnote (A1).**  The paper prints F_cent = (1-a) exp(-T/T*) + a exp(-T**/T)
   with a = 0.604, T* = 6927, T** = 132.  The case reads the three numbers as the CHEMKIN-II `TROE / a T*** T* /`
   of the same mechanism family, F_cent = (1-a) exp(-T/6927) + a exp(-T/132); the printed exponent

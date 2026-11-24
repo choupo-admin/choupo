@@ -17,7 +17,7 @@ reviewStatus   interim;
 reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
 standardThermochemistry
 {
-    dHf_298    -48420.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol
+    dHf_298    -48600.000;   // J/mol  -- ideal gas; ATcT, Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 1 (0 K), derived to 298.15 K, +-0.22 kJ/mol
     s_298      241.963;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
 }
 
@@ -39,11 +39,11 @@ provenance
 {
     dHf_298
     {
-        origin        literature;
-        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
-        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
-        uncertainty   "+-0.11 kJ/mol (ATcT, 95% confidence)";
-        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar.";
+        origin        derived;
+        method        "Active Thermochemical Tables enthalpy of formation at 0 K as printed in the cited journal paper, converted to 298.15 K, ideal gas";
+        methodVersion "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT TN ver. 1.122b)";
+        uncertainty   "+-0.22 kJ/mol (paper's 95% confidence at 0 K, 0.1, with 0.2 for the 0 K to 298.15 K conversion, in quadrature)";
+        notes         "Value read in Table 1 of Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 1 (ATcT thermochemical network ver. 1.122b, Delta_f H at 0 K, 95 percent uncertainty, one decimal), manuscript PDF page 32 of the accepted manuscript at OSTI 1389058 (the journal's table number is the citation; the manuscript's pagination is not the journal's): Delta_f H(0 K) = -45.5 +-0.1 kJ/mol (paper label CH2CO); the 298.15 K value is DERIVED from that 0 K value as Delta_f H(298.15) = Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py, the same constants as this record's S and Cp) - sum of [H(298.15)-H(0)] of the elements in their standard states (CODATA Key Values for Thermodynamics: C graphite 1.050, H2 8.468, N2 8.670, O2 8.680 kJ/mol), net increment -3.099 kJ/mol; the same conversion reproduces the paper's own pair for singlet CH2 (+0.422 against the printed +0.412 kJ/mol). The value held before 2026-11-23 was -48.42 (website version, withdrawn as a source); the difference is 0.18 kJ/mol.";
     }
     s_298
     {

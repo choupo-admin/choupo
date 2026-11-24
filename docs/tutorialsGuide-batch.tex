@@ -1468,15 +1468,15 @@ THE JACOBIAN is the analytic one (the default; audited against a finite differen
 \goldrow{kpi}{T1000}{E\_reaction\_total\_kJ}{-2.97108044833e-08}
 \goldrow{kpi}{T1000}{P\_final}{111457.5}
 \goldrow{kpi}{T1000}{T\_final}{1000}
-\goldrow{kpi}{T1000}{n\_H2O2\_final}{5.53382336697e-27}
+\goldrow{kpi}{T1000}{n\_H2O2\_final}{5.53382336698e-27}
 \goldrow{kpi}{T1000}{n\_H2\_final}{2.55152725357e-16}
-\goldrow{kpi}{T1000}{n\_HNO\_final}{4.74843402438e-14}
+\goldrow{kpi}{T1000}{n\_HNO\_final}{4.74843402439e-14}
 \goldrow{kpi}{T1000}{n\_HO2\_final}{1.10785665093e-17}
 \goldrow{kpi}{T1000}{n\_H\_final}{1.62823152097e-17}
 \goldrow{kpi}{T1000}{n\_He\_final}{0.0132313228152}
-\goldrow{kpi}{T1000}{n\_N2H2\_final}{1.37582391502e-26}
-\goldrow{kpi}{T1000}{n\_N2O\_final}{3.79636332836e-17}
-\goldrow{kpi}{T1000}{n\_N2\_final}{8.77642970436e-14}
+\goldrow{kpi}{T1000}{n\_N2H2\_final}{1.37980428254e-26}
+\goldrow{kpi}{T1000}{n\_N2O\_final}{3.79636333037e-17}
+\goldrow{kpi}{T1000}{n\_N2\_final}{8.77642970437e-14}
 \goldrow{kpi}{T1000}{n\_NH2\_final}{2.29341613127e-16}
 \goldmore{475}
 \end{tutgolden}
@@ -1500,21 +1500,21 @@ THE JACOBIAN is the analytic one (the default; audited against a finite differen
 \tutreadme{The 1.8e-3 sits at the 2 ms write, in the induction, where the radical pool grows by decades per millisecond; it is the integration error of the second-order Rosenbrock method and shrinks with the tolerance (docs/reviews/2026-11-22-miller-bowman/compare\_cantera.py large). All 235 reactions balance in elements (Cantera refuses an unbalanced reaction on loading; it loaded all of them).}
 \tutreadme{linearSolver sparse (the vessel has 52 rows, the sparse path factors W on the network's pattern), jacobian analytic, Rosenbrock23, adaptive: 12 audits of the analytic Jacobian against the dense finite difference, worst column 1.0e-7 of the column's scale (tolerance 1e-4).}
 \begin{tutgolden}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.33365031194e-15}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.14312883881e-15}
-\goldrow{kpi}{campaign}{element\_N\_closure\_rel}{2.55362664321e-15}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.14283970056e-15}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.55362664321e-15}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{7.04929450598e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{2.66730062388e-15}
+\goldrow{kpi}{campaign}{element\_N\_closure\_rel}{3.40483552427e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{3.42851910167e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{7.04929450598e-15}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{0}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.16692976861e-06}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.16692977705e-06}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.000263335416197}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.000263335986828}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.70630589005e-10}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.70630591227e-10}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
-\goldmore{60}
+\goldmore{69}
 \end{tutgolden}
 
 \clearpage
@@ -1536,21 +1536,21 @@ THE JACOBIAN is the analytic one (the default; audited against a finite differen
 \tutreadme{The vessel. Lean methane/air (phi = 0.6) with 100 ppm NO, 1300 K, 1 atm, 1 L, closed, adiabatic at constant volume (mode adiabatic; energy gasConstantV, the shock-tube / engine cell). Constant volume is chosen because the analytic Jacobian, audited at run time, is available there (constant pressure integrates on the finite difference, ignition03) and because the burned gas then carries both the heat release and the pressure rise. The mechanism was built for exactly this chemistry: the CH + N2 prompt route (A151), the HCN/NCO/NH chain, the NNH route (A216, A221-A227), N2O (A203-A207), NO2 (A188-A191).}
 \tutreadme{$\ast$ Induction (0-2.4 ms): the methane starts to break down and the radical pool builds, and part of the initial NO becomes NO2 (17 ppm at 1 ms; the mechanism's route to it is HO2 + NO = NO2 + OH, A188 -- not checked here by a rate-of-production report). $\ast$ Ignition at 2.4 ms (Cantera: maximum dT/dt; the write grid of 1 ms says "3 ms"): T jumps to 2612 K, P from 1.0 to 2.0 atm. $\ast$ Thermal NO then grows in the burned gas, 90 \% of its final value within 9 ms of the ignition, to 15008 ppm of NO (NO2 10 ppm) at 30 ms: 99.997 \% of the constant-volume adiabatic equilibrium Cantera computes from the same charge (NOx 15019.0 ppm, 2593.63 K, 2.0457 bar; here 2593.63 K and 2.0457 bar).}
 \begin{tutgolden}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.16408620085e-13}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.12455215941e-14}
-\goldrow{kpi}{campaign}{element\_N\_closure\_rel}{8.59720969879e-14}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{4.65135758126e-14}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.16408620085e-13}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.0821619674e-13}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.78518620327e-13}
+\goldrow{kpi}{campaign}{element\_N\_closure\_rel}{1.96994055333e-14}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{5.73705529679e-14}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.78518620327e-13}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{0}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.16692984375e-06}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.16692974453e-06}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.000263335416197}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.000263335986828}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.70630608791e-10}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.70630582662e-10}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
-\goldmore{60}
+\goldmore{69}
 \end{tutgolden}
 
 \subsection{crystallisation}

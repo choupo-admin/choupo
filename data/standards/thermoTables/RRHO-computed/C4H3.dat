@@ -17,7 +17,7 @@ reviewStatus   interim;
 reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
 standardThermochemistry
 {
-    dHf_298    544740.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.87 kJ/mol
+    dHf_298    545070.000;   // J/mol  -- ideal gas; Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580, Table 2 (ANL0 ab initio, NOT an ATcT value), 298.15 K derived, +-2.2 kJ/mol
     s_298      282.868;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
 }
 
@@ -39,11 +39,11 @@ provenance
 {
     dHf_298
     {
-        origin        literature;
-        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
-        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
-        uncertainty   "+-0.87 kJ/mol (ATcT, 95% confidence)";
-        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. The mechanism's C4H3 is not an isomer-resolved species; n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is taken because ATcT lists it with a measured-quality enthalpy (the resonance-stabilised i-C4H3 H2C=C=C=CH is lower in energy and is NOT used).";
+        origin        derived;
+        method        "ab initio composite (ANL0) enthalpy of formation at 0 K, as printed in the cited journal paper for n-C4H3 (CHCHCCH), converted to 298.15 K with this tool's own thermal enthalpies";
+        methodVersion "Klippenstein, Harding & Ruscic, J. Phys. Chem. A 121 (2017) 6580-6602, doi:10.1021/acs.jpca.7b05945, Table 2, manuscript PDF page 35 of the accepted manuscript at OSTI 1389058";
+        uncertainty   "+-2.2 kJ/mol (twice the 1.08 kJ/mol RMS error of the same ANL0 method against 150 ATcT species, Table 4 of the paper)";
+        notes         "n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is NOT in the ATcT species set of that paper: its Table 2 lists the ANL0 CALCULATED Delta_f H(0 K) = 547.4 kJ/mol for CHCHCCH, and this record uses that calculated value, not an ATcT value (the earlier record cited ATcT 1.124 by version only, which is no source). The 298.15 K value is DERIVED: Delta_f H(0) + [H(298.15)-H(0)] of the species (rrho_thermo.py) - sum of the elements' increments (CODATA Key Values: C graphite 1.050, H2 8.468 kJ/mol), net increment -2.328 kJ/mol. The value held before 2026-11-23 (544.74, website version) lies 0.33 kJ/mol from it. The resonance-stabilised i-C4H3 (H2C=C=C=CH, 495.7 at 0 K in the same table) is lower in energy and is NOT used.";
     }
     s_298
     {
