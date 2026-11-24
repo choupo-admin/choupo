@@ -5637,6 +5637,21 @@ accepts today, and that is a policy call.
 > then the pin in check_element_closure (KNOWN_OPEN, NOT_A_LEAK) goes to zero and the RESIN-HOLDUP name in
 > ElementBalanceReport is deleted.
 
+> **C501. EDUTOOL: DESIGNING A COLUMN FOR A REAL MIXTURE (Vitor through the cloud, 2026-11-24; after the
+> presentation).**  Feasibility on the residue-curve map, the rigorous R-against-N curve by designSpec, the cost
+> optimum with the energy price as a slider, FUG beside the rigorous result.  The pinch-point minimum reflux is
+> not in the engine: its own slice, against a published case, then its card.
+
+> **C502. THE PEQ PRICE MAP (Vitor, 2026-11-24: "how is the Madoqua plant in Sines being built then?").**
+> Hydrogen cost against green-ammonia price, the region where the plant pays.  Waits on `gridSweep` reading
+> `economics.*` (nan today).  Until then the run's two break-evens answer it: ammonia at 1.952 EUR/kg, or
+> hydrogen at 1.685 EUR/kg.  THE TAX QUESTION, ruled the same night: `taxOnLoss credit` stays (README states it
+> and both NPVs); the stand-alone reading was run again, -4140.1 MEUR.
+
+> **C503. EDUTOOL: FROM THE CALCULATED TO THE BOUGHT (architect, 2026-11-24, on reading the practitioner's design
+> book Vitor brought).**  Same item: calculated value, margin, commercial size, cost.  First measure which design
+> sheets already show margin and commercial size; nothing before 2 December.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
