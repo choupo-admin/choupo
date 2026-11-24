@@ -460,6 +460,8 @@ import os
 import re
 import shutil
 import case_records  # noqa: E402
+import restart_tears  # noqa: E402
+import time
 import subprocess
 import sys
 import tempfile
@@ -489,7 +491,7 @@ def prepare(work, name, src, edit=None, drop_layout=False):
     if d.exists():
         shutil.rmtree(d)
     case_records.copytree(src, d, ignore=shutil.ignore_patterns(
-        "reports", "converged", "design", "iterations"))
+        "reports", "converged", "converged.restart", "design", "iterations"))
     lay = d / "system" / "layoutDict"
     if drop_layout and lay.exists():
         lay.unlink()
@@ -579,6 +581,13 @@ def _input_key(d, extra):
     return h.hexdigest()
 
 
+# Arms that differ only in system/layoutDict or system/postDict share one recycle
+# solve: the engine restarts from the exact converged tears for all but the first
+# (restart_tears.py -- exactness is PROVEN per solve key against the full run,
+# never assumed).  CHOUPO_GATE_NO_RESTART=1 turns it off (it changes no result).
+_RST = restart_tears.Restarter(_ancestor_inputs)
+
+
 def solve(d, *extra):
     global _RUN_STASH
     if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
@@ -590,7 +599,15 @@ def solve(d, *extra):
         out, err, rc, first, stash = hit
         shutil.copytree(stash, d, dirs_exist_ok=True)
         return out.replace(first, str(d)), err.replace(first, str(d)), rc
-    out, err, rc = run([str(BIN), *extra, str(d)])
+    if os.environ.get("CHOUPO_GATE_NO_RESTART"):
+        flags, ctx = [], None
+    else:
+        flags, ctx = _RST.begin(d, extra)
+    t0 = time.time()
+    out, err, rc = run([str(BIN), *flags, *extra, str(d)])
+    _RST.end(d, ctx, rc, time.time() - t0,
+             lambda: run([str(BIN), "--restart-tears", str(d)])[2])
+    out, err = restart_tears.strip_announcements(out), restart_tears.strip_announcements(err)
     if _RUN_STASH is None:
         _RUN_STASH = Path(tempfile.mkdtemp(prefix="plantlayout.stash."))
     stash = _RUN_STASH / key
@@ -3702,8 +3719,10 @@ def main():
             shutil.rmtree(work, ignore_errors=True)
         if _RUN_STASH is not None:
             shutil.rmtree(_RUN_STASH, ignore_errors=True)
+        _RST.cleanup()
         if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
-            print("run-cache: %d engine runs, %d replayed" % (len(_RUNS), _HITS[0]), file=sys.stderr)
+            print("run-cache: %d engine runs, %d replayed; restart: %d proofs, %d restarted, %d not exact"
+                  % (len(_RUNS), _HITS[0], _RST.proofs, _RST.restarts, _RST.refused), file=sys.stderr)
     if fails:
         print("check_plant_layout: FAIL")
         for f in fails:
