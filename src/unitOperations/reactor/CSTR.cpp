@@ -381,7 +381,28 @@ int CSTR::solve(const DictPtr& dict,
     // Irreversible:  g(ξ) = ξ - k V_R Π_j C_j(ξ)^β_j = 0
     // Reversible:    g(ξ) = ξ - (k_fwd · Π_react C^a - k_rev · Π_prod C^b) V_R
     //                (orders default to |ν| on each side when reversible)
-    const scalar xi_max = F_i_in[iLim] / (-nu[iLim]);    // 100% forward conversion
+    //  THE FORWARD EXTENT STOPS WHERE THE FIRST CONSUMED SPECIES RUNS OUT
+    //  (C498, review R-011), not where the NAMED limiting reactant does:
+    //  `limitingReactant` is the reference of the reported conversion X and
+    //  nothing more.  Bounding by it alone let a zero-order law (the acid in
+    //  cstr01_first_order) drive another reactant to a mole fraction of
+    //  -0.357 at 100 % "converged".  Every nu < 0 species bounds the extent;
+    //  the reverse extent, when the reaction may run backwards (reversible
+    //  law, a product present in the feed), is bounded the same way by the
+    //  species with nu > 0.
+    scalar xi_max   = std::numeric_limits<scalar>::infinity();
+    std::size_t iOut = iLim;                              // runs out first
+    for (std::size_t j = 0; j < n; ++j)
+        if (nu[j] < 0.0 && F_i_in[j] / (-nu[j]) < xi_max)
+        {
+            xi_max = F_i_in[j] / (-nu[j]);
+            iOut   = j;
+        }
+    scalar xi_back = std::numeric_limits<scalar>::infinity();
+    for (std::size_t j = 0; j < n; ++j)
+        if (nu[j] > 0.0 && F_i_in[j] / nu[j] < xi_back)
+            xi_back = F_i_in[j] / nu[j];
+    if (!std::isfinite(xi_back)) xi_back = 0.0;
     auto rate = [&](scalar xi)
     {
         scalar r_fwd = k;
@@ -444,11 +465,24 @@ int CSTR::solve(const DictPtr& dict,
         return (g(xi + h) - g(xi - h)) / (2.0 * h);
     };
 
+    //  The extent's own scale (the largest the reaction can go).  The stopping
+    //  tolerance below is the historical one (an absolute floor of 1 mol/s in
+    //  max(), which every shipped case at ordinary scale converges well past);
+    //  what makes the answer RELATIVE is the check after the solve, which
+    //  holds the residual to 1e-6 of this scale and polishes with a relative
+    //  1e-9 when the first stop was too loose for a small flow (C498, R-012: a
+    //  1e-9 mol/s residual is 1e-3 of a flow of 1e-6 mol/s).
+    const scalar xiScale = (xi_max > 0.0) ? xi_max : std::max(F_in, 1.0e-300);
     solver::NROptions nro;
     nro.tolerance          = 1.0e-9 * std::max(xi_max, 1.0);
     nro.maxIter            = 80;
     nro.lower              = 0.0;
     nro.upper              = 0.9999 * xi_max;
+    //  The reaction runs BACKWARDS at the feed (net rate < 0: a reversible law
+    //  with product in the feed beyond equilibrium): the root is a negative
+    //  extent, bounded by the products' amounts.
+    if (reversible && g(0.0) > 0.0)
+        nro.lower = -0.9999 * xi_back;
     nro.bracket            = true;
     nro.monotoneIncreasing = true;          // PROVEN above: no product/negative order
     nro.maxStep            = 0.25 * xi_max;
@@ -475,7 +509,55 @@ int CSTR::solve(const DictPtr& dict,
     };
 
     auto r = solver::newton1D(g, dg, 0.5 * xi_max, nro);
+    if (std::abs(g(r.x)) > 1.0e-6 * xiScale)
+    {
+        //  A stop that was loose for this flow: polish with a relative
+        //  tolerance from where it stopped (one extra pass at ordinary
+        //  scale never happens: the test above is 1e-6 of the extent).
+        nro.tolerance = 1.0e-9 * xiScale;
+        r = solver::newton1D(g, dg, r.x, nro);
+    }
     const scalar xi = r.x;
+
+    //  THE CONVERGED STATE IS CHECKED BEFORE ANYTHING IS CLIPPED OR PRINTED
+    //  (C498).  newton1D returns the bound when the bracket holds no root, and
+    //  the extent equation xi = r(xi) V_R must hold at the answer to the
+    //  tolerance, with every outlet flow non-negative.  A law with NO root
+    //  inside the feasible interval (a reactant runs out while the rate stays
+    //  positive: a zero order in it, or a rate too fast for the reactor
+    //  volume) has no steady state of this reactor; it is refused by name,
+    //  never cut at the bound and reported as a conversion.
+    {
+        const scalar gAt = g(xi);
+        bool negative = false;
+        for (std::size_t i = 0; i < n; ++i)
+            if (F_i_in[i] + nu[i] * xi < -1.0e-9 * F_in) negative = true;
+        if (std::abs(gAt) > 1.0e-6 * xiScale || negative)
+        {
+            const scalar rAtBound = rate(xi);
+            std::ostringstream m;
+            m << std::setprecision(6)
+              << "CSTR: the extent equation xi = r(xi) V_R has no root inside the"
+                 " feasible interval, so this reactor has no steady state at these"
+                 " feeds and this volume -- ";
+            if (xi >= 0.9999 * xi_max * (1.0 - 1e-9) && xi_max > 0.0)
+                m << "'" << thermo.comp(iOut).name() << "' runs out at xi = "
+                  << xi_max << " mol/s (" << (F_i_in[iOut] * 3.6) << " kmol/h fed, nu "
+                  << nu[iOut] << ") while the rate there is still r = " << rAtBound
+                  << " mol/(m3 s), which asks for xi = r V_R = " << rAtBound * V_R
+                  << " mol/s, more than the reactant can supply";
+            else
+                m << "the Newton iteration ended at xi = " << xi
+                  << " mol/s with residual g = " << gAt << " (scale " << xiScale << ")";
+            if (order[iOut] == 0.0)
+                m << ".  The declared rate is ZERO order in '" << thermo.comp(iOut).name()
+                  << "', so it does not fall as '" << thermo.comp(iOut).name()
+                  << "' is consumed and nothing stops the reaction before it is gone";
+            m << ".  Reduce the volume or the rate constant, feed more '"
+              << thermo.comp(iOut).name() << "', or give the law a positive order in it.";
+            throw InfeasibleTrial(m.str());
+        }
+    }
 
     // ---- Outlet composition & conversion ----------------------------
     sVector F_i_out(n);
@@ -802,6 +884,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     //  cold one from xi = 0 (which root a run reports is the cold start's,
     //  see above); the warm start only rescues a cold start that failed.
     sVector lastGoodXi(R, 0.0);
+    sVector lastIterate(R, 0.0);
     bool    haveGoodXi = false;
     bool maxStepAnnounced = false;
     //  g_i(T) for the species of every law whose reverse leg is detailed
@@ -837,7 +920,11 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             {
                 scalar v = F_i_in[i];
                 for (std::size_t j = 0; j < R; ++j) v += nu[j][i] * xi[j];
-                if (!(v >= -1.0e-6 * std::max(F_in, 1.0)))
+                //  RELATIVE to the feed, never an absolute mol/s (C498,
+                //  R-012: with `max(F_in, 1.0)` a feed of 1e-6 mol/s admitted
+                //  a flow of -1e-6, a 100 % violation, and the clip below
+                //  then created 44 % of the mass).
+                if (!(v >= -1.0e-6 * F_in))
                     throw InfeasibleTrial("CSTR: a trial extent makes the"
                         " outlet flow of '" + thermo.comp(i).name()
                         + "' negative (infeasible trial)");
@@ -897,7 +984,52 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         if (sl.converged) { lastGoodXi = sl.x; haveGoodXi = true; }
         okOut = sl.converged;
         lastRes = sl.residual;
+        lastIterate = sl.x;
         return sl.x;
+    };
+
+    //  AN EXTENT SOLVE THAT FOUND NO ROOT IS REFUSED WITH ITS REASON (C498).
+    //  When the feasible region holds no root -- a reactant is exhausted while
+    //  the law keeps a positive rate (a zero order in it, or a rate too fast
+    //  for the volume) -- the Newton can only end at the boundary of the
+    //  region, and "failed to converge" says nothing a student can act on.
+    //  Read off the last iterate: the species whose outlet flow was driven to
+    //  zero, by which reaction, and what to change.  Only when such a species
+    //  exists; any other non-convergence keeps its own report.
+    auto refuseNoRoot = [&](const sVector& xiLast)
+    {
+        std::ostringstream m;
+        bool any = false;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            scalar v = F_i_in[i];
+            scalar consumedBy = 0.0;
+            std::string by;
+            for (std::size_t j = 0; j < R; ++j)
+            {
+                v += nu[j][i] * xiLast[j];
+                if (nu[j][i] < 0.0) { consumedBy = 1.0; by += (by.empty() ? "" : ", ") + rname[j]; }
+            }
+            if (consumedBy > 0.0 && F_i_in[i] > 0.0 && v <= 1.0e-5 * F_in)
+            {
+                if (!any)
+                    m << "CSTR: the extent equations have no root inside the feasible"
+                         " region, so this reactor has no steady state at these feeds"
+                         " and this volume -- ";
+                else m << "; ";
+                m << "'" << thermo.comp(i).name() << "' (fed "
+                  << F_i_in[i] * 3.6 << " kmol/h) is exhausted by " << by
+                  << " while the rate law still asks for more (extent residual "
+                  << lastRes << " mol/s at the boundary)";
+                any = true;
+            }
+        }
+        if (!any) return;
+        m << ".  A rate that does not fall to zero as its reactant does (a ZERO"
+             " order in it) or a volume too large for the feed has no root;"
+             " reduce the volume or the rate constant, feed more of the"
+             " exhausted reactant, or give the law a positive order in it.";
+        throw InfeasibleTrial(m.str());
     };
 
     //  THE EXTENT ROOTS OF A ONE-REACTION SET, at the reported temperature.
@@ -1019,6 +1151,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         xi = extentsAt(T_iso, ok);
         converged = ok;
         recordResidual(lastRes);
+        if (!ok) refuseNoRoot(xi);
         auditExtentRoots(T_iso, xi[0]);
         if (!ok && verbosity >= 1)
             std::cout << "  [cstr] WARNING: the multi-reaction Newton did not converge "
@@ -1276,6 +1409,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         xi = extentsAt(T_out, ok);
         converged = ok && !roots.empty();
         recordResidual(lastRes);
+        if (!ok) refuseNoRoot(xi);
         auditExtentRoots(T_out, xi[0]);
 
         if (verbosity >= 2)
@@ -1296,6 +1430,26 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     }
 
     // ---- Outlet -------------------------------------------------------
+    //  THE CONVERGED STATE IS CHECKED BEFORE ANY CLIP (C498, R-012).  The
+    //  probe tolerance above is room for a finite-difference step at a vertex
+    //  of the feasible set; it is never a licence to ACCEPT a final state with
+    //  a negative flow (the clip then reads it as zero and creates mass).  The
+    //  tolerance here is the Newton's own, relative to the feed.
+    if (converged)
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            scalar v = F_i_in[i];
+            for (std::size_t j = 0; j < R; ++j) v += nu[j][i] * xi[j];
+            if (!(v >= -1.0e-9 * F_in))
+                throw InfeasibleTrial("CSTR: the converged extents give '"
+                    + thermo.comp(i).name() + "' an outlet flow of "
+                    + std::to_string(v * 3.6) + " kmol/h (feed "
+                    + std::to_string(F_i_in[i] * 3.6) + " kmol/h): a reaction"
+                    " cannot consume more of a species than it is fed, so the"
+                    " rate law has no steady state inside the feasible region"
+                    " at these feeds and this volume.  Refused rather than"
+                    " clipped to zero, which would create mass.");
+        }
     sVector F_i_out(n, 0.0); scalar F_out = 0.0;
     for (std::size_t i = 0; i < n; ++i)
     {

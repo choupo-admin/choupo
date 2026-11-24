@@ -160,6 +160,10 @@ DOMAINS = [
      "the vapour fraction of a two-phase feed lies in [0, 1] (q = 1 - vf: the page's feed is partly vaporised, "
      "never a sub-cooled liquid, which is q > 1)", False),
     (M + "PonchonSavaritTool.tsx", "xD", 0.0, 1.0, "a distillate mole fraction lies in [0, 1]", False),
+    (M + "RelaxationTool.tsx", "logEta", None, 0.0,
+     "log10 of the inner tolerance as a fraction of the outer mistake: at 0 the inner error equals the outer "
+     "mistake, and above it the inexact-Newton forcing term (eta < 1) no longer contracts; any smaller positive "
+     "fraction is valid, and -4 is the page's own choice", False),
     (M + "EquilibriumOrRateBasedTool.tsx", "e", None, None,
      "log10(lambda), lambda = m V / L, a positive ratio with no physical bound: the relation HETP = "
      "H_OG ln(lambda)/(lambda-1) holds for every lambda > 0 (Seader, Henley and Roper Eq. 7-87); the "

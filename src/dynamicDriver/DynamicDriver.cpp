@@ -2280,7 +2280,9 @@ try
                         worst = std::max(worst, r);
                     }
                     bk["element_worst_closure_rel"] = worst;
-                    if (!ledgerBreach && !(worst <= ledgerBand))
+                    //  (a PARTIAL ledger cannot close better than its data: C498)
+                    if (!ledgerBreach && !ledgerElemsPartial
+                        && !(worst <= ledgerBand))
                     {
                         ledgerBreach = true;
                         ledgerBreachDetail =

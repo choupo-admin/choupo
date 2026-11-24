@@ -98,7 +98,7 @@ export const LADDER_COLUMNS: readonly LadderColumn[] = [
   { unit: "gibbs", stream: "outGibbs", rung: 2, label: "Gibbs reactor",
     told: "elements and four species, no reaction", kpi: null },
   { unit: "kinetic", stream: "outKinetic", rung: 3, label: "plug flow (PFR)",
-    told: "the reaction and a measured rate law", kpi: "X_limiting" },
+    told: "the reaction and an illustrative rate law", kpi: "X_limiting" },
 ];
 
 export const LADDER_SPECIES: readonly string[] = ["CO", "water", "CO2", "H2"];

@@ -5588,6 +5588,81 @@ accepts today, and that is a policy call.
 > EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
+> **ONE OPTIMISER THAT EVOLVES (Vitor, 2026-11-24: "acho que vamos parar e ficar só com o SQP que eu acho
+> que do ponto de vista de Pareto e John Gall é um optimizador ótimo").**  Weighed with the bench on the
+> table (docs/audits of the cloud, C496): AGREED on the direction -- our four flowsheets are already
+> solved 12/12 at 1e-2 and 11/12 at 1e-4, and no method added to them has earned its simulations; a zoo of
+> optimisers is not a system that grew from one that worked.  NOT agreed on "optimal": on 18 clean
+> Hock-Schittkowski problems the SQP solves 0.67 / 0.61 / 0.39 at tau 1e-2 / 1e-4 / 1e-6 against IPOPT's
+> 0.94 / 0.89 / 0.78 and SLSQP's 0.89 / 0.83 / 0.72 (forward step fixed at 1e-5; line-search failures), and
+> with noise of 1e-8 to 1e-6 it is ahead of SLSQP, trust-constr and IPOPT.  RULED: the only method work
+> is making THE SQP robust (C496: adaptive difference step, merit/line search, both opt-in, judged once on
+> the bench); the evolutionary, CMA-ES and Bayesian additions stop; Nelder-Mead stays (cheapest without
+> constraints on our cases); MADS lands opt-in and is REMOVED if the bench finds no problem class where it
+> wins.  Two flowsheet cases are repaired and three added so the bench has something real to run on.
+> STOPPED, the same evening (Vitor to the cloud): the large comparison (the 106-problem re-run and its
+> extra columns, 969 runs made) does not run; the runs and the protocol stay unread on the cloud's local
+> branch.  CONSEQUENCE, accepted: the improved SQP is judged ONCE on the 18 problems of the v1 protocol
+> against its published table, no externals re-run; and MADS is decided on the evidence that exists
+> (more simulations on every case measured, no class found where it wins): KEPT, FROZEN, opt-in,
+> described as such.  The condition "removed if the bench finds no class" is withdrawn with the bench.
+
+> **C499. BAYESIAN OPTIMISATION, ON THE PAGE FIRST (Vitor, 2026-11-24, after asking what it is: "Que fixe!
+> E tem naturalmente que ficar nos guias e no Edutool!").**  WEIGHED: the EduTool yes, the guides only
+> when the engine has it (rule 4d documents what is implemented).  SCOPE: one card in the `optimizers`
+> EduTool -- a one-variable curve, the points evaluated, a Gaussian-process mean and band computed in the
+> page, the next point by expected improvement, the student stepping it and watching the band shrink --
+> saying that Choupo's engine has no such method; a sentence in the guides' "what the optimiser is not".
+> The method itself, when the bench says it earns its place on a case of ours (an expensive plant, few
+> variables); multi-start of the SQP and the evolutionary columns come with it (cloud, C496 re-run).  An
+> own Gaussian process, short and legible, is the only route that keeps the glass box.  No claim before
+> the measurement.
+> GROWN THE SAME EVENING (Vitor, asked whether he meant the card or the optimiser: "Eu também quero isso!
+> Ficava já feito!").  WEIGHED: it is one more method ninety minutes after the ruling for one; ACCEPTED as
+> an opt-in in new files, on the cloud, because its niche is distinct (expensive simulations, few
+> variables) and it reaches no existing case, with an acceptance rule written first: offered to main only
+> if it needs fewer simulations than `sqp` on an expensive shipped plant at 1e-2, median of five seeds;
+> otherwise it stays on its branch with the table.  One measurement, not the large bench (stopped).
+> WITHDRAWN the same hour (Vitor: "Fica com um case study que achares melhor!  A ideia é os alunos terem
+> mais essa ferramenta! ... ou então comparas só num caso!").  AGREED: the acceptance rule and the second
+> case are dropped.  One case study, a copy of the MTBE reactive column (expensive, few variables, a
+> constraint, runs that can fail), compared ONCE with `sqp` there in a README table that says what it is;
+> it lands opt-in when it runs and is documented.
+
+> **C500. THE SOFTENER'S RESIN BECOMES NAMED STREAMS (architect, 2026-11-24, from C498's sweep).**  Rule 4b:
+> no shipped case shows a violated element balance, and a modelling assumption that moves matter becomes a
+> named stream carrying exactly it.  IonExchanger publishes one outlet; Ca, Mg and K stay on the resin and
+> Na comes off it, so membrane08 closes Ca at 0.01 % and creates 0.4 kg/h.  To design: a resin-in and a
+> resin-out stream (both with non-negative flows), computed by the unit, so the plant boundary sees them;
+> then the pin in check_element_closure (KNOWN_OPEN, NOT_A_LEAK) goes to zero and the RESIN-HOLDUP name in
+> ElementBalanceReport is deleted.
+
+> **C501. EDUTOOL: DESIGNING A COLUMN FOR A REAL MIXTURE (Vitor through the cloud, 2026-11-24; after the
+> presentation).**  Feasibility on the residue-curve map, the rigorous R-against-N curve by designSpec, the cost
+> optimum with the energy price as a slider, FUG beside the rigorous result.  The pinch-point minimum reflux is
+> not in the engine: its own slice, against a published case, then its card.
+
+> **C502. THE PEQ PRICE MAP (Vitor, 2026-11-24: "how is the Madoqua plant in Sines being built then?").**
+> Hydrogen cost against green-ammonia price, the region where the plant pays.  Waits on `gridSweep` reading
+> `economics.*` (nan today).  Until then the run's two break-evens answer it: ammonia at 1.952 EUR/kg, or
+> hydrogen at 1.685 EUR/kg.  THE TAX QUESTION, ruled the same night: `taxOnLoss credit` stays (README states it
+> and both NPVs); the stand-alone reading was run again, -4140.1 MEUR.
+
+> **C503. EDUTOOL: FROM THE CALCULATED TO THE BOUGHT (architect, 2026-11-24, on reading the practitioner's design
+> book Vitor brought).**  Same item: calculated value, margin, commercial size, cost.  First measure which design
+> sheets already show margin and commercial size; nothing before 2 December.
+
+> PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
+> "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
+> acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
+> optimizer walking out of the physical region, C498 admissibility) is the evidence rule 4e(4) asks
+> for.  Order, once the cloud's running work and the C498 landing are in: (1) admissibility (C498, in
+> flight) and failed closure = failed run, steady and dynamic; (2) the closures recomputed outside the
+> engine (the cloud's verify-the-verifier) and homogeneity, run nightly by one transform-and-compare
+> tool; (3) the second-law ledger as the engine's block, three states; (4) component and reaction
+> order, rest at equilibrium, isofugacity and the forgotten phase.  The GUI PANEL and the EduTool stay
+> after 2 December: a red row on the reference plant in front of colleagues is the one risk the proofs
+> add, so each proof is read on the demonstration cases before it is shown.
 
 > **C491 (1) MEASURED (2026-11-24): the second law over the steady and plant corpus.**  An opt-in
 > ledger (CHOUPO_ENTROPY_LEDGER=1, EnergyBalanceReport, branch worktree-agent-acb5ee81503f2c160 at
@@ -5708,6 +5783,37 @@ accepts today, and that is a policy call.
 > name with the time and the holdup, instead of clamping.  Candidates of the same shape, unmeasured:
 > BatchDiafilter.cpp:486, BatchCrystalliser.cpp:364.  Slice (a) first; it reaches every time-integrated
 > case, all of which close today (C258).
+> CORRECTION the same evening: "as a steady run does" was wrong -- a steady run whose balance fails
+> prints the alarm and still exits 0 with `converged` true (C498).
+> LANDED 2026-11-24 with C498: the closure alarm of a time-integrated run, the Williams-Otto vessel's refusal.
+> Not looked at: the same pattern in BatchDiafilter and BatchCrystalliser (their closures are gated in every run).
+
+> **C498. A REACTOR PUBLISHES A NEGATIVE FLOW, OR HIDES IT BY CLIPPING, AND THE RUN SAYS CONVERGED
+> (external review handed over by Vitor, 2026-11-24, its R-011 and R-012; BOTH REPRODUCED by the
+> architect on the current build before registering).**  R-011: cstr01_first_order with acetic acid
+> 0.5 -> 0.1 kmol/h (inside the Levenspiel page's own slider, 0.1 to 2): X = 0.6288 against a
+> stoichiometric ceiling of 0.2, acid mole fraction -0.357, exit 0, `converged` true.  Cause:
+> CSTR.cpp:384, the extent is bounded by the NAMED limiting reactant only and the rate is zero order in
+> the acid.  R-012: the same case through `reactions ( ... )` with every flow and the volume x1e-5: the
+> probe tolerance `-1e-6 * max(F_in, 1.0)` mol/s (CSTR.cpp ~826) is absolute, the negative is clipped to
+> zero and 44 % of mass is created; at x1 the same problem is refused.  AND, found here: at x1e-5 the
+> engine prints ELEMENT BALANCE FAILED and exits 0.  SLICE: (a) ONE admissibility guard where every
+> unit's outlets pass (runUnit, beside the negative-pressure refusal): an accepted outlet with a
+> component flow below zero by more than a RELATIVE roundoff is refused by name; (b) the CSTR's extent
+> bounded by every consumed species, its final state checked before any clip, the probe tolerance
+> relative; a rate law with no root in the domain is refused, never cut; (c) a steady run whose MASS or
+> ELEMENT balance breaks the gates' band is not converged and exits non-zero (an energy closure stays an
+> alarm: KNOWN_OPEN).  It reaches every steady case: full sweep alone.  The review's harness proposal
+> (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
+> closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
+> lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
+> LANDED 2026-11-24 (full sweep, alone, 22:30-23:13: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
+> and fixed, then their gates and the cases they reach).  What the sweep taught: (1) a PARTIAL element
+> ledger (a declared composition with unaccounted mass) cannot close better than its data, in choupoSolve and
+> in the dynamic driver: it alarms as PARTIAL-DATA and does not fail the run; (2) membrane08's softener is
+> the one shipped steady case that still breaks rule 4b (the exchanged cations stay on a resin that is not a
+> stream): RESIN-HOLDUP alarm, C500; (3) the CSTR's refusals are InfeasibleTrial, so a recycle trial shortens
+> its step; (4) check_element_balance now REQUIRES the failed run on its chlorine fixture.
 
 > **C497. THE GIBBS ELEMENT-POTENTIAL NEWTON CONVERGES ON AN ABSOLUTE mol/s RESIDUAL (found 2026-11-24 by
 > the cloud's homogeneity measurement, C491 (2)).**  FASTSET's 36 steady entries with every feed x2: 17
@@ -5747,6 +5853,13 @@ accepts today, and that is a policy call.
 > EXTERNAL programs, never linked: SLSQP and COBYLA (SciPy), COBYQA, IPOPT with finite differences, NOMAD,
 > OpenSQP, whichever install cleanly, each named with its version; the ones that do not are named.
 > Every table prints where Choupo LOSES.  No claim of "best" is made before that table exists.
+> OPUS REVIEW, 2026-11-24 22:10 (docs/audits/2026-11-24-c496-opus-review.md, the reviewer's report):
+> DOES NOT LAND BEFORE 2 DECEMBER.  ff4fbdc8ca: land after F1-F7 (the default path is unchanged; under
+> `fdMode auto` a steep penalty beside a flat optimum is certified non-stationary (x = 0.575 for 0.6), the
+> shadow-price bar is wrong when a CONSTRAINT carries the noise, the robust QP calls feasible problems
+> infeasible, and steps can leave the box -- optim05 simulates 17.5 K above its declared bound).
+> 79bf454c79 (noise-aware stopping): NOT; it certifies false optima.  In its place F11, a scaled
+> stationarity test.  `sqp` on main is untouched by any of this.
 
 > **THE 11-24 AFTERNOON STACK LANDED (C493, and the cloud's afternoon).**  Full sweep alone, reason
 > written before launch (restart-tears edits Flowsheet.cpp and main.cpp): 16:58-17:54, 2032 PASS / 1
@@ -6061,6 +6174,10 @@ accepts today, and that is a policy call.
 > and "pedido" are retired as names for it, in files and in conversation;
 > DEV.md 4c is the item's HISTORY (the narrative), never its status; PLAN.md
 > and the page are VIEWS of the backlog by horizon.
+> COMPLETENESS SHOWN (Vitor, 2026-11-24: "Podes por a % estimada de completude no backlog?"):
+> `bin/curate/backlog_progress.tsv`, one estimate per open item with its basis, shown by the page and
+> the views; the rule is in its header; an estimate, never a status.  Only the laptop's items: the
+> cloud manages its own progress (Vitor, same evening).
 
 > **C435 (Vitor, 2026-11-18 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before
@@ -14631,6 +14748,12 @@ accepts today, and that is a policy call.
 > the two defects first, reproduce, minimal fixes, suite, then
 > initialisation/recovery, then the full DME plant with its recycle.
 > STATUS: SCHEDULED for Saturday; A and B are small and come first.
+> DISPATCHED TO THE CLOUD 2026-11-24 (Vitor: "Passa isso hoje à outra sessão!", after finding it
+> PARTIAL when a November commit title had read "C184 done"; only A and B were).  Order: the A-D
+> feasibility diagnosis, the thermodynamic initial profile, adaptive CMO -> MESH -> fullMESH recovery,
+> then his DME plant (origin/claude/c184-distillation, branch only).  The architect had proposed to wait
+> for after 2 December; what carries of that is the landing rule: (2) and (3) land before only if
+> column14, column19, column20 and the PEQ plant do not move.
 
 > DONE 2026-11-02, defects A and B (126fc9b98, a general): B -- NewtonND
 > took non-improving steps at the line-search floor and returned a worse

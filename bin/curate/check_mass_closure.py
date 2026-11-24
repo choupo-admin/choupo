@@ -306,6 +306,109 @@ def refusal_arm():
     return out
 
 
+#  ---- The ADMISSIBILITY arm (C498, 2026-11-24) ---------------------------
+#
+#  THE REAL DEFECT, from an external review (R-011, R-012), both reproduced:
+#    R-011  cstr01_first_order with the feed acid cut from 0.5 to 0.1 kmol/h
+#           (inside the Levenspiel page's own slider): the extent was bounded
+#           by the NAMED limiting reactant only and the rate is zero order in
+#           the acid, so the outlet carried an acid mole fraction of -0.357,
+#           X = 62.9 % against a ceiling of 20 %, exit 0, `converged` true.
+#    R-012  the same case through `reactions ( ... )` with every flow and the
+#           volume x1e-5: an ABSOLUTE probe tolerance clipped the negative
+#           flow to zero and the plant created 44 % of the mass; the run
+#           printed ELEMENT BALANCE FAILED and still exited 0, converged true.
+#  The two engine facts this arm pins: a unit that publishes a negative flow
+#  is REFUSED (runUnit's admissibility guard, the CSTR's extent bounds), and
+#  a steady run whose mass or element balance breaks the band is NOT
+#  CONVERGED (exit non-zero).  Probes are built in temporary copies of
+#  cstr01_first_order; the controls are the admissible neighbours, because a
+#  guard that refuses everything passes every refusal probe.
+PROBE_CSTR = ROOT / "tutorials/steady/reactors/cstr01_first_order"
+
+
+def admissibility_arm():
+    """-> (findings, number of probes run)."""
+    import shutil
+    import case_records  # noqa: E402
+    import tempfile
+    out = []
+    if not PROBE_CSTR.is_dir():
+        return ["the admissibility arm's base case %s is gone -- a check that "
+                "cannot run must not pass" % PROBE_CSTR.name], 0
+    scale = 1.0e-5
+    #  (label, feed edits, V_R, multi-reaction grammar, reaction-file edit,
+    #   expected: None = must run clean, else the phrase a refusal must carry)
+    probes = [
+        ("R-011-acid-below-stoichiometry",
+         {"aceticAcid    0.5 kmol/h;": "aceticAcid    0.1 kmol/h;"},
+         None, False, None, "aceticAcid"),
+        ("R-012-reactions-list-at-1e-5",
+         {"ethanol    0.5 kmol/h;": "ethanol    %g kmol/h;" % (0.5 * scale),
+          "aceticAcid    0.5 kmol/h;": "aceticAcid    %g kmol/h;" % (0.1 * scale)},
+         0.005 * scale, True, None, "no root inside the feasible region"),
+        ("non-conserving-stoichiometry",
+         {}, None, False,
+         ("component ethylAcetate;  nu  1;", "component ethylAcetate;  nu  2;"),
+         "RUN NOT CONVERGED"),
+        ("control-acid-0.3", {"aceticAcid    0.5 kmol/h;": "aceticAcid    0.3 kmol/h;"},
+         None, False, None, None),
+        ("control-equimolar-1e-5",
+         {"ethanol    0.5 kmol/h;": "ethanol    %g kmol/h;" % (0.5 * scale),
+          "aceticAcid    0.5 kmol/h;": "aceticAcid    %g kmol/h;" % (0.5 * scale)},
+         0.005 * scale, True, None, None),
+    ]
+    with tempfile.TemporaryDirectory(prefix="choupo-admiss-") as tmp:
+        for label, feed, vr, multi, rxn, phrase in probes:
+            case = Path(tmp) / label
+            case_records.copytree(PROBE_CSTR, case)
+            pd = case / "system" / "postDict"
+            if pd.exists():
+                pd.unlink()
+            edits = [(case / "0" / "feed", dict(feed))]
+            fd = case / "system" / "flowsheetDict"
+            fe = {}
+            if vr is not None:
+                fe["V_R 0.005;"] = "V_R %.10g;" % vr
+            if multi:
+                fe["reaction    esterification_etac;"] = \
+                    "reactions ( esterification_etac );"
+            edits.append((fd, fe))
+            if rxn:
+                edits.append((case / "constant" / "reactions", {rxn[0]: rxn[1]}))
+            ok = True
+            for f, d in edits:
+                txt = f.read_text()
+                for old, new in d.items():
+                    if old not in txt:
+                        out.append("probe %s could not spoil %s: the text %r is"
+                                   " not there any more" % (label, f.name, old))
+                        ok = False
+                        break
+                    txt = txt.replace(old, new, 1)
+                if not ok:
+                    break
+                f.write_text(txt)
+            if not ok:
+                continue
+            p = subprocess.run([str(ROOT / "choupoSolve"), str(case)],
+                               capture_output=True, text=True, timeout=300)
+            body = p.stdout + p.stderr
+            if phrase is None:
+                if p.returncode != 0 or '"converged": true' not in body:
+                    out.append("control %s was REFUSED (exit %d) -- an "
+                               "admissible reactor must still solve"
+                               % (label, p.returncode))
+            elif p.returncode == 0 or '"converged": true' in body:
+                out.append("probe %s was ACCEPTED (exit %d) -- a state that "
+                           "creates or loses matter must be refused or not "
+                           "converged" % (label, p.returncode))
+            elif phrase not in body:
+                out.append("probe %s refused, but its message never says "
+                           "'%s' -- the refusal must name why" % (label, phrase))
+    return out, len(probes)
+
+
 #  ---- The ATOM scope arm (2026-09-25) ------------------------------------
 REPORT_LINE = re.compile(r"\[report\] (massBalance|elementBalance) -> (\S+)")
 
@@ -649,6 +752,8 @@ def main() -> int:
                 "renamed): an arm that reads nothing passes forever."
                 % (rel, unit))
     bad += refusal_arm()
+    admBad, admN = admissibility_arm()
+    bad += admBad
     atomBad, atomSeen, atomNote = atom_scope_arm(ranPlants)
     atomNotJudged = atomNote if atomSeen == 0 else ""
     bad += atomBad
@@ -693,7 +798,12 @@ def main() -> int:
           "case(s) whose closure above therefore says nothing about that "
           "term; %d are verified by the unit's own second route (every "
           "solute balanced on its own) and %d are NOT VERIFIED (%s); every "
-          "in-scope witness among %d was read.%s%s"
+          "in-scope witness among %d was read.%s%s  ADMISSIBILITY (C498, "
+          "review R-011/R-012): %d probes were built on cstr01_first_order -- "
+          "a reactant driven below zero, the same at 1e-5 scale through the "
+          "reactions list, a non-conserving stoichiometry -- and each was "
+          "refused or left NOT CONVERGED by name, while two admissible "
+          "neighbours still solved."
           % (checked, BAND, processScope, len(PROBES), len(noBoundary),
              len(announced), len(unrun), len(silent),
              ("NOT JUDGED in this scope" if atomNotJudged else
@@ -711,7 +821,7 @@ def main() -> int:
              len(BY_CONSTRUCTION_WITNESSES),
              scope_sentence(checked + len(noBoundary) + len(announced)
                             + len(unrun) + len(silent), len(outOfScope)),
-             atomNotJudged))
+             atomNotJudged, admN))
     return 0
 
 

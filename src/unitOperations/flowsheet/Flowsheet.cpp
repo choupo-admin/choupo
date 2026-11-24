@@ -77,6 +77,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -1076,6 +1077,60 @@ std::vector<EnergyWire> resolveEnergyInputs(const DictPtr&                      
     return resolved;
 }
 
+//  Admissibility of a published outlet (C498).  Relative tolerance on the
+//  scale of the unit's own throughput; see the guard in runUnit.
+namespace {
+constexpr double kAdmitRel = 1.0e-6;
+
+double inletThroughput(const std::map<std::string, ProcessStream>& streams,
+                       const DictPtr& udict)
+{
+    std::vector<std::string> names;
+    if (udict->found("in"))          names.push_back(udict->lookupWord("in"));
+    else if (udict->found("inputs")) names = udict->lookupWordList("inputs");
+    double sum = 0.0;
+    for (const auto& n : names)
+    {
+        auto it = streams.find(n);
+        if (it != streams.end() && std::isfinite(it->second.F))
+            sum += std::fabs(it->second.F);
+    }
+    return sum;
+}
+
+std::optional<std::string> outletInadmissible(const ProcessStream& s,
+                                              const ThermoPackage& thermo,
+                                              double inletF)
+{
+    auto num = [](double v) {
+        std::ostringstream o; o << std::setprecision(6) << v; return o.str(); };
+    auto cname = [&](std::size_t i) {
+        return i < thermo.components().size() ? thermo.components()[i].name()
+                                              : std::string("#") + std::to_string(i); };
+    if (!std::isfinite(s.F) || !std::isfinite(s.T) || !std::isfinite(s.vf))
+        return std::string("has a non-finite total flow, temperature or vapour fraction (F = ")
+            + num(s.F) + ", T = " + num(s.T) + ", vf = " + num(s.vf) + ")";
+    for (std::size_t i = 0; i < s.z.size(); ++i)
+        if (!std::isfinite(s.z[i]))
+            return "has a non-finite mole fraction of component '" + cname(i) + "'";
+    //  scale: the unit's inlet throughput, or its own outlet's when it has none
+    const double scale = (inletF > 0.0) ? inletF : std::fabs(s.F);
+    if (s.F < -kAdmitRel * scale)
+        return "has a NEGATIVE total flow, F = " + num(s.F * 3600.0) + " kmol/h";
+    for (std::size_t i = 0; i < s.z.size(); ++i)
+    {
+        const double flow = s.F * s.z[i];
+        if (flow < -kAdmitRel * scale)
+            return "has a NEGATIVE flow of component '" + cname(i) + "', "
+                + num(flow * 3600.0) + " kmol/h (mole fraction " + num(s.z[i])
+                + ", unit throughput " + num(scale * 3600.0) + " kmol/h)";
+    }
+    if (s.vf < -kAdmitRel || s.vf > 1.0 + kAdmitRel)
+        return "has a vapour fraction outside [0, 1], vf = " + num(s.vf);
+    return std::nullopt;
+}
+} // namespace
+
 //  Trial sweeps (quiet: a Newton probe or a Wegstein iterate) that met a
 //  NEGATIVE outlet pressure and handled it as before; reset when a recycle
 //  solve starts, announced when it ends.
@@ -1308,6 +1363,37 @@ void runUnit(const DictPtr&                                          udict,
                   << " pressure.";
                 throw std::runtime_error("Flowsheet: " + m.str());
             }
+        }
+        //  ---- ADMISSIBILITY OF THE OUTLET (DEV.md 4c C498; external review
+        //  R-011, R-012) -------------------------------------------------
+        //  A stream is a total flow, a composition and a vapour fraction; a
+        //  unit that publishes a NEGATIVE component flow, a vapour fraction
+        //  outside [0, 1] or a non-finite number has not computed a state
+        //  that exists.  cstr01_first_order with the feed acid cut from 0.5
+        //  to 0.1 kmol/h published an acid mole fraction of -0.357 and the
+        //  run said "converged"; the same problem scaled by 1e-5 was clipped
+        //  to zero and created 44 % of mass.  ONE guard here, where every
+        //  unit's outlets pass, so no unit has to remember it.
+        //  THE THRESHOLD IS RELATIVE, never a mol/s floor: roundoff and the
+        //  inner solvers' stopping tests are relative to the size of what
+        //  flows, so a negative flow is admitted only up to kAdmitRel times
+        //  the unit's own inlet throughput (the sum of its inlets' total
+        //  flows; a unit with no inlet -- a source -- is measured against its
+        //  own outlet's total flow, so a zero-feed unit divides by nothing and
+        //  an absolute floor is never needed).  A floor in mol/s would hide
+        //  a real fault in exactly the small-scale problem it was set for.
+        //  On a TRIAL sweep it is an InfeasibleTrial, as the negative pressure
+        //  above (the line search shortens the step); on an accepted pass it
+        //  is refused by unit, stream, component and value.
+        if (auto why = outletInadmissible(s, thermo, inletThroughput(streams, udict)))
+        {
+            if (quiet)
+                throw InfeasibleTrial("unit '" + uname + "' (" + utype
+                    + "): outlet stream '" + outputs[k] + "' " + *why);
+            throw std::runtime_error("Flowsheet: unit '" + uname + "' (" + utype
+                + "): outlet stream '" + outputs[k] + "' " + *why
+                + " -- the unit published a state that does not exist, so the"
+                + " run is refused rather than reported as converged.");
         }
         if (s.P <= 0.0) s.P = P_inherit;
         s.producedBy      = uname;                       // TD-17: who, and
