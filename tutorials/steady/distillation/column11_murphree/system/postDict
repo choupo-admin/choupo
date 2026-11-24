@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column11_murphree -- the view the lesson opens on (DEV.md 4c C477).
+
+  The lesson: with a Murphree efficiency of 0.70 the same 15-stage column
+  separates less than column09's ideal stages (distillate benzene 0.9179
+  against 0.9510, as the case's header records).
+
+  The plot: the benzene composition tray by tray, liquid and vapour.  One run
+  draws one column, so column09's ideal profile cannot sit on this figure; the
+  gap between the two curves at each tray is what the efficiency measures, and
+  the note says which end values to compare with column09.
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_tray;
+        type    profile;
+        title   "Benzene tray by tray with Murphree efficiency 0.70";
+        xAxis   { label "tray (1 = top, 15 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "Read it: the vapour leaving a tray is less rich in benzene than equilibrium with the liquid on it would give, so the two curves sit closer together than column09's (E_MV = 1) and the top composition stalls short of it: the top liquid reads 0.852 here against 0.883 in column09, and the bottom 0.082 against 0.049. Open column09 beside this figure to compare. The marker is the feed tray.";
+        series
+        (
+            { name liquid; label "liquid on the tray"; unitOp column11; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name vapour; label "vapour leaving the tray"; unitOp column11; table profile; x stage; y y_benzene; style linesMarkers; }
+            { name feedTray; label "feed tray (8)"; unitOp column11; table profile; select { stage 8; } x stage; y x_benzene; style markers; }
+        );
+    }
+);

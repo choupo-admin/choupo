@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  totalReflux01_c6c7_yanagiRun628 -- the view the lesson opens on (DEV.md 4c C477).
+
+  The lesson: at total reflux the column is pinned by the reboiler liquid
+  (28.4 mol % cyclohexane) and the boil-up, and the ideal trays climb the
+  cyclohexane profile further than the real trays of FRI run 628 did.
+
+  The plot: the cyclohexane mole fraction tray by tray, liquid and vapour, on
+  the ten ideal trays plus the reboiler.  The measured profile of the run
+  (Yanagi and Sakata 1982, Table III: reflux 98.8 %, tray 10 97.4 %, tray 8
+  93.7 %, tray 5 81.9 %, tray 4 73.2 %) is quoted in the case's flowsheetDict
+  header, not held as a data file under constant/, so it is NOT drawn here: a
+  parity or overlay against it needs a reference CSV, which no case file
+  carries today.  The figure shows the model side only.
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_tray;
+        type    profile;
+        title   "Total reflux, ideal trays: cyclohexane tray by tray";
+        xAxis   { label "stage (1 = top tray, 11 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "cyclohexane mole fraction"; unit "-"; scale linear; }
+        note    "Read it: the profile climbs from the reboiler's 0.284 to nearly pure cyclohexane at the top, tray by tray. The measured run (case header) had a reflux of 98.8 % cyclohexane and an overall tray efficiency of 70.8 %; these trays are ideal, so the column separates more than that run did, and the profile is the ceiling the real trays fall short of. The tray-by-tray measured values are in the header but not drawn here. The vapour leaving a tray equals the liquid on the tray above, which is the total-reflux operating line.";
+        series
+        (
+            { name liquid; label "liquid on the tray"; unitOp column; table profile; x stage; y x_cyclohexane; style linesMarkers; }
+            { name vapour; label "vapour leaving the tray"; unitOp column; table profile; x stage; y y_cyclohexane; style linesMarkers; }
+        );
+    }
+);
