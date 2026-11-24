@@ -94,10 +94,16 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
 
 ## Before the day
 
-- [ ] Re-read every quoted number from its file (above).
+- [x] Re-read every quoted number from its file (above).  Done 2026-11-24 after the
+      C256 landing (afd3f8ff91): FEHE 64 380.7 kW and its four temperatures, TCI
+      167.86 M EUR, NPV -3 287.7 M EUR, break-even 1.952 and 1.685 EUR/kg read from
+      the PEQ `expected`; column19 duties from its `expected`; every case of the path
+      PASSED in the full sweep of that morning, both EduTools in `--gui` 49/0.
 - [ ] C479 landed (the U.A.LMTD line, variable units, buffer names, the MTBE
       comparison on screen); else use the traps' words.
-- [ ] WASM rebuilt from the landed main; the site serves it.
+- [x] WASM rebuilt from the landed main; the site serves it (rebuilt 2026-11-24
+      10:01 at afd3f8ff91; publish-site succeeded for that commit).  Redo if an engine
+      change lands before the day.
 - [ ] Vitor rehearses the whole path once in the browser, on the machine and
       the network of the day, and notes any screen that surprised him.
 - [ ] The 107 advisories under the plant's run header: decide whether the
