@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  optim07_mads_mixed_column -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "The N-vs-R trade solved in ONE MADS run: nStages (integer) and reflux (continuous) searched together, the purity spec on the progressive barrier, against optim06 enumerating one SQP per stage count";
+
+verbosity     1;
