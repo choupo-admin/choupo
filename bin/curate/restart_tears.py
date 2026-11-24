@@ -22,9 +22,15 @@ takes the engine's word for exactness:
     differ only in what acts after the solve;
   * the first arm of a solve key runs in full (with the flag, so the engine
     leaves its record) and its stdout/stderr are what the gate sees, as before;
-  * when that full solve took long enough to be worth it, the same directory is
-    run AGAIN from the record and every file under converged/ reports/ design/
-    postProcessing/ is compared BYTE FOR BYTE with the full run's.  Identical =>
+  * EVERY solve key is proven (no duration threshold: whether a gate sees a
+    restart or a full run must not depend on how fast the machine was).  The
+    four output folders are snapshotted and then DELETED, the same directory is
+    run AGAIN from the record, and the rerun must (1) print the engine's
+    `Recycle restart:` line -- a refused record makes the rerun a second full
+    solve, which would compare equal and prove nothing -- and (2) reproduce
+    every file under converged/ reports/ design/ postProcessing/ BYTE FOR BYTE
+    (a folder the full run did not write must stay absent; a file only a full
+    solve writes cannot survive from the first run).  Identical =>
     the solve key is PROVEN exact and later arms of it restart.  Different (a
     unit seeds an inner iteration from an outlet a previous sweep left -- the
     waterCooler of ammonia02_full_plant, the PFR bed of ammoniaReactor04) =>
@@ -56,7 +62,7 @@ RECORD = "converged.restart"
 COMPARE_DIRS = ("converged", "reports", "design", "postProcessing")
 OUTPUT_DIRS = ("reports", "converged", "design", "iterations", "postProcessing")
 NOT_SOLVE_INPUTS = ("system/layoutDict", "system/postDict", RECORD)
-MIN_SECONDS = 3.0   # a full solve shorter than this is not worth a proof run
+RESTART_LINE = "Recycle restart:"   # what the engine prints when it APPLIED the record
 
 
 def _same_tree(a: Path, b: Path) -> bool:
@@ -117,7 +123,7 @@ class Restarter:
         try:
             out, err, rc = engine(flags)
             self.end(d, ctx, rc, time.time() - t0,
-                     lambda: engine(["--restart-tears"])[2])
+                     lambda: (lambda o: (o[2], o[0]))(engine(["--restart-tears"])))
         except BaseException:
             self._release(ctx, None)
             raise
@@ -163,7 +169,8 @@ class Restarter:
 
     # ---- after the run ------------------------------------------------------
     def end(self, d: Path, ctx, rc: int, seconds: float, rerun) -> None:
-        """`rerun()` runs the engine again in `d` with the flag, returns its rc."""
+        #  Called OUTSIDE any caller's slot semaphore: the rerun takes its own.
+        """`rerun()` runs the engine again in `d` with the flag, returns (rc, stdout)."""
         if ctx is None:
             return
         mode, key = ctx
@@ -172,7 +179,7 @@ class Restarter:
             rec_path.unlink(missing_ok=True)
             return
         # learn
-        if rc != 0 or not rec_path.is_file() or seconds < MIN_SECONDS:
+        if rc != 0 or not rec_path.is_file():
             rec_path.unlink(missing_ok=True)
             self._release(ctx, None)
             return
@@ -183,21 +190,25 @@ class Restarter:
             for name in COMPARE_DIRS:
                 if (d / name).exists():
                     shutil.copytree(d / name, snap / name)
-            rc2 = rerun()
-            exact = (rc2 == 0) and all(_same_tree(snap / n, d / n)
-                                       for n in COMPARE_DIRS)
+            #  Nothing of the full run may survive into the comparison: the engine
+            #  does not wipe reports/, design/ or postProcessing/.
+            for name in COMPARE_DIRS:
+                shutil.rmtree(d / name, ignore_errors=True)
+            rc2, out2 = rerun()
+            exact = (rc2 == 0) and (RESTART_LINE in out2) \
+                and all(_same_tree(snap / n, d / n) for n in COMPARE_DIRS)
             with self._lock:
                 self.proofs += 1
                 if not exact:
                     self.refused += 1
             if exact:
                 verdict = text
-            else:
+        finally:
+            if verdict is None:     # refused (or the rerun raised): the full run's outputs stand
                 for name in COMPARE_DIRS:
                     shutil.rmtree(d / name, ignore_errors=True)
                     if (snap / name).exists():
                         shutil.copytree(snap / name, d / name)
-        finally:
             shutil.rmtree(snap, ignore_errors=True)
             rec_path.unlink(missing_ok=True)
             self._release(ctx, verdict)

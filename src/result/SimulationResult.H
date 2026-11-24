@@ -520,6 +520,12 @@ struct SimulationResult
     //  not emitted) for every other case.
     std::string                                                   postProcessingBlock;
     bool                                                           converged = true;
+    //  A run seeded from `--restart-tears` says so (and is not a plain run: the
+    //  iteration-time history and advisories of a full solve are not re-emitted).
+    //  Emitted as the `restart` block only when `restartApplied`; absent otherwise.
+    bool                                                           restartApplied = false;
+    std::string                                                    restartRecord;
+    int                                                            restartIterationsSkipped = 0;
 
     //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------
     //  The manifest's claim and its RETRACTION must travel together.  Until

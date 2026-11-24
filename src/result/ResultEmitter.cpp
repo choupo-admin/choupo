@@ -125,6 +125,12 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     os << "<<<Choupo:result-begin>>>\n";
     os << "{ \"version\": 1,\n";
     os << "  \"converged\": " << (r.converged ? "true" : "false") << ",\n";
+    //  A restarted run is labelled (absent when the flag is off: default output unchanged).
+    if (r.restartApplied)
+        os << "  \"restart\": { \"applied\": true, \"record\": " << esc(r.restartRecord)
+           << ", \"iterationSkipped\": " << r.restartIterationsSkipped
+           << ", \"note\": \"tears seeded from the record; the iteration history and the iteration-time"
+              " advisories of a full solve are not re-emitted\" },\n";
 
     //  ---- the provenance seal, tri-state (forum 2026-08-02) -------------
     //  Read HERE, at the ONE point every result passes through, so the

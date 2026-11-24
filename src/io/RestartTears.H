@@ -53,6 +53,19 @@ Description
     solves in full, announced: the flag is a speed aid and never a way to fail
     a case that the plain command solves.
 
+    (3b) THE CATALOGUE FILES THE ASSEMBLY READ.  The package identity names
+    record HOMES and law names, not the numbers inside the records, so the
+    record also holds a hash of the BYTES of every file the run parsed up to
+    the moment the session opens (core/ReadLog: the one place a record file
+    becomes a dictionary), outside the case folder (the case's own files are
+    in (2)).  A changed Antoine constant in a catalogue record is refused by
+    the name of the file.  What this cannot see -- a unit reading a record
+    after the session opened, a reader that does not go through
+    `Dictionary::fromFile` -- is caught by the LAST GUARD: after the final
+    pass the flowsheet measures the tear residual of the seeded x against the
+    outlets G(x), with the loop's own measure and tolerance, and a record that
+    is not a fixed point of these inputs makes the run NOT converged.
+
     WHAT IT DOES NOT PROMISE.  The tears are the loop's only coordinate, but a
     unit may seed an inner iteration from an outlet a previous sweep left; the
     restarted final pass starts those cold.  The result is then exact only
@@ -94,10 +107,16 @@ struct Record
     std::string solver;            ///< the solver that converged
     bool        converged = false;
     scalar      residual  = 0.0;
-    int         iteration = 0;
+    int         iteration = 0;        ///< the pseudo-time INSTANT of the converged final pass (iterations + 1)
+    int         iterations = 0;       ///< solver iterations the converging solve took ("converged in N")
     /// per tear: F, T, P, vf, z, s -- the values ENTERING the final pass
     std::map<std::string, ProcessStream> tears;
+    /// (file name, hash of its bytes) of every file the assembly parsed outside the case
+    std::vector<std::pair<std::string, std::string>> reads;
 };
+
+/// Hash the bytes of every file in core/ReadLog outside `caseDir`, sorted by path.
+std::vector<std::pair<std::string, std::string>> hashReads(const std::filesystem::path& caseDir);
 
 /// The conventional file next to `converged/`.
 std::filesystem::path recordPath(const std::filesystem::path& caseDir);
@@ -144,6 +163,7 @@ public:
 private:
     std::filesystem::path         dir_;
     std::string                   package_, inputHash_, binaryHash_;
+    std::vector<std::pair<std::string, std::string>> reads_;
     std::shared_ptr<const Record> record_;
     Record                        kept_;
     bool                          haveKept_ = false;

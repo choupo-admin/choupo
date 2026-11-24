@@ -893,13 +893,28 @@ build that wrote it, of every input the solve reads --- the case's files
 except \file{system/layoutDict} and \file{system/postDict}, which act after
 the solve, and the \file{system/} and \file{constant/} of up to six parent
 folders --- and of the thermophysical package the run assembled (which
-covers the catalogue records the assembly resolved).  When all three equal
-the present run's, the tears are seeded from the record, the iteration is
-skipped, and the same final pass runs; the log says so
-(\code{Recycle restart: ... seeded EXACTLY ...}).  When any differs the run
+covers the catalogue records the assembly resolved by name), and of the
+\emph{bytes} of every catalogue file the package assembly parsed (a changed
+Antoine constant in a record is a different input and is named by its file).
+When all of them equal the present run's, the tears are seeded from the
+record, the iteration is skipped, and the final pass runs; the log says so
+(\code{Recycle restart: ... seeded bit for bit ...}).  The tears are the
+exact values the last pass entered with; the non-tear unit state and fields
+such as carried quantities, speciation and enthalpies come from \file{0/}, as
+in any run.  When any differs the run
 prints which (\code{[restart] the record ... is not used: an input the solve
 reads ... differs}) and solves in full: the flag never makes a case fail
 that the plain command solves.  It is not used under an \file{outerDict}.
+
+\paragraph{The last guard.}  Some changes no fingerprint can see (a unit
+reading a record outside the package, a file under \file{data/local}).  After
+the final pass the engine therefore measures the residual between the seeded
+tears and the outlets of that pass, with the measure and the tolerance
+(\code{recycleTol}) of the loop that wrote the record, and prints it
+(\code{Recycle restart check: ...}).  A record that is not a fixed point of
+the present inputs makes the run \emph{not converged}, with the reason named
+and a nonzero exit code; the engine does not re-solve in that process.  Run
+again without \code{-{}-restart-tears}.
 
 \paragraph{What it does not promise.}  The tears are the loop's only
 coordinate, but a unit may start an inner iteration from an outlet a previous
@@ -910,6 +925,15 @@ is for runs whose consumer compares the results (the layout and design-sheet
 gates restart an arm only after proving, file by file, that the restarted
 run reproduces the full one), and a result that matters is confirmed by one
 plain run.
+
+\paragraph{A restarted run is not a plain run.}  The iteration-time items of
+a full solve are \emph{not re-emitted}: the iteration history (the convergence
+curves of the tear loop) is absent, and so are the advisories raised during
+the iteration (on one test plant the validity section lists three advisories
+where the plain run lists five).  The result JSON of a restarted run carries a
+\code{restart} block (\code{applied}, the record, \code{iterationSkipped});
+it is absent from every plain run.  A result that matters --- one you report,
+cite or compare against a reference --- needs a plain run.
 
 \subsection{Units on every scalar}\label{sec:units-suffixes}
 

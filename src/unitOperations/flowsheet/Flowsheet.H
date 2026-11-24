@@ -209,6 +209,8 @@ public:
     void setTearSnapshotHook(TearSnapshotHook h) { onTearSnapshot_ = std::move(h); }
     /// true when the last solve() seeded from the record instead of iterating
     bool tearRestartApplied() const { return tearRestartApplied_; }
+    /// solver iterations the applied record let this run skip (0 when none)
+    int  tearRestartIterationsSkipped() const { return tearRestartSkipped_; }
 
     int solve(const DictPtr& dict,
               const ThermoPackage& thermo,
@@ -492,6 +494,7 @@ private:
     std::shared_ptr<const restartTears::Record>            tearRestart_;
     TearSnapshotHook                                       onTearSnapshot_;
     bool                                                   tearRestartApplied_ = false;
+    int                                                    tearRestartSkipped_ = 0;
 };
 
 } // namespace Choupo

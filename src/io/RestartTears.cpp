@@ -34,6 +34,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "io/RestartTears.H"
+#include "core/ReadLog.H"
 
 #include <algorithm>
 #include <cstdint>
@@ -176,6 +177,23 @@ std::string hashInputs(const fs::path& caseDirIn)
     return h.hex();
 }
 
+std::vector<std::pair<std::string, std::string>> hashReads(const fs::path& caseDirIn)
+{
+    std::error_code ec;
+    const fs::path caseDir = fs::weakly_canonical(caseDirIn, ec);
+    std::vector<std::pair<std::string, std::string>> out;
+    for (const auto& path : readlog::state().paths)      // std::set: sorted by path
+    {
+        const fs::path canon = fs::weakly_canonical(path, ec);
+        const std::string c = canon.generic_string(), d = caseDir.generic_string() + "/";
+        if (c.compare(0, d.size(), d) == 0) continue;     // the case's files are hashed by hashInputs
+        Hasher h;
+        const std::string name = fs::path(path).filename().string();
+        out.emplace_back(name, hashFile(h, canon) ? h.hex() : std::string("unreadable"));
+    }
+    return out;
+}
+
 std::string hashBinary()
 {
 #if defined(__linux__) && !defined(__EMSCRIPTEN__)
@@ -221,7 +239,10 @@ bool write(const fs::path& path, const Record& r)
       << "solver " << r.solver << ";\n"
       << "converged " << (r.converged ? 1 : 0) << ";\n"
       << "residual " << hexOf(r.residual) << ";\n"
-      << "iteration " << r.iteration << ";\n";
+      << "instant " << r.iteration << ";\n"
+      << "iterations " << r.iterations << ";\n";
+    for (const auto& kv : r.reads)
+        o << "read " << kv.second << " " << kv.first << ";\n";
     for (const auto& kv : r.tears)
     {
         const ProcessStream& s = kv.second;
@@ -256,7 +277,13 @@ bool read(const fs::path& path, Record& r, std::string& why)
         else if (key == "solver")    ls >> r.solver;
         else if (key == "converged") { int v = 0; ls >> v; r.converged = (v != 0); }
         else if (key == "residual")  { std::string v; ls >> v; r.residual = num(v); }
-        else if (key == "iteration") ls >> r.iteration;
+        else if (key == "instant")    ls >> r.iteration;
+        else if (key == "iterations") ls >> r.iterations;
+        else if (key == "read")
+        {
+            std::string h, n; ls >> h; std::getline(ls >> std::ws, n);
+            r.reads.emplace_back(n, h);
+        }
         else if (key == "tear")
         {
             std::string name, tag, v;
@@ -324,6 +351,7 @@ Session::Session(const fs::path& caseDir, const std::string& packageIdentity,
     package_    = packageIdentity;
     inputHash_  = hashInputs(caseDir);
     binaryHash_ = hashBinary();
+    reads_      = hashReads(caseDir);
     if (inputHash_.empty() || binaryHash_.empty())
     {
         std::cout << "[restart] the inputs or the build cannot be hashed on this"
@@ -351,6 +379,23 @@ Session::Session(const fs::path& caseDir, const std::string& packageIdentity,
     else if (rec->packageIdentity != package_)
         why = "the thermophysical package assembled now is not the one it was"
               " written for";
+    else if (rec->reads != reads_)
+    {
+        std::string which = "the set of files it read differs";
+        for (std::size_t i = 0; i < std::max(rec->reads.size(), reads_.size()); ++i)
+        {
+            if (i >= rec->reads.size())      { which = "'" + reads_[i].first + "' was not read when it was written"; break; }
+            if (i >= reads_.size())          { which = "'" + rec->reads[i].first + "' is no longer read"; break; }
+            if (rec->reads[i] != reads_[i])
+            {
+                which = rec->reads[i].first == reads_[i].first
+                      ? "the catalogue file '" + reads_[i].first + "' has other contents than when it was written"
+                      : "'" + reads_[i].first + "' replaces '" + rec->reads[i].first + "' in the files read";
+                break;
+            }
+        }
+        why = "a catalogue file the package assembly read differs: " + which;
+    }
     else if (!rec->converged)
         why = "the run that wrote it had not converged";
     if (why.empty()) { record_ = rec; return; }
@@ -366,6 +411,7 @@ std::function<void(Record&)> Session::hook()
         r.binaryHash      = binaryHash_;
         r.inputHash       = inputHash_;
         r.packageIdentity = package_;
+        r.reads           = reads_;
         kept_             = r;
         haveKept_         = true;
     };

@@ -329,6 +329,12 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
         r.convergence["Energy balance (global)"] = flowsheet.globalEnergyResiduals();
     r.profiles    = flowsheet.unitProfiles();  r.closuresByConstruction = flowsheet.closuresInTopologyOrder();   // C174
     r.converged   = (rc == 0);
+    if (flowsheet.tearRestartApplied())
+    {
+        r.restartApplied = true;
+        r.restartRecord  = restartTears::recordPath(g_restartCase).filename().string();
+        r.restartIterationsSkipped = flowsheet.tearRestartIterationsSkipped();
+    }
     r.advisories  = AdvisoryLog::instance().entries();   // drain this pass's advisories
     r.divergences = ProblemDivergence::instance().entries();   // separate channel
     r.thermoResolution = ThermoResolutionLog::instance().entries();  // pair provenance
