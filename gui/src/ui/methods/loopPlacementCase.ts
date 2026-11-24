@@ -160,6 +160,12 @@ export function buildLoopCase(
     { file: FILES.control, key: "endTime", value: end }),
     { file: FILES.control, key: "writeInterval", value: 1000 });
 
+  // A rewired case is not the case its declared figures were written for: the
+  // witness's views name controllers (LC1, TC1) a wiring may remove, and the
+  // engine refuses a view whose source is absent before it integrates (C487).
+  // The page draws its own figures from the trajectory, so the views go.
+  delete out["system/postDict"];
+
   if (feed !== null)
     out[FILES.feed] = applyScalarOverride(need(raw, FILES.feed),
       { file: FILES.feed, key: "2Methyl1Propanol", value: feed, unit: "kmol/s" });
