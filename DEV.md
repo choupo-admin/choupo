@@ -5588,6 +5588,58 @@ accepts today, and that is a policy call.
 > EduTool!"): how an engineer checks a simulation without an experiment -- the proofs of nine, each
 > broken on purpose so the student sees which law catches it; its pedagogical scope is put to Vitor
 > before it is dispatched (CLAUDE.md section 10).
+> **ONE OPTIMISER THAT EVOLVES (Vitor, 2026-11-24: "acho que vamos parar e ficar só com o SQP que eu acho
+> que do ponto de vista de Pareto e John Gall é um optimizador ótimo").**  Weighed with the bench on the
+> table (docs/audits of the cloud, C496): AGREED on the direction -- our four flowsheets are already
+> solved 12/12 at 1e-2 and 11/12 at 1e-4, and no method added to them has earned its simulations; a zoo of
+> optimisers is not a system that grew from one that worked.  NOT agreed on "optimal": on 18 clean
+> Hock-Schittkowski problems the SQP solves 0.67 / 0.61 / 0.39 at tau 1e-2 / 1e-4 / 1e-6 against IPOPT's
+> 0.94 / 0.89 / 0.78 and SLSQP's 0.89 / 0.83 / 0.72 (forward step fixed at 1e-5; line-search failures), and
+> with noise of 1e-8 to 1e-6 it is ahead of SLSQP, trust-constr and IPOPT.  RULED: the only method work
+> is making THE SQP robust (C496: adaptive difference step, merit/line search, both opt-in, judged once on
+> the bench); the evolutionary, CMA-ES and Bayesian additions stop; Nelder-Mead stays (cheapest without
+> constraints on our cases); MADS lands opt-in and is REMOVED if the bench finds no problem class where it
+> wins.  Two flowsheet cases are repaired and three added so the bench has something real to run on.
+> STOPPED, the same evening (Vitor to the cloud): the large comparison (the 106-problem re-run and its
+> extra columns, 969 runs made) does not run; the runs and the protocol stay unread on the cloud's local
+> branch.  CONSEQUENCE, accepted: the improved SQP is judged ONCE on the 18 problems of the v1 protocol
+> against its published table, no externals re-run; and MADS is decided on the evidence that exists
+> (more simulations on every case measured, no class found where it wins): KEPT, FROZEN, opt-in,
+> described as such.  The condition "removed if the bench finds no class" is withdrawn with the bench.
+
+> **C499. BAYESIAN OPTIMISATION, ON THE PAGE FIRST (Vitor, 2026-11-24, after asking what it is: "Que fixe!
+> E tem naturalmente que ficar nos guias e no Edutool!").**  WEIGHED: the EduTool yes, the guides only
+> when the engine has it (rule 4d documents what is implemented).  SCOPE: one card in the `optimizers`
+> EduTool -- a one-variable curve, the points evaluated, a Gaussian-process mean and band computed in the
+> page, the next point by expected improvement, the student stepping it and watching the band shrink --
+> saying that Choupo's engine has no such method; a sentence in the guides' "what the optimiser is not".
+> The method itself, when the bench says it earns its place on a case of ours (an expensive plant, few
+> variables); multi-start of the SQP and the evolutionary columns come with it (cloud, C496 re-run).  An
+> own Gaussian process, short and legible, is the only route that keeps the glass box.  No claim before
+> the measurement.
+> GROWN THE SAME EVENING (Vitor, asked whether he meant the card or the optimiser: "Eu também quero isso!
+> Ficava já feito!").  WEIGHED: it is one more method ninety minutes after the ruling for one; ACCEPTED as
+> an opt-in in new files, on the cloud, because its niche is distinct (expensive simulations, few
+> variables) and it reaches no existing case, with an acceptance rule written first: offered to main only
+> if it needs fewer simulations than `sqp` on an expensive shipped plant at 1e-2, median of five seeds;
+> otherwise it stays on its branch with the table.  One measurement, not the large bench (stopped).
+> WITHDRAWN the same hour (Vitor: "Fica com um case study que achares melhor!  A ideia é os alunos terem
+> mais essa ferramenta! ... ou então comparas só num caso!").  AGREED: the acceptance rule and the second
+> case are dropped.  One case study, a copy of the MTBE reactive column (expensive, few variables, a
+> constraint, runs that can fail), compared ONCE with `sqp` there in a README table that says what it is;
+> it lands opt-in when it runs and is documented.
+
+> PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
+> "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
+> acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
+> optimizer walking out of the physical region, C498 admissibility) is the evidence rule 4e(4) asks
+> for.  Order, once the cloud's running work and the C498 landing are in: (1) admissibility (C498, in
+> flight) and failed closure = failed run, steady and dynamic; (2) the closures recomputed outside the
+> engine (the cloud's verify-the-verifier) and homogeneity, run nightly by one transform-and-compare
+> tool; (3) the second-law ledger as the engine's block, three states; (4) component and reaction
+> order, rest at equilibrium, isofugacity and the forgotten phase.  The GUI PANEL and the EduTool stay
+> after 2 December: a red row on the reference plant in front of colleagues is the one risk the proofs
+> add, so each proof is read on the demonstration cases before it is shown.
 
 > **C491 (1) MEASURED (2026-11-24): the second law over the steady and plant corpus.**  An opt-in
 > ledger (CHOUPO_ENTROPY_LEDGER=1, EnergyBalanceReport, branch worktree-agent-acb5ee81503f2c160 at
@@ -5696,6 +5748,55 @@ accepts today, and that is a policy call.
 > against 0.97e6 kg fed, objective 12 times the published optimum.  Open: which schedule values and
 > which unit, and whether the run ends at exit 0 with no announcement.  Diagnosis first (the C494
 > general, one forward run); a fix is its own slice.
+> DIAGNOSED the same day (one forward choupoCtrl run at the point, no optimizer; three step sizes).
+> williamsOttoPlant draws mu (a fixed 1.3e2 klb/h) scaled by the composition whatever the holdup
+> (WilliamsOttoPlant.cpp:166); with feed B at zero the vessel empties, and the answer then depends on
+> the step: dt 60 s J 6497, closure 0.984, +4.3e6 kg; dt 20 s J -7, residual 2e17 kg; dt 5 s J 0.49,
+> -9.6e5 kg.  NOT the clamp alone (line 241: about 0.81e6 kg, 19 %, at 60 s; the architect had guessed
+> it was the cause) and NOT the step alone.  Two defects: (a) ENGINE, S1 -- every one of those runs
+> exits 0 with `converged` true and only the bare line "(NOT closed)" (DynamicDriver.cpp:2196): a
+> time-integrated run that breaks its own closure must alarm, say not converged and exit non-zero, as
+> a steady run does; (b) MODEL -- the plant has no valid state at zero holdup and must refuse it by
+> name with the time and the holdup, instead of clamping.  Candidates of the same shape, unmeasured:
+> BatchDiafilter.cpp:486, BatchCrystalliser.cpp:364.  Slice (a) first; it reaches every time-integrated
+> case, all of which close today (C258).
+> CORRECTION the same evening: "as a steady run does" was wrong -- a steady run whose balance fails
+> prints the alarm and still exits 0 with `converged` true (C498).
+
+> **C498. A REACTOR PUBLISHES A NEGATIVE FLOW, OR HIDES IT BY CLIPPING, AND THE RUN SAYS CONVERGED
+> (external review handed over by Vitor, 2026-11-24, its R-011 and R-012; BOTH REPRODUCED by the
+> architect on the current build before registering).**  R-011: cstr01_first_order with acetic acid
+> 0.5 -> 0.1 kmol/h (inside the Levenspiel page's own slider, 0.1 to 2): X = 0.6288 against a
+> stoichiometric ceiling of 0.2, acid mole fraction -0.357, exit 0, `converged` true.  Cause:
+> CSTR.cpp:384, the extent is bounded by the NAMED limiting reactant only and the rate is zero order in
+> the acid.  R-012: the same case through `reactions ( ... )` with every flow and the volume x1e-5: the
+> probe tolerance `-1e-6 * max(F_in, 1.0)` mol/s (CSTR.cpp ~826) is absolute, the negative is clipped to
+> zero and 44 % of mass is created; at x1 the same problem is refused.  AND, found here: at x1e-5 the
+> engine prints ELEMENT BALANCE FAILED and exits 0.  SLICE: (a) ONE admissibility guard where every
+> unit's outlets pass (runUnit, beside the negative-pressure refusal): an accepted outlet with a
+> component flow below zero by more than a RELATIVE roundoff is refused by name; (b) the CSTR's extent
+> bounded by every consumed species, its final state checked before any clip, the probe tolerance
+> relative; a rate law with no root in the domain is refused, never cut; (c) a steady run whose MASS or
+> ELEMENT balance breaks the gates' band is not converged and exits non-zero (an energy closure stays an
+> alarm: KNOWN_OPEN).  It reaches every steady case: full sweep alone.  The review's harness proposal
+> (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
+> closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
+> lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
+
+> **C497. THE GIBBS ELEMENT-POTENTIAL NEWTON CONVERGES ON AN ABSOLUTE mol/s RESIDUAL (found 2026-11-24 by
+> the cloud's homogeneity measurement, C491 (2)).**  FASTSET's 36 steady entries with every feed x2: 17
+> homogeneous, 0 violations, 18 not judged (a declared size or duty, each named), 1 refused by design;
+> the control (a declared Q) is seen.  Far from x2 one defect shows: at 1e6 of scale aceticAcid01 and
+> ammoniaReactor02 do not converge, at 1e-6 trace fractions move up to 8 % -- GibbsMethod.cpp:76-92, :128
+> (tolerance 1e-8 on an unscaled norm).  Flat from 1e-3 to 1e4, so latent for shipped cases.  Remedy: a
+> relative residual (the one convergence home).  After 2 December.
+
+> **relTol / Final TOLERANCES (Vitor through the cloud, 2026-11-24: "quero o RelFinal já, porque isso
+> ajuda a acelerar a convergência").**  Weighed: inside the rate-based segment the speed is already
+> taken (inexact inner Newton, 102 -> 26 s).  Where it could still pay is one level up: units solved to
+> full tolerance on every recycle pass.  RULED: the measurement first and now (time in inner solves on
+> the ten slowest recycle cases, with an upper bound on the gain); the solverDict grammar after 2
+> December; the recycle-level inexact solve decided on the number.
 
 > **C496. A NOISE-AWARE SQP WITH ERROR BARS ON ITS SHADOW PRICES (Vitor, 2026-11-24: "Escolhe o melhor
 > método top notch para o Choupo ficar o simulador de referência! Naturalmente, fazemos tudo from blank
@@ -6034,6 +6135,10 @@ accepts today, and that is a policy call.
 > and "pedido" are retired as names for it, in files and in conversation;
 > DEV.md 4c is the item's HISTORY (the narrative), never its status; PLAN.md
 > and the page are VIEWS of the backlog by horizon.
+> COMPLETENESS SHOWN (Vitor, 2026-11-24: "Podes por a % estimada de completude no backlog?"):
+> `bin/curate/backlog_progress.tsv`, one estimate per open item with its basis, shown by the page and
+> the views; the rule is in its header; an estimate, never a status.  Only the laptop's items: the
+> cloud manages its own progress (Vitor, same evening).
 
 > **C435 (Vitor, 2026-11-18 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before
@@ -14604,6 +14709,12 @@ accepts today, and that is a policy call.
 > the two defects first, reproduce, minimal fixes, suite, then
 > initialisation/recovery, then the full DME plant with its recycle.
 > STATUS: SCHEDULED for Saturday; A and B are small and come first.
+> DISPATCHED TO THE CLOUD 2026-11-24 (Vitor: "Passa isso hoje à outra sessão!", after finding it
+> PARTIAL when a November commit title had read "C184 done"; only A and B were).  Order: the A-D
+> feasibility diagnosis, the thermodynamic initial profile, adaptive CMO -> MESH -> fullMESH recovery,
+> then his DME plant (origin/claude/c184-distillation, branch only).  The architect had proposed to wait
+> for after 2 December; what carries of that is the landing rule: (2) and (3) land before only if
+> column14, column19, column20 and the PEQ plant do not move.
 
 > DONE 2026-11-02, defects A and B (126fc9b98, a general): B -- NewtonND
 > took non-improving steps at the line-search floor and returned a worse
