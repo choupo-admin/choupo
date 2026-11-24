@@ -37,10 +37,25 @@
   materials per kg of NH3, and dHrxn_kJ_per_mol is the heat of reaction on
   the ideal-gas rung, per 2 mol NH3.  `waterSplitting` is the electrolyser
   alone, H2O -> H2 + 1/2 O2, on the route's 4404 kmol/h of water: its duty
-  Q_kW is the least power a thermoneutral electrolyser fed STEAM can be
-  supplied with, the FLOOR under the green route's assumed electricity (an
-  electrolyser fed liquid water must also pay the water's enthalpy of
-  vaporisation, the higher-heating-value basis, so its floor is higher).
+  Q_kW (295 834 kW) is the electricity a THERMONEUTRAL electrolyser fed
+  STEAM takes, dH = 241.826 kJ/mol, all the energy supplied as electricity
+  and no heat exchanged (an electrolyser fed liquid water must also pay the
+  water's enthalpy of vaporisation, the higher-heating-value basis, so it
+  takes more).  That is NOT the second-law floor.  The least electrical work
+  is dG = dH - T dS, because the T dS part can come as heat from
+  surroundings at 298.15 K.  From the catalogue records this case reads
+  (s_298 of H2 130.680, O2 205.150, water gas 188.834 J/(mol K)):
+  dS = 44.421 J/(mol K), T dS = 13.244 kJ/mol, dG = 228.582 kJ/mol; on
+  4404 kmol/h that is 279 632 kW of work floor and 16 202 kW of ambient
+  heat, against the 295 834 kW of Q_kW.  The energy ledger books this
+  electricity as a HEAT duty at 298.15 K (served by LP steam) because a
+  conversion reactor has no work port, and heat from a source at or below
+  298 K cannot split water: the entropy ledger therefore flags
+  `waterSplitting` (and `electrolytic`, below) with negative generated
+  entropy.  That is a screening convention for counting energy, not a
+  process.  `electrolytic` carries the same three water molecules per
+  extent, so most of its Q_kW is this electrolysis enthalpy, less the
+  synthesis exotherm, and the same remark applies to it.
   `combustion`, CH4 + 2 O2 -> CO2 + 2 H2O, has a dHrxn_kJ_per_mol that IS
   the lower heating value of methane, which turns a reformer's fuel,
   declared in GJ, into kilograms of methane and CO2.  `synthesis150` and

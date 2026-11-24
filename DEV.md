@@ -5615,6 +5615,43 @@ accepts today, and that is a policy call.
 > DECISION: no gate yet; the ledger lands with C492's block, not alone.  Next, on Vitor's word: the
 > turbine-vs-package disagreement first.
 
+> **C490 LANDED (79c4312d0b) with the C477 corpus survey; RESTART FROM converged/ AUTHORISED (2026-11-24).**
+> C490 from the cloud, squashed: the thermoPackage schema's activityModel enum held to the registry,
+> schemas for batchAccumulator, dynamicTank, quasiSteady and williamsOttoPlant, the rest pinned in
+> debt_registry (may only shrink), the GUI start values audited.  No src/; reach: the schema and doc
+> gates, regen-llm-docs --check, gate manifest, --gui 49/0.  C477 survey 
+> (docs/audits/2026-11-24-cases-answer-in-a-figure.md): of 678 cases, 68 answer in a declared figure, 84 by default views,
+> 23 by the sweep CSV, 292 are rightly a number or a table, 211 NEED A FIGURE (named per case).
+> RESTART, Vitor's request through the cloud ("não quero passar a vida a ver os gates a correr"):
+> the architect's objection of the morning was that a layout arm restarted from converged/ would
+> prove something else; the cloud measured why (converged/ at 10 significant figures) and proposed
+> 17 figures plus zero iterations when the tears already hold.  AUTHORISED on four conditions sent
+> to the cloud: opt-in and keyed on every input but layoutDict/postDict (a flowsheet edit re-solves,
+> with a sabotage); converged/ holds the INPUT of the last unit pass, so the identity is exact by
+> construction; the 34 gates and 5 GUI test files that read converged/ re-run; every layout and
+> design-sheet arm byte-identical by diff.  It changes SolutionWriter: a full sweep ALONE at landing.
+
+> **C493. A TURBINE PRICES A CONDENSING OUTLET AS DRY VAPOUR (found 2026-11-24 by the C491 second-law
+> ledger; diagnosed by a general, numbers re-checked by the architect).**  proxy01_gas_loop T1: at the
+> converged outlet (311.023 K, 2.4673 bar, z_water 0.1135) the equilibrium split is V/F 0.9108, the
+> condensate 99.96 % water, the vapour saturated (y P = Psat).  The turbine (Turbine.cpp:92-93, :115-116;
+> IsentropicCore.cpp:44, :69) prices the outlet on H_real/S_real of the ALL-VAPOUR state and publishes
+> vf 1; the energy report and the ledger re-flash it (BalanceMath.H:212 streamSplit, hOfState/sOfState).
+> Gap: H 3927 J/mol x 0.259808 mol/s = 1.0202 kW, which IS the T1 first-law residual and proxy01's
+> KNOWN_OPEN plant residual; S 11.955 J/(mol K), the ledger's -2.78 W/K.  Independent check: 8.9 %
+> condensed x ~44 kJ/mol = 3.9 kJ/mol.  The report is right; the turbine's outlet is a fictitious
+> supersaturated vapour, and its T_out is too low (the latent heat is not released into the gas).
+> So the second law LOCATED a balance pinned open for weeks.  Reach: the 9 turbine and 25 compressor
+> cases share IsentropicCore; only a wet gas crossing its dew point is affected.  DECISION: the
+> equilibrium-aware discharge (h_out and s_out on the flashed state, outlet published with its phases)
+> is built on a branch now and its reach measured on the 34 rotating cases; it lands before 2 December
+> only if no case of the demonstration path moves, else after.  proxy01 then leaves KNOWN_OPEN.
+> Two process lessons of the same hour: the architect refuted the general's (right) hypothesis by
+> reading the ledger's per-stream vf column, which is the stream's DECLARED vf, not the flashed one --
+> read what a column means before using it as evidence; and a push went out after a red
+> check_doc_references because a for-loop of gates does not stop the next command (the C485 item
+> "push refused when a gate failed" is therefore needed, not optional).
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
