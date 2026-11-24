@@ -532,6 +532,24 @@ GibbsPrimalSeed gibbsPrimalSeed(const std::vector<std::vector<scalar>>& A,
     return out;
 }
 
+bool canCondenseAt(const GibbsProblem& p, std::size_t i, scalar T)
+{
+    if (!p.condensable[i]) return false;
+    const Component& c = p.thermo->comp(p.compIdx[i]);
+    const scalar Tc = c.Tc();
+    if (!(Tc > 0.0 && T >= Tc)) return true;
+    const std::string msg = c.name() + " is above its critical temperature ("
+        + std::to_string(Tc) + " K) at the reactor's T: it is never tested for, nor "
+          "given, a pure-liquid phase here (a pure liquid does not exist above Tc, and "
+          "the continued Psat is a numerical surface), so any liquid this reactor "
+          "forms carries none of it -- a Henry solubility the package declares is "
+          "not read inside the Gibbs reactor (DEV.md 4c C256 (b))";
+    if (AdvisoryLog::instance().addAnnouncedOnce("gibbsAboveTc:" + c.name(), "validity",
+            "info", "gibbsReactor, species " + c.name(), msg))
+        std::cerr << "[gibbsReactor] " << msg << ".\n";
+    return false;
+}
+
 std::string supersaturatedCondensables(const GibbsProblem& p,
                                        const GibbsEquilibrium& eq, scalar T,
                                        const std::vector<bool>& condensed)
@@ -541,7 +559,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     if (!(eq.Ntotal_gas > 0.0)) return m;
     for (std::size_t i = 0; i < p.N(); ++i)
     {
-        if (!p.condensable[i]) continue;
+        if (!canCondenseAt(p, i, T)) continue;       // above Tc: no pure liquid (C256 (b))
         if (i < condensed.size() && condensed[i]) continue;
         const scalar Psat = thermo.pureLiquidReference(p.compIdx[i], T, p.P);
         const scalar yP   = eq.nGas[i] / eq.Ntotal_gas * p.P;
@@ -565,7 +583,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     //  the per-species test above.
     std::vector<std::size_t> cand;
     for (std::size_t i = 0; i < p.N(); ++i)
-        if (p.condensable[i] && !(i < condensed.size() && condensed[i])
+        if (canCondenseAt(p, i, T) && !(i < condensed.size() && condensed[i])
             && eq.nGas[i] > 0.0)
             cand.push_back(i);
     if (cand.size() < 2) return m;

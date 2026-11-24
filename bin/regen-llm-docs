@@ -65,6 +65,7 @@ COMP_DIR = REPO / "data" / "standards" / "components"
 SCHEMA_DIR = REPO / "gui" / "schemas" / "operations"
 OUT_COMP = REPO / "docs" / "ai" / "components.md"
 OUT_SCHEMA = REPO / "docs" / "ai" / "schemas-reference.md"
+OUT_REF = REPO / "docs" / "ai" / "registry-reference.md"
 
 # ============================================================ Components
 
@@ -635,14 +636,291 @@ def render_one_schema(path: Path) -> list[str]:
     return out
 
 
+# ============================================================ Reference
+
+#  docs/ai/registry-reference.md -- C200 phase D, the GENERATED lookup.
+#
+#  An assistant that must NAME a unit type, a key or a model needs one line
+#  per fact, not the prose of schemas-reference.md (which stays: it is the
+#  long form, with descriptions).  Both files read the same schemas through
+#  `_load_op_schemas()`; this one adds what the schemas do not hold -- the
+#  registries -- and drops what makes the other long.
+#
+#  NOTHING IN THE RENDERED FILE IS TYPED HERE except its prose header and the
+#  legend.  Every name is read from a `X::registerBuiltins()` body in src/
+#  (the registrations are explicit, CLAUDE.md section 5, so the text of the
+#  function IS the registry); every key, type, unit, bound, enum and default
+#  from a schema.  A fact that is in neither is listed under GAPS, not typed.
+#
+#  THE REAL DEFECT THIS HOLDS (rule 4e(4); measured 2026-11-24 against the
+#  hand-written docs/ai text): the unit types `coolingTower` and
+#  `williamsOttoPlant` were named in NONE of the hand-written assistant
+#  documents, and 43 of the 709 schema keys (`coolingTower.merkelNumber`,
+#  `coolingTower.T_water_out`, `cyclone.cLimit`, `gibbsMap.Tgrid`, ...) were
+#  likewise named nowhere outside the generated files, so an assistant told to
+#  "never invent a key" had no way to learn them.  A unit registered tomorrow
+#  appears here tomorrow; this file differing from a fresh run fails the suite.
+
+#  The call forms a registration takes in this tree.
+_REG_CALL = re.compile(
+    r'(?<![A-Za-z_])(?:registerType|registerModel|reg)\(\s*"([^"]+)"')
+_REG_DEF = re.compile(
+    r'^(?:static\s+)?void\s+([A-Za-z_]+)::registerBuiltins\s*\(\s*\)\s*\n\{',
+    re.MULTILINE)
+#  The four registries that carry a `type` the case writes, in reading order.
+_OP_CLASSES = ("UnitOperation", "BatchUnitOperation", "DynamicUnitOperation",
+               "PropertyOperation")
+_OP_LABEL = {
+    "UnitOperation": "Steady units (choupoSolve flowsheetDict `type`)",
+    "BatchUnitOperation": "Batch vessels (choupoBatch)",
+    "DynamicUnitOperation": "Time-integrated units (choupoCtrl, choupoSemiContinuous)",
+    "PropertyOperation": "Property operations (choupoProps `type`)",
+}
+
+
+def _scan_registries() -> dict:
+    """{class: {"file": rel, "calls": [(name, maker_class|None, retired)]}}
+    read from every `X::registerBuiltins()` body under src/.  Fail-closed:
+    the four op registries must be found with names, or the generator stops
+    rather than publish a smaller registry as the whole."""
+    out: dict = {}
+    for f in sorted((REPO / "src").rglob("*.cpp")):
+        text = f.read_text(encoding="utf-8", errors="replace")
+        for m in _REG_DEF.finditer(text):
+            end = text.find("\n}\n", m.end())
+            body = "\n".join(l for l in text[m.end():end].splitlines()
+                             if not l.lstrip().startswith("//"))
+            hits = list(_REG_CALL.finditer(body))
+            calls = []
+            for i, h in enumerate(hits):
+                seg = body[h.start(): hits[i + 1].start() if i + 1 < len(hits)
+                           else len(body)]
+                mk = re.search(r"make_unique<\s*([A-Za-z_][A-Za-z0-9_:]*)\s*>", seg)
+                calls.append((h.group(1), mk.group(1) if mk else None,
+                              "RETIRED" in seg))
+            out[m.group(1)] = {"file": str(f.relative_to(REPO)), "calls": calls}
+    for c in _OP_CLASSES:
+        if c not in out or not out[c]["calls"]:
+            raise SystemExit(f"regen-llm-docs: registry {c} not found or empty "
+                             "-- the registration form moved; fix _REG_DEF / "
+                             "_REG_CALL rather than publish less than the whole.")
+    return out
+
+
+def _class_headers() -> dict:
+    """{class name: repo-relative header} for `class X` / `struct X` in src/*.H."""
+    idx: dict = {}
+    pat = re.compile(r"^(?:class|struct)\s+([A-Za-z_][A-Za-z0-9_]*)\b[^;{]*\{?\s*$",
+                     re.MULTILINE)
+    for f in sorted((REPO / "src").rglob("*.H")):
+        for m in pat.finditer(f.read_text(encoding="utf-8", errors="replace")):
+            idx.setdefault(m.group(1), str(f.relative_to(REPO)))
+    return idx
+
+
+def _load_op_schemas() -> dict:
+    """{operation name: parsed schema} for every gui/schemas/operations file."""
+    return {p.name[:-len(".schema.json")]: json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted(SCHEMA_DIR.glob("*.schema.json"))}
+
+
+_TYPE_ABBR = {"number": "n", "integer": "i", "string": "s", "boolean": "b",
+              "object": "o", "array": "a"}
+
+
+def _num(v) -> str:
+    return str(int(v)) if isinstance(v, float) and v == int(v) and abs(v) < 1e15 else str(v)
+
+
+def _type_of(p: dict) -> str:
+    t = p.get("type")
+    if t is None:
+        alts = p.get("oneOf") or p.get("anyOf") or []
+        ts = [_TYPE_ABBR.get(a.get("type", ""), "?") for a in alts]
+        return "|".join(dict.fromkeys(ts)) if ts else "?"
+    if isinstance(t, list):
+        return "|".join(_TYPE_ABBR.get(x, x) for x in t)
+    if t == "array":
+        it = p.get("items", {})
+        return "a<" + (_type_of(it) if isinstance(it, dict) else "?") + ">"
+    return _TYPE_ABBR.get(t, t)
+
+
+def _key_lines(props: dict, required, prefix: str, depth: int) -> list:
+    """One line per key: `name[*] type [unit] bounds {enum} =default`.
+    Nested object properties (and array-of-object items) follow as dotted
+    paths, three levels at most."""
+    out = []
+    for k, p in props.items():
+        bits = [f"{prefix}{k}{'*' if k in required else ''}", _type_of(p)]
+        if p.get("unit") not in (None, "-"):
+            bits.append(f"[{p['unit']}]")
+        elif p.get("quantity"):
+            bits.append(f"[{p['quantity']}]")
+        for key, sym in (("minimum", ">="), ("exclusiveMinimum", ">"),
+                         ("maximum", "<="), ("exclusiveMaximum", "<")):
+            if key in p:
+                bits.append(f"{sym}{_num(p[key])}")
+        if "enum" in p:
+            bits.append("{" + "|".join(str(e) for e in p["enum"]) + "}")
+        if "default" in p:
+            #  A schema `default` is the GUI editor's starting value, and the
+            #  engine may REQUIRE the key (measured: `nStages` carries default
+            #  20 while DistillationColumn.cpp:1409 reads it with no default).
+            #  `=x` is printed only where the key's own description says the
+            #  engine defaults it; otherwise `ui=x`, which an assistant must
+            #  not read as "may be omitted".
+            eng = re.search(r"\bdefault", p.get("description", ""), re.I)
+            bits.append(f"{'=' if eng else 'ui='}{p['default']}")
+        out.append(" ".join(bits))
+        sub = p
+        if p.get("type") == "array" and isinstance(p.get("items"), dict):
+            sub = p["items"]
+            pre = f"{prefix}{k}[]."
+        else:
+            pre = f"{prefix}{k}."
+        if depth < 3 and isinstance(sub.get("properties"), dict):
+            out += _key_lines(sub["properties"], set(sub.get("required", [])),
+                              pre, depth + 1)
+    return out
+
+
+def _gist(s: dict, limit: int = 110) -> str:
+    """The schema description's first sentence, cut at a word boundary."""
+    d = " ".join(s.get("description", "").split())
+    m = re.search(r"(?<=[.;])\s", d)
+    if m:
+        d = d[:m.start()].rstrip(".;")
+    if len(d) > limit:
+        d = d[:limit].rsplit(" ", 1)[0] + "..."
+    return d
+
+
+def render_reference_md() -> str:
+    regs = _scan_registries()
+    schemas = _load_op_schemas()
+    hdr = _class_headers()
+    out: list = [
+        "# Registry reference -- every unit type, operation, key and model, one line each",
+        "",
+        "<!-- AUTO-GENERATED by bin/regen-llm-docs from the `X::registerBuiltins()`",
+        "     bodies in src/ (names) and gui/schemas/operations/ (keys).  Do not edit",
+        "     here: change the source and re-run.  `bin/regen-llm-docs --check` fails",
+        "     when this file differs from a fresh generation. -->",
+        "",
+        "LOOK UP, never read end to end.  Prose, reasons and worked examples: "
+        "[`unit-ops.md`](unit-ops.md); every description: "
+        "[`schemas-reference.md`](schemas-reference.md); components: "
+        "[`components.md`](components.md).",
+        "",
+        "Key line: `name[*] type [unit] bounds {enum} =default`; `*` required; "
+        "`=x` the key's description says the engine defaults to x, `ui=x` only "
+        "the GUI editor starts at x (the engine may still REQUIRE the key); "
+        "type n number, i integer, s string, b boolean, o object, a<t> array; "
+        "bounds `>=` `>` `<=` `<`; `a.b` is a key inside object `a`, `a[].b` "
+        "inside its list items.  Keys are the unit's `operation { }` block (a "
+        "props operation: its own keys).  `x = y` heading: the same unit under "
+        "two registered names, identical keys.  A key with no unit is "
+        "dimensionless or not a quantity.  The bracketed path after a "
+        "description is the implementing class; in the registries block "
+        "`Class <source under src/>: words`.",
+        "",
+    ]
+    counts = ", ".join(f"{len(regs[c]['calls'])} {n}" for c, n in (
+        ("UnitOperation", "steady units"), ("BatchUnitOperation", "batch vessels"),
+        ("DynamicUnitOperation", "time-integrated units"),
+        ("PropertyOperation", "property operations")))
+    out += [f"Registered names: {counts}.", ""]
+
+    # --- sub-model and other registries (names only) -------------------------
+    out += ["## Registries (the `model` / `type` words each factory accepts)", "",
+            "```"]
+    gaps_empty = []
+    for cls in sorted(regs, key=str.lower):
+        if cls in _OP_CLASSES:
+            continue
+        if not regs[cls]["calls"]:
+            gaps_empty.append(cls)
+            continue
+        names = [n + ("(retired)" if r else "") for n, _, r in regs[cls]["calls"]]
+        out.append(f"{cls} <{regs[cls]['file'][4:-4]}>: " + " ".join(names))
+    out += ["```", ""]
+
+    # --- the four op registries ---------------------------------------------
+    gaps_noschema = []
+    for cls in _OP_CLASSES:
+        out += [f"## {_OP_LABEL[cls]}", ""]
+        groups: dict = {}          # (maker, signature) -> [(name, retired)]
+        order = []
+        makers = {}
+        for name, maker, retired in regs[cls]["calls"]:
+            makers[name] = maker
+            sch = schemas.get(name)
+            #  the signature is what is RENDERED: two names whose schemas
+            #  differ only in prose print one entry
+            sig = "\n".join(_key_lines(sch.get("properties", {}),
+                                       set(sch.get("required", [])), "", 1)) \
+                if sch else None
+            key = (maker, sig) if (maker and sig) else (name, None)
+            if key not in groups:
+                groups[key] = []
+                order.append(key)
+            groups[key].append((name, retired))
+        for key in sorted(order, key=lambda k: groups[k][0][0].lower()):
+            names = groups[key]
+            head = names[0][0]
+            title = head + "".join(f" = {n}" for n, _ in names[1:])
+            src = hdr.get(makers.get(head) or "", "")
+            sch = schemas.get(head)
+            out.append(f"### {title}")
+            if any(r for _, r in names):
+                out += ["RETIRED: the factory refuses by name.", ""]
+                continue
+            if sch is None:
+                gaps_noschema.append(head)
+                out.append("No schema; keys are in " + (f"`{src}`" if src else
+                           "the implementing class") + ".")
+                out.append("")
+                continue
+            out.append(_gist(sch) + (f" [`{src}`]" if src else ""))
+            lines = _key_lines(sch.get("properties", {}),
+                               set(sch.get("required", [])), "", 1)
+            if lines:
+                out += ["```"] + lines + ["```"]
+            else:
+                out.append("(no operation-block keys)")
+            out.append("")
+
+    # --- gaps ----------------------------------------------------------------
+    op_names = {n for c in _OP_CLASSES for n, _, _ in regs[c]["calls"]}
+    orphan = sorted(set(schemas) - op_names, key=str.lower)
+    out += ["## Gaps (read from the tree, not typed)", ""]
+    out.append("- Registered with no schema: " +
+               (", ".join(f"`{g}`" for g in sorted(gaps_noschema, key=str.lower))
+                or "none") + ".")
+    out.append("- Schema with no registered type: " +
+               (", ".join(f"`{g}`" for g in orphan) or "none") + ".")
+    out.append("- Registries whose names the scanner cannot read: " +
+               (", ".join(f"`{g}`" for g in gaps_empty) or "none") +
+               " (they register by another form; read the class).")
+    out.append("- Which unit reads which sub-model registry above, and `model` "
+               "words a unit tests by string comparison, are in no registry or "
+               "schema: read `unit-ops.md` or the unit's source.")
+    out.append("- Refusals and degrees of freedom: the generated acceptance "
+               "regions of `unit-ops.md` and the packs.")
+    out.append("")
+    return "\n".join(out)
+
+
 # ============================================================ Driver
 
-def regenerate() -> tuple[str, str]:
-    return render_components_md(), render_schemas_md()
+def regenerate() -> tuple[str, str, str]:
+    return render_components_md(), render_schemas_md(), render_reference_md()
 
 
 def check_drift() -> int:
-    new_comp, new_schema = regenerate()
+    new_comp, new_schema, new_ref = regenerate()
+    old_ref = OUT_REF.read_text(encoding="utf-8") if OUT_REF.exists() else ""
     old_comp = OUT_COMP.read_text(encoding="utf-8") if OUT_COMP.exists() else ""
     old_schema = OUT_SCHEMA.read_text(encoding="utf-8") if OUT_SCHEMA.exists() else ""
     drift = []
@@ -650,6 +928,8 @@ def check_drift() -> int:
         drift.append(("components.md", old_comp, new_comp))
     if new_schema.strip() != old_schema.strip():
         drift.append(("schemas-reference.md", old_schema, new_schema))
+    if new_ref.strip() != old_ref.strip():
+        drift.append(("registry-reference.md", old_ref, new_ref))
     if not drift:
         print("regen-llm-docs: no drift.")
         return 0
@@ -686,9 +966,11 @@ def main() -> int:
     args = ap.parse_args()
     if args.check:
         return check_drift()
-    new_comp, new_schema = regenerate()
+    new_comp, new_schema, new_ref = regenerate()
     OUT_COMP.write_text(new_comp, encoding="utf-8")
     OUT_SCHEMA.write_text(new_schema, encoding="utf-8")
+    OUT_REF.write_text(new_ref, encoding="utf-8")
+    print(f"regen-llm-docs: wrote {OUT_REF.relative_to(REPO)}")
     print(f"regen-llm-docs: wrote {OUT_COMP.relative_to(REPO)}")
     print(f"regen-llm-docs: wrote {OUT_SCHEMA.relative_to(REPO)}")
     return 0

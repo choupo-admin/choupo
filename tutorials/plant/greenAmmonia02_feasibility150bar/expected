@@ -57,18 +57,16 @@ kpi     Aftercooler            Q_latent_kW      0                1e-4
 kpi     Aftercooler            Q_sensible_kW    -5482.93664939   1e-4
 kpi     Aftercooler            T_in             424.570143382    1e-4
 kpi     Aftercooler            T_out            313.15           1e-4
-kpi     Aftercooler            Tsat             150              1e-4
 kpi     Aftercooler            vf_in            1                1e-4
 kpi     Aftercooler            vf_out           1                1e-4
 kpi     Chiller                F                4.62216989389    1e-4
 kpi     Chiller                P                15000000         1e-4
 kpi     Chiller                Q                -20789836.9412   1e-4
 kpi     Chiller                Q_kW             -20789.8369412   1e-4
-kpi     Chiller                Q_latent_kW      -1884.09965681   1e-4
-kpi     Chiller                Q_sensible_kW    -18905.7372844   1e-4
+kpi     Chiller                Q_latent_kW      -10657.7717022   1e-4
+kpi     Chiller                Q_sensible_kW    -10132.0652372   1e-4
 kpi     Chiller                T_in             313.15           1e-4
 kpi     Chiller                T_out            253.15           1e-4
-kpi     Chiller                Tsat             150              1e-4
 kpi     Chiller                vf_in            0.956810866391   1e-4
 kpi     Chiller                vf_out           0.822561259534   1e-4
 kpi     Converter              F_in_kmol_h      19567.4777971    1e-4
@@ -95,7 +93,6 @@ kpi     EffluentCooler         Q_latent_kW      0                1e-4
 kpi     EffluentCooler         Q_sensible_kW    -60293.7561092   1e-4
 kpi     EffluentCooler         T_in             733.15           1e-4
 kpi     EffluentCooler         T_out            345.15           1e-4
-kpi     EffluentCooler         Tsat             150              1e-4
 kpi     EffluentCooler         vf_in            1                1e-4
 kpi     EffluentCooler         vf_out           1                1e-4
 kpi     FeedPreheater          F                5.4354104992     1e-4
@@ -106,7 +103,6 @@ kpi     FeedPreheater          Q_latent_kW      0                1e-4
 kpi     FeedPreheater          Q_sensible_kW    62013.4090893    1e-4
 kpi     FeedPreheater          T_in             276.070529496    1e-4
 kpi     FeedPreheater          T_out            653.15           1e-4
-kpi     FeedPreheater          Tsat             150              1e-4
 kpi     FeedPreheater          vf_in            1                1e-4
 kpi     FeedPreheater          vf_out           1                1e-4
 kpi     Intercooler            F                1.63333333333    1e-4
@@ -117,7 +113,6 @@ kpi     Intercooler            Q_latent_kW      0                1e-4
 kpi     Intercooler            Q_sensible_kW    -5180.08805351   1e-4
 kpi     Intercooler            T_in             420.212131593    1e-4
 kpi     Intercooler            T_out            313.15           1e-4
-kpi     Intercooler            Tsat             150              1e-4
 kpi     Intercooler            vf_in            1                1e-4
 kpi     Intercooler            vf_out           1                1e-4
 kpi     LetdownHP              F_alpha          0.813327606884   1e-4
@@ -196,7 +191,7 @@ kpi     N2Cooler               Q_latent_kW      0                1e-4
 kpi     N2Cooler               Q_sensible_kW    -1975.49332092   1e-4
 kpi     N2Cooler               T_in             473.769161677    1e-4
 kpi     N2Cooler               T_out            313.15           1e-4
-kpi     N2Cooler               Tsat             150              1e-4
+kpi     N2Cooler               Tsat             126.108934357    1e-4
 kpi     N2Cooler               vf_in            1                1e-4
 kpi     N2Cooler               vf_out           1                1e-4
 kpi     RecycleComp            F                3.80207716587    1e-4
@@ -244,11 +239,10 @@ kpi     WaterCooler            F                4.62216989389    1e-4
 kpi     WaterCooler            P                15000000         1e-4
 kpi     WaterCooler            Q                -8077178.29619   1e-4
 kpi     WaterCooler            Q_kW             -8077.17829619   1e-4
-kpi     WaterCooler            Q_latent_kW      -606.129386264   1e-4
-kpi     WaterCooler            Q_sensible_kW    -7471.04890993   1e-4
+kpi     WaterCooler            Q_latent_kW      -2977.19854142   1e-4
+kpi     WaterCooler            Q_sensible_kW    -5099.97975663   1e-4
 kpi     WaterCooler            T_in             345.15           1e-4
 kpi     WaterCooler            T_out            313.15           1e-4
-kpi     WaterCooler            Tsat             150              1e-4
 kpi     WaterCooler            vf_in            1                1e-4
 kpi     WaterCooler            vf_out           0.956810866391   1e-4
 kpi     economics              COM_d            747171502.114    1e-4

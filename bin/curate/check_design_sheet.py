@@ -457,6 +457,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     declare an unreadable one.
 """
 import csv
+import hashlib
 import os
 import math
 import re
@@ -507,9 +508,114 @@ TOL = 1.0e-6      # relative, between two projections of the same number
 CONTINGENCY_AND_FEE = 1.18
 
 
+# The run cache (_input_key, _ancestor_inputs) hashes the files of the cases
+# this gate solves IN PLACE and the system/ and constant/ of their parent
+# folders (the cascade); every other walk is over the gate's own scratch
+# copies (check_scan_roots).
+SCAN_ROOTS = (
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/ammonia02_full_plant",
+    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "tutorials/steady/distillation/column17_exchanger_design",
+    "tutorials/steady/economics/economics03_startup_years",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "constant",
+    "system",
+    "tutorials/constant",
+    "tutorials/plant/constant",
+    "tutorials/plant/system",
+    "tutorials/steady/constant",
+    "tutorials/steady/distillation/constant",
+    "tutorials/steady/distillation/system",
+    "tutorials/steady/economics/constant",
+    "tutorials/steady/economics/system",
+    "tutorials/steady/flowsheets/constant",
+    "tutorials/steady/flowsheets/system",
+    "tutorials/steady/reactors/constant",
+    "tutorials/steady/reactors/system",
+    "tutorials/steady/system",
+    "tutorials/system",
+)
+
+
+# One engine run per DISTINCT input (2026-11-24, slow-gates profile).  The same
+# shipped plant is solved again and again by arms that only READ its sheets
+# (the green PEQ plant four times in place, at about 16 s each).  The engine is
+# deterministic and a case directory's name reaches its output only as the
+# directory's PATH, so a run whose input files (everything but the outputs it
+# writes) and argument are identical to an earlier one in this gate run is
+# REPLAYED: the same stdout and stderr, the same exit code, and the files the
+# first run wrote copied into this directory.  A probe that edits anything it
+# runs (every sabotage) has another key and runs for real.  Within one gate run
+# only; nothing persists.  CHOUPO_GATE_NO_RUN_CACHE=1 turns it off.
+_RUNS = {}
+_RUN_STASH = []
+_HITS = [0]
+_OUTPUT_DIRS = ("design", "reports", "converged", "postProcessing", "iterations")
+
+
+def _ancestor_inputs(h, d):
+    """The folder cascade (choupoSolve main.cpp resolveUp; Flowsheet's child
+    loader) reads system/ and constant/ of up to six PARENT folders, so a case
+    run in place and a copy of the same files elsewhere are not the same input.
+    Hash those parents' files too: a run is replayed only when what the engine
+    can read is the same."""
+    p = Path(d).resolve()
+    for up in range(1, 7):
+        if p.parent == p:
+            break
+        p = p.parent
+        for sub in ("system", "constant"):
+            q = p / sub
+            if q.is_dir():
+                for f in sorted(q.rglob("*")):
+                    if f.is_file():
+                        h.update(("%d/%s" % (up, f.relative_to(p))).encode()
+                                 + b"\0" + f.read_bytes() + b"\0")
+
+
+def _input_key(d):
+    h = hashlib.sha256()
+    _ancestor_inputs(h, d)
+    for q in sorted(d.rglob("*")):
+        rel = q.relative_to(d)
+        if rel.parts[0] in _OUTPUT_DIRS or not q.is_file():
+            continue
+        h.update(str(rel).encode() + b"\0" + q.read_bytes() + b"\0")
+    return h.hexdigest()
+
+
+def _engine(d):
+    """`choupoSolve d`, captured; replayed when an identical input ran before."""
+    d = Path(d)
+    cmd = [str(ROOT / "choupoSolve"), str(d)]
+    if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
+        return subprocess.run(cmd, capture_output=True, text=True)
+    key = _input_key(d)
+    hit = _RUNS.get(key)
+    if hit is not None:
+        proc, first, stash = hit
+        _HITS[0] += 1
+        if first != str(d):
+            shutil.copytree(stash, d, dirs_exist_ok=True)
+        return subprocess.CompletedProcess(
+            cmd, proc.returncode, proc.stdout.replace(first, str(d)),
+            proc.stderr.replace(first, str(d)))
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if not _RUN_STASH:
+        _RUN_STASH.append(Path(tempfile.mkdtemp(prefix="design_sheet_stash_")))
+    stash = _RUN_STASH[0] / key
+    shutil.copytree(d, stash)
+    _RUNS[key] = (proc, str(d), stash)
+    return proc
+
+
 def run_case(rel: str):
-    proc = subprocess.run([str(ROOT / "choupoSolve"), str(ROOT / rel)],
-                          capture_output=True, text=True)
+    proc = _engine(ROOT / rel)
     return proc.returncode, proc.stdout, proc.stderr
 
 
@@ -1706,8 +1812,7 @@ def _run_copy(src: Path, edit, keep_layout=True):
     if not keep_layout:
         text = re.sub(r"\n[ \t]*land\s*\n[ \t]*\{[^{}]*\}", "\n", text)
     pd.write_text(edit(text))
-    proc = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
-                          capture_output=True, text=True)
+    proc = _engine(dst)
     return dst, proc.returncode, proc.stdout, proc.stderr
 
 
@@ -2848,8 +2953,7 @@ def check_storage_link(problems, notes):
                             r'\1    storage ( { ' + ent + r' } );\n\2', t, count=1)
             return t2 if n == 1 else t + "\n#error the probe found no sizing block\n"
         d = _copy_case(pcase, [("system/postDict", add)])
-        proc = subprocess.run([str(ROOT / "choupoSolve"), str(d)],
-                              capture_output=True, text=True)
+        proc = _engine(d)
         both = proc.stdout + proc.stderr
         name = "makeupComp" if "makeupComp" in ent else "T201"
         if proc.returncode != 0:
@@ -3554,8 +3658,7 @@ def check_column_exchanger_design(problems, notes):
         pd.write_text(ed(pd.read_text(errors="replace")))
         if extra:
             extra(dst)
-        p = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
-                           capture_output=True, text=True)
+        p = _engine(dst)
         both = p.stdout + p.stderr
         line = re.search(r'\[not sized\] the %s of column \'%s\' was NOT sized:'
                          r'[^\n]*' % (item, COLX_UNIT), both)
@@ -3791,8 +3894,7 @@ def check_material_limits(problems, notes):
                         r"([0-9.]+) K \(its hottest port, stream '([^']+)'")
 
     # --- the shipped case: SS316 everywhere hot, nothing to announce --------
-    proc = subprocess.run([str(ROOT / "choupoSolve"), str(src)],
-                          capture_output=True, text=True)
+    proc = _engine(src)
     if proc.returncode != 0:
         problems.append("%s: the shipped %s did not run (exit %d)"
                         % (tag, MATERIAL_WITNESS, proc.returncode))
@@ -3953,8 +4055,7 @@ def check_material_limits(problems, notes):
                                  "once and replayed" % P_PROBE)
         finally:
             shutil.rmtree(cdst.parent, ignore_errors=True)
-        shipped = subprocess.run([str(ROOT / "choupoSolve"), str(col_src)],
-                                 capture_output=True, text=True)
+        shipped = _engine(col_src)
         if "design pressure" in shipped.stdout and "EXCEEDS material" in shipped.stdout:
             problems.append("%s: the SHIPPED %s (carbon steel, 2 bar) announces "
                             "a design pressure above its rating" % (tag, COLUMN))
@@ -4676,6 +4777,11 @@ def check_pressure_store_link(problems, notes):
 
 
 def main() -> int:
+    import atexit
+    atexit.register(lambda: [shutil.rmtree(x, ignore_errors=True) for x in _RUN_STASH])
+    if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
+        atexit.register(lambda: print("run-cache: %d engine runs, %d replayed"
+                                      % (len(_RUNS), _HITS[0]), file=sys.stderr))
     problems, notes = [], []
 
     all_units = []

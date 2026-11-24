@@ -456,6 +456,7 @@ strengthened):
       "allowance rain 9.6 m3; 0.05 m over 204.0 m2 gives 10.2".
 """
 import json
+import os
 import re
 import shutil
 import case_records  # noqa: E402
@@ -503,8 +504,99 @@ def run(cmd, cwd=ROOT):
     return p.stdout, p.stderr, p.returncode
 
 
+# The run cache (_input_key, _ancestor_inputs) hashes the files of the cases
+# this gate solves IN PLACE and the system/ and constant/ of their parent
+# folders (the cascade); every other walk is over the gate's own scratch
+# copies (check_scan_roots).
+SCAN_ROOTS = (
+    "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/ammonia02_full_plant",
+    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "constant",
+    "system",
+    "tutorials/batch/constant",
+    "tutorials/batch/plant/constant",
+    "tutorials/batch/plant/system",
+    "tutorials/batch/system",
+    "tutorials/constant",
+    "tutorials/plant/constant",
+    "tutorials/plant/system",
+    "tutorials/steady/constant",
+    "tutorials/steady/distillation/constant",
+    "tutorials/steady/distillation/system",
+    "tutorials/steady/system",
+    "tutorials/system",
+)
+
+
+# One engine run per DISTINCT input (2026-11-24, slow-gates profile).  Forty-odd
+# arms run the same case unchanged -- the witness a dozen times, the green PEQ
+# plant and the acetic plant once per arm that only READS their layout block --
+# and a plant solve costs seconds.  The engine is deterministic and a case
+# directory's name appears in its output only as the directory's PATH, so a run
+# of identical input files and identical arguments is replayed: the stdout and
+# stderr with the first directory's path rewritten to this one's, the exit code,
+# and the files the first run wrote copied into this directory.  A MUTATING arm
+# (a sabotage: any edit of any input file changes the key) always runs for real.
+# Within one gate run only; nothing is kept between runs.
+_RUNS = {}
+_RUN_STASH = None
+_HITS = [0]
+_SKIP_DIRS = ("reports", "converged", "design", "iterations")
+
+
+def _ancestor_inputs(h, d):
+    """The folder cascade (choupoSolve main.cpp resolveUp; Flowsheet's child
+    loader) reads system/ and constant/ of up to six PARENT folders, so a case
+    run in place and a copy of the same files elsewhere are not the same input.
+    Hash those parents' files too: a run is replayed only when what the engine
+    can read is the same."""
+    p = Path(d).resolve()
+    for up in range(1, 7):
+        if p.parent == p:
+            break
+        p = p.parent
+        for sub in ("system", "constant"):
+            q = p / sub
+            if q.is_dir():
+                for f in sorted(q.rglob("*")):
+                    if f.is_file():
+                        h.update(("%d/%s" % (up, f.relative_to(p))).encode()
+                                 + b"\0" + f.read_bytes() + b"\0")
+
+
+def _input_key(d, extra):
+    h = hashlib.sha256(repr(extra).encode())
+    _ancestor_inputs(h, d)
+    for p in sorted(d.rglob("*")):
+        rel = p.relative_to(d)
+        if rel.parts[0] in _SKIP_DIRS or not p.is_file():
+            continue
+        h.update(str(rel).encode() + b"\0" + p.read_bytes() + b"\0")
+    return h.hexdigest()
+
+
 def solve(d, *extra):
-    return run([str(BIN), *extra, str(d)])
+    global _RUN_STASH
+    if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
+        return run([str(BIN), *extra, str(d)])
+    key = _input_key(d, extra)
+    hit = _RUNS.get(key)
+    if hit is not None:
+        _HITS[0] += 1
+        out, err, rc, first, stash = hit
+        shutil.copytree(stash, d, dirs_exist_ok=True)
+        return out.replace(first, str(d)), err.replace(first, str(d)), rc
+    out, err, rc = run([str(BIN), *extra, str(d)])
+    if _RUN_STASH is None:
+        _RUN_STASH = Path(tempfile.mkdtemp(prefix="plantlayout.stash."))
+    stash = _RUN_STASH / key
+    shutil.copytree(d, stash)
+    _RUNS[key] = (out, err, rc, str(d), stash)
+    return out, err, rc
 
 
 def result_json(out):
@@ -3608,6 +3700,10 @@ def main():
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
+        if _RUN_STASH is not None:
+            shutil.rmtree(_RUN_STASH, ignore_errors=True)
+        if os.environ.get("CHOUPO_GATE_RUN_CACHE_STATS"):
+            print("run-cache: %d engine runs, %d replayed" % (len(_RUNS), _HITS[0]), file=sys.stderr)
     if fails:
         print("check_plant_layout: FAIL")
         for f in fails:

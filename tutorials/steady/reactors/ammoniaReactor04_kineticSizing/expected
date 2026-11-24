@@ -53,7 +53,6 @@ kpi     feedPreheat            Q_latent_kW      0                1e-4
 kpi     feedPreheat            Q_sensible_kW    152025.519966    1e-4
 kpi     feedPreheat            T_in             259.494615244    1e-4
 kpi     feedPreheat            T_out            700              1e-4
-kpi     feedPreheat            Tsat             150              1e-4
 kpi     feedPreheat            vf_in            1                1e-4
 kpi     feedPreheat            vf_out           1                1e-4
 kpi     letdown                F_alpha          0.862230046333   1e-4

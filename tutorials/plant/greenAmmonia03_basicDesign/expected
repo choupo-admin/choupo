@@ -65,18 +65,16 @@ kpi     Aftercooler            Q_latent_kW      0                1e-4
 kpi     Aftercooler            Q_sensible_kW    -5482.93664939   1e-4
 kpi     Aftercooler            T_in             424.570143382    1e-4
 kpi     Aftercooler            T_out            313.15           1e-4
-kpi     Aftercooler            Tsat             150              1e-4
 kpi     Aftercooler            vf_in            1                1e-4
 kpi     Aftercooler            vf_out           1                1e-4
 kpi     Chiller                F                4.84931009456    1e-4
 kpi     Chiller                P                14849105.2732    1e-4
 kpi     Chiller                Q                -21901248.9224   1e-4
 kpi     Chiller                Q_kW             -21901.2489224   1e-4
-kpi     Chiller                Q_latent_kW      -1996.33855475   1e-4
-kpi     Chiller                Q_sensible_kW    -19904.9103676   1e-4
+kpi     Chiller                Q_latent_kW      -11404.5456674   1e-4
+kpi     Chiller                Q_sensible_kW    -10496.7032549   1e-4
 kpi     Chiller                T_in             313.15           1e-4
 kpi     Chiller                T_out            253.15           1e-4
-kpi     Chiller                Tsat             150              1e-4
 kpi     Chiller                vf_in            0.967803762516   1e-4
 kpi     Chiller                vf_out           0.830955101294   1e-4
 kpi     FEHE                   C_cold           167047.856475    1e-4
@@ -103,7 +101,6 @@ kpi     Intercooler            Q_latent_kW      0                1e-4
 kpi     Intercooler            Q_sensible_kW    -5180.08805351   1e-4
 kpi     Intercooler            T_in             420.212131593    1e-4
 kpi     Intercooler            T_out            313.15           1e-4
-kpi     Intercooler            Tsat             150              1e-4
 kpi     Intercooler            vf_in            1                1e-4
 kpi     Intercooler            vf_out           1                1e-4
 kpi     LetdownHP              F_alpha          0.813228045277   1e-4
@@ -182,7 +179,7 @@ kpi     N2Cooler               Q_latent_kW      0                1e-4
 kpi     N2Cooler               Q_sensible_kW    -1975.49332092   1e-4
 kpi     N2Cooler               T_in             473.769161677    1e-4
 kpi     N2Cooler               T_out            313.15           1e-4
-kpi     N2Cooler               Tsat             150              1e-4
+kpi     N2Cooler               Tsat             126.108934357    1e-4
 kpi     N2Cooler               vf_in            1                1e-4
 kpi     N2Cooler               vf_out           1                1e-4
 kpi     RecycleComp            F                4.02912272553    1e-4
@@ -230,11 +227,10 @@ kpi     WaterCooler            F                4.84931009456    1e-4
 kpi     WaterCooler            P                14849105.2732    1e-4
 kpi     WaterCooler            Q                -6590699.85066   1e-4
 kpi     WaterCooler            Q_kW             -6590.69985066   1e-4
-kpi     WaterCooler            Q_latent_kW      -469.676426736   1e-4
-kpi     WaterCooler            Q_sensible_kW    -6121.02342392   1e-4
+kpi     WaterCooler            Q_latent_kW      -2339.9598077   1e-4
+kpi     WaterCooler            Q_sensible_kW    -4250.74004308   1e-4
 kpi     WaterCooler            T_in             338.716127783    1e-4
 kpi     WaterCooler            T_out            313.15           1e-4
-kpi     WaterCooler            Tsat             150              1e-4
 kpi     WaterCooler            vf_in            1                1e-4
 kpi     WaterCooler            vf_out           0.967803762516   1e-4
 kpi     economics              COM_d            719253550.575    1e-4
@@ -1007,7 +1003,6 @@ kpi     CONVERTER.InterbedCooler1 Q_latent_kW      0                1e-4
 kpi     CONVERTER.InterbedCooler1 Q_sensible_kW    -16013.2870113   1e-4
 kpi     CONVERTER.InterbedCooler1 T_in             788.149059543    1e-4
 kpi     CONVERTER.InterbedCooler1 T_out            693.15           1e-4
-kpi     CONVERTER.InterbedCooler1 Tsat             150              1e-4
 kpi     CONVERTER.InterbedCooler1 vf_in            1                1e-4
 kpi     CONVERTER.InterbedCooler1 vf_out           1                1e-4
 kpi     CONVERTER.InterbedCooler2 F                5.00981291913    1e-4
@@ -1018,7 +1013,6 @@ kpi     CONVERTER.InterbedCooler2 Q_latent_kW      0                1e-4
 kpi     CONVERTER.InterbedCooler2 Q_sensible_kW    -13405.1641558   1e-4
 kpi     CONVERTER.InterbedCooler2 T_in             763.75539317     1e-4
 kpi     CONVERTER.InterbedCooler2 T_out            683.15           1e-4
-kpi     CONVERTER.InterbedCooler2 Tsat             150              1e-4
 kpi     CONVERTER.InterbedCooler2 vf_in            1                1e-4
 kpi     CONVERTER.InterbedCooler2 vf_out           1                1e-4
 equipment CONVERTER.Bed1/catalystCharge basis            m_catalyst_=_V_R_x_catalystBulkDensity_(declared) exact

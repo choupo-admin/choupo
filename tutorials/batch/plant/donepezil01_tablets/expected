@@ -75,7 +75,6 @@ kpi     coatingAirHeater       Q_latent_kW      0                  1e-4
 kpi     coatingAirHeater       Q_sensible_kW    72.0627086335      1e-4
 kpi     coatingAirHeater       T_in             298.15             1e-4
 kpi     coatingAirHeater       T_out            333.15             1e-4
-kpi     coatingAirHeater       Tsat             150                1e-4
 kpi     coatingAirHeater       vf_in            1                  1e-4
 kpi     coatingAirHeater       vf_out           1                  1e-4
 kpi     coatingDryer           T_out            317.588908471      1e-4
@@ -136,7 +135,6 @@ kpi     fbdAirHeater           Q_latent_kW      0                  1e-4
 kpi     fbdAirHeater           Q_sensible_kW    72.0627086335      1e-4
 kpi     fbdAirHeater           T_in             298.15             1e-4
 kpi     fbdAirHeater           T_out            333.15             1e-4
-kpi     fbdAirHeater           Tsat             150                1e-4
 kpi     fbdAirHeater           vf_in            1                  1e-4
 kpi     fbdAirHeater           vf_out           1                  1e-4
 kpi     finalBlender           F_out            2.04443313415e-05  1e-4

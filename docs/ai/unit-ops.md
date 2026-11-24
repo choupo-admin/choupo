@@ -766,6 +766,12 @@ adiabatic mode it covers the final solve at the converged T.  A path under
 `tutorials/steady/gibbs/gibbs12_element_potential_newton`; the EduTool
 `element-potential` draws it.
 
+A condensable species ABOVE ITS CRITICAL TEMPERATURE is never tested for
+condensation and never given a liquid fraction (C256 (b), `canCondenseAt`): a pure
+liquid does not exist there, so H2, N2, Ar -- and NH3 above 405.5 K -- stay in the
+gas by rule, not because the continued Psat happens to be large.  Theory:
+`sec:gibbs-supercritical`.
+
 For an adiabatic Gibbs reactor (the flame temperature problem), declare
 `mode adiabatic;` (an outer Newton on T balances `H_out = H_in + Q`), or wrap
 in a DesignSpec that varies `$T`.
@@ -823,6 +829,19 @@ operation
     subcool      <K>;           // T = Tsat(P) − ΔK (liquid side) → Q
 }
 ```
+**A dominant component above its critical point has no Tsat** (C256 (a)): a dome exists
+iff P < Pc of the dominant component AND its Psat curve reaches P at or below Tc (CO2's
+Antoine reaches 100 bar below Tc, so the second test alone is not enough); the root is
+searched from min(150 K, 0.4 Tc), so N2/H2/CO/Ar get their real Tsat below Tc.  A mixture
+dominated by a gas with Tc <= 150 K has no dome centre either.  Without a dome the unit
+reports no `Tsat` (no KPI, `none` in the result block), says so once with the true reason,
+solves `Q` / `outletT` on the single-phase branch, prices the phase change at the COLD end
+(cooling: inlet phases frozen T_in -> T_out, then re-partitioned at T_out; heating:
+re-partitioned at T_in, then the outlet's phases frozen; zero when vf does not change), and
+REFUSES by name the specs that are a distance from Tsat (`superheat`, `subcool`,
+`outletState`, `outletQuality` on a pure dome, the geometry condensation / boiling models).
+Theory: `sec:pc-no-dome`.
+
 For an area/HTC **rating** (duty EMERGES from geometry + a coolant/heating
 medium) use `model geometry;` with a `geometry{}` + `coolant{}` block (Nusselt
 film condensation) or a `boiling{}` + `heatingMedium{}` block (Rohsenow nucleate

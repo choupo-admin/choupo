@@ -5355,6 +5355,36 @@ C4H3 & 545.07 & 282.87 & 72.93 & 138.3 & 3e-04\\
 \end{tabular}
 \end{center}
 
+\paragraph{A computed record that stays in \file{components/}: vinylacetylene.}
+\label{sec:rrho-component}
+A species with a liquid-side life --- a Henry pair, a sigma profile --- cannot
+move to the table home.  Vinylacetylene (H$_2$C=CH--C$\equiv$CH, CAS 689-97-4, the
+\code{C4H4} record) is one: the Henry constant in water reads it.  Its record used to
+carry 431.7~kJ/mol, an enthalpy about 135~kJ/mol too high for this molecule
+(that of a cyclobutadiene-class C$_4$H$_4$), taken from a compilation Choupo may not
+redistribute.  It is now written by the same tool from an input of the file's
+\code{component\_records} list, and the gate holds its three blocks
+(\code{standardThermochemistry}, \code{idealGasHeatCapacity}, \code{provenance}) equal to
+the tool's output (\code{check\_rrho\_thermo}, arm~e).  The enthalpy is the
+\emph{0~K} value of the ab initio ANL0 scheme, 295.7~kJ/mol with a $2\sigma$ of
+1.4~kJ/mol (Klippenstein, Harding \& Ruscic, J.~Phys.\ Chem.\ A 121 (2017) 6580,
+Table~2, a species not in the ATcT set), so the tool converts it to 298.15~K,
+\begin{equation}
+  \Delta_f h^{\circ}_{298} = \Delta_f h^{\circ}_{0}
+    + \big[h_{298}-h_0\big]_{\mathrm{mol}}
+    - \sum_{\mathrm{el}} \nu_{\mathrm{el}}\big[h_{298}-h_0\big]_{\mathrm{el}},
+  \label{eq:rrho-dhf-0K}
+\end{equation}
+with $[h_{298}-h_0]_{\mathrm{mol}}=14.47$~kJ/mol from the model itself (translation and
+rotation $4RT$ plus the vibrations) and the CODATA Key Values increments of the
+elements (graphite 1.050, H$_2$ 8.468~kJ/mol), giving 289.04~kJ/mol.  The rotational
+constants are the measured ones (microwave, as listed by CCCBDB); no measured
+fundamental was readable, so the 18 vibrations are B3LYP/def2-TZVP values scaled by
+0.9642 and are marked \emph{calc}.  $s^{\circ}_{298}=278.49$ and
+$c_p(298)=72.79$~J/(mol\,K), within 0.5\,\% of the WebBook's statistical values (73.18 at 298.15~K, 138.74 against 138.61 here at 1000~K; a cross-check, not an origin).  The \emph{uncertainty} of the enthalpy is the paper's; the entropy and heat
+capacity carry $\pm$0.7 and $\pm$0.9 from the scaled-frequency error plus the two
+large-amplitude bends treated as harmonic.
+
 \begin{intuition}
 \textbf{What is approximate.}  The formulas are exact for a rigid rotor and a
 harmonic oscillator; a real molecule is neither.  Observed fundamentals stand
@@ -18932,6 +18962,25 @@ stream is the one fluid phase, read on the vapour leg, and the run says so
 (``resolved TWO-PHASE \ldots{} above the highest critical temperature \ldots{}
 DISCARDED'').
 
+\paragraph{A single liquid root is the same defect (DEV.md 4c C256 (c)).}
+The same stands for $V/F=0$, ``subcooled liquid'', above every $T_c$.  Measured on
+the ammonia-synthesis loop's feed-effluent exchanger: its cold outlet (669.8~K,
+231~bar, N$_2$/H$_2$/NH$_3$/Ar, every component above its $T_c$) is a gas --- until
+the \emph{continued} NH$_3$ vapour pressure is multiplied by ten, when the
+dilute-solution solutes, whose Henry constants are referred to the solvent's
+saturation, collapse ($K_{\mathrm{N_2}}$ from 1.44 to 0.0026, measured in a
+scratch flash of that stream at 690~K) and the flash returns $V/F=0$: a
+``liquid'' whose outlet then reads 619.0~K.  A number that moves when a fictitious
+curve is scaled is a defect, and its cause is the one above, not the exchanger:
+the root is discarded exactly as a two-phase root is (the advisory reads
+``resolved a single LIQUID phase \ldots{} DISCARDED'') and the stream is priced
+and labelled as the one fluid phase it can be, so the exchanger's phase report
+(entered \ldots{} leaves \ldots{}) no longer depends on where the continued curve
+sits.  The rule is held to the $\gamma$--$\phi$ route, to streams with no
+electrolyte speciation or organic liquid, and to streams in which every present
+component declares a $T_c$ (a molten salt declares none, and absence is not
+evidence).  Implemented in \code{flashState::supercriticalSplitDiscarded}.\label{sec:flash-above-tc-liquid}
+
 \paragraph{$\phi$--$\phi$ route (the rule is the Gibbs-energy test).}
 Under a $\phi$--$\phi$ package $K_i=\varphi_i^L(x)/\varphi_i^V(y)$ comes from one
 cubic and neither correlation is read.  A converged split can then be real: a
@@ -19119,6 +19168,43 @@ the dew point, and the engine brackets the sign-changing interval on a flash sca
 before driving Newton inside it.  This split --- step-at-$T^{\mathrm{sat}}$ for a
 pure dome, smooth-$\mathrm{vf}(T)$ for a mixture --- is the one subtlety that
 distinguishes the two cases throughout the solve.
+
+\paragraph{A supercritical dominant component has no saturation temperature.}\label{sec:pc-no-dome}
+Above its critical temperature a component has no vapour pressure.  The
+engine \emph{continues} $\ln\Psat$ linearly in $1/T$ past $T_c$ so a solver in
+transit sees a finite, smooth surface (announced \code{[psatContinued]}), but
+that continued curve is not a saturation state, and a bisection on it returned
+a number that is the temperature of nothing: $150$\,K, the lower end of the
+bracket, for a hydrogen-rich stream ($T_c=33$\,K), with a ``latent'' duty
+priced there.  The dome exists at $P_{\mathrm{out}}$ if and only if
+(i) $P_{\mathrm{out}}<P_c$ of the dominant component \emph{and} (ii) its
+$\Psat$ curve reaches $P_{\mathrm{out}}$ at or below $T_c$.  Condition (i) is
+not implied by (ii): CO$_2$'s Antoine fit sits on the sublimation range and
+reaches 100~bar below $T_c$ although $P_c=73.8$~bar.  The root is searched
+from a lower bracket taken from the component, $\min(150\,\mathrm{K},0.4\,T_c)$
+(the records carry no triple point in general), so N$_2$, H$_2$, CO and Ar get
+their real $T^{\mathrm{sat}}$ below $T_c$ (N$_2$ at 1~bar: 77.2~K); for
+$T_c\ge375$~K the bracket is the old 150~K and the bisection the old one.  When
+there is no dome the unit reports no $T^{\mathrm{sat}}$ and says so once, with
+the true reason (above its critical point at this pressure, or the saturation
+temperature below the search bracket).  A mixture whose dominant component has
+$T_c\le150$~K (an N$_2$-rich gas with a condensing vapour) is a gas of the
+mixture: it has no dome centre either, and takes the same no-dome handling.
+Each spec then does the honest thing: \code{Q} and \code{outletT} are solved on
+the single-phase branch (no plateau test); \code{superheat}, \code{subcool},
+\code{outletState}, \code{outletQuality} on a pure dome, and the
+film-condensation / boiling geometry models, which \emph{are} distances from
+$T^{\mathrm{sat}}$, are refused by name; a vapour-fraction target on a
+multicomponent mixture searches below the feed temperature.  The duty is split
+without a saturation temperature, pricing the phase change at the \emph{cold}
+end of the unit so that no liquid is carried past its $T_c$: cooling ---
+$Q_{\mathrm{sens}}=F\,[H^{\mathrm{fr}}(T_{\mathrm{out}})-H^{\mathrm{fr}}(T_{\mathrm{in}})]$
+with the inlet's phases (compositions and split) frozen, the latent part being
+the rest, the re-partitioning at $T_{\mathrm{out}}$; heating --- the latent part
+is the re-partitioning at $T_{\mathrm{in}}$ (the liquid vaporises where it is
+cold), the sensible part the outlet's phases frozen from $T_{\mathrm{in}}$ to
+$T_{\mathrm{out}}$.  A unit that changes no phase has latent zero.  Source:
+\file{PhaseChanger.cpp}, \code{saturationT} (DEV.md 4c C256 (a)).
 
 \subsection{Dome-aware enthalpy and the vf closure}
 
@@ -22670,6 +22756,15 @@ reactions that corresponds to.
         (This bullet said until 2026-09-27 that no multi-phase Gibbs
         was done.)  The EduTool \emph{How a Gibbs reactor solves} draws
         both searches from the engine's own log.
+  \item \textbf{A species above its critical temperature cannot condense.}\label{sec:gibbs-supercritical}
+        A pure liquid exists only below $T_c$.  The condensation test
+        ($y_iP>P^{\mathrm{sat}}_i$), the active set of \code{reactiveFlash} and
+        the liquid-fraction variables of \code{directMin} therefore skip a
+        condensable whose $T\ge T_c$ (\code{canCondenseAt}, \file{GibbsMethod.H}):
+        H$_2$, N$_2$, Ar and, in a converter at 800~K, NH$_3$ itself stay in the gas
+        by rule, not because the engine's continued $\Psat$ happens to be large
+        there (DEV.md 4c C256 (b)).  A species with no declared $T_c$ is judged
+        as before.
   \item \textbf{Element rank deficiency.}  If $\mathbf{A}$ does not
         have full row rank (e.g.\ a redundant element constraint),
         the normal-equation matrix in the initial-guess step becomes
@@ -31342,6 +31437,19 @@ is announced, and its $Q$ is not a condenser's.  Tutorial
 \file{hx02\_condensing\_steam}: 8\,bar steam at 450\,K against 300\,K
 water, $Q = 5.14$\,kW, the steam leaving at $T_\text{sat} = 443.56$\,K with
 vapour fraction $0.869$ and a zero closure gap.
+
+\paragraph{The phase it reports above every critical temperature.}\label{sec:hx-supercritical-phase}
+The outlet's phase word (\code{liquid}, \code{two-phase}, \code{vapour}) and the
+``entered \ldots{} leaves \ldots{}'' announcement read the vapour fraction of the
+equilibrium the package resolves at the outlet $(T,P,\mathbf z)$.  Above the
+highest critical temperature of any component present that equilibrium cannot
+be a liquid or a split: the root is discarded by the flash's one rule
+(Sec.~\ref{sec:flash-above-tc}, \ref{sec:flash-above-tc-liquid}) and the stream
+keeps the single fluid phase it carries, whatever the engine's continued
+vapour pressure of a supercritical component would have said.  A feed-effluent
+exchanger whose cold outlet is above every $T_c$ therefore reports a gas, and
+scaling the continued curve by 0.1 or 10 moves no outlet temperature, vapour
+fraction or duty (DEV.md 4c C256 (c)).
 
 % ---------------------------------------------------------------------
 \section{Heat exchanger DESIGN: geometry, pressure drop, and the sizing

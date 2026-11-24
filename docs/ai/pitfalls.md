@@ -820,6 +820,13 @@ the pure Tc of its lighter component.  A phi-phi state that is one phase is
 simply one phase.  Theory Guide, `sec:flash-above-tc`; gate
 `check_supercritical_route`.
 
+A SINGLE LIQUID root (V/F = 0) above every Tc is discarded the same way on gamma-phi
+(`resolved a single LIQUID phase ... DISCARDED`, C256 (c)): a Henry solute's K is
+referred to the solvent's saturation, so scaling a CONTINUED solvent Psat used to
+flip a 669.8 K, 231 bar all-supercritical gas to a "liquid" in the feed-effluent
+exchanger.  Held to streams in which every present component declares a Tc.
+Theory Guide, `sec:flash-above-tc-liquid`, `sec:hx-supercritical-phase`.
+
 ## A VLLE answer drops a phase by RE-SOLVING, never by renormalising (C467, 2026-11-21)
 
 `phaseSet VLLE` searches three phases by Gibbs minimisation.  When the answer
