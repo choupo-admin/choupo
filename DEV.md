@@ -5671,6 +5671,15 @@ accepts today, and that is a policy call.
 > the tear Jacobian with per-unit finite differences at tight unit tolerance (analytic where a unit
 > has them), and REFUSED by name when the engine's two-step gradient check says the gradients are
 > not good.  Nothing before 2 December except, if a slot is free, the measurement.
+> CORRECTION, the same hour, read in the tree before dispatching: Choupo ALREADY HAS the SQP of
+> point (3) -- `method sqp;` in OptimizationDriver (src/solver/SQP.cpp, ActiveSetQP.cpp), with
+> constraints, the active set and the Lagrange multipliers printed as SHADOW PRICES
+> (OptimizationDriver.cpp:961), and a self-check against Hock-Schittkowski HS35/HS21/HS71 before every
+> run (:623); Nelder-Mead is the unconstrained method, integers are enumerated.  The architect had
+> told Vitor the optimizer was Nelder-Mead alone without reading the driver.  So the gap is exactly
+> the NON-SMOOTH constrained problem, and Vitor chose to build MADS NOW ("Então vamos já atacar
+> isso!"): a third method beside the two, opt-in, no existing case moves, so the demonstration is
+> safe by construction.  What remains of (3) is only the gradient-quality check.
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
