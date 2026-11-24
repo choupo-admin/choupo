@@ -455,6 +455,19 @@ WHAT THIS DOES NOT CHECK, said plainly:
     tutorials declare a `sizing {}` block at all.  Arm (k) therefore sees only
     the unit words THOSE two write; a sizer no witness exercises can still
     declare an unreadable one.
+
+  PARALLEL ARMS (2026-11-24, the slow-gates profile: 592 s on four cores, 99 %
+  of it 62 sequential `choupoSolve` runs).  The fifteen arms that take their
+  own `problems` and `notes` lists run side by side in threads and their lists
+  are joined in the sequential order (the printed verdict is the sequential
+  run's, byte for byte); the five source and fixture arms that follow them stay
+  sequential (check_ignored writes under the shipped case's design/).  Every
+  engine run holds one of CHOUPO_GATE_JOBS slots (default min(4, cpu_count); 1
+  = the sequential walk); the run cache holds a run IN FLIGHT behind a lock, so
+  two arms that ask for one input wait for one run (56 runs, 6 replayed, as
+  before).  Measured: 592 s -> 190 s, stdout identical; a sabotage in a scratch
+  copy of the tree (the converter of ammoniaReactor03 in aluminium) FAILs arm
+  (t) by name.
 """
 import csv
 import hashlib
@@ -464,6 +477,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import sys
 from pathlib import Path
 
@@ -557,6 +571,54 @@ _RUN_STASH = []
 _HITS = [0]
 _OUTPUT_DIRS = ("design", "reports", "converged", "postProcessing", "iterations")
 
+# PARALLEL ARMS (2026-11-24).  The arms of `main` that take their own `problems`
+# and `notes` lists are independent of one another (each runs shipped cases in
+# place or private copies, and none reads another's output), so `main` runs them
+# in threads and joins their lists in the arms' fixed order: the printed
+# verdict is the sequential run's, byte for byte.  Every engine run holds one
+# of CHOUPO_GATE_JOBS slots (default min(4, cpu_count); 1 = the sequential
+# walk), and the run cache is lock-guarded and holds a run IN FLIGHT, so two
+# arms that ask for the same input wait for one run.
+_LOCK = threading.Lock()
+
+
+def _jobs():
+    try:
+        n = int(os.environ.get("CHOUPO_GATE_JOBS", "0"))
+    except ValueError:
+        n = 0
+    return n if n > 0 else max(1, min(4, os.cpu_count() or 1))
+
+
+_JOBS = _jobs()
+_SLOTS = threading.BoundedSemaphore(_JOBS)
+_SLOT_GATE = threading.Lock()      # a group of runs takes its slots one at a time
+
+
+class _slots:
+    """`with _slots(n):` -- n engine runs are about to be alive together."""
+
+    def __init__(self, n=1):
+        self.n = min(n, _JOBS)
+
+    def __enter__(self):
+        with _SLOT_GATE:
+            for _ in range(self.n):
+                _SLOTS.acquire()
+
+    def __exit__(self, *a):
+        for _ in range(self.n):
+            _SLOTS.release()
+
+
+class _Flight:
+    """One engine run, finished or in flight; waiters block on `done`."""
+
+    def __init__(self):
+        self.done = threading.Event()
+        self.res = None
+        self.exc = None
+
 
 def _ancestor_inputs(h, d):
     """The folder cascade (choupoSolve main.cpp resolveUp; Flowsheet's child
@@ -594,24 +656,40 @@ def _engine(d):
     d = Path(d)
     cmd = [str(ROOT / "choupoSolve"), str(d)]
     if os.environ.get("CHOUPO_GATE_NO_RUN_CACHE"):
-        return subprocess.run(cmd, capture_output=True, text=True)
+        with _slots():
+            return subprocess.run(cmd, capture_output=True, text=True)
     key = _input_key(d)
-    hit = _RUNS.get(key)
-    if hit is not None:
-        proc, first, stash = hit
+    with _LOCK:
+        fl = _RUNS.get(key)
+        mine = fl is None
+        if mine:
+            fl = _RUNS[key] = _Flight()
+            if not _RUN_STASH:
+                _RUN_STASH.append(Path(tempfile.mkdtemp(prefix="design_sheet_stash_")))
+            stash = _RUN_STASH[0] / key
+    if mine:
+        try:
+            with _slots():
+                proc = subprocess.run(cmd, capture_output=True, text=True)
+            shutil.copytree(d, stash)
+            fl.res = (proc, str(d), stash)
+        except BaseException as e:
+            fl.exc = e
+            raise
+        finally:
+            fl.done.set()
+        return proc
+    fl.done.wait()
+    if fl.exc is not None:
+        raise fl.exc
+    proc, first, stash = fl.res
+    with _LOCK:
         _HITS[0] += 1
-        if first != str(d):
-            shutil.copytree(stash, d, dirs_exist_ok=True)
-        return subprocess.CompletedProcess(
-            cmd, proc.returncode, proc.stdout.replace(first, str(d)),
-            proc.stderr.replace(first, str(d)))
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if not _RUN_STASH:
-        _RUN_STASH.append(Path(tempfile.mkdtemp(prefix="design_sheet_stash_")))
-    stash = _RUN_STASH[0] / key
-    shutil.copytree(d, stash)
-    _RUNS[key] = (proc, str(d), stash)
-    return proc
+    if first != str(d):
+        shutil.copytree(stash, d, dirs_exist_ok=True)
+    return subprocess.CompletedProcess(
+        cmd, proc.returncode, proc.stdout.replace(first, str(d)),
+        proc.stderr.replace(first, str(d)))
 
 
 def run_case(rel: str):
@@ -2859,10 +2937,11 @@ def check_storage_link(problems, notes):
                         t, count=1, flags=re.S)
         return t2 if n == 1 else t + "\n#error the probe found no methanolTank\n"
     cp = _copy_case(case, [("system/flowsheetDict", bump)])
-    procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              text=True) for d in (case, cp)]
-    (out, err), (cout, cerr) = (p.communicate() for p in procs)
+    with _slots(2):
+        procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True) for d in (case, cp)]
+        (out, err), (cout, cerr) = (p.communicate() for p in procs)
     rcs = [p.returncode for p in procs]
     shutil.rmtree(cp.parent, ignore_errors=True)
     if rcs[0] != 0:
@@ -4557,10 +4636,11 @@ def check_pressure_store_link(problems, notes):
     gcp2 = _copy_case(gcase, [("system/postDict", add_list("gasStorage", gas)),
                               ("system/flowsheetDict", residence(gu, "0.5 h", "1 h"))])
     lcp2 = _copy_case(case, [("system/flowsheetDict", residence(lu, "48 h", "96 h"))])
-    procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              text=True) for d in (gcp, gcp2, case, lcp2)]
-    outs = [p.communicate() for p in procs]
+    with _slots(4):
+        procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True) for d in (gcp, gcp2, case, lcp2)]
+        outs = [p.communicate() for p in procs]
     rcs = [p.returncode for p in procs]
     for d in (gcp, gcp2, lcp2):
         shutil.rmtree(d.parent, ignore_errors=True)
@@ -4785,10 +4865,47 @@ def main() -> int:
     problems, notes = [], []
 
     all_units = []
-    n1 = check_case(SECTORED, True,  problems, notes, all_units)
-    n2 = check_case(FLAT,    False, problems, notes, all_units)
-    n3 = check_case(COLUMN,  False, problems, notes, all_units)
+    #  The arms that take their own lists: each runs in a thread, its lists
+    #  are joined in this order (the sequential walk's).  check_case's three
+    #  calls come first, then the three "nothing was checked" guards.
+    def case_arm(rel, sector):
+        return lambda pr, no: (check_case(rel, sector, pr, no, all_units),)
+    arms = [case_arm(SECTORED, True), case_arm(FLAT, False), case_arm(COLUMN, False),
+            check_column_items, check_catalyst_bed, check_space_velocity_basis,
+            check_exchanger_routes, check_storage, check_storage_link,
+            check_inventory, check_exchanger_design, check_column_exchanger_design,
+            check_material_limits, check_gas_store, check_pressure_store_link]
+    results = [None] * len(arms)
 
+    def run_arm(k):
+        pr, no = [], []
+        exc, ret = None, None
+        try:
+            ret = arms[k](pr, no)
+        except BaseException as e:         # re-raised in arm order below
+            exc = e
+        results[k] = (pr, no, ret, exc)
+
+    if _JOBS < 2:
+        for k in range(len(arms)):
+            run_arm(k)
+    else:
+        #  the arms that run the plants longest start first
+        order = sorted(range(len(arms)), key=lambda k: arms[k] not in (
+            check_gas_store, check_pressure_store_link, check_material_limits,
+            check_exchanger_design, check_column_exchanger_design, check_storage_link))
+        ts = [threading.Thread(target=run_arm, args=(k,)) for k in order]
+        for t in ts:
+            t.start()
+        for t in ts:
+            t.join()
+    for pr, no, ret, exc in results:
+        if exc is not None:
+            raise exc
+    for k in range(3):
+        problems.extend(results[k][0])
+        notes.extend(results[k][1])
+    n1, n2, n3 = (results[k][2][0] for k in range(3))
     if n1 == 0:
         problems.append("%s: no sheet was checked at all -- the arms above "
                         "cannot fire." % SECTORED)
@@ -4797,18 +4914,9 @@ def main() -> int:
     if n3 == 0:
         problems.append("%s: no sheet was checked at all -- the 1:N address "
                         "is then exercised by nothing." % COLUMN)
-    check_column_items(problems, notes)
-    check_catalyst_bed(problems, notes)
-    check_space_velocity_basis(problems, notes)
-    check_exchanger_routes(problems, notes)
-    check_storage(problems, notes)
-    check_storage_link(problems, notes)
-    check_inventory(problems, notes)
-    check_exchanger_design(problems, notes)
-    check_column_exchanger_design(problems, notes)
-    check_material_limits(problems, notes)
-    check_gas_store(problems, notes)
-    check_pressure_store_link(problems, notes)
+    for k in range(3, len(arms)):
+        problems.extend(results[k][0])
+        notes.extend(results[k][1])
 
     check_ignored(problems)
     check_refusal(problems)
