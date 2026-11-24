@@ -5486,6 +5486,34 @@ accepts today, and that is a policy call.
 > promotion-vs-dossier gate did not fire.  --gui 49/0.  C487 slice 1 READY from the cloud; slice 2 and
 > the dynamic-views gate dispatched to it.
 
+> **C487 landed 2026-11-24 (a956c15c44), both slices under one validation.**  Slice 1's own --gui
+> was stopped half way because slice 2 moves two GUI test witnesses (unsteady07/08), so one --gui
+> covers both.  Reach: DynamicDriver.cpp (every choupoCtrl/choupoSemiContinuous case) and
+> BatchPublications (choupoBatch cases with views): --scope tutorials/ctrl, unsteady, batch 116/0;
+> check_dynamic_views OK (27 cases, 40 views, 117 series).  --gui found ONE real defect: the
+> loop-placement EduTool rewires ctrl22 without TC1, the new views name TC1, and the engine refuses
+> a view whose source is absent before it integrates, so the page and its native test got no
+> result -- it would have broken in the browser at the next WASM build.  Fixed at the source
+> (buildLoopCase drops the witness's postDict; the page draws from the trajectory), re-checked by
+> the test file (21/21) and the typecheck.  LESSON for every case that an EduTool or gate rewires:
+> declared views belong to the case as shipped, and a derived case drops them.  Environment, not
+> the slice: check_rrho_thermo and check_thermo_tables need the NASA TP-2002 PDF, absent on this
+> laptop (OK with CHOUPO_ALLOW_NO_NASA_PDF=1); check_regressed_pairs hit a NIST 504.
+
+> **RULING ON ATcT (2026-11-23, the cloud's question).**  The tree contradicted itself: the debt
+> registry said ATcT was not used (no licence stated, contractor authors, so no public-domain
+> grant), while the nine RRHO-computed records and heavyWater took dHf from "ATcT 1.124".  RULED: an
+> ATcT value is a source when it is read from a peer-reviewed ATcT paper, cited by table and page
+> (the authority-vs-route rule of CLAUDE.md section 7: the value came from the journal); the
+> website/dataset version alone is not.  A paper's value is kept when it differs from 1.124, the
+> difference in the record's comment; a species no paper prints gets another primary or is pinned
+> with the paper that would settle it named; check_source_licence gains a sabotage (a record citing
+> only "ATcT 1.x" fails).  Read the same night on the laptop: Glarborg, Miller, Ruscic &
+> Klippenstein 2018, Table 1 p. 33 (ATcT TN 1.122b) prints NNH, 1CH2, N and NH and none of HOCN,
+> HCNO, H2CN, CH2CO, HCCOH, C3H2, n-C4H3, C4H4, D2O; its other species come from the Goos-Burcat-
+> Ruscic database, the NonCommercial compilation, which is not a route.  To the cloud inside C335.
+> Next cloud batch: C486, C335, C256 in that order.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
