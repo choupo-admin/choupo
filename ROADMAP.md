@@ -166,7 +166,7 @@ is commissioned.
 - **C132** -- EduTool de diagnóstico de falhas a partir de historiador (asked 2026-10-21).
 - **C133** -- PFD com tabela de correntes e folhas de especificação em PDF (asked 2026-10-21).
 - **C139** -- EduTool da economia da rede de químicos e parques industriais (asked 2026-10-24).
-- **C160** -- Termodinâmica e cinética de topo: programa de paridade com biblioteca aberta (asked 2026-10-25).
+- **C160** -- O que ainda falta: a cinética de superfície, com a cobertura dos sítios do catalisador, e os fluxos de difusão no transporte. As chamas 1-D e o plasma ficam fora, por serem amplitude que o Choupo não persegue. (asked 2026-10-25).
 - **C181** -- Modelo de arrefecimento sequencial (asked 2026-10-27).
 - **C195** -- O que falta ao Choupo para os dois grupos farmacêuticos 2026-27 (asked 2026-11-02).
 - **C203** -- Gémeo digital como última forma de um caso de planta (asked 2026-11-02).
