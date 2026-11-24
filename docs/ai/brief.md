@@ -348,12 +348,9 @@ message, fix exactly that, re-run.
 
 In the app: open the case, *Run*, read **Streams** first, then **Log**.
 Command line: `bin/runCase <case>`; `bin/choupo-lint <case>` validates
-without solving; `choupoSolve --restart-tears <case>` (opt-in, recycle cases)
-keeps the exact converged tears in `<case>/converged.restart` and, when the
-build, the inputs and the property package are unchanged, skips the tear
-iteration and runs only the final pass (a stale record is named and the full
-solve runs; a unit that seeds an inner solve from its last outlet may differ
-in the last digits -- confirm a result that matters with one plain run).  Every converged steady run prints and writes mass,
+without solving; `choupoSolve --restart-tears <case>` reruns a recycle case
+from its converged tears (user guide; confirm a result that matters with one
+plain run).  Every converged steady run prints and writes mass,
 element and energy balances in the LOG and under `reports/` (the app's
 run strip may still say MASS "not published" on cases where the log
 closes it -- a known display defect; trust the log) — check they close
