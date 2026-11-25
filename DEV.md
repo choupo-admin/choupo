@@ -5740,6 +5740,11 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C534. PSYCHROMETRIC CHARTS: ONE HOME, THREE DOORS (Vitor, 2026-11-25, for Saturday 28 November).**  The chart
+> stays in its EduTool; the Explorer gets a card (a gas and a vapour) that opens it with the pair filled; Find answers
+> "humid air", "wet bulb", "dew point"; a link carries gas, vapour and pressure; air + water is the default (N2 + water
+> today); click a point to read every property; A4 print, CSV, save as case.
+
 > **C533 (Vitor, 2026-11-25): which mixture of three solvents dissolves a solid.**  Scatchard-Hildebrand as an activity
 > model (ln gamma_2 = V_2 (delta_2 - delta_bar)^2 phi_1^2 / RT, any number of solvents), with the fusion equation giving the
 > amount; the Hansen triangle for three (today two).  Measured by a scratch run: benzene in three solvents with UNIFAC works
