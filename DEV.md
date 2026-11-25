@@ -5702,7 +5702,7 @@ accepts today, and that is a policy call.
 > FIRST SLICE LANDED 2026-11-25: Billet-Schultes (PackingBS), five records, ratebased05; law equal to a second
 > transcription to 7e-16; no measured set in hand.  OPEN: Onda + Bravo-Fair as the cross-check, the 0.03 N/m floor
 > on surface tension (as printed on p. 500, it binds on every organic liquid; announced), C518 the packing pin.
-> BATCH 1125c LANDED 2026-11-25 (full sweep alone, 07:00-07:53: 2039 PASS / 2 FAIL, a restated start and an
+> BATCH 1125c LANDED 2026-11-25 (full sweep alone, 06:50-07:39: 2039 PASS / 2 FAIL, a restated start and an
 > uncited chapter, both fixed and re-run): C184 slice (1), the A-D diagnosis of a failed column; C477, 15
 > distillation figures; C499, `method bayesian` opt-in with its case study optim08 and the EduTool card (20 runs
 > against 25 for sqp central on the same problem, and the column where it is the wrong tool); C501, the
@@ -5725,7 +5725,7 @@ accepts today, and that is a policy call.
 > `converged/` drops the feed's declared phase (stripper01/02) and the engine refuses the speciation block it
 > wrote (marcilla01/02).  C517: claus01 and ammonia01 close in atoms; the few 1e-5 of mass is the record's MW
 > against its formula (S8 256.48 against 256.52): a gate at 1e-4 and the records outside it corrected.
-> LANDED 2026-11-25 (batch 1125b, full sweep alone 03:40-04:36: every case passed, 2031 PASS / 6 FAIL, all six of
+> LANDED 2026-11-25 (batch 1125b, full sweep alone 03:38-04:32: every case passed, 2031 PASS / 6 FAIL, all six of
 > prose and counts, fixed and re-run), with C500, C504 and C513's first slice.  MOVED GOLDENS: column keys (x_D_LK,
 > x_B_HK: the declared pair; 3+ components without keys publish x_D_<name>, x_B_<name>); membranes rename
 > c_ret_elem to c_ret_<solute>_elem, same values; vlle03, vlle05, decanter01 move up to 3e-4 because the
@@ -5889,7 +5889,7 @@ accepts today, and that is a policy call.
 > (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
 > closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
 > lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
-> LANDED 2026-11-24 (full sweep, alone, 22:30-23:13: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
+> LANDED 2026-11-24 (full sweep, alone, 22:23-23:05: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
 > and fixed, then their gates and the cases they reach).  What the sweep taught: (1) a PARTIAL element
 > ledger (a declared composition with unaccounted mass) cannot close better than its data, in choupoSolve and
 > in the dynamic driver: it alarms as PARTIAL-DATA and does not fail the run; (2) membrane08's softener is
