@@ -4336,6 +4336,23 @@ PYEOF
     fi
     rm -f /tmp/adiabappr.$$
 
+    # adiabatic-restart gate (C521, 2026-11-25).  The adiabatic liquid batch
+    # vessel integrated a heat of reaction frozen at the charge T, so a restart
+    # from a written instant re-resolved it at that instant's T and ended 6 mK
+    # away (batch02/04/06), and H(end) - H(charge) was 24 J.  It now integrates
+    # H = const on the canonical surface.  Arms: a restart of batch02 from
+    # t = 300 ends on the uninterrupted T_final and n_ethylAcetate_final; the
+    # trajectory agrees at t = 310; a source arm on the energy equation.
+    if gate_exec "$ROOT/bin/curate/check_adiabatic_restart.py" > /tmp/adiabrest.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "adiabatic-restart-gate" "$(gate_claim check_adiabatic_restart /tmp/adiabrest.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_adiabatic_restart.py)\n" "adiabatic-restart-gate"
+        cat /tmp/adiabrest.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/adiabrest.$$
+
     # feed-thermal-state gate (2026-09-12).  `operation.feedQuality` was a
     # SECOND HOME for a fact the feed stream already carries, and the
     # single-feed solver paths never reconciled the two: column01_benzene_
