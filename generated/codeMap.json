@@ -10296,6 +10296,11 @@
    "src/core/Types.H",
    "src/solver/Wegstein.H"
   ],
+  "src/solver/ip/DenseLDLT.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
   "src/streams/AnalysisReconciler.cpp": [
    "src/core/Types.H",
    "src/solver/ActiveSetQP.H",
@@ -21190,6 +21195,7 @@
    "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
    "src/solver/Wegstein.cpp",
+   "src/solver/ip/DenseLDLT.cpp",
    "src/streams/AnalysisReconciler.cpp",
    "src/streams/Carried.cpp",
    "src/streams/Composition.cpp",
@@ -23625,6 +23631,12 @@
    "src/solver/Wegstein.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/solver/ip/DenseLDLT.H": [
+   "src/solver/ip/DenseLDLT.cpp"
+  ],
+  "src/solver/ip/SymmetricIndefinite.H": [
+   "src/solver/ip/DenseLDLT.cpp"
   ],
   "src/streams/AnalysisReconciler.H": [
    "src/propertyOps/DataReconciliation.cpp",
