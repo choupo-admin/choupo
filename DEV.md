@@ -5652,6 +5652,18 @@ accepts today, and that is a policy call.
 > book Vitor brought).**  Same item: calculated value, margin, commercial size, cost.  First measure which design
 > sheets already show margin and commercial size; nothing before 2 December.
 
+> **C504. THE KEY PURITIES FOLLOW THE LIST'S ORDER (architect, 2026-11-25, from C492's first measurement).**
+> Reversing `components` on acetone06 leaves every physical result equal to 4e-9 and moves x_B_HK from 0.884
+> to 0.095: DistillationColumn publishes the first name's distillate fraction as x_D_LK and the last name's
+> bottoms fraction as x_B_HK.  Ruling: declared keys; in a binary the more volatile by the engine's K; with
+> three or more components and no keys, each purity by its component's name.  C492 T1-T6 on 40 cases: 25 first
+> violations, all the tool's own, then 2 left, both this.
+
+> **C505. READ MORAN FOR EDUTOOLS AND CORRELATIONS (Vitor, 2026-11-25: "Poe um Agente a ler o Moran e vê o que
+> pode tirar de lá para o Choupo (Edutools e correlações)").**  A reading general, report private in the literature
+> folder; correlations with page and primary source (the books are secondary), at most eight tools, his criticisms
+> of simulators turned into tests, the layout rules against the PEQ layout.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
