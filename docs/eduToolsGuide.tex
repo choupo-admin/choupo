@@ -3653,6 +3653,19 @@ adiabatic-saturation and true wet-bulb lines, over any carrier gas and
 condensable pair the catalogue can serve.  Every line is engine-computed.
 \declaredanchor{ch:drying}
 
+\subsection*{Why did it not dry? \quad(\code{tool=why-did-it-not-dry})}\label{sec:edu-why-did-it-not-dry}
+Page A of the dryer pages, ``the water, the air, the clock''.  Three cards, each a live figure on engine runs of
+bundled cases (the typescript orders, takes ratios and converts bases; it predicts nothing).  \emph{Ten percent of
+what?}\ converts between the wet and the dry basis and shows each case's own feed and product on both, with the
+engine's wet-basis kpi beside the converted value.  \emph{Three ceilings} runs four cases side by side
+(\code{solidDryer01\_sugar}, \code{solidDryer02\_starved\_air}, \code{evapDryer02\_energy\_limited},
+\code{sprayDryer06\_rea}) and gives each a verdict --- air-limited (exhaust saturated, or gas at its wet bulb),
+time-limited, isotherm-bound, or ``not classified'' --- that orders the engine's own numbers against tolerances
+printed beside it and lists the numbers it used; an air-flow slider and a sweep show where the cliff is.  The solid
+and evaporative dryers have no clock, and the card says so.  \emph{The humid day} runs the tray case in five airs of
+rising humidity: the floor $X_e$ rises, and a specification below it is unreachable at any time.  Theory: Section~\ref{sec:drying-three-ceilings}.
+\declaredanchor{sec:drying-three-ceilings}
+
 \subsection*{Drying curve, batch tray \quad(\code{tool=drying})}
 The two classical drying plots side by side on one run --- moisture
 against time, and rate against moisture --- with the critical moisture
@@ -3660,9 +3673,18 @@ visible as the corner where a flat rate begins to fall.  The tool is
 careful about one thing that deserves writing up properly: the engine
 omits the break time entirely when the crossing was never observed, and
 the tool reports \emph{which} absence it is rather than drawing a zero.
+Three further cards read the engine's runs: the tray \emph{loading} $L=m_s/A$ (three runs, moisture against $t/L$ on one curve),
+\emph{the last percent} (the time to a specification read off the emitted curve, with the floor as an asymptote) and
+\emph{the spray chamber} (the residence, the constant-rate time and the falling-rate constant of \code{sprayDryer01\_sugar}
+at four heights and two wheel speeds; no particle temperature is shown, the engine does not solve it).  Theory:
+Section~\ref{sec:drying-loading-tail-chamber}.
 \declaredanchor{ch:drying}
 
 \subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
+The page now opens on \emph{what you cannot calculate}: the bill of tests, the numbers the engine takes from a
+test of the sample (critical moisture, the falling-rate curve, the gas-film coefficient, the sorption constants)
+against those the plant decides, each with the number the bundled case declares; then the three flow
+arrangements, and last, in a collapsed drawer, the selection tree and the tables of the books, none of them removed.
 A \emph{selection} aid: the seven dryer types that do most of the drying ---
 spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
 each drawn as a schematic made for the page (wet feed and wet material in
