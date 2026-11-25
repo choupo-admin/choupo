@@ -200,8 +200,10 @@ describe("the lesson", () => {
     const ids = BAYES_LIMITS.map((l) => l.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toContain("not-in-engine");
+    expect(ENGINE_STATUS).toContain("offers this method, opt-in");
     expect(ENGINE_STATUS).toContain("15 simulations against 25");
     expect(ENGINE_STATUS).toContain("23 against 22");
+    expect(ENGINE_STATUS).toContain("method bayesian;");
     expect(ENGINE_STATUS).toContain("sqp");
   });
   it("cites the two equations it is built on, by number", () => {
@@ -222,7 +224,7 @@ describe("the card renders", () => {
     const html = renderToStaticMarkup(
       createElement(MantineProvider, null, createElement(BayesOptCard)),
     );
-    expect(html).toContain("15 simulations against 25");
+    expect(html).toContain("offers this method, opt-in");
     expect(html).toContain("Bayesian optimisation");
     expect(html).toContain("Gradient method (sketch)");
     expect(html).toContain("data-lesson-quiz");

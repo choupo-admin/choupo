@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HSO4.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HSO4;
+formula     "HSO4-";
+charge  -1;
+MW { value 97.07; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -887340; unit J/mol;}
+sAq  { value 131.8;  unit J/mol/K;}
+cpAq { value -84.0; unit J/mol/K;}
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+// 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+// only thing the engine consumes).
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value -35; }
+        { T 333.15; value -13; }
+        { T 373.15; value -10; }
+        { T 423.15; value -18; }
+        { T 473.15; value -18; }
+    );
+    potentiometric true;   // CC note b (cell-potential dT, larger errors)
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 1.33e-09; unit m2/s; }
+    provenance
+    {
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
+        D0
+        {
+            source        "Y.-H. Li and S. Gregory, Diffusion of ions in sea water and in deep-sea sediments, Geochim. Cosmochim. Acta 38 (1974) 703-714, Table 1 (p. 705: tracer and self-diffusion coefficients of ions at infinite dilution, 10^-6 cm2/s at 0, 18 and 25 C), row HSO4-, column 25 C: 13.3 x 10^-6 cm2/s";
+            origin        literature;
+            method        "read at the page, 2026-11-15 (DEV.md 4c C403): the scan's text layer of this table is garbled, so the row was read from the page image; the 25 C entry converted (1 x 10^-6 cm2/s = 1 x 10^-10 m2/s) to 1.33e-09 m2/s";
+            reviewStatus  interim;
+            notes         "Li & Gregory give, for the same row, 0 C not given; 18 C not given; 25 C 13.3 x 1e-10 m2/s (kept here for the later check of the Stokes-Einstein correction to the run temperature, thermo/transport/StokesEinstein.H, which is applied by the consumer). A second compiled table (named in the comment above) gives 1.385e-09 m2/s for this ion at 25 C (+4.1 %).";
+        }
+    }
+}

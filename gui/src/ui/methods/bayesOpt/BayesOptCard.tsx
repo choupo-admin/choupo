@@ -30,7 +30,7 @@
   tests/bayesOpt.test.ts; this file draws it.
 
   THE ENGINE STATUS SENTENCE is shown on the card (ENGINE_STATUS): the method
-  is not offered by the engine yet.
+  is offered by the engine, opt-in (C499); the sentence quotes the measurement.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";

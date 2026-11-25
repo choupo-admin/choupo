@@ -248,6 +248,18 @@
   "BatchVesselRecord": [
    "src/postProcessing/views/BatchPublications.H"
   ],
+  "BayesOptions": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesPoint": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResponse": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResult": [
+   "src/solver/BayesOpt.H"
+  ],
   "BedAnchor": [
    "src/unitOperations/batch/BedTransportCorrelations.H"
   ],
@@ -13689,6 +13701,11 @@
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
+  "src/unitOperations/distillation/PackingBS.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/distillation/PackingBS.H",
+   "src/unitOperations/distillation/PackingRBF.H"
+  ],
   "src/unitOperations/distillation/PackingDelft.cpp": [
    "src/core/Constants.H",
    "src/core/Types.H",
@@ -13760,6 +13777,7 @@
    "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
+   "src/unitOperations/distillation/PackingBS.H",
    "src/unitOperations/distillation/PackingDelft.H",
    "src/unitOperations/distillation/PackingRBF.H",
    "src/unitOperations/distillation/PackingRecord.H",
@@ -21308,6 +21326,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/ColumnDiagnosis.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/PackingBS.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
    "src/unitOperations/distillation/PackingRecord.cpp",
@@ -29733,6 +29752,10 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
+  "src/unitOperations/distillation/PackingBS.H": [
+   "src/unitOperations/distillation/PackingBS.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
+  ],
   "src/unitOperations/distillation/PackingDelft.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
@@ -29740,6 +29763,7 @@
   ],
   "src/unitOperations/distillation/PackingRBF.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/PackingBS.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp"

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1941,
+  "cases": 1942,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -29460,6 +29460,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/optimisation/optim08_bayesian_membrane": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/pareto01_purity_energy": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32997,6 +33013,7 @@
     "tutorials/steady/optimisation/optim05_reactor_npv",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",
@@ -33856,6 +33873,7 @@
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -34972,6 +34990,7 @@
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
    "eNRTL": [
@@ -36548,6 +36567,7 @@
     "tutorials/steady/optimisation/optim05_reactor_npv",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",
