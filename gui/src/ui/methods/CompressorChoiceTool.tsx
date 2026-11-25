@@ -487,7 +487,7 @@ export function CompressorChoiceTool(): JSX.Element {
         </Text>
       )}
       {rec.share > 0 && runH.result?.log.includes("could not be SIZED") && (
-        <Alert color="orange" variant="light" mt={8} data-cc-hot-refused="">
+        <Alert color="orange" variant="light" mt={8} data-cc-hot-failed="">
           With the recycle returning hot, the engine's staged design of this machine could not keep every discharge within the
           case's temperature limit, and the engine said so (its message is in the run's log): the single pass above is still solved,
           but a machine with a hot recycle cannot be designed on the same staging.
