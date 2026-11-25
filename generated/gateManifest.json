@@ -1955,6 +1955,11 @@
       "exit": 0,
       "claim": "check_header_numbers: OK -- 25 marked header number(s) agree with their golden rows; suspect header numbers 1519 in 298 case(s) held at the pinned debt (may only shrink)",
       "seconds": 3.5
+    },
+    "check_ldlt_inertia": {
+      "exit": 0,
+      "claim": "check_ldlt_inertia: OK -- 13 matrices of known inertia exact, worst eta 1.0e-16; refinement of an inexact factorisation 2.63e-08 -> 4.99e-17 accepted, eps 0.3 rejected",
+      "seconds": 1.4
     }
   }
 }
