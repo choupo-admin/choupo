@@ -450,6 +450,16 @@ strengthened):
       item -- caught by the needle, not by the exit code.
   S52 a lying cylinder displaces its bounding box                       -> (p)
       2334.47 m3 against the segments' 1681.47 recomputed here.
+  The six converter pipes, 2026-11-24, by hand, PlantLayout.cpp restored by
+  copy and rebuilt after, arms (g) and (h), both CAUGHT in one run:
+  S53 `shellHostOf` returns "" (a unit inside a placed shell has no host)  -> (h)
+      the reference plant's six pipes unrouted, the four inside-shell
+      streams not listed, PreheatedFeed / HotEffluent not on the shell.
+  S54 the `pipeNotRouted` finding not raised                             -> (g), (h)
+      the refused separator's streams and every notRouted stream that is no
+      rule (solids, indoor, two consumers) with no finding saying so.
+  The real defect: the plan said "0 findings" beside six unrouted process
+  pipes of the converter, because only rule violations were counted.
   S53 a pipe through a wall tested ABOVE its top                        -> (p)
       the 0.1 m route through the kerb announces nothing.
   S54 a depth allowance over the catch area only (the pit dropped)      -> (p)
