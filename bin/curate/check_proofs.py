@@ -40,6 +40,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from collections import Counter
@@ -199,6 +200,13 @@ def main(argv):
                 binp = gatekit.binary('choupoSolve')
             except gatekit.GateRefusal as e:
                 print('FAIL: %s' % e)
+                return 1
+            # A STALE BINARY MUST NOT JUDGE THE CORPUS: a build older than the tree made two cases of main look refused
+            # (2026-11-25, the binary was not rebuilt after a merge).  The one build-fresh check refuses it.
+            bf = subprocess.run([sys.executable, str(HERE / 'check_build_fresh.py')], capture_output=True, text=True)
+            if bf.returncode != 0:
+                print('check_proofs: FAILED\n  - the binary is not fresh against the tree, so no proof is judged:\n    '
+                      + '\n    '.join((bf.stdout + bf.stderr).strip().split('\n')[:6]))
                 return 1
             scratch = tempfile.mkdtemp(prefix='checkproofs.')
             os.environ['PROOFS_SCRATCH'] = scratch
