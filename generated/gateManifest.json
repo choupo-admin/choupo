@@ -1963,8 +1963,8 @@
     },
     "check_interior_point": {
       "exit": 0,
-      "claim": "check_interior_point: OK -- 16 of 16 HS problems to 1e-6 (iterations 3-311), 2 infeasible problems ended locally infeasible, 6 inertia-correction checks, 18 derivative checks",
-      "seconds": 8.1
+      "claim": "check_interior_point: OK -- 21 of 21 HS problems to 1e-6 (iterations 0-312), 2 infeasible problems ended locally infeasible, 6 inertia-correction checks, 22 derivative checks",
+      "seconds": 8.3
     }
   }
 }
