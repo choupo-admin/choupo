@@ -221,6 +221,15 @@ batch plan, sizing, clean utilities, costing and economics on top
   hazardous zone or downwind of a release, roads without a gate, items out of
   reach of a road are announced; truck routes walked against a design
   vehicle; a fence derived from the plot.
+* THE SERVICE CLEARANCE (`key:serviceClearance` in `system/layoutDict`): for each
+  placed shell-and-tube exchanger the clear length at its declared CHANNEL end
+  (west/east/north/south, along its axis) must be at least its design sheet's
+  `tubeLength` (a fact) plus the case's declared `clearance` (a convention, with
+  `source` and `reason`; none is shipped); the nearest blocker among other items,
+  the fence and a pipe rack below the exchanger's top is a `serviceClearance`
+  finding (`a` the exchanger, `b` the blocker, value the clear length, limit the
+  length needed).  A case that declares nothing is ANNOUNCED as not checked.
+  Witness `tutorials/plant/greenAmmoniaPEQ_baseCase` (`pack:layout`).
 * THE LINE LIST (`key:lineDesign` in `system/layoutDict`): one sized
   specification per ROUTED PROCESS pipe -- service (liquid discharge, liquid
   suction before a pump, gas, steam, two-phase), nominal size and schedule
@@ -240,7 +249,10 @@ batch plan, sizing, clean utilities, costing and economics on top
   facing from the case's pressure-temperature table per material (Perry Table
   10-42 in the shipped cases), orientation, design P and T) and the manways or
   inspection openings by the case's rule per equipment kind (Towler and Sinnott
-  p. 714, p. 1062).  Nothing defaulted; a material with no table is NOT RATED.
+  p. 714, p. 1062).  Nothing defaulted; a material with no table is NOT RATED.  A nozzle whose design pressure no class of the table holds at its design temperature
+  (C519: the PEQ's feed-effluent exchanger at 166 bar, 760.6 K on SS316) says so in the row's `why`, with the
+  table's highest class and its working pressure there, what is left to DECIDE, and, where its OWN stream
+  temperature would be covered, that the item-wide design temperature is what denies it; no class is invented.
 * Missing: utility-line sizing, the two-phase drop, nozzle entrance and exit
   losses, the pump a line needs, steam and nitrogen lines, structures; no
   spacing or zoning table is shipped (every distance is the case's).
