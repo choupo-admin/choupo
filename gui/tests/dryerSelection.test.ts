@@ -269,15 +269,15 @@ describe("(b) the tree is total and consistent with the feed-form tables", () =>
 });
 
 describe("(c) the lesson prints the data's numbers", () => {
-  it("step 5 prints each energy range of Table 1.4 as the data holds it", () => {
-    const t = stepText(5);
+  it("step 10 prints each energy range of Table 1.4 as the data holds it", () => {
+    const t = stepText(10);
     for (const id of ["spray", "rotary", "fluidBed", "belt", "drum", "flash"] as DryerId[]) {
       const e = DRYERS[id].energy!;
       expect(t, id).toContain(`${grouped(e.value[0])} to ${grouped(e.value[1])}`);
     }
   });
-  it("step 3 prints each residence time of Table 1.2 (and van 't Land's freeze figure)", () => {
-    const t = stepText(3);
+  it("step 2 prints each residence time of Table 1.2 (and van 't Land's freeze figure)", () => {
+    const t = stepText(2);
     for (const id of DRYER_IDS) {
       const r = DRYERS[id].residence;
       if (!r) continue;
@@ -285,16 +285,16 @@ describe("(c) the lesson prints the data's numbers", () => {
       expect(t, id).toContain(`${m[1]} to ${m[2]} ${m[3]}`);
     }
   });
-  it("step 4 prints Perry's two thresholds and the other two books' 100 kg/h", () => {
-    const t = stepText(4);
+  it("step 3 prints Perry's two thresholds and the other two books' 100 kg/h", () => {
+    const t = stepText(3);
     expect(t).toContain("50 kg/h");
     expect(t).toContain("1 t/h");
     expect(t).toContain("100 kg/h");
     expect(SCALE_LABEL.small).toContain("50 kg/h");
     expect(SCALE_LABEL.large).toContain("1 t/h");
   });
-  it("the worked example of step 5 is the arithmetic", () => {
-    const t = stepText(5);
+  it("the worked example of step 10 is the arithmetic", () => {
+    const t = stepText(10);
     expect(LATENT_HEAT_KJ_PER_KG).toBe(2257);
     expect(t).toContain("2257 kJ");
     const spray = energyBills(1000).find((b) => b.id === "spray")!;
@@ -313,7 +313,7 @@ describe("(c) the lesson prints the data's numbers", () => {
     for (const b of energyBills(1000)) expect(b.highKW).toBeGreaterThan(b.lowKW);
   });
   it("the formula parses and every symbol of it is glossed", () => {
-    const s = DRYER_SELECTION_STEPS.find((x) => x.formula)!;
+    const s = DRYER_SELECTION_STEPS.find((x) => x.formula && x.n === 10)!;
     expect(texParses(s.formula!)).toBe(true);
     for (const w of s.where!) {
       expect(texParses(w.sym), w.sym).toBe(true);
@@ -326,8 +326,8 @@ describe("(c) the lesson prints the data's numbers", () => {
     expect(DRYER_SELECTION_LIMITS.length).toBeGreaterThanOrEqual(5);
     expect(DRYER_SELECTION_QUIZ.length).toBeGreaterThanOrEqual(7);
   });
-  it("step 3 states BOTH conditions of van 't Land's 75 degC branch, and that his tree is for a particulate solid", () => {
-    const t = stepText(3);
+  it("step 2 states BOTH conditions of van 't Land's 75 degC branch, and that his tree is for a particulate solid", () => {
+    const t = stepText(2);
     expect(t).toMatch(/75 degC or more\s+AND a particle-size increase is required/);
     expect(t).toContain("re-slurrying additives");
     expect(t).toMatch(/particulate solid/);
@@ -335,16 +335,16 @@ describe("(c) the lesson prints the data's numbers", () => {
     expect(t).not.toMatch(/at 75 degC or more his continuous tree opens the spray-dryer branch/);
     expect(read("gui/src/ui/methods/dryerSelection.ts")).toMatch(/particle size\s+increase required/);
   });
-  it("step 3 corrects Mujumdar's sublimation sentence with both pages and both numbers", () => {
-    const t = stepText(3);
+  it("step 2 corrects Mujumdar's sublimation sentence with both pages and both numbers", () => {
+    const t = stepText(2);
     expect(t).toMatch(/severalfold lower/);
     expect(t).toContain("2840");
     expect(t).toContain("2257");
     expect(t).toMatch(/p\.259/);
     expect(t).toMatch(/wrong by the book's\s+own Chapter 11/);
   });
-  it("step 6 prints the numbers of the habitual tables the data holds", () => {
-    const t = stepText(6);
+  it("step 11 prints the numbers of the habitual tables the data holds", () => {
+    const t = stepText(11);
     expect(MUJ_T11_COLUMNS.length).toBe(11);
     expect(t).toContain("eleven feed forms");
     expect(t).toContain("0.15 to 1.0 kg/(h m2)");
@@ -362,8 +362,8 @@ describe("(c) the lesson prints the data's numbers", () => {
     expect(e1).toBeCloseTo(0.7053, 4);
     expect(G_PER_M2S_TO_KG_PER_M2H).toBe(3.6);
   });
-  it("steps 1 to 8 name no page of the engine's source (nothing to drift); steps 9 to 12 do, held by dryerArrangements.test.ts", () => {
-    const all = DRYER_SELECTION_STEPS.filter((s) => s.n <= 8).map((s) => s.body + (s.note ?? "")).join(" ");
+  it("steps 1-4 and 9-12 name no page of the engine's source (nothing to drift); steps 5 to 8 do, held by dryerArrangements.test.ts", () => {
+    const all = DRYER_SELECTION_STEPS.filter((s) => s.n <= 4 || s.n >= 9).map((s) => s.body + (s.note ?? "")).join(" ");
     expect(all).not.toMatch(/\.(cpp|H):\d+/);
   });
 });
@@ -413,7 +413,7 @@ describe("(e) the types the engine models open their case", () => {
       };
       const flow = read(`tutorials/${name}/system/flowsheetDict`);
       expect(flow, name).toMatch(new RegExp(`type\\s+${unit[id]}\\s*;`));
-      expect(stepText(7), unit[id]).toContain(unit[id]);
+      expect(stepText(9), unit[id]).toContain(unit[id]);
     });
   it("the rendered page carries one open-case button per modelled type", () => {
     const html = renderToStaticMarkup(createElement(MantineProvider, null, createElement(DryerSelectionTool)));
