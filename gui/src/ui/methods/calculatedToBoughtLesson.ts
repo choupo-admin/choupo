@@ -184,7 +184,7 @@ export const CB_LIMITS: readonly LessonLimit[] = [
 export const CB_QUIZ: readonly QuizQuestion[] = [
   {
     id: "minimum", steps: [1],
-    q: "The calculated area of an exchanger is best read as...",
+    q: "How is the calculated area of an exchanger best read?",
     options: [
       "the area to be installed",
       "a minimum specification: the area of the smallest bundle that delivers the duty",
