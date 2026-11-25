@@ -5691,6 +5691,12 @@ accepts today, and that is a policy call.
 > drying page grown (loading, the last percent, the spray chamber), the selection tables last; evapDryer02's and
 > the sugar plant's sentences corrected.  C509: `control-valve`, seven cards, the authority from an engine run,
 > gains checked by hand; the speed-control card not built.  Seen by the architect in screenshots, not by Vítor.
+> C508 REOPENED 2026-11-25 (Vitor, asking whether our dryer types and heuristics agree with the book or whether its
+> author would call us academics).  READ SIDE BY SIDE (chapter 29 against dryerSelection.ts and
+> docs/design-heuristics.md): the types agree; the book's rotary "for slurries" is looser than our cited rule.  WE
+> LACK the flash (pneumatic) and the agitated vacuum dryer as types, the dust / solvent / upstream-downstream
+> questions, the tray's working day; and design-heuristics' uncited dryer table disagrees with the page (tray
+> 2-24 h against 1-6 h, fluid bed from 50 um against 0.1 mm, solidDryer01 called through-circulation).
 
 > **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
 > packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
@@ -5730,6 +5736,9 @@ accepts today, and that is a policy call.
 > of the item it belongs to, or is fixed where it was found; one old item closed per new one; half the generals
 > on PARTIAL items at 70 % or more; the open count may not rise between two daily reports without the reason
 > in the report's first line.  C518 folded into C513; C517 closed (its 1e-5 rung is held by the gate's ratchet).
+> AUDIT OF THE 56 OLD ITEMS (docs/audits/2026-11-25-backlog-audit.md): 0 closable unseen, 6 folded (C110 into C306,
+> C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
+> Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
