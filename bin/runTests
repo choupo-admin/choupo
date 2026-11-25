@@ -6370,6 +6370,20 @@ PYEOF
     fi
     rm -f /tmp/elemrate.$$
 
+    # gibbs-scale-invariance gate (2026-11-25, backlog C497).  The element-potential
+    # Newton stopped on an ABSOLUTE 1e-8 mol/s: at feeds x1e6 two cases did not
+    # converge, at x1e-6 trace fractions moved up to 8 %.  Each Gibbs witness at
+    # both scales must reproduce its shipped compositions.
+    if gate_exec "$ROOT/bin/curate/check_gibbs_scale_invariance.py" > /tmp/gibbsscale.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gibbs-scale-invariance-gate" "$(head -1 /tmp/gibbsscale.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gibbs_scale_invariance.py)\n" "gibbs-scale-invariance-gate"
+        cat /tmp/gibbsscale.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gibbsscale.$$
+
     # plog gate (2026-11-20).  `type plog` (CHEMKIN-II PLOG) interpolates ln k
     # linearly in ln P between tabulated pressures, clamps outside them and sums
     # lines at one pressure.  Four pfr witnesses whose tables all give the

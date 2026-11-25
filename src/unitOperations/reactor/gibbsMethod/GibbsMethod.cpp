@@ -125,7 +125,15 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     }
 
     solver::NDOptions ndo;
-    ndo.tolerance = 1.0e-8;
+    //  RELATIVE RESIDUAL (backlog C497, found by the homogeneity probe): the
+    //  residual F is in mol/s, so an absolute 1e-8 is a different tolerance at
+    //  every flow scale -- at feeds x1e6 two cases (aceticAcid01,
+    //  ammoniaReactor02) could not reach it, at x1e-6 it was met at once and the
+    //  trace fractions stopped moving (up to 8 %).  The tolerance is 1e-8 of the
+    //  feed's total moles, so the problem is homogeneous of degree one in the
+    //  feed; where the feed is 1 mol/s it is the old number.  The logged normF
+    //  stays in mol/s.
+    ndo.tolerance = 1.0e-8 * N0;
     ndo.maxIter   = 80;
     //  The iterates of the route in flight, kept ONLY when a log is asked
     //  for; `logRoute` (below) turns them into records once the route ends.
