@@ -131,6 +131,13 @@ export interface ComponentMeta {
   tc?: number;
   pc?: number;
   tb?: number;
+  /** Liquid molar volume at 25 C [m3/mol] -- the Wilson model refuses a component without it. */
+  vliq?: number;
+  /** The correlation forms the record carries under `liquidViscosity { }` (chemsepEq101, andrade, vogel, ...).
+   *  The engine's Andrade/Vogel/chemsepEq101 models each read ONE of them and refuse a record that holds another. */
+  viscForms?: string[];
+  /** The same under `liquidThermalConductivity { }` (chemsepEq16, ...). */
+  condForms?: string[];
 }
 
 const RAW = import.meta.glob("../../../data/standards/components/*.dat", {
@@ -202,7 +209,12 @@ export function mixtureShadowedBodies(names: string[]): Record<string, string> {
   for (const n of names) {
     if (!MIXTURE_STEMS.has(n)) continue;
     const body = RAW_BY_NAME.get(n);
-    if (body) out[`constant/components/${n}.dat`] = body;
+    //  A case copy that shadows a catalogue record must say what it is, or the engine
+    //  refuses the run by name ("shadows the catalogue record of the same name without
+    //  declaring what it is"); measured 2026-11-25: every scan of `air` from the Explorer.
+    //  The copy IS the full record, read alone, so `variationOf` is the honest word.
+    if (body) out[`constant/components/${n}.dat`] =
+      `variationOf ${n};\nvariationReason "Explorer: the component itself, not the catalogue mixture of the same name";\n${body}`;
   }
   return out;
 }
@@ -263,6 +275,10 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
       }).filter((g) => g !== "")
     : [];
   const num = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
+  const forms = (b: unknown): string[] => b && typeof b === "object" && !Array.isArray(b)
+    ? Object.entries(b as Record<string, unknown>)
+        .filter(([, v]) => v !== null && typeof v === "object" && !Array.isArray(v)).map(([k]) => k)
+    : [];
   //  The SAME three the engine's solubilityParameter op requires, and it
   //  refuses by name for each one missing.  Read here so a study is offered
   //  only where it can answer.
@@ -271,7 +287,8 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
   return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, isPureSolid, hasUnifac, unifacGroups,
-    deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
+    deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb), vliq: num(j.Vliq),
+    viscForms: forms(j.liquidViscosity), condForms: forms(j.liquidThermalConductivity) };
 }
 
 /** Every standard component, sorted by name. Computed once at module load. */
