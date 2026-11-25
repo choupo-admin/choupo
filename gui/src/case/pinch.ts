@@ -192,7 +192,7 @@ export function parseMatches(csv: string): HeatMatch[] {
   const out: HeatMatch[] = [];
   for (const line of lines.slice(1)) {
     const f = line.split(",");
-    if (f.length !== 8 || f[3] !== "yes") continue;
+    if ((f.length !== 8 && f.length !== 10) || f[3] !== "yes") continue;
     const cap = Number(f[5]);
     if (!Number.isFinite(cap)) continue;
     out.push({ hot: f[1]!, cold: f[2]!, capKW: cap,
