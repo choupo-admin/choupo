@@ -21,7 +21,7 @@
   READS the three areas (`A_calculated`, `A_margined`, `A_bought`), the tubes,
   the length, the shell and the purchased cost from the equipment list the
   engine wrote.  The pipe: line01_pumped_drum's line list (nominal size, bore,
-  velocity, the window's ceiling) is read as the engine wrote it, with the
+  velocity, the window's ceiling; the run's reports/lines/lineList.csv) is read as the engine wrote it, with the
   ceiling of the discharge service moved by the student.  The compressor:
   compressor03_staged_design's shaft power and driver rating.
 
@@ -131,19 +131,33 @@ export interface LineReading {
   boreMin: number;
   /** page arithmetic: how much more flow area the bought bore has than the minimum */
   areaMargin: number;
+  /** the engine's price of the line where the case declares one for that size, else null */
+  cost: number | null;
 }
 
 export function readLines(result: RunResult | null | undefined): LineReading[] {
+  const files = result?.csvFiles ?? {};
+  const key = Object.keys(files).find((k) => k.endsWith("reports/lines/lineList.csv"));
+  const text = key ? files[key] : undefined;
+  if (typeof text !== "string") return [];
+  const rows = text.trim().split(/\r?\n/);
+  const head = (rows[0] ?? "").split(",");
+  const at = (k: string) => head.indexOf(k);
+  const cols = ["line", "service", "state", "nominalSize_in", "schedule", "insideDiameter_m",
+    "velocity_m_s", "velocityMax_m_s"].map(at);
+  if (cols.some((c) => c < 0)) return [];
   const out: LineReading[] = [];
-  for (const l of result?.layout?.lines ?? []) {
-    if (l.sizeState !== "sized") continue;
-    const { lineNps: nps, lineSchedule: sch, lineInsideDiameter: d,
-      lineVelocity: v, lineVelocityMax: vm } = l;
-    if (![nps, sch, d, v, vm].every((x) => typeof x === "number" && Number.isFinite(x))) continue;
+  for (const row of rows.slice(1)) {
+    const c = row.split(",");
+    if (c[at("state")] !== "sized") continue;
+    const nps = Number(c[at("nominalSize_in")]), sch = Number(c[at("schedule")]);
+    const d = Number(c[at("insideDiameter_m")]), v = Number(c[at("velocity_m_s")]);
+    const vm = Number(c[at("velocityMax_m_s")]);
+    if (![nps, sch, d, v, vm].every((x) => Number.isFinite(x)) || !(v > 0)) continue;
     out.push({
-      stream: l.stream, service: l.service, nps: nps!, schedule: sch!, bore: d!,
-      velocity: v!, velocityMax: vm!,
-      boreMin: d! * Math.sqrt(v! / vm!), areaMargin: vm! / v! - 1,
+      stream: c[at("line")]!, service: c[at("service")]!, nps, schedule: sch, bore: d,
+      velocity: v, velocityMax: vm, boreMin: d * Math.sqrt(v / vm), areaMargin: vm / v - 1,
+      cost: (() => { const t = (c[at("cost")] ?? "").trim(); return t !== "" && Number.isFinite(Number(t)) ? Number(t) : null; })(),
     });
   }
   return out;

@@ -314,7 +314,7 @@ export function CalculatedToBoughtTool(): JSX.Element {
           <Table.Thead>
             <Table.Tr><Table.Th>line</Table.Th><Table.Th>service</Table.Th><Table.Th>bought: nominal size [in], schedule</Table.Th>
               <Table.Th>bore [mm]</Table.Th><Table.Th>velocity [m/s]</Table.Th><Table.Th>ceiling [m/s]</Table.Th>
-              <Table.Th>smallest bore the ceiling allows [mm]</Table.Th><Table.Th>extra flow area</Table.Th></Table.Tr>
+              <Table.Th>smallest bore the ceiling allows [mm]</Table.Th><Table.Th>extra flow area</Table.Th><Table.Th>price of the line</Table.Th></Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {lines.map((l) => (
@@ -322,7 +322,7 @@ export function CalculatedToBoughtTool(): JSX.Element {
                 <Table.Td>{l.stream}</Table.Td><Table.Td>{l.service}</Table.Td>
                 <Table.Td>{fx(l.nps, 2)}, {fx(l.schedule, 0)}</Table.Td><Table.Td>{fx(l.bore * 1000, 1)}</Table.Td>
                 <Table.Td>{fx(l.velocity, 2)}</Table.Td><Table.Td>{fx(l.velocityMax, 2)}</Table.Td>
-                <Table.Td>{fx(l.boreMin * 1000, 1)}</Table.Td><Table.Td>{pct(l.areaMargin)}</Table.Td>
+                <Table.Td>{fx(l.boreMin * 1000, 1)}</Table.Td><Table.Td>{pct(l.areaMargin)}</Table.Td><Table.Td>{l.cost === null ? "not costed" : money(l.cost)}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
@@ -330,8 +330,8 @@ export function CalculatedToBoughtTool(): JSX.Element {
       )}
       <PanelNote>
         Runs tutorials/plant/{CB_LINE_WITNESS} (choupoSolve WASM) with the ceiling of its liquid-discharge window moved.
-        The case prices only the 4 inch line: any other size is listed as not costed in the engine's line list, so this
-        card shows no price. The suction line follows a different rule and is not read here.
+        The case declares a price for the 4 inch line only: any other size is listed as not costed in the engine's line list,
+        and the page shows it as such. The suction line follows a different rule and is not read here.
       </PanelNote>
     </Box>
   );
@@ -377,8 +377,8 @@ export function CalculatedToBoughtTool(): JSX.Element {
   // ---- card 6 -----------------------------------------------------------------
   const costPts: [number, number][] = points
     .filter((p) => p.reading.cost !== null && cost0 !== null)
-    .map((p) => [p.margin, p.reading.cost! / cost0!]);
-  const yMax = Math.max(1.05, ...costPts.map((p) => p[1])) * 1.04;
+    .map((p) => [p.margin, (p.reading.cost! / cost0! - 1) * 100]);
+  const yMax = Math.max(1, ...costPts.map((p) => p[1])) * 1.1;
   const costSeries: CurveSeries[] = costPts.length > 1
     ? [{ name: "cost", pts: costPts, color: HUE_B, labelX: 0.12, labelDy: -10 }] : [];
   const card6 = (
@@ -387,14 +387,14 @@ export function CalculatedToBoughtTool(): JSX.Element {
         note="the cost is the engine's purchased cost at each swept margin; the cover marker uses card 2's uncertainty" />
       <Box mt={8}><SweepWaiting s={margins} what="the engine is sweeping the margin from 0 to 30 %" /></Box>
       {costSeries.length > 0 && (
-        <Figure caption={<>The condenser's purchased cost against the margin, relative to the cost with none ({money(cost0)}{" "}
+        <Figure caption={<>The condenser's purchased cost against the margin, as the percentage above the cost with none ({money(cost0)}{" "}
           {points[0]?.reading.currency}). It rises in steps because the bought area does.
           {cover ? <> The dotted line marks the cheapest margin that covers an uncertainty of {pct(uCoef, 0)}: {pct(cover.margin, 0)},
-            at {fx(cover.reading.cost! / cost0!, 3)} times the cost of none.</> : <> No swept margin covers an uncertainty of {pct(uCoef, 0)}.</>}</>}>
-          <CurveChart series={costSeries} xMax={0.3} yMax={yMax} xLabel="margin on the area" yLabel="cost / cost with no margin"
-            xTicks={[0, 0.1, 0.2, 0.3]} yTicks={[1, Math.round((yMax + 1) / 2 * 100) / 100, Math.round(yMax * 100) / 100]}
+            at {fx((cover.reading.cost! / cost0! - 1) * 100, 1)} % more than the cost of none.</> : <> No swept margin covers an uncertainty of {pct(uCoef, 0)}.</>}</>}>
+          <CurveChart series={costSeries} xMax={0.3} yMax={yMax} xLabel="margin on the area" yLabel="extra cost over no margin, %"
+            xTicks={[0, 0.1, 0.2, 0.3]} yTicks={[0, Math.round(yMax / 2 * 10) / 10, Math.round(yMax * 10) / 10]}
             marks={cover ? [{ x: cover.margin, label: "covers u", color: "var(--mantine-color-dimmed)" }] : []}
-            aria="Purchased cost of the condenser against the design margin, relative to no margin." />
+            aria="Extra purchased cost of the condenser against the design margin, in percent over no margin." />
         </Figure>
       )}
       <Text size="sm" data-cb-sentence="">

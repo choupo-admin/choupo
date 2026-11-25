@@ -173,22 +173,13 @@ describe("calculated-to-bought: the driver", () => {
 });
 
 describe("calculated-to-bought: the line feed", () => {
+  const lineResult = (): RunResult => ({ csvFiles: {
+    "reports/lines/lineList.csv": witnessOutput(LINE_CASE, "reports/lines/lineList.csv") } } as unknown as RunResult);
   it("the minimum bore is the engine's bore and velocity combined", () => {
-    const csv = witnessOutput(LINE_CASE, "reports/lines/lineList.csv").trim().split("\n");
-    const head = csv[0]!.split(",");
-    const col = (k: string) => head.indexOf(k);
-    const layout = {
-      lines: csv.slice(1).map((row) => {
-        const c = row.split(",");
-        return { id: `line:${c[0]}`, stream: c[0]!, from: c[1]!, to: c[2]!, service: c[3]!, sizeState: c[4]!,
-          length: Number(c[col("length_m")]),
-          lineNps: Number(c[col("nominalSize_in")]), lineSchedule: Number(c[col("schedule")]),
-          lineInsideDiameter: Number(c[col("insideDiameter_m")]),
-          lineVelocity: Number(c[col("velocity_m_s")]), lineVelocityMax: Number(c[col("velocityMax_m_s")]) };
-      }),
-    };
-    const rows = readLines({ layout } as unknown as RunResult);
+    const rows = readLines(lineResult());
     expect(rows.length).toBeGreaterThanOrEqual(3);
+    expect(rows.filter((r) => r.cost !== null).length).toBeGreaterThanOrEqual(1);
+    expect(rows.some((r) => r.cost === null)).toBe(true);
     for (const r of rows) {
       expect(r.boreMin).toBeLessThanOrEqual(r.bore * (1 + 1e-12));
       // velocity at the minimum bore, flow held, is the ceiling
@@ -197,10 +188,13 @@ describe("calculated-to-bought: the line feed", () => {
     }
   });
   it("the hand case of the lesson: 2 m/s under a 3 m/s ceiling is 50 percent more area", () => {
-    const rows = readLines({ layout: { lines: [{ id: "x", stream: "s", from: "a", to: "b", service: "liquidDischarge",
-      sizeState: "sized", length: 1, lineNps: 4, lineSchedule: 40, lineInsideDiameter: 0.1,
-      lineVelocity: 2, lineVelocityMax: 3 }] } } as unknown as RunResult);
+    const csv = "line,from,to,service,state,nominalSize_in,schedule,insideDiameter_m,velocity_m_s,velocityMax_m_s\n"
+      + "x,a,b,liquidDischarge,sized,4,40,0.1,2,3";
+    const rows = readLines({ csvFiles: { "reports/lines/lineList.csv": csv } } as unknown as RunResult);
     expect(rows[0]!.areaMargin).toBeCloseTo(0.5, 12);
+  });
+  it("reads nothing, and says so, from a run with no line list", () => {
+    expect(readLines({ csvFiles: {} } as unknown as RunResult)).toEqual([]);
   });
 });
 
