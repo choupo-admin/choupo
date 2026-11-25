@@ -16,7 +16,7 @@ without it the run takes ascent steps and stalls or converges to a stationary
 point that is not a minimiser, exit 0; (iii) the RESTORATION PHASE recovers
 from a point where no step is acceptable -- without it the run stops short of a
 solution a feasible path leads to; (iv) the LOCAL-INFEASIBILITY VERDICT turns a
-problem with no feasible point into the words "locally infeasible" -- without
+problem with no feasible point (or a local minimum of the violation) into the words "locally infeasible" -- without
 it such a problem is reported "converged" (the multipliers blow up and the
 residual test passes on a scaled problem) or runs to the iteration limit, and a
 process model with inconsistent specifications looks like a slow solve.  A
@@ -34,12 +34,42 @@ of rows below the expected fails the gate.
       analytic Hessian where there is one) equal central differences;
   (b) each of the fifteen Hock-Schittkowski problems HS1, 6, 7, 13, 21, 35,
       38, 40, 43, 71, 76, 100, 113, 116, 118 converges from the collection's
-      start with |f - f*| <= 1e-6 max(1, |f*|) (HS13 and HS116 under their own
-      rule, below) and a constraint and bound violation <= 1e-8, in an iteration
-      count within a band of its pin; plus WB2000 (Wachter & Biegler 2000, from
-      a start far from feasibility), the one problem that ENTERS the restoration
-      phase and recovers -- the witness of the restoration sabotage, since the
-      HS set itself never enters it;
+      start with |f - f*| <= 1e-6 max(1, |f*|) and a constraint and bound
+      violation <= 1e-8, in an iteration count within a band of its pin, and NO
+      evaluation of f, its gradient, the constraints or their Jacobian is made
+      outside the variable bounds (the start is evaluated clamped to them).
+      HS13 has its own rule and HS116 its own reference, below.  Added rows:
+      HS100p1 and HS100p2 (HS100 from two seeded perturbations of its start --
+      the only rows that hold the filter's corner (22), sabotage iv);
+      WB2000 (Wachter & Biegler 2000, from a start I CHOSE, (-3, 3, 0.01), so
+      that the run enters the restoration phase and recovers -- the witness of
+      the restoration sabotage; the HS set itself never enters it); WB2000c, the
+      SAME problem from the paper's own start (-2, 3, 1), whose expected
+      outcome is the known behaviour of this method there: "locally infeasible"
+      at x = (-1, 0, 0), a local minimum of ||c||_1 = 1.5 (not a claim that the
+      problem is infeasible); FDHESS (a problem with no analytic Hessian
+      whose objective is undefined below its bound: the finite-difference
+      Hessian is clamped to the bounds); EVALFAIL (a start that cannot be
+      evaluated ends "evaluation failed" with a defined x, run once under
+      -D_GLIBCXX_ASSERTIONS by hand);
+  HS13 -- THE RULE AND ITS TRUE REASON.  Its optimum (1, 0) is a cusp with NO
+      KKT point; this method accepts an equality residual up to tol on g - s = 0
+      and uses it, and since the constraint is a cube a residual v lets x1 reach
+      1 + v^(1/3): f reaches the floor (1 - v^(1/3))^2, 4.3e-3 below f* at
+      v = 1e-8.  The rule is computed from the run's OWN violation v (a run with
+      v = 0 must give f >= 1 - 1e-6).  (An earlier justification, "no solver
+      can meet |df| <= 1e-6 at v <= 1e-8", was false: x = (1, 0) meets it.)
+  HS116 -- THE REFERENCE IS 97.5875096, NOT THE COLLECTION'S 97.5884089805.
+      Independent review (2026-11-25): the transcription agrees term by term
+      with Schittkowski's PROB.FOR (TP116, LEX = .FALSE.: the collection's own
+      flag that the listed solution is not exact), CUTEst HS116.SIF,
+      Vanderbei's hs116.mod, JSO's hs116.jl and TEST.TEX.  The published x* in
+      this transcription gives f = 97.5884089807 with all eleven active rows
+      INSIDE by 2.29e-7..2.39e-7; scipy SLSQP and trust-constr from the
+      published x* give 97.5875096 / 97.5875097, feasible to 1e-11; first
+      order with the run's multipliers: 3790 x 2.309e-7 + 2.4e-5 (x4 bound)
+      = 8.99e-4 = the gap.  A second stationary point is at 97.59103; x3 and x6
+      are not unique, so f is pinned, never x.
   (c) the two infeasible problems of review R3 -- two inconsistent linear
       equalities, and a bound against an equality -- end "locally infeasible"
       naming the violated rows, never "converged" and never at the iteration
@@ -62,28 +92,24 @@ SABOTAGE-VERIFIED 2026-11-25 (by hand, in the source, restored; outputs in the
 slice report):
   (i)   fraction to the boundary removed (alpha_max and alpha_z = 1): the line
         search's own rejection of a trial with an undefined log HIDES it from
-        the objective (HS21, HS76, HS118 still converge, only the iteration
-        count moves), so the test counts every evaluation of f outside the
-        variable bounds -- 0 on every problem now, 9-13 on HS13, HS21, HS76,
-        HS116, HS118 with the rule removed -- FAILS (b).
-  (ii)  Algorithm IC's inertia test removed: HS7 converges to f = +1.78
-        instead of -sqrt(3), HS6 and HS38 stop in the restoration phase, and
-        the indefinite-Hessian case reports inertia (1,2,0) -- FAILS (b), (d).
-  (iii) restoration replaced by a stop: both infeasible problems end
-        "restoration failed", not "locally infeasible" -- FAILS (c).  (The
-        design named HS13 for this sabotage; HS13 never enters the restoration
-        phase in this implementation, so the gate does not hold the line
-        there.)
+        the objective, so the test counts every evaluation (f, gradient,
+        constraints, Jacobian) outside the variable bounds -- FAILS (b).
+  (ii)  Algorithm IC's inertia test removed: HS7 converges to f = +1.78,
+        HS6 / HS38 / HS13 stop in the restoration phase, the indefinite-Hessian
+        case reports inertia (1,2,0) -- FAILS (b), (d).  (HS40 needs no
+        regularisation and is NOT a witness for this sabotage.)
+  (iii) restoration replaced by a stop: WB2000 ends "restoration failed" and
+        both infeasible problems end so, not "locally infeasible" -- FAILS.
+  (iv)  the filter corner (22) computed from f instead of phi_mu in both
+        augment calls: every HS row and WB2000 are unchanged, but HS100p1 and
+        HS100p2 end "restoration failed" (14 and 21 iterations against 25 and
+        38) -- FAILS (b).  Only these two rows hold that line.
   (r3)  the "locally infeasible" exit test of the restoration phase never
-        fires: both infeasible problems run to the 3000-iteration limit with
-        2999 restorations -- FAILS (c).
+        fires: both infeasible problems and WB2000c run to the iteration limit
+        -- FAILS (c) and (b).
   (r3b) the primal infeasibility removed from the stopping test: the
         two-equalities problem reports "converged" and HS6 returns with a
         violation of 1.7e-2 -- FAILS (c) and (b).
-NOT HELD by this gate: sabotage (iv) of the design (the filter corner (22)
-computed from f instead of phi_mu) -- measured: every one of the fifteen runs
-has the same iteration count and result, so the gate does NOT hold that line;
-it needs a witness that enters the filter's corner, which belongs to slice A3.
 """
 
 import re
@@ -97,7 +123,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
 HS_NAMES = ["HS1", "HS6", "HS7", "HS13", "HS21", "HS35", "HS38", "HS40", "HS43", "HS71",
-            "HS76", "HS100", "HS113", "HS116", "HS118", "WB2000"]
+            "HS76", "HS100", "HS100p1", "HS100p2", "HS113", "HS116", "HS118", "WB2000", "WB2000c",
+            "FDHESS", "EVALFAIL"]
 
 
 def main():
@@ -122,23 +149,25 @@ def main():
         lines = out.splitlines()
 
         deriv = [ln for ln in lines if "derivatives vs central differences" in ln]
-        hs = {ln.split()[0]: ln for ln in lines if re.match(r"^(HS\d+|WB2000)\s+f\* ", ln)}
+        hs = {ln.split()[0]: ln for ln in lines if re.match(r"^(HS\d+\w*|WB2000c?|FDHESS|EVALFAIL)\s+(f\*|expected) ", ln)}
         inf = [ln for ln in lines if re.match(r"^INF\d", ln) and "status" in ln]
         ic = [ln for ln in lines if ln.startswith("IC ")]
 
-        if len(deriv) < 18 or any(not ln.rstrip().endswith("ok") for ln in deriv):
-            failures.append(f"derivative checks: {len(deriv)} rows (expected 18) or one failed:\n"
+        if len(deriv) < 22 or any(not ln.rstrip().endswith("ok") for ln in deriv):
+            failures.append(f"derivative checks: {len(deriv)} rows (expected 22) or one failed:\n"
                             + "\n".join(ln for ln in deriv if not ln.rstrip().endswith("ok")))
         missing = [n for n in HS_NAMES if n not in hs]
         if missing:
             failures.append("HS rows missing: " + ", ".join(missing))
+        if "WB2000c" in hs and "locally infeasible" not in hs["WB2000c"].split("status", 1)[-1]:
+            failures.append("WB2000c (the paper's own start) must end locally infeasible:\n" + hs["WB2000c"])
         if "WB2000" in hs and not re.search(r"\bresto\s+[1-9]", hs["WB2000"]):
             failures.append("WB2000 must ENTER the restoration phase and still converge (it is the witness that "
                             "holds the restoration phase):\n" + hs["WB2000"])
         bad = [hs[n] for n in HS_NAMES if n in hs and not hs[n].rstrip().endswith("PASS")]
         if bad:
-            failures.append("HS problems that do not meet the PASS rule (|f - f*| <= 1e-6 max(1,|f*|), "
-                            "violation <= 1e-8, iterations in band):\n" + "\n".join(bad))
+            failures.append("rows that do not meet their rule (|f - f*| <= 1e-6 max(1,|f*|), "
+                            "violation <= 1e-8, iterations in band, no evaluation outside the bounds):\n" + "\n".join(bad))
         if len(inf) != 2 or any(not ln.rstrip().endswith("PASS") or "locally infeasible" not in ln for ln in inf):
             failures.append("the two infeasible problems must end 'locally infeasible' naming their rows:\n"
                             + "\n".join(inf))

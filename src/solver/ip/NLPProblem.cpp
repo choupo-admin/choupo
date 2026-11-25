@@ -63,6 +63,9 @@ bool lagrangianGradient(const NLPProblem& p, const sVector& x, scalar sigma,
     for (std::size_t i = 0; i < n; ++i) g[i] = sigma * gf[i];
     for (std::size_t j = 0; j < J.size(); ++j)
         for (std::size_t i = 0; i < n; ++i) g[i] += lambda[j] * J[j][i];
+    //  A gradient holding NaN or inf is a failed evaluation, never a number to difference.
+    for (std::size_t i = 0; i < n; ++i)
+        if (!std::isfinite(g[i])) return false;
     return true;
 }
 
@@ -72,11 +75,15 @@ bool NLPProblem::hessianLagrangian(const sVector& x, scalar sigma, const sVector
                                    DenseMatrix& W) const
 {
     //  Central differences of the analytic gradient of the Lagrangian:
-    //  W[:, i] = (g(x + h e_i) - g(x - h e_i)) / (2 h), h = 1e-6 max(1, |x_i|)
-    //  (truncation error h^2, round-off eps / h: both near 1e-10 of the
-    //  gradient's scale), then symmetrised.  It never steps outside the
-    //  bounds' neighbourhood by more than h; a failed evaluation on one side
-    //  falls back to a one-sided difference.
+    //  W[:, i] = (g(x_hi) - g(x_lo)) / (x_hi - x_lo), x_hi/lo = x +- h e_i,
+    //  h = 1e-6 max(1, |x_i|) (truncation error h^2, round-off eps / h: both
+    //  near 1e-10 of the gradient's scale), then symmetrised.  THE DIFFERENCE
+    //  POINTS ARE CLAMPED TO THE BOUNDS (a point outside them is a point the
+    //  problem may not be defined at: min x1 + x1^1.5 with x1 >= 0 gave NaN
+    //  there), so next to a bound the difference is one-sided; a side whose
+    //  gradient is not finite counts as a failed side and the other is used.
+    sVector xL, xU;
+    variableBounds(xL, xU);
     const std::size_t n = x.size();
     W.assign(n, sVector(n, 0.0));
     sVector g0;
@@ -84,16 +91,17 @@ bool NLPProblem::hessianLagrangian(const sVector& x, scalar sigma, const sVector
     {
         const scalar h = 1.0e-6 * std::max(1.0, std::abs(x[i]));
         sVector xp = x, xm = x, gp, gm;
-        xp[i] += h;  xm[i] -= h;
-        const bool okp = lagrangianGradient(*this, xp, sigma, lambda, gp);
-        const bool okm = lagrangianGradient(*this, xm, sigma, lambda, gm);
+        xp[i] = std::min(x[i] + h, xU[i]);
+        xm[i] = std::max(x[i] - h, xL[i]);
+        const bool okp = xp[i] > x[i] && lagrangianGradient(*this, xp, sigma, lambda, gp);
+        const bool okm = xm[i] < x[i] && lagrangianGradient(*this, xm, sigma, lambda, gm);
         if (okp && okm)
-            for (std::size_t r = 0; r < n; ++r) W[r][i] = (gp[r] - gm[r]) / (2.0 * h);
+            for (std::size_t r = 0; r < n; ++r) W[r][i] = (gp[r] - gm[r]) / (xp[i] - xm[i]);
         else if (okp || okm)
         {
             if (g0.empty() && !lagrangianGradient(*this, x, sigma, lambda, g0)) return false;
             for (std::size_t r = 0; r < n; ++r)
-                W[r][i] = okp ? (gp[r] - g0[r]) / h : (g0[r] - gm[r]) / h;
+                W[r][i] = okp ? (gp[r] - g0[r]) / (xp[i] - x[i]) : (g0[r] - gm[r]) / (x[i] - xm[i]);
         }
         else
             return false;
@@ -134,7 +142,14 @@ sVector EqualityForm::startingPoint() const
     sVector x = base_.startingPoint();
     sVector c;
     sVector s(slackRow_.size(), 0.0);
-    if (!slackRow_.empty() && base_.constraints(x, c))
+    //  The slacks are seeded with c(x0).  The user's start may lie outside the bounds (the
+    //  collection's start of HS21 does), and a model may be undefined there: seed from the
+    //  start CLAMPED to the bounds, so no evaluation is made outside them.
+    sVector xl, xu;
+    base_.variableBounds(xl, xu);
+    sVector xc = x;
+    for (std::size_t i = 0; i < n_; ++i) xc[i] = std::min(std::max(xc[i], xl[i]), xu[i]);
+    if (!slackRow_.empty() && base_.constraints(xc, c))
         for (std::size_t k = 0; k < slackRow_.size(); ++k) s[k] = c[slackRow_[k]];
     x.insert(x.end(), s.begin(), s.end());
     return x;

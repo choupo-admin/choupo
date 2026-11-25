@@ -458,6 +458,13 @@ bool AlgorithmA::computeStep(sVector& dx, sVector& dl, IPIterationRecord& rec)
         finish(IPStatus::EvaluationFailed, "the Hessian of the Lagrangian could not be evaluated");
         return false;
     }
+    for (const sVector& row : W)
+        for (scalar w : row)
+            if (!std::isfinite(w))
+            {
+                finish(IPStatus::EvaluationFailed, "the Hessian of the Lagrangian holds a non-finite entry");
+                return false;
+            }
     sVector gphi;
     barrierGradient(gphi);
 
@@ -533,8 +540,8 @@ bool AlgorithmA::restoration(const std::string& reason, IPIterationRecord& rec)
         for (std::size_t i = 0; i < out.violatedRows.size() && i < 6; ++i)
             rows += (i ? "; " : "") + out.violatedRows[i];
         finish(IPStatus::LocallyInfeasible,
-               "no feasible point is reachable: the minimum of ||c||_1 found is " + sci(out.theta)
-                   + " (rows still violated: " + rows + ")");
+               "a local minimum of the constraint violation was reached (||c||_1 = " + sci(out.theta)
+                   + "; rows still violated: " + rows + "): the problem may be infeasible, or feasible elsewhere from another start");
         x_ = out.x;
         return false;
     }
@@ -562,6 +569,9 @@ IPResult AlgorithmA::run()
     trace_.live = opt_.log;
     if (!initialise())
     {
+        //  The start could not be evaluated: the result still carries a DEFINED x (the
+        //  start, projected by initialise() where it got that far), never an empty vector.
+        if (res_.x.size() != n_) res_.x = x_.size() == n_ ? x_ : sVector(n_, 0.0);
         res_.trace = trace_;
         return res_;
     }

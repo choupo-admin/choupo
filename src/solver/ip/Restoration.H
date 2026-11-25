@@ -52,8 +52,9 @@ Description
                          infeasibility theta <= kappa_resto theta(x_R)
                          (the caller's exit test): the regular iteration resumes;
       LocallyInfeasible  the restoration problem CONVERGED, to a point whose
-                         infeasibility is still above the tolerance: no
-                         feasible point is reachable from here, and the rows
+                         infeasibility is still above the tolerance: a LOCAL
+                         minimum of ||c||_1 (the problem may be infeasible, or
+                         feasible elsewhere from another start), and the rows
                          still violated are named with their residuals;
       Failed             the inner run hit its iteration limit, an evaluation
                          failure or another stop.
