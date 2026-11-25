@@ -209,7 +209,8 @@ private:
     MonotoneBarrierUpdate barrier_;
 
     sVector xL_, xU_;
-    std::vector<char> hasL_, hasU_;
+    std::vector<char> hasL_, hasU_;   //- hasL_/hasU_: a bound WITH a barrier term and a multiplier
+    std::vector<char> guardL_;        //- a lower bound kept by the fraction to the boundary ALONE (NLPProblem::isGuardOnly)
 
     sVector x_, lambda_, zL_, zU_;
     scalar  f_ = 0.0;
@@ -247,6 +248,7 @@ bool AlgorithmA::barrierObjective(const sVector& x, scalar f, scalar& phi) const
     phi = f;
     for (std::size_t i = 0; i < n_; ++i)
     {
+        if (guardL_[i] && !(x[i] - xL_[i] > 0.0)) return false;   //- a guard is no barrier, but the point must be inside it
         if (hasL_[i])
         {
             const scalar s = x[i] - xL_[i];
@@ -379,7 +381,7 @@ scalar AlgorithmA::fractionToBoundaryPrimal(const sVector& dx, scalar tau) const
     scalar a = 1.0;
     for (std::size_t i = 0; i < n_; ++i)
     {
-        if (hasL_[i] && dx[i] < 0.0) a = std::min(a, -tau * (x_[i] - xL_[i]) / dx[i]);
+        if ((hasL_[i] || guardL_[i]) && dx[i] < 0.0) a = std::min(a, -tau * (x_[i] - xL_[i]) / dx[i]);
         if (hasU_[i] && dx[i] > 0.0) a = std::min(a, tau * (xU_[i] - x_[i]) / dx[i]);
     }
     return a;
@@ -403,12 +405,13 @@ bool AlgorithmA::initialise()
     //  inside, z0 = 1, lambda0 by least squares.
     P_.variableBounds(xL_, xU_);
     if (opt_.relaxBounds) relaxBounds(xL_, xU_, par_.boundRelax);
-    hasL_.assign(n_, 0);  hasU_.assign(n_, 0);
+    hasL_.assign(n_, 0);  hasU_.assign(n_, 0);  guardL_.assign(n_, 0);
     nBounds_ = 0;
     for (std::size_t i = 0; i < n_; ++i)
     {
-        hasL_[i] = std::isfinite(xL_[i]);
         hasU_[i] = std::isfinite(xU_[i]);
+        guardL_[i] = (std::isfinite(xL_[i]) && !hasU_[i] && P_.isGuardOnly(i)) ? 1 : 0;
+        hasL_[i] = (std::isfinite(xL_[i]) && !guardL_[i]) ? 1 : 0;
         nBounds_ += (hasL_[i] ? 1 : 0) + (hasU_[i] ? 1 : 0);
     }
     x_ = P_.startingPoint();

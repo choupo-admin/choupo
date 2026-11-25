@@ -30,6 +30,7 @@ License
 #include "ElementPotential.H"
 #include "ReactiveFlash.H"
 #include "DirectMin.H"
+#include "InteriorPointGibbs.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "solver/NewtonND.H"
@@ -54,7 +55,8 @@ namespace { inline scalar clampArg(scalar a)
 GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
-                               const std::function<void(int,scalar,scalar)>& onIter, const GibbsLog& log)
+                               const std::function<void(int,scalar,scalar)>& onIter, const GibbsLog& log,
+                               const std::vector<scalar>* seedX0)
 {
     const std::size_t M = p.M(), N = p.N();
     const auto& A = p.A;
@@ -123,6 +125,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
         catch (const std::exception&) { piLstSq.assign(M, 0.0); }
         for (std::size_t j = 0; j < M; ++j) x0[j] = piLstSq[j];
     }
+    if (seedX0 && seedX0->size() == M + 1) x0 = *seedX0;   // the caller's seed (the interiorPoint polish)
 
     solver::NDOptions ndo;
     ndo.tolerance = 1.0e-8;
@@ -384,6 +387,7 @@ void GibbsMethod::registerBuiltins()
     registerType("NRTL",             []{ return std::make_unique<ReactiveFlash>(); });    // alias
     registerType("directMin",        []{ return std::make_unique<DirectMin>(); });
     registerType("nelderMead",       []{ return std::make_unique<DirectMin>(); });        // alias
+    registerType("interiorPoint",    []{ return std::make_unique<InteriorPointGibbs>(); });   // slice B1
 }
 
 std::vector<std::string> GibbsMethod::availableTypes()

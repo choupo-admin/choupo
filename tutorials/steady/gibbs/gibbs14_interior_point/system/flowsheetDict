@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  gibbs14_interior_point  --  the Gibbs reactor solved by the INTERIOR POINT.
+
+      CO + H2O  <->  CO2 + H2,   excess steam (1 CO + 3 H2O), 350 K, 1 bar.
+
+  The same problem as gibbs07_wgs_cooled (gas + a condensing water), posed as
+  what it is: minimise G over the amounts of the species subject to the
+  element balances, n >= 0.  `model interiorPoint;` hands it to Choupo-IP, the
+  primal-dual interior-point filter line search of src/solver/ip/.  What a
+  student sees that the element-potential Newton does not show:
+
+    * the multipliers of the element balances ARE the element potentials of
+      gibbs07, with the sign of THE BRIDGE, pi = -lambda: the run prints
+      lambda, pi = -lambda and the pi of the element-potential Newton started
+      from it, side by side;
+    * the barrier on the liquid water (the one phase that can vanish) is a
+      parameter mu that falls from its start to 1e-9, iteration by iteration,
+      while the gas species carry NO barrier: the entropy term already keeps
+      them positive (design record, review R1);
+    * `interiorPoint { log ipLog.csv; }` writes that iteration table as a
+      CSV (mu, the dual and element-balance infeasibilities, the step
+      lengths, the amounts and the bridge) for a plot.
+
+  Nothing else changes: the gas, the condensate and every printed amount are
+  gibbs07's (the gate check_gibbs_interior_point holds them to the
+  element-potential method on this very feed).  Outlets: `gas` and
+  `condensate` (liquid water).
+\*---------------------------------------------------------------------------*/
+
+
+units
+(
+    {
+        name        wgs;
+        type        gibbsReactor;
+        model       interiorPoint;
+        in          feed;
+        outputs     ( gas  condensate );
+
+        operation
+        {
+            T          350.0 K;
+            P          1.0 bar;
+            elements   ( C  H  O );
+            species
+            (
+                { name  CO;    atoms  ( 1  0  1 ); }
+                { name  water; atoms  ( 0  2  1 ); }
+                { name  CO2;   atoms  ( 1  0  2 ); }
+                { name  H2;    atoms  ( 0  2  0 ); }
+            );
+        }
+
+        interiorPoint
+        {
+            barrier        pureCondensedOnly;   // the default: no barrier on the gas species
+            barrierUpdate  monotone;
+            globalization  filter;
+            log            ipLog.csv;
+        }
+    }
+);

@@ -32,6 +32,7 @@ License
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "gibbsMethod/GibbsMethod.H"
+#include "gibbsMethod/InteriorPointGibbs.H"
 #include "solver/NewtonRaphson.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 #include <algorithm>
@@ -221,6 +222,17 @@ int GibbsReactor::solve(const DictPtr& dict,
     const std::string modelName = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("model", "elementPotential"));
     auto method = GibbsMethod::New(modelName);
+    //  THE OPTIONAL `interiorPoint { }` BLOCK (design record sec. 3.3, slice B1): read by the
+    //  interiorPoint method alone, REFUSED by name under any other model.
+    std::string ipLogPath;
+    if (dict->found("interiorPoint"))
+    {
+        auto* ip = dynamic_cast<InteriorPointGibbs*>(method.get());
+        if (!ip) InteriorPointGibbs::refuseBlockUnder(modelName);
+        const InteriorPointGibbs::Options o = InteriorPointGibbs::readBlock(dict->subDict("interiorPoint"));
+        ip->setOptions(o);
+        ipLogPath = o.log;
+    }
 
     // -- Elements and species ----------------------------------------------
     auto elems = operDict->lookupWordList("elements");
@@ -444,6 +456,8 @@ int GibbsReactor::solve(const DictPtr& dict,
         operDict->lookupWordOrDefault("newtonLog", "");
     std::vector<GibbsLogRecord> logRecords;
     GibbsLog logSink;
+    if (!ipLogPath.empty())
+        logSink = [&logRecords](const GibbsLogRecord& r) { logRecords.push_back(r); };
     if (!newtonLogPath.empty())
     {
         if (method->name() != "elementPotential")
@@ -763,6 +777,7 @@ int GibbsReactor::solve(const DictPtr& dict,
             kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;
     if (prob.dTapproach != 0.0)
         kpis_["temperatureApproach_K"] = prob.dTapproach;
+    for (const auto& kv : method->extraKpis()) kpis_[kv.first] = kv.second;   //- interiorPoint's own (empty otherwise)
     for (std::size_t i = 0; i < N; ++i)
         kpis_["y_" + specNames[i]] = (Ng > 0.0) ? eq.nGas[i] / Ng : 0.0;
     //  A declared pure solid publishes its amount and its ACTIVITY at the
@@ -832,7 +847,25 @@ int GibbsReactor::solve(const DictPtr& dict,
     if (eq.twoPhase)
         std::cout << "  Liquid fraction: " << std::fixed << std::setprecision(4)
                   << (Nl / (Ng + Nl)) << "  (condensate stream emitted)\n";
+    //  THE METHOD'S OWN ACCOUNT OF ITS FINAL SOLVE (interiorPoint: the bridge pi = -lambda, the
+    //  polish, and at verbosity 3 the iteration table).  Empty for every other method.
+    {
+        const std::string rep = method->report(verbosity >= 3);
+        if (!rep.empty()) std::cout << rep;
+    }
     std::cout << "==================================================================\n\n";
+
+    if (!ipLogPath.empty())
+    {
+        const long n = writeGibbsLogCsv(ipLogPath, logRecords);
+        if (n < 0)
+            std::cerr << "GibbsReactor: `interiorPoint { log " << ipLogPath
+                      << "; }` could not be opened for writing; no log written.\n";
+        else
+            std::cout << "  [gibbs] interiorPoint log: " << n << " records of the "
+                      << (mode == "adiabatic" ? "final solve at the converged T" : "isothermal solve")
+                      << " written to " << ipLogPath << "\n";
+    }
 
     //  The declared log, written whether or not the solve converged: a
     //  Newton that stopped is exactly the one whose iterates are worth

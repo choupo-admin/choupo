@@ -16711,7 +16711,8 @@ in stages (design record \code{docs/design/interior-point.md}).  The SQP
 serves the \code{outerDict} (a few variables, finite-difference gradients);
 the interior-point code serves \emph{inner} problems that have structure
 and analytic derivatives.  Slice A2, described in this and the following
-sections, is the algorithm itself on dense matrices; no case selects it yet.
+sections, is the algorithm itself on dense matrices; since slice B1 the Gibbs reactor
+selects it with \code{model interiorPoint;} (§\ref{sec:gibbs-interior-point}).
 The sections read in this order: the barrier problem and its step (here),
 the linear algebra with the inertia (§\ref{sec:ldlt-inertia}), the inertia
 correction (§\ref{sec:ip-inertia}), the filter line search
@@ -23751,6 +23752,115 @@ forward reaction is favoured at lower temperature).  At 1000~K the
 simulator returns $K_{\mathrm{eq}} \approx 1.4$, against the
 literature 1.40 --- the same accuracy as the 800~K case.
 \end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\subsection{The interior-point method: \code{model interiorPoint}}\label{sec:gibbs-interior-point}
+
+The element-potential Newton of the sections above solves the $M+1$ equations
+\eqref{eq:gibbs-ni} for $\boldsymbol{\pi}$ and $\ln N$; it is quadratically
+fast once it is close, and it needs a \emph{seed} (the least-squares fit at the
+feed, or the primal iteration of the initial-guess subsection above) because far from the
+answer its Jacobian is singular.  \code{model interiorPoint;} poses the same
+equilibrium as an \emph{optimisation} instead and hands it to Choupo-IP, the
+primal-dual interior-point filter line search of §\ref{sec:ip-barrier}: it
+needs no primal seed, it carries a condensed phase as one more variable with a
+bound, and it returns the element potentials as a by-product (the
+\emph{bridge} below).  Slice B1 of the design record
+\code{docs/design/interior-point.md}; the solver is
+\file{src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.cpp}.
+
+\paragraph{The problem.}  With gas amounts $n_i$ ($i=1..N$) and ideal-liquid amounts
+$l_k$ of the $K$ condensable species, scaled by the total feed moles
+$N_0$ ($u_i=n_i/N_0$, $w_k=l_k/N_0$), the method minimises
+\begin{equation}\label{eq:gibbs-ip-objective}
+\frac{G}{RT N_0}=\sum_{i}u_i\Bigl(\frac{g_i^{\circ}}{RT}+\ln\frac{P}{P^{\circ}}+\ln\frac{u_i}{U}\Bigr)
++\sum_{k}w_k\Bigl(\frac{g_k^{\circ}}{RT}+\ln\frac{f_k^{\mathrm{L}}}{P^{\circ}}+\ln\frac{w_k}{W}\Bigr),
+\end{equation}
+$U=\sum_i u_i$, $W=\sum_k w_k$, subject to the element balances and the bounds
+\begin{equation}\label{eq:gibbs-ip-constraints}
+\sum_i A_{ji}u_i+\sum_k A_{j,c(k)}w_k=b_j/N_0\quad(j=1..M),\qquad u_i\ge0,\ w_k\ge0 .
+\end{equation}
+$f^{\mathrm{L}}_k$ is the pure-liquid reference of the package
+(\code{pureLiquidReference}: $P^{\mathrm{sat}}$ with the saturation fugacity
+coefficient and the Poynting factor), the same reference the element-potential
+method saturates against, so the two methods pose one problem.  The liquid is the
+\emph{ideal} mixture of the condensables (Raoult: an activity model of the package
+is not read, as in the element-potential method).  The gradient is the chemical
+potential of each species over $RT$,
+\begin{equation}\label{eq:gibbs-ip-gradient}
+\frac{\partial}{\partial u_i}=\frac{g_i^{\circ}}{RT}+\ln\frac{P}{P^{\circ}}+\ln\frac{u_i}{U}=\frac{\mu_i}{RT},
+\end{equation}
+and the Hessian of each ideal mixing phase is analytic,
+$\partial^2/\partial u_i\partial u_j=\delta_{ij}/u_i-1/U$ (positive semi-definite;
+the constraints are linear, so it is also the Hessian of the Lagrangian).  No
+finite difference enters.
+
+\paragraph{The KKT conditions and the bridge $\pi=-\lambda$.}  Choupo-IP's Lagrangian is
+$f+\lambda^{T}c$ (§\ref{sec:ip-barrier}), with $c=Au-b/N_0$ the element balances; the
+stationarity condition for the gas amount $i$ is
+\begin{equation}\label{eq:gibbs-ip-kkt}
+\frac{\mu_i}{RT}+\sum_j A_{ji}\lambda_j=z_i,\qquad z_i\ge0,\qquad z_iu_i=0 .
+\end{equation}
+A species that is \emph{present} has $z_i=0$, so $\mu_i/RT=-\sum_jA_{ji}\lambda_j$.
+This is the element-potential condition $\mu_i/RT=\sum_jA_{ji}\pi_j$ of
+\eqref{eq:gibbs-ni}, which was derived above with the opposite sign convention
+for the multiplier ($L=G-\sum\lambda_j(\ldots)$, $\pi_j=\lambda_j/RT$).  Hence
+\begin{equation}\label{eq:gibbs-ip-bridge}
+\boxed{\ \pi_j=-\lambda_j\ }
+\end{equation}
+(dimensionless: the scaling by $N_0$ and $RT$ cancels).  The method publishes
+$\boldsymbol{\pi}$ as \code{lambda\_<element>}${}=\pi RT$, exactly as the
+element-potential method does, and prints $\lambda$, $\pi=-\lambda$ and the
+polished $\pi$ in the run; the gate \code{check\_gibbs\_interior\_point} holds
+the identity to $10^{-8}$ against an independent element-potential solve of the
+same case, and a sign error in the code makes it fail.  An \emph{absent} pure
+condensed phase has $z>0$ and $z=g/RT-\sum_j\pi_jA_j=-\ln a$: the bound
+multiplier \emph{is} the phase test (this is how slice B2 will carry pure solids; in
+B1 the liquid's presence is read from the same multipliers as the
+tangent-plane sum $\sum_k\exp\bigl(-(g_k^{\circ}/RT+\ln(f_k^{\mathrm{L}}/P^{\circ})-\sum_jA_{jk}\pi_j)\bigr)\ge1$).
+
+\paragraph{Does the gas need a barrier?  Review R1, measured.}  A log barrier
+$-\mu\ln u_i$ on every amount makes the amount of a species \emph{present} at
+the optimum satisfy $z_iu_i=\mu$, an error $\mu/u_i$ in its chemical potential: at the
+final $\mu=10^{-9}$ a species below about $10^{-7}$ of the feed is off by more
+than one per cent (design record sec.~2.9).  But in a phase that is present the
+entropy term $u_i\ln(u_i/U)$ has the derivative $\ln(u_i/U)\to-\infty$ as
+$u_i\to0^{+}$: the minimum has every amount positive and the bound is
+\emph{never active} for a species of a present mixture phase.  The barrier
+buys nothing there and costs exactly that error.  Two variants were implemented
+and measured on the same cases (\code{interiorPoint \{ barrier \ldots; \}}):
+\begin{description}[nosep,leftmargin=*]
+  \item[\code{pureCondensedOnly} (the default)] no barrier term and no
+        multiplier on the gas species ($z_i\equiv0$; the iterate stays positive
+        by the fraction-to-the-boundary rule alone, \code{NLPProblem::isGuardOnly});
+        a barrier on the liquid amounts, a phase that can vanish.  The step is the
+        primal-dual Newton on the true KKT conditions.
+  \item[\code{everyAmount}] a barrier on every amount, then the polish of the
+        design record: every gas amount is recomputed from $\pi=-\lambda$ and the
+        existing Newton (\code{gibbsGasSolve}) finishes the gas, and the largest
+        change it makes is printed.
+\end{description}
+In both, the polish is \emph{computed} and its largest change reported
+(\code{ip\_polishLargestRelativeChange}); only \code{everyAmount} publishes the
+polished amounts.  @@R1TABLE@@
+
+\paragraph{Validity.}  Gas $+$ ideal liquid, ideal-gas package.  Refused by name,
+with the slice that will carry each: a pure solid (slice B2; \code{GibbsMethod::solve}),
+a fugacity model, i.e.\ an equation of state other than the ideal gas (slice B3), the
+adaptive barrier update and the merit globalisation (slices A3, A4).  The limit of the
+barrier-free variant is stated: when a whole phase vanishes ($N\to0$) the gradient
+$\ln(u_i/N)$ stays finite and the bounds become active together, so a phase that
+can disappear needs the barrier; the method refuses a vanished \emph{gas}
+phase by name (stage C) and keeps the barrier on the liquid.  The liquid is declared absent when its
+tangent-plane sum is below $1-10^{-7}$ and the few $\mu/z$ of mass the barrier left in it
+are dropped (printed as the ``barrier ghost'').  Sources: the optimizer is Wächter \&
+Biegler (2006) as in §\ref{sec:ip-barrier} (preprint read); the minimisation of $G$
+under element balances, with the multipliers as element potentials, is the RAND
+formulation of White, Johnson and Dantzig (1958), not re-read for this slice, and the
+reduced Gibbs iteration of Gordon \& McBride (NASA RP-1311, 1994) is as cited in the
+initial-guess subsection above.  In-sample statement: nothing is fitted; the comparison with the
+element-potential method (the gate) is a comparison of two solutions of one problem on
+the corpus's own gas-and-ideal-liquid cases.
 
 % ---------------------------------------------------------------------
 \subsection{Equilibrium maps and the temperature approach}\label{sec:gibbs-maps}
