@@ -89,17 +89,19 @@ All of these are the PROOF'S OWN FAULT, fixed in the tool, none an engine defect
 
 ## NOT JUDGED, with reasons
 
-* T1 (29): 24 declare a size, duty or volume (area, V_R, volume, W_shaft, Q, distillateRate,
-  N_cellpairs, nTubes, filterArea, bodyDiameter, bowlRadius, D, an `area $A` design spec); the key is
-  named in each line of the log.  This list is deliberately CONSERVATIVE (any unit-bearing size or a
-  known key), so a case whose declared size is inert is also NOT JUDGED.  3 more: userOp01 (needs
-  `bin/buildCode`, refused without its user code), agitation02 (refuses by design: density needs
-  critical constants), and economics02 / crystalliser (no usable converged feed topology).
+* T1 (29), recounted from `results/T1.case.jsonl`: 26 declare a size, duty or volume (area x9 incl.
+  `area $A`, V_R/volume x4, W_shaft x3, Q x1, N_cellpairs x2, distillateRate x2, nTubes, filterArea,
+  bodyDiameter, bowlRadius, D); 1 has no identifiable feed topology (crystalliser01_sugar: no
+  `units (` list); 2 have a base run that refuses (userOp01, needs `bin/buildCode`; agitation02,
+  refuses by design: density needs critical constants).  The rule is deliberately CONSERVATIVE, so a
+  case whose declared size is inert is also NOT JUDGED.
 * T2 (6): one-component cases (condenser01, air01, rankine01, agitation01), userOp01 and agitation02.
 * T3 (2), T5 (2): userOp01 and agitation02 (the base run refuses; both by design).
-* T4 (11): the independent reader refuses by name what it does not understand: stream blocks
-  `category` (utility streams: 4 cases), `vaporFraction`, `speciation`/`calculated`, a solids-bearing
-  file with a text value; `crystalliser` flowsheets it cannot parse (2); economics02 (no `converged/` feed); and the two cases above.
+* T4 (11), recounted from the JSON: the independent reader refuses by name stream blocks `category`
+  (utility streams: designSpec01, ChemicalPlantTutorial, utility01 = 3), `vaporFraction` (condenser01),
+  `speciation`/`calculated` (analysis01), a text value `n/a` (centrifuge01); a flowsheet with no
+  `units (` list (crystalliser01, crystalliser02); economics02 (no `converged/` feed); and the two
+  base refusals (userOp01, agitation02).
 * T6 (4): userOp01, agitation02, ChemicalPlantTutorial (`converged/` holds no state files at the
   top level: a sectored plant) and economics02 (no `converged/`).
 

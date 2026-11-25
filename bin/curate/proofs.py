@@ -558,7 +558,15 @@ def t6(case):
     return verdict_from(viol, worst, wk, n, ' [tol %.0e]' % tol)
 
 
+def t0(case):
+    """the base run alone (its wall time is the corpus's fixed cost; every proof compares with it)."""
+    r = base_of(case)
+    p = base_problem(case, r)
+    return (NOTJ, p) if p else (HOLDS, 'base run converged in %.1f s' % r['secs'])
+
+
 TRANSFORMATIONS = {
+    'T0': ('base run alone', t0),
     'T1': ('homogeneity of degree one (feeds x2)', t1),
     'T2': ('component order reversed', t2),
     'T3': ('unit writing (SI instead of bar, kmol/h)', t3),
@@ -607,7 +615,7 @@ def main(argv):
         print(__doc__)
         return 2
     if 'all' in ts:
-        ts = list(TRANSFORMATIONS)
+        ts = [x for x in TRANSFORMATIONS if x != 'T0']
     cases = named or (cases_all() if scope == 'all' else cases_fast())
     (SCR / 'results').mkdir(parents=True, exist_ok=True)
     for t in ts:
