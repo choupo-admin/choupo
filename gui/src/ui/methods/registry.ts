@@ -86,7 +86,7 @@ export type MethodToolId =
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
-  | "control-valve";
+  | "control-valve" | "compressor-choice";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1247,6 +1247,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "so you see a loop that cannot work. Then the order of the valves: "
       + "inventory, throughput, quality.",
     theory: "ch:dyn-cstr",
+  },
+  //  COMMISSIONED (C263, built C510): "which compressor, and how far can I turn
+  //  it down?".  A CONSTRUCTION on two live engine runs (the air machine of
+  //  compressor03 and the ammonia plant's make-up compressor, both sized) plus
+  //  a RECORDED run of the reference plant's four compressors.  The engine
+  //  publishes the machine chart it selects from (Brown 2005 Fig 1-2) in its
+  //  design sheet and the page draws THAT; the seven practitioner questions
+  //  are AUTHORED text; the surge flow and the shut-off head are the
+  //  student's, because the engine has no characteristic map (so surge itself,
+  //  speed control and suction throttling are not built, and the page says why).
+  {
+    id: "compressor-choice", blurb: "Duty as a volume and a ratio, the machine chart, the highest pressure, the cost of anti-surge.",
+    label: "Which compressor, and how far can I turn it down?",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "A compressor is chosen from the gas as it enters the machine (a volume flow) and a pressure "
+      + "ratio, not from kilograms and kilowatts: two gases with the same volume and ratio need nearly the same power "
+      + "and very different heads. The engine's own machine chart, drawn from its design sheet, shows which families "
+      + "can take a duty and how it breaks a tie; seven practitioner questions (authored) say what the chart does not; "
+      + "a one-section ceiling shows the highest pressure a blocked discharge can reach and the relief that implies; and "
+      + "two engine runs price the anti-surge recycle at part load, cooled and hot. No surge line is computed: the engine "
+      + "has no characteristic map, and the page says so.",
+    theory: "sec:compressor-choice",
   },
   //  COMMISSIONED 2026-11-25 (C509): "why does a correctly sized valve still
   //  control badly?".  A CONSTRUCTION with two engine runs in the browser
