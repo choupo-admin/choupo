@@ -141,7 +141,8 @@ def run_in(d):
     err = None
     if j is None:
         tail = [x for x in (p.stderr + '\n' + p.stdout).strip().split('\n') if x.strip()]
-        err = 'rc=%d: %s' % (p.returncode, ' | '.join(tail[-2:])[:300])
+        errs = [x for x in p.stderr.split('\n') if x.startswith('ERROR')]
+        err = 'rc=%d: %s' % (p.returncode, ' | '.join(errs[-2:] if errs else tail[-2:])[:300])
     return {'json': j, 'err': err, 'secs': time.time() - t0}
 
 
@@ -315,9 +316,10 @@ _RECORD = re.compile(r'(?m)(?<![\w.$])(module|stack)\s+[A-Za-z][^;\s]*\s*;')
 # Each rule was read in the engine source named and checked on one case by hand (docs/audits/2026-11-25-proofs-t1-rules.md).
 UNIT_RULES = {
     # DistillationColumn.cpp: distillateRate/bottomsRate/side-draw `rate` are molar flow specifications (extensive);
-    # hydraulics `diameter` enters only through A_T = pi D^2/4 (l.5138) and the flow path derived from it (l.5201-5205),
-    # so D x sqrt(k) keeps the vapour velocity; stage height and packing geometry are per-stage lengths (intensive).
-    'distillationColumn': {'distillateRate': 'k', 'bottomsRate': 'k', 'rate': 'k', 'diameter': 'sqrtk',
+    # `diameter` has NO rule: a tray column's weir loading is per length (see the tray refusal in plan_t1) and no packed
+    # column with a declared diameter reached a judged T1 to check a D x sqrt(k) rule by hand ('sqrtk' is implemented,
+    # unused).  Stage height and packing geometry are per-stage lengths (intensive).
+    'distillationColumn': {'distillateRate': 'k', 'bottomsRate': 'k', 'rate': 'k',
                            'height': 'inert', 'elementHeight': 'inert', 'corrugationSide': 'inert',
                            'corrugationHeight': 'inert', 'corrugationBase': 'inert'},
     # CSTR.cpp:745 `UA` W/K is extensive; V_R with the feed keeps the residence time; catalystLoading is kg/m3 (intensive).
