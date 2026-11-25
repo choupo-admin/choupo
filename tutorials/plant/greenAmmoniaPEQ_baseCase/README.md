@@ -371,9 +371,8 @@ stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
 -4 140.1 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
 this case with `taxOnLoss none;` added to the `economics` block printed
-`NPV(i=0.100) = -4085642704 EUR`, `taxCreditOnLoss` 0 and the break-evens
-unchanged, but it was taken BEFORE the 2026-11-19 lote moved this plant and
-has not been repeated). Neither reading carries a loss forward.
+an NPV of -4140.1 MEUR, `taxCreditOnLoss` 0 and the break-evens unchanged,
+run again on 2026-11-24). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`
 block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run

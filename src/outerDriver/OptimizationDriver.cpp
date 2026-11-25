@@ -27,10 +27,12 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "OptimizationDriver.H"
+#include "ClosureGuard.H"
 #include "ResponseExtractor.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/PostProcessor.H"
 #include "solver/ActiveSetQP.H"
+#include "solver/MADS.H"
 #include "solver/NelderMead.H"
 #include "solver/SQP.H"
 #include "streams/StreamOverrides.H"
@@ -119,7 +121,9 @@ std::string OptimizationDriver::EvaluationLedger::byCause() const
 {
     return "did not converge " + std::to_string(notConverged)
          + ", simulator threw " + std::to_string(threw)
-         + ", non-finite " + std::to_string(nonFinite);
+         + ", non-finite " + std::to_string(nonFinite)
+         + (closure > 0 ? ", closure violated " + std::to_string(closure)
+                        : std::string());
 }
 
 void OptimizationDriver::EvaluationLedger::add(const EvaluationLedger& o)
@@ -128,6 +132,7 @@ void OptimizationDriver::EvaluationLedger::add(const EvaluationLedger& o)
     notConverged += o.notConverged;
     threw        += o.threw;
     nonFinite    += o.nonFinite;
+    closure      += o.closure;
 }
 
 std::string OptimizationDriver::describePoint(const std::vector<scalar>& xUser) const
@@ -152,10 +157,62 @@ void OptimizationDriver::noteFailedEvaluation(Fail kind, const std::string& caus
         case Fail::NotConverged: ++ledger_.notConverged; break;
         case Fail::Threw:        ++ledger_.threw;        break;
         case Fail::NonFinite:    ++ledger_.nonFinite;    break;
+        case Fail::Closure:      ++ledger_.closure;      break;
         case Fail::None:         return;
     }
+    if (kind == Fail::Closure && !closureKeysSaid_.insert(closureKeyLast_).second)
+        return;       // counted; the cause was already printed once with its point
     std::cout << "  [evaluation " << ledger_.total << "] FAILED -- " << cause
               << "  (" << describePoint(xUser) << ")\n";
+}
+
+bool OptimizationDriver::closureViolated(const SimulationResult& r, std::string& cause)
+{
+    const ClosureReading cr = readClosure(r);
+    if (!cr.published)
+    {
+        if (!closureNoteDone_)
+        {
+            closureNoteDone_ = true;
+            //  clog, not cerr: the evaluator has swapped cerr into its sink, and the
+            //  stdout of an existing case must not move.
+            std::clog << "[closure guard] this case's run publishes no mass or"
+                         " element closure at an evaluation (steady reports run"
+                         " after the optimiser): the evaluations are NOT"
+                         " closure-checked here; the replay at the optimum is"
+                         " checked by the balance reports.\n";
+        }
+        return false;
+    }
+    if (cr.worst <= closureBand()) return false;
+    std::ostringstream o;
+    o << std::scientific << std::setprecision(4)
+      << "the run's own closure " << cr.key << " = " << cr.worst
+      << " exceeds the conservation band " << closureBand()
+      << " (reporting::massBandPct): the run creates or loses matter, so its"
+         " objective is not a result";
+    cause = o.str();
+    closureKeyLast_ = cr.key;
+    return true;
+}
+
+void OptimizationDriver::checkReplayClosure(const SimulationResult& r) const
+{
+    const ClosureReading cr = readClosure(r);
+    if (cr.published && cr.worst > closureBand())
+    {
+        std::ostringstream o;
+        o << std::scientific << std::setprecision(4)
+          << "OptimizationDriver: the replay at the best point violates"
+             " conservation (" << cr.key << " = " << cr.worst << " > "
+          << closureBand() << ") -- this is NOT an optimum and none is"
+             " reported.  The objective rewards a state in which the model"
+             " creates or loses matter; add the closure as a constraint"
+             " (`constraints ( { kpi <unit>." << cr.key << "; atMost "
+          << closureBand() << "; } );` under sqp or mads) or restrict the"
+             " variable ranges.";
+        throw std::runtime_error(o.str());
+    }
 }
 
 OptimizationDriver::OptimizationDriver(const DictPtr& d)
@@ -164,8 +221,9 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     const std::string method = d->lookupWordOrDefault("method", "nelderMead");
     if      (method == "nelderMead") method_ = Method::NelderMead;
     else if (method == "sqp")        method_ = Method::Sqp;
+    else if (method == "mads")       method_ = Method::Mads;
     else throw std::runtime_error("OptimizationDriver: method must be"
-        " 'nelderMead' or 'sqp' (got '" + method + "')");
+        " 'nelderMead', 'sqp' or 'mads' (got '" + method + "')");
 
     // -----------------------------------------------------------------
     //  variables  ( {path; min; max; initial;}... );
@@ -236,6 +294,10 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
         if (op->found("tolF")       ) tolF_        = op->lookupScalar("tolF");
         if (op->found("simplexInit")) simplexInit_ = op->lookupScalar("simplexInit");
         if (op->found("fdStep")     ) fdStep_      = op->lookupScalar("fdStep");
+        if (op->found("maxEvaluations")) madsMaxEval_ = static_cast<int>(op->lookupScalar("maxEvaluations"));
+        if (op->found("seed")       ) madsSeed_    = static_cast<int>(op->lookupScalar("seed"));
+        if (op->found("initialPollSize")) madsPoll0_ = op->lookupScalar("initialPollSize");
+        if (op->found("tau")        ) madsTau_     = op->lookupScalar("tau");
         if (op->found("fdMode"))
         {
             const std::string m = op->lookupWord("fdMode");
@@ -255,10 +317,10 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     // Parsed by the SHARED grammar (ConstraintSpec.H) -- identical block,
     // identical refusals, shared with the sweep's feasibility map.
     constraints_ = parseConstraints(d, "OptimizationDriver");
-    if (!constraints_.empty() && method_ != Method::Sqp)
+    if (!constraints_.empty() && method_ == Method::NelderMead)
         throw std::runtime_error("OptimizationDriver: `constraints` require"
-            " method 'sqp' (Nelder-Mead is unconstrained; add a penalty term"
-            " or switch to sqp)");
+            " method 'sqp' or 'mads' (Nelder-Mead is unconstrained; add a"
+            " penalty term or switch to sqp / mads)");
 
     // -----------------------------------------------------------------
     //  report { file; }
@@ -348,6 +410,13 @@ int OptimizationDriver::run()
     if (!flowsheetDict_)
         throw std::runtime_error("OptimizationDriver: flowsheetDict not set");
 
+    //  MADS handles an integer variable natively (mesh floor of 1): no
+    //  enumeration.  An integer with no `initial` starts at its lower bound.
+    if (method_ == Method::Mads)
+    {
+        resolveStarts();
+        return runMads();
+    }
     for (const auto& v : vars_)
         if (v.isInt) return runIntegerEnumeration();
     resolveStarts();
@@ -441,6 +510,7 @@ int OptimizationDriver::runNelderMead()
             auto result = simulator_(clone, ov);
             cause = simulationFailure(result);
             if (!cause.empty()) kind = Fail::NotConverged;
+            else if (closureViolated(result, cause)) kind = Fail::Closure;
             else {
                 if (needPost) {
                     auto chain = PostProcessor::buildChain(postDict_);
@@ -600,10 +670,293 @@ int OptimizationDriver::runNelderMead()
     lastF_         = sensed(R.f);
     lastConverged_ = R.converged;
     lastFeasible_  = true;
+    checkReplayClosure(finalResult);
     setFinalResult(finalResult);          // expose for the reports{} chain
     if (emitJson_) emitResultJson(std::cout, finalResult);
 
     return R.converged ? 0 : 1;
+}
+
+// ===========================================================================
+//  MADS back-end (C494): derivative-free, relaxable constraints by the
+//  progressive barrier, integer variables native.  The algorithm, what was
+//  read and every deviation are in solver/MADS.H.
+// ===========================================================================
+int OptimizationDriver::runMads()
+{
+    //  Self-check gate (as the SQP's): two published problems, every run.  A
+    //  throw aborts the run -- a loud merge-block, never a silent wrong answer.
+    {
+        const scalar err = solver::verifyMADS(0);
+        std::cout << "  [self-check]  MADS: HS35 (smooth, constrained) and CB3"
+                     " (non-smooth) vs their published optima, worst |df| = "
+                  << std::scientific << std::setprecision(2) << err
+                  << "   (gates passed, deterministic: two runs equal)\n";
+    }
+
+    const bool costNeedsPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
+    if (costNeedsPost && !postDict_)
+        throw std::runtime_error("OptimizationDriver: objective requires a"
+            " post-processing chain, but the case has no system/postDict");
+    const bool needPost = costNeedsPost || (postDict_ != nullptr);
+
+    const std::size_t n = vars_.size();
+    const std::size_t m = constraints_.size();
+
+    std::ofstream csv(reportFile_);
+    if (!csv)
+        throw std::runtime_error("OptimizationDriver: cannot open '"
+            + reportFile_ + "' for writing");
+    csv << "iter,outcome,f,h,pollSize,meshSize,nPoll,evaluations";
+    for (const auto& v : vars_) csv << "," << v.path;
+    csv << "\n";
+
+    std::cout << "\n=========================  Optimisation (MADS)  ====================\n"
+              << "  method:        mads  (mesh adaptive direct search, OrthoMADS-style\n"
+              << "                       2n poll, progressive barrier; solver/MADS.H)\n"
+              << "  variables:     " << n << "\n";
+    for (const auto& v : vars_)
+        std::cout << "    " << v.path
+                  << "   range [" << v.lo << ", " << v.hi << "]"
+                  << "   initial " << v.x0
+                  << (v.isInt ? "   INTEGER (native: mesh floor 1, no enumeration)" : "")
+                  << "   start: " << (v.x0Source.empty() ? "range lower bound" : v.x0Source)
+                  << "\n";
+    std::cout << "  objective:     '" << objPath_ << "'   "
+              << (objSense_ == Sense::Minimise ? "minimise" : "maximise") << "\n"
+              << "  constraints:   " << m << "  (relaxable, progressive barrier:"
+                 " h = sum max(residual,0)^2, residual normalised by max(|rhs|,tol))\n";
+    for (const auto& c : constraints_)
+    {
+        const char* op = (c.op == Constraint::Op::AtMost)  ? "<="
+                       : (c.op == Constraint::Op::AtLeast) ? ">="
+                                                           : "==";
+        std::cout << "    " << c.path << "  " << op << "  "
+                  << std::scientific << std::setprecision(6) << c.rhs << "\n";
+    }
+    std::cout << "  poll size:     Delta0 " << madsPoll0_ << " (fraction of each range),"
+                 "  tau " << madsTau_ << ",  stop below tolX " << tolX_ << "\n"
+              << "  mesh size:     delta = min(Delta, Delta^2);  search step: EMPTY\n"
+              << "  direction seed: " << madsSeed_
+              << " (Halton index offset; same seed, same run)\n"
+              << "  budget:        maxIter " << maxIter_ << ",  maxEvaluations "
+              << madsMaxEval_ << "\n"
+              << "  history file:  " << reportFile_ << "\n"
+              << "====================================================================\n";
+
+    auto sensed = [&](scalar f) {
+        return (objSense_ == Sense::Maximise) ? -f : f;
+    };
+
+    std::ostringstream sink;
+    std::string lastCause;
+
+    auto evaluate = [&](const sVector& x) -> solver::MADSResponse
+    {
+        ++ledger_.total;
+        solver::MADSResponse out;
+        out.ok = false;
+
+        auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+        StreamOverrides ov;
+        for (const auto& [fp, fv] : fixedVars_)
+            if (fp.rfind("streams.", 0) == 0)
+                 ov.set(StreamOverrides::fromDictPath(fp), fv);
+            else clone->setScalarAtPath(fp, fv);
+        for (std::size_t i = 0; i < n; ++i)
+            if (vars_[i].path.rfind("streams.", 0) == 0)
+                ov.set(StreamOverrides::fromDictPath(vars_[i].path), x[i]);
+            else
+                clone->setScalarAtPath(vars_[i].path, x[i]);
+
+        auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
+        auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
+        Fail kind = Fail::None;
+        std::string cause;
+        try
+        {
+            auto result = simulator_(clone, ov);
+            cause = simulationFailure(result);
+            if (!cause.empty()) kind = Fail::NotConverged;
+            else if (closureViolated(result, cause)) kind = Fail::Closure;
+            else
+            {
+                if (needPost)
+                {
+                    auto chain = PostProcessor::buildChain(postDict_);
+                    for (auto& pp : chain) PostProcessor::runOrThrow(*pp, result);
+                }
+                const scalar f = extractObjective(result, objKind_, objPath_);
+                out.f = (objSense_ == Sense::Maximise) ? -f : f;
+                out.ok = std::isfinite(out.f);
+                for (const auto& c : constraints_)
+                {
+                    const ConstraintEval ce = evaluateConstraint(c, result, "mads");
+                    if (!ce.evaluated || !std::isfinite(ce.residual))
+                    { out.ok = false; cause = "the constraint response '" + c.path
+                                              + "' is not readable or not finite"; }
+                    out.c.push_back(ce.residual);
+                }
+                if (!out.ok)
+                {
+                    kind = Fail::NonFinite;
+                    if (cause.empty())
+                        cause = "the objective '" + objPath_ + "' is not finite";
+                }
+            }
+        }
+        catch (const std::exception& e)
+        {
+            kind  = Fail::Threw;
+            cause = std::string("the simulator threw: ") + e.what();
+        }
+        std::cout.rdbuf(coutBuf);
+        std::cerr.rdbuf(cerrBuf);
+        sink.str(""); sink.clear();
+        if (kind != Fail::None)
+        {
+            out.ok = false;
+            noteFailedEvaluation(kind, cause, x);
+        }
+        return out;
+    };
+
+    sVector x0(n), lo(n), hi(n);
+    solver::MADSOptions opts;
+    opts.isInt.assign(n, false);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        x0[i] = vars_[i].x0;
+        lo[i] = vars_[i].lo;
+        hi[i] = vars_[i].hi;
+        opts.isInt[i] = vars_[i].isInt;
+    }
+    opts.pollSize0 = madsPoll0_;
+    opts.tau       = madsTau_;
+    opts.epsStop   = tolX_;
+    opts.maxIter   = maxIter_;
+    opts.maxEval   = madsMaxEval_;
+    opts.seed      = madsSeed_;
+
+    std::cout << "\n  iter  outcome        Delta    delta   poll cached   evals"
+                 "   best f         h(best)     h(inf.inc.)   hMax\n"
+              << "  ----  ------------  -------  -------  ----  ------  ------"
+                 "  -------------  ----------  ------------  ----------\n";
+    opts.onIter = [&](const solver::MADSTrace& t) {
+        std::cout << "  " << std::setw(4) << t.iteration << "  " << std::left
+                  << std::setw(12) << t.outcome << std::right << std::scientific
+                  << std::setprecision(1) << "  " << std::setw(7) << t.pollSize
+                  << "  " << std::setw(7) << t.meshSize
+                  << "  " << std::setw(4) << t.nPoll
+                  << "  " << std::setw(6) << t.nCached
+                  << "  " << std::setw(6) << t.evaluations
+                  << "  " << std::setprecision(6) << std::setw(13) << sensed(t.f)
+                  << std::setprecision(2) << "  " << std::setw(10) << t.h
+                  << "  " << std::setw(12) << t.hInfeas
+                  << "  " << std::setw(10) << t.hMax << "\n";
+        csv << t.iteration << "," << t.outcome << "," << sensed(t.f) << ","
+            << t.h << "," << t.pollSize << "," << t.meshSize << ","
+            << t.nPoll << "," << t.evaluations;
+        for (scalar xv : t.x) csv << "," << xv;
+        csv << "\n";
+    };
+
+    const solver::MADSResult R = solver::mads(evaluate, x0, lo, hi, opts);
+    csv.close();
+
+    if (!R.found)
+        throw std::runtime_error("OptimizationDriver(mads): every one of the "
+            + std::to_string(ledger_.total) + " evaluation(s) FAILED ("
+            + ledger_.byCause() + ") -- there is no converged simulation to"
+            " read the objective from, so no optimum is reported.  Each"
+            " failure is named above with its point.  Remedies: narrow the"
+            " variable ranges to where the flowsheet converges, or fix the"
+            " `initial` point.");
+
+    //  Replay at the best point with full output; read the constraints there.
+    auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+    StreamOverrides ov;
+    for (const auto& [fp, fv] : fixedVars_)
+        if (fp.rfind("streams.", 0) == 0)
+             ov.set(StreamOverrides::fromDictPath(fp), fv);
+        else clone->setScalarAtPath(fp, fv);
+    for (std::size_t i = 0; i < n; ++i)
+        if (vars_[i].path.rfind("streams.", 0) == 0)
+            ov.set(StreamOverrides::fromDictPath(vars_[i].path), R.x[i]);
+        else
+            clone->setScalarAtPath(vars_[i].path, R.x[i]);
+
+    std::cout << "\n=========================  Optimum (MADS)  ==========================\n"
+              << "  status:        " << (R.converged ? "converged" : "stopped")
+              << "  (" << R.reason << ")\n"
+              << "  iterations:    " << R.iterations
+              << "   simulations: " << R.evaluations
+              << "   cache hits (not re-simulated): " << R.cacheHits << "\n"
+              << "  final poll size Delta: " << std::scientific
+              << std::setprecision(2) << R.pollSize << "\n";
+    if (ledger_.failed() > 0)
+        std::cout << "  failed evaluations: " << ledger_.failed() << " of "
+                  << ledger_.total << "  (" << ledger_.byCause()
+                  << ") -- each named above with its point; none entered"
+                     " the objective\n";
+    if (!R.feasible)
+        std::cout << "  NO FEASIBLE POINT FOUND: the best INFEASIBLE incumbent is"
+                     " reported (h = " << R.h << ").\n";
+    std::cout << "  best objective:" << std::scientific << std::setprecision(6)
+              << "  " << sensed(R.f) << "   ("
+              << (R.feasible ? "feasible" : "INFEASIBLE") << ")\n"
+              << "  best variables:\n";
+    for (std::size_t i = 0; i < R.x.size(); ++i)
+        std::cout << "    " << vars_[i].path << " = "
+                  << std::fixed << std::setprecision(vars_[i].isInt ? 0 : 6)
+                  << R.x[i] << (vars_[i].isInt ? "  (integer)" : "") << "\n";
+    std::cout << "  history:       " << reportFile_ << "\n";
+
+    std::cout << "\n[replaying simulator at optimum]\n";
+    auto finalResult = simulator_(clone, ov);
+    if (const std::string why = simulationFailure(finalResult); !why.empty())
+        throw std::runtime_error("OptimizationDriver(mads): the replay at the"
+            " optimum FAILED -- " + why + " -- although the evaluation at"
+            " this point was accepted; the simulation is not reproducible"
+            " here and no result is published");
+    if (needPost)
+    {
+        auto chain = PostProcessor::buildChain(postDict_);
+        for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
+    }
+
+    //  Active constraints at the end: within 0.1 % of the bound (normalised).
+    if (m > 0)
+    {
+        std::cout << "\n  constraints at the optimum (active = within 1e-3 of"
+                     " its bound, normalised):\n";
+        for (const auto& c : constraints_)
+        {
+            const ConstraintEval ce = evaluateConstraint(c, finalResult, "mads");
+            const char* op = (c.op == Constraint::Op::AtMost)  ? "<="
+                           : (c.op == Constraint::Op::AtLeast) ? ">="
+                                                               : "==";
+            const bool active = ce.evaluated && ce.residual <= 0.0
+                                && ce.residual >= -1.0e-3;
+            std::cout << "    " << c.path << "  value " << std::scientific
+                      << std::setprecision(6) << ce.value << "  " << op << "  "
+                      << c.rhs << "   residual " << std::setprecision(2)
+                      << ce.residual << "   "
+                      << (!ce.evaluated ? "UNREADABLE"
+                          : ce.residual > 0.0 ? "VIOLATED"
+                          : active ? "ACTIVE" : "inactive") << "\n";
+        }
+    }
+
+    lastX_         = R.x;
+    lastF_         = sensed(R.f);
+    lastConverged_ = R.converged;
+    lastFeasible_  = R.feasible;
+    checkReplayClosure(finalResult);
+    setFinalResult(finalResult);
+    if (emitJson_) emitResultJson(std::cout, finalResult);
+
+    return (R.converged && R.feasible) ? 0 : 1;
 }
 
 // ===========================================================================
@@ -758,6 +1111,7 @@ int OptimizationDriver::runSqp()
             auto result = simulator_(clone, ov);
             cause = simulationFailure(result);
             if (!cause.empty()) kind = Fail::NotConverged;
+            else if (closureViolated(result, cause)) kind = Fail::Closure;
             else
             {
                 if (needPost)
@@ -1045,6 +1399,7 @@ int OptimizationDriver::runSqp()
         auto chain = PostProcessor::buildChain(postDict_);
         for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
     }
+    checkReplayClosure(finalResult);
     setFinalResult(finalResult);
     if (emitJson_) emitResultJson(std::cout, finalResult);
 

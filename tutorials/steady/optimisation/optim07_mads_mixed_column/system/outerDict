@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  optim07_mads_mixed_column / system/outerDict
+
+  WHAT THIS CASE IS: the column question of optim06 -- how many stages, at
+  what reflux, to make the purity spec for the least reboiler vapour? --
+  solved in ONE run by `method mads;` with the stage count `nStages`
+  (integer) and the reflux ratio (continuous) searched TOGETHER:
+
+      minimise V_strip  over  nStages in {8..14} (integer),  R in [1.5, 6]
+      subject to x_D_LK >= 0.98
+
+  optim06 declares nStages `integer;` and the driver ENUMERATES it: one full
+  SQP per stage count, seven runs, every value on a table.  Here nothing is
+  enumerated.  MADS (Audet & Dennis; solver/MADS.H says what was read) polls
+  mesh points around the best point it has: the integer variable moves in
+  whole stages (its mesh never goes below 1), the reflux in a mesh that
+  shrinks as the search closes in, and the purity constraint rides on the
+  PROGRESSIVE BARRIER -- an infeasible trial point is kept while its
+  violation h is below a threshold that falls with the iterations, so the
+  search may cross the spec on its way and is pushed back to it.  No
+  gradient is taken anywhere, so a non-smooth response, a regime switch or a
+  table lookup would not break it; that is its ground, and the one the SQP
+  (smooth, shadow prices) and the enumeration (one integer) do not cover.
+
+  WHAT A STUDENT SEES: every iteration prints the poll size Delta, the mesh
+  size delta, how many points were polled and how many were already in the
+  cache (a repeated point is not simulated twice), the outcome (dominating /
+  improving / unsuccessful), the best objective, the violation h of the
+  infeasible incumbent and the barrier threshold hMax; the end prints why
+  it stopped, the NUMBER OF SIMULATIONS, and which constraints are active.
+  Put the simulation count beside optim06's (its integer table prints the
+  evaluations of all seven SQP runs).  MEASURED (docs/audits/2026-11-24-
+  optimizer-comparison.md): the same optimum, nStages = 14 (the upper
+  bound) at R = 2.90, V_strip 0.034821 against optim06's 0.034790 kmol/s
+  (0.09 % above: MADS stops on its poll-size tolerance, tolX), in 126
+  simulations against the enumeration's 74 -- MADS is NOT cheaper here, and
+  the smooth SQP inside the enumeration is the better tool for this smooth
+  problem.  What each promises: MADS, a local optimum on the mesh, no
+  multipliers; the enumeration, an optimum for each stage count, all
+  visible, and the refusals (N = 8, N = 9..11) on the table.  The case is
+  here for what MADS does that the enumeration cannot: more than one
+  integer variable, a non-smooth response, no inner solver at all.  It
+  cost MORE simulations than the enumeration (126 against 74); what it buys
+  instead is one run, mixed variables and no enumeration grammar -- not a
+  better answer.
+
+  Same seed (default 0), same run: the poll directions come from a Halton
+  sequence indexed by the seed, so the output is reproducible.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  mads;
+
+variables
+(
+    {
+        path     units[0].operation.nStages;
+        integer  true;
+        min      8;
+        max      14;
+        initial  11;
+    }
+    {
+        path     units[0].operation.refluxRatio;
+        min      1.5;
+        max      6.0;
+        initial  3.0;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     column01.V_strip;
+    sense    minimise;
+}
+
+constraints
+(
+    { kpi column01.x_D_LK;  atLeast 0.98; }
+);
+
+options
+{
+    maxEvaluations  300;
+    tolX            1e-3;     // stop when the poll size is below 0.1 % of a range
+    seed            0;
+}

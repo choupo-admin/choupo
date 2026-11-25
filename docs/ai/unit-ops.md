@@ -194,6 +194,14 @@ A gas-phase CSTR therefore needs a `V_R` sized for the gas: see
 `cstr02_reversible_wgs` (V_R 1e-2 m^3, tau ~7.2 s at 600 K, 10 bar).
 Theory Guide `sec:cstr-volumetric-basis`.
 
+**The extent is bounded by every consumed species (C498).**  The single-reaction
+extent runs on `[-min(F_p/nu_p), min(F_r/-nu_r)]` over all products / reactants
+(the reverse bound only when the reaction runs backwards at the feed), the converged
+extent must satisfy `xi = r(xi) V_R` with every outlet flow >= 0 BEFORE any clip, and a
+law with no root inside the interval (a zero order in the reactant that runs out)
+is refused naming it.  The multi-reaction probe tolerance is relative to the feed.
+`limitingReactant` is only the reference of X.  Theory Guide `sec:cstr-feasible-extent`.
+
 **THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C73)** -- for the
 `cstr` and the `pfr` as for the `conversionReactor` (C72, one home:
 `src/unitOperations/reactor/ReactorOutlet.H`): the outlet's vapour fraction is

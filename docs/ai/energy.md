@@ -335,6 +335,6 @@ publishes `element_<X>_residual_kmolatom` instead of a closure and stays out
 of the worst element and the verdict -- a floor never decides).  Dynamic
 (choupoCtrl / choupoSemiContinuous, one driver): the accepted-step ledger writes `balanceTrajectory.csv` +
 `.meta`; the dynamicCSTR's physical-energy claim honestly refuses (its ODE
-is not the derivative of a canonical U/H).  All three ride ONE formula
+is not the derivative of a canonical U/H); a dynamic run whose mass or element closure exceeds the conservation band (1e-3, `reporting::massBandPct`) raises the balance alarm, is NOT CONVERGED and exits non-zero (C495).  All three ride ONE formula
 parser (`elementalComposition` props op is its glass-box surface); an
 unparseable formula withholds only the elemental claim, naming itself.

@@ -160,12 +160,22 @@ DOMAINS = [
      "the vapour fraction of a two-phase feed lies in [0, 1] (q = 1 - vf: the page's feed is partly vaporised, "
      "never a sub-cooled liquid, which is q > 1)", False),
     (M + "PonchonSavaritTool.tsx", "xD", 0.0, 1.0, "a distillate mole fraction lies in [0, 1]", False),
+    (M + "RelaxationTool.tsx", "logEta", None, 0.0,
+     "log10 of the inner tolerance as a fraction of the outer mistake: at 0 the inner error equals the outer "
+     "mistake, and above it the inexact-Newton forcing term (eta < 1) no longer contracts; any smaller positive "
+     "fraction is valid, and -4 is the page's own choice", False),
     (M + "EquilibriumOrRateBasedTool.tsx", "e", None, None,
      "log10(lambda), lambda = m V / L, a positive ratio with no physical bound: the relation HETP = "
      "H_OG ln(lambda)/(lambda-1) holds for every lambda > 0 (Seader, Henley and Roper Eq. 7-87); the "
      "slider spans 0.1 to 10, the page's own choice", False),
     (M + "OverpressureTool.tsx", "Kd", 0.0, 1.0, "a discharge coefficient lies in (0, 1]", False),
     (M + "OverpressureTool.tsx", "Kb", 0.0, 1.0, "a back-pressure correction factor lies in (0, 1]", False),
+    (M + "OptimizersTool.tsx", "seed", None, None,
+     "the seed of a pseudo-random generator that draws the MADS poll directions: any integer is as good as another, the "
+     "page offers 1 to 20 and counts what twenty of them do", False),
+    (M + "OptimizersTool.tsx", "spec", 0.0, 0.99,
+     "the purity limit of the page's toy column: a purity is below 1, and the toy's largest stage count and reflux "
+     "(14 and 6) reach 1 - exp(-0.6 x 9 x 6/7) = 0.990, so a limit above that has no feasible point; the slider stops at 0.985", False),
     (M + "StiffChemistryTool.tsx", "logLam", 3.0, 10.0,
      "log10 of the fastest rate in 1/s: radicals settle in about 1e-9 s and NOx chemistry in about 1e-3 s "
      "(Theory Guide ch:stiff-ode), so 1e3 to 1e10 /s spans the chemistry the page is about; the page is "

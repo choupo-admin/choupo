@@ -33,7 +33,7 @@ Description
     flowsheetDict.  Reads `system/outerDict`:
 
         type        optimization;
-        method      nelderMead;        // only supported method for now
+        method      nelderMead;        // | sqp | mads (C494)
 
         variables
         (
@@ -88,6 +88,7 @@ Description
 #include "ConstraintSpec.H"
 #include "OuterDriver.H"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -151,7 +152,8 @@ public:
         int notConverged = 0;   // the flowsheet answered converged = false
         int threw        = 0;   // the simulator or the post chain threw
         int nonFinite    = 0;   // the objective / a constraint is not finite
-        int failed() const { return notConverged + threw + nonFinite; }
+        int closure      = 0;   // the run's OWN mass/element closure above the band
+        int failed() const { return notConverged + threw + nonFinite + closure; }
         std::string byCause() const;          // "did not converge 3, ..."
         void add(const EvaluationLedger& o);
     };
@@ -181,7 +183,7 @@ private:
     // feasibility map parses the same block, so the two can never drift.
     using Constraint = ConstraintSpec;
 
-    enum class Method { NelderMead, Sqp };
+    enum class Method { NelderMead, Sqp, Mads };
 
     std::vector<Var>        vars_;
     std::vector<Constraint> constraints_;
@@ -198,6 +200,12 @@ private:
 
     // SQP options
     scalar                  fdStep_      = 1.0e-5;
+
+    // MADS options (method mads; see solver/MADS.H)
+    int                     madsMaxEval_ = 1000;
+    int                     madsSeed_    = 0;
+    scalar                  madsPoll0_   = 0.1;
+    scalar                  madsTau_     = 0.5;
     bool                    fdCentral_   = false;
 
     std::string             reportFile_ = "optimization_history.csv";
@@ -216,16 +224,27 @@ private:
 
     //  The failed-evaluation ledger of this run() and the one way an
     //  evaluation is marked failed: counted by cause, said with the point.
-    enum class Fail { None, NotConverged, Threw, NonFinite };
+    enum class Fail { None, NotConverged, Threw, NonFinite, Closure };
     EvaluationLedger        ledger_;
     void noteFailedEvaluation(Fail kind, const std::string& cause,
                               const std::vector<scalar>& xUser);
     std::string describePoint(const std::vector<scalar>& xUser) const;
 
+    //  THE CLOSURE GUARD (C494 follow-up, CLAUDE.md rule 4b): an evaluation
+    //  whose run publishes a mass/element closure above the conservation
+    //  band is a FAILED evaluation, never a value.  Reads what the run
+    //  itself published (ClosureGuard.H); recomputes nothing.
+    bool closureViolated(const SimulationResult& r, std::string& cause);
+    void checkReplayClosure(const SimulationResult& r) const;
+    bool                    closureNoteDone_ = false;   // 'publishes none' said once
+    std::set<std::string>   closureKeysSaid_;           // one line per cause
+    std::string             closureKeyLast_;
+
     // The two solver back-ends.
     void resolveStarts();
     int runNelderMead();
     int runSqp();
+    int runMads();
 };
 
 } // namespace Choupo

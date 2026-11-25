@@ -3303,6 +3303,88 @@ that recorded it, every reference was verified on Crossref or the project's
 citation file, and a test holds each cited line to the tree.
 \declaredanchor{ch:stiff-ode}
 
+\subsection*{Three ways to optimise a flowsheet \quad(\code{tool=optimizers})}\label{sec:edu-optimizers}
+\textit{\small Tool:} \code{tool=optimizers}.  The student's question:
+\emph{I have a flowsheet and a target; which optimiser can I trust, and how do
+I read what it tells me?}  The page runs two toy landscapes of two variables,
+declared as toys (a number of stages $s$ beside a reflux ratio $r$, a cost $f=(r+1)+1.6\,s_e$ and a
+purity limit $g=0.98-P\le 0$ with the shape of the shipped case
+\code{optim06\_integer\_stages}): a \emph{smooth} one, where the stage count is
+real, and a \emph{stepped} one, where it is rounded to a whole stage and cost
+and purity are a staircase.  The three methods are the page's own arithmetic,
+stepped move by move, and the table of the real run is the engine's.
+
+\subsubsection*{What the page shows}
+
+Six cards and a quiz.  (1)~\textbf{The landscape}: cost bands, the limit as a
+dashed line with the violated side hatched, a click to read $f$, $g$ and the
+purity, and the exact optimum (a search along the limit for the smooth one, an
+enumeration of whole stage counts for the stepped one).  (2)~\textbf{Nelder--Mead}:
+the simplex of three points with its four moves (reflect, expand, contract,
+shrink), the engine's coefficients and stop tests, and why it takes no
+constraint: the driver throws on one and names the way out, a penalty term,
+whose weight is the user's guess.  (3)~\textbf{SQP}: forward finite-difference
+slopes, a quadratic model whose Hessian is learnt by damped BFGS, the QP of
+the \code{active-set-qp} page, an L1 merit function and backtracking; at the
+answer the limit is active and its Lagrange multiplier is a \emph{shadow
+price}, $\lambda=\mathrm{d}f^{*}/\mathrm{d}p_\mathrm{spec}$, checked on the page
+by moving the limit and re-running; on the stepped landscape the slope in
+$s$ across a plateau is exactly zero, so the method converges on the plateau
+it started on although the next stage count is cheaper.  (4)~\textbf{MADS}:
+a mesh of size $\delta_k=\min(\Delta_k,\Delta_k^2)$, a complete poll of four
+random directions (the LTMADS construction), mesh refinement after a failure
+and coarsening after a success, integers on a mesh no finer than one stage,
+and a progressive barrier that closes; twenty seeds are counted to show that
+MADS is a local method.  The card is written \emph{from the papers} and cites the engine's own
+\code{method mads;} (\code{MADS.cpp}, the driver, \code{optim07\_mads\_mixed\_column}), saying where the
+page's toy differs: random against Halton poll directions, discarding against projecting onto the box, a simplified
+against the papers' barrier update; the simplifications are listed under the plot.  (5)~\textbf{Reading a real run}:
+the shipped \code{optim06\_integer\_stages}, one SQP per stage count from 8 to
+14 (8 cannot be built with the case's feed stage, 9 to 11 stop at the top of
+the reflux box, 12 to 14 converge) and its golden, $V_\mathrm{strip}=0.03479$
+kmol/s at $R=2.8994$, with the multiplier of $x_{D,LK}\ge0.98$ at 14 stages,
+0.83715, checked against the engine's own optimum by moving the limit.
+(6)~\textbf{Which one, when}: a decision table (smooth with constraints:
+SQP and its shadow prices; an integer: enumerate it; non-smooth or a black
+box: MADS; a first look at an unconstrained problem: Nelder--Mead) and
+McKinnon's counter-example, on which the engine's own Nelder--Mead rules
+contract forever toward $(0,0)$ and report convergence at a point whose slope
+in $y$ is not zero.  The same card states the \emph{no free lunch} theorem of
+Wolpert and Macready (1997), read from the paper: averaged over all possible
+objective functions on a finite space every search algorithm performs the same,
+so there is no universal winner; and the half that keeps it from becoming the
+opposite myth, that a real problem is not ``all possible functions'' but has
+structure (smooth, constrained, integer, noisy), so an algorithm is good for a
+class and the engineer's job is to know the class.  A table runs the page's two
+landscapes: SQP is exact and cheapest on the smooth one and misled on the
+stepped one; MADS is not blind to the steps but is slower and local;
+Nelder--Mead does well on both toys (two variables, an adequate penalty
+weight), which the page says is a property of the toys; and the quiz asks what
+an engineer should conclude from the theorem.
+
+\subsubsection*{What the page is held to}
+
+A test (\code{gui/tests/optimizers.test.ts}) recomputes the exact optimum
+independently of every method, holds the page's SQP to it and its multiplier to
+the slope of the exact optimal cost against the limit at three limits, proves
+the zero slope on the staircase, reads the engine's Nelder--Mead coefficients
+from \code{NelderMead.H}, checks that the four MADS directions are a maximal
+positive basis of determinant $2^{2l}$, that the mesh size is the minimum of
+the poll size and its square and that the barrier only falls, and reads
+every cited \code{file:line} back from the tree.  The optim06 table is the
+engine's run: the enumeration CSV and the run log are generated by the witness
+setup and read by the test.  The typed golden numbers are held to the case's
+\code{expected} file, and the engine citations of the MADS, closure and comparison-audit lines are read back like the others.  Card 6 also states that an optimiser refuses a run that breaks conservation (the driver's replay check, with ctrl16 as the example, where MADS alone had returned an objective twelve times the published one).  Sources, each verified on Crossref:
+Nelder and Mead (1965); McKinnon (1998); Audet and Dennis (2006), with the
+poll-direction construction read in the erratum of Audet, Cust\'odio and
+Dennis (2008); Audet and Dennis (2009), whose progressive barrier is
+reproduced in a simplified form read from the survey of Larson, Menickelly and
+Wild (2019); the NOMAD~4 paper (2022), whose Algorithm~2.1 was read; and
+Nocedal and Wright (2006) and Hock and Schittkowski (1981) for the SQP method
+and the problems the engine proves it on.  The original 2006 and 2009 papers
+were not available to the page's author, which the page says.
+\declaredanchor{ch:sqp}
+
 \subsection*{From a database to binary parameters \quad(\code{tool=database-to-parameters})}
 Choupo's curation pipeline as a lesson: a ThermoML file is read in the
 browser (the same reader the curation tool is held to), the usable blocks

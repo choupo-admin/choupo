@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  Raoult DECLARED, not defaulted (gamma = 1 identically).
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+
+  VAPOUR (C239 S6, 2026-11-23, docs/audits/2026-11-23-c239-s5-vapour-
+    measurement.md): the vapour is IDEAL at 1 atm, where the real one has phi
+    0.95-0.97.  On an SRK vapour the duties of the family's MEASURED members
+    (column01, column03, column17, column18, acetone06) move under 0.7 %;
+    that duty figure is theirs, not measured for this case.  The effect on
+    the product purity was measured only on the benzene/toluene column01
+    (0.9510 -> 0.9410 at fixed reflux and stages, SRK against ideal) and was
+    NOT measured for this case: read its purities as ideal-vapour values.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( benzene  toluene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

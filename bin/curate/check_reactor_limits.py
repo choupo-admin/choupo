@@ -461,8 +461,16 @@ def main() -> int:
         ok = True
         if edit(d / "constant/reactions",
                 "{ component water;         nu  1;  order 0; }", "", "R7"):
-            out = expect_runs("R7 (sum nu != 0)", d, "choupoCtrl")
-            if out is None:
+            #  The probe drops the water product, so its declared reaction
+            #  loses mass.  Since C495 (2026-11-24) the driver refuses a run
+            #  whose material ledger does not close: exit 1 WITH the ledger
+            #  alarm, or a clean exit 0, and nothing else.  The announcement
+            #  this arm holds must be there either way.
+            rc, out = run(d, "choupoCtrl")
+            if rc != 0 and not (rc == 1 and "material ledger" in out
+                                and "NOT CONVERGED" in out):
+                failures.append(f"R7 (sum nu != 0): the negative r7_mole exited"
+                                f" {rc} without the closure alarm")
                 ok = False
             else:
                 warn = [ln for ln in out.splitlines()

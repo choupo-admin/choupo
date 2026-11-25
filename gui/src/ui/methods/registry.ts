@@ -63,7 +63,7 @@ export type MethodToolId =
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
   | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry"
-  | "sentence-to-decision"
+  | "sentence-to-decision" | "optimizers"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -281,10 +281,11 @@ export const METHOD_PATHS: MethodPath[] = [
   {
     id: "linear-solves",
     title: "Linear solves and the bowl",
-    intro: "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+    intro: "From why every Newton step is a linear system to the bowl, the constrained bowl, the optimisers that solve it at every step, and a fit whose damping keeps it a bowl.",
     steps: [
       { tool: "linear-algebra-without-pain", why: "Elimination, LU as a receipt, pivoting, conditioning, structure, the positive-definite bowl, conjugate gradient." },
       { tool: "active-set-qp", why: "The same bowl under constraints: the inner problem of every SQP step." },
+      { tool: "optimizers", why: "The outer loop that uses that inner problem: SQP with shadow prices beside Nelder-Mead and MADS, on a smooth and a stepped landscape." },
       { tool: "least-squares", why: "Gauss-Newton's step is a linear solve too, and its damping is what keeps the table a bowl." },
     ],
   },
@@ -2081,6 +2082,32 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "multiplier IS the number of standard deviations it moved each "
       + "measurement.",
     theory: "ch:active-set-qp",
+  },
+  //  COMMISSIONED 2026-11-24 (DEV.md 4c C494), Vitor, scope approved: three
+  //  ways to optimise a flowsheet.  Nelder-Mead and SQP are in the engine
+  //  (`method nelderMead;` / `method sqp;` / `method mads;`); the MADS card is written from the
+  //  papers and says where it differs from the engine's.
+  //  On the numerics shelf because its question is how the simulator
+  //  arrives at a design, and on the linear-solves path after the page whose
+  //  QP every SQP step solves.
+  {
+    id: "optimizers", blurb: "Compare Nelder-Mead, SQP and MADS on a smooth and a stepped landscape.",
+    label: "Three ways to optimise a flowsheet",
+    discipline: "Flowsheeting & numerics", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "Which optimiser to trust and how to read what it says: one problem "
+      + "(a cost, a purity limit, a stage count beside a reflux ratio) drawn "
+      + "whole, in a smooth and a stepped version, and Nelder-Mead, SQP and "
+      + "MADS stepped on both.  Nelder-Mead compares values and takes no "
+      + "constraint; SQP builds a quadratic model, honours the limit and "
+      + "prints a Lagrange multiplier that is a shadow price, and on the "
+      + "staircase its finite-difference slope is zero so it converges where "
+      + "it started; MADS polls a mesh, keeps the integer whole and has a "
+      + "convergence theory for non-smooth functions.  Then the shipped "
+      + "integer-stages case optim06 read row by row, the multiplier checked "
+      + "against the engine by moving the limit, and a decision card with "
+      + "McKinnon's counter-example.",
+    theory: "ch:sqp",
   },
   {
     id: "least-squares", blurb: "See what a fitted parameter is worth, and when it is not.",

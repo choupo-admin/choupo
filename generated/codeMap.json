@@ -425,6 +425,9 @@
   "ClosureInputs": [
    "src/reporting/ModelBoundaryLedger.H"
   ],
+  "ClosureReading": [
+   "src/outerDriver/ClosureGuard.H"
+  ],
   "ClosureVariable": [
    "src/result/ClosureVariable.H"
   ],
@@ -935,6 +938,9 @@
   "Factor": [
    "src/thermo/transport/StokesEinstein.H"
   ],
+  "Facts": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "Family": [
    "src/thermo/electrolyte/ReactiveVLE.H"
   ],
@@ -1252,6 +1258,9 @@
   "Law": [
    "src/thermo/RecordLaws.H"
   ],
+  "Layout": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "LayoutAccess": [
    "src/core/ResultRecords.H"
   ],
@@ -1434,6 +1443,18 @@
   ],
   "LookupBase": [
    "src/propertyOps/CatalogueLookup.H"
+  ],
+  "MADSOptions": [
+   "src/solver/MADS.H"
+  ],
+  "MADSResponse": [
+   "src/solver/MADS.H"
+  ],
+  "MADSResult": [
+   "src/solver/MADS.H"
+  ],
+  "MADSTrace": [
+   "src/solver/MADS.H"
   ],
   "Manipulate": [
    "src/outerDriver/DesignSpec.H"
@@ -2732,6 +2753,9 @@
   ],
   "Var": [
    "src/outerDriver/OptimizationDriver.H"
+  ],
+  "Verdict": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
   ],
   "VerifyResult": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
@@ -13578,6 +13602,10 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.H",
    "src/unitOperations/crystallisation/Crystalliser.H"
   ],
+  "src/unitOperations/distillation/ColumnDiagnosis.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "src/unitOperations/distillation/DistillationColumn.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -13627,6 +13655,7 @@
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/UnitTypedProperties.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/PackingDelft.H",
@@ -16195,23 +16224,36 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ReadLog.H",
    "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/streams/Carried.H",
+   "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
+   "src/thermo/PropertyDomainError.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/rotating/IsentropicCore.H"
   ],
   "src/unitOperations/rotating/PressureExchanger.cpp": [
@@ -19537,6 +19579,7 @@
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -21244,6 +21287,7 @@
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
@@ -22515,6 +22559,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -22813,6 +22858,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -23657,6 +23703,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -23846,6 +23893,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -25475,6 +25523,7 @@
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -27701,6 +27750,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -28072,6 +28122,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -29426,6 +29477,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -29520,6 +29572,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
@@ -29636,6 +29689,10 @@
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp"
+  ],
+  "src/unitOperations/distillation/ColumnDiagnosis.H": [
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp"
   ],
   "src/unitOperations/distillation/ColumnTypedProperties.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
@@ -29803,6 +29860,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/solids/Mill.cpp",
@@ -29847,6 +29905,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -29891,6 +29950,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",

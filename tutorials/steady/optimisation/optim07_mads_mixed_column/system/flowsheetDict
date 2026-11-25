@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  sensitivity01_column_reflux  --  the column01 benzene/toluene column
+  (classical Raoult textbook problem, no azeotrope), reused UNCHANGED as
+  the inner problem of a sensitivity sweep: system/outerDict varies
+  units[0].operation.refluxRatio over R = 1.5 .. 5.0 (10 points) and reads
+  T_top, T_bottom, x_D_LK, x_B_HK and V_strip (the reboiler-duty proxy) --
+  the classic purity-vs-energy trade-off, one CSV row per R.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        column01;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            P              1.01325 bar;
+        }
+
+        // Looser tol + higher iter cap — the sweep visits R values from
+        // 1.5 to 5 and high-R cases need more outer iterations to converge.
+        compositionTol   1e-6;
+        maxOuterIter     800;
+    }
+);
