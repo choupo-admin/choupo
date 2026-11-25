@@ -229,7 +229,7 @@ def arm_converged(tmp):
                      "or seeded thermodynamically: the default path must be untouched")
 
 
-RETRY = "the MESH from the default seed did NOT converge; it was re-solved from the thermodynamic profile"
+RETRY = "did NOT converge; it was re-solved from the thermodynamic profile"
 
 
 def arm_retry(tmp):
@@ -237,14 +237,17 @@ def arm_retry(tmp):
     # (f1) the shipped case converges BY the retry, and says so
     c = copy_case(case, tmp / "f1")
     rc, out = run(c)
-    if rc != 0 or RETRY not in out or "CONVERGED in" not in out \
+    if rc != 0 or "the MESH from the default seed " + RETRY not in out or "CONVERGED in" not in out \
+            or "retryHistoryStartsAt" not in out \
             or not re.search(r"Converged:\s+yes", out) or "[diagnosis]" in out:
         fails.append(f"(f) column22 was not rescued by the announced retry (exit {rc}):\n{out[-700:]}")
-    # (f2) the full-MESH rung: the same column as model fullMESH
+    # (f2) the full-MESH rung: the same column as model fullMESH on 30 stages (at 20 the retry stops at 3e-7 in 60 iterations)
     c = copy_case(case, tmp / "f2")
-    edit(c, "system/flowsheetDict", [(r"(?m)^(\s*)model(\s+)simultaneous;", r"\1model\2fullMESH;")])
+    edit(c, "system/flowsheetDict", [(r"(?m)^(\s*)model(\s+)simultaneous;", r"\1model\2fullMESH;"),
+                                     (r"nStages\s+20;", "nStages 30;"), (r"feedStage\s+10;", "feedStage 15;")])
     rc, out = run(c)
-    if rc != 0 or "(fullMESH): " + RETRY not in out or "CONVERGED in" not in out:
+    if rc != 0 or "(fullMESH): the full MESH seeded from the constant-molal-overflow profile " + RETRY not in out \
+            or "CONVERGED in" not in out:
         fails.append(f"(f) the full-MESH rung did not rescue column22 as fullMESH (exit {rc}):\n{out[-700:]}")
     # (f3) `seed thermodynamic;` starts from the profile and never retries
     c = copy_case(case, tmp / "f3")
@@ -254,6 +257,17 @@ def arm_retry(tmp):
             or not re.search(r"Converged:\s+yes", out):
         fails.append(f"(f) `seed thermodynamic;` did not start the column from the profile "
                      f"(exit {rc}):\n{out[-700:]}")
+    # (f5) a TALL wide-boiling column (40 stages, relative volatility 270): the profile once
+    #      rounded 1 - 1/(1 + exp(-lr)) to zero and seeded every stage pure heavy
+    #      (559.7 K at the top too); in log space it keeps the light key at the top.
+    c = copy_case(case, tmp / "f5")
+    edit(c, "system/flowsheetDict", [(r"nStages\s+20;", "nStages 40;"), (r"feedStage\s+10;", "feedStage 20;")])
+    rc, out = run(c)
+    mt = re.search(r"stage T ([0-9.]+) K \(top\) -> ([0-9.]+) K \(bottom\)", out)
+    if rc != 0 or not mt or float(mt.group(2)) - float(mt.group(1)) < 100.0 \
+            or "CONVERGED in" not in out or not re.search(r"Converged:\s+yes", out):
+        fails.append(f"(f) the 40-stage wide-boiling column was not rescued from a profile that "
+                     f"spans its two boiling points (exit {rc}, {mt.groups() if mt else None}):\n{out[-500:]}")
     # (f4) an unknown seed word is refused by name
     c = copy_case(case, tmp / "f4")
     edit(c, "system/flowsheetDict", [(r"operation\s*\{", "operation\n        {\n            seed fancy;")])

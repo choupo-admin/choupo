@@ -33748,10 +33748,19 @@ situations and in no other:
   constant-molal-overflow Newton (both phases of a reactive column); for
   \code{model fullMESH} it retries the full MESH from the profile's
   $T_j,x_{ji}$ together with the constant-molal flows $V_j,L_j$.  The verdict
-  is that model's own residual: a retry never replaces the model, and when it
-  too fails the first attempt's iterate is kept and the \code{[diagnosis]}
-  block says a retry was tried.  Every retry is announced in the log and as an
-  advisory naming the unit, the rung and the outcome.  A column that converges
+  is that model's own residual: a retry never replaces the model.  When it
+  too fails, the \emph{first} attempt's iterate is kept \emph{whichever of the
+  two ended lower}, because the diagnosis is about the run the default seed
+  produced; the diagnosis reads only that run's evidence (its refused trials and
+  advisories, not the retry's), restores the state that run left, and says a
+  retry was tried.  A retry is optional: a refusal raised while it runs is
+  announced and the first result stands, never turned into a refusal exit.
+  Every retry is announced in the log and as an advisory naming the unit, the
+  rung, the run that failed, both residuals and the outcome.  When the retry's
+  answer is the published one, the convergence history holds the first
+  attempt's trace and then the retry's, and the result's
+  \code{retryHistoryStartsAt} gives the index where the retry's begins; the
+  printed iteration count is the published run's.  A column that converges
   from the default seed is never retried, so its output is unchanged.
 \item \textbf{On request.}  \code{seed thermodynamic;} in the column's
   \code{operation} block starts the first attempt from the profile.  A
@@ -33793,7 +33802,14 @@ column pressure:
   \end{equation}
   so stage $N-1$ has the bottoms' composition and stage $0$ the distillate's,
   and each stage temperature is the bubble temperature of its own liquid,
-  $T_j = T_{\mathrm{bub}}(x_j,P)$.
+  $T_j = T_{\mathrm{bub}}(x_j,P)$.  Everything is evaluated in logarithms
+  ($\ln b_i = \ln f_i - \ln(1+e^{\ell_i})$ with $\ell_i=\ln c+S\ln\alpha_i$, and
+  $\ln x_{ji}$ normalised on its largest term): with $\alpha\approx 270$ on 40
+  stages $\ell_i$ exceeds 100, where $1-1/(1+e^{-\ell_i})$ rounds to zero and the
+  light key would vanish from every stage.  Under a partial condenser stage $0$
+  is the condenser, whose liquid is in equilibrium with the distillate
+  \emph{vapour}, so its exponent is one power of $\alpha$ lower
+  ($x_{0i}\propto d_i/\alpha_i$).
 \end{enumerate}
 The flows are the constant-molal-overflow ones the column already has.  A
 reactive column uses the same blended feed composition as its default seed (so

@@ -1255,6 +1255,14 @@ sVector thomas(const sVector& A,
 //       top (so stage 0 is the distillate's composition, stage N-1 the
 //       bottoms'), and T_j = the bubble temperature of x_j at P.
 //  The flows stay the constant-molal-overflow ones the caller already has.
+//  |F| in scientific notation: a near-converged retry (|F| ~ 1e-7) must not print as 0.000000.
+std::string sciStr(scalar v)
+{
+    std::ostringstream o;
+    o << std::scientific << std::setprecision(3) << v;
+    return o.str();
+}
+
 struct ThermodynamicProfile
 {
     bool                 ok = false;
@@ -1269,7 +1277,8 @@ ThermodynamicProfile thermodynamicProfile(const ThermoPackage& thermo,
                                           const sVector&       feedFlow,   // sum of the feeds, per component
                                           scalar               P,
                                           std::size_t          N,
-                                          scalar               distillateFraction)
+                                          scalar               distillateFraction,
+                                          bool                 partialCondenser)
 {
     ThermodynamicProfile out;
     const std::size_t n = thermo.n();
@@ -1293,7 +1302,7 @@ ThermodynamicProfile thermodynamicProfile(const ThermoPackage& thermo,
             const DewPoint::Result dp = DewPoint::compute(thermo, z, P, out.Tbubble);
             if (dp.converged) out.Tdew = dp.T;
         }
-        catch (const std::exception&) { rethrowHardRefusal(); }   // the dew point is only reported
+        catch (const std::exception&) { /* the dew point is only reported */ }
         //  2. relative volatilities at the feed's bubble point
         const sVector K = thermo.Kvec(out.Tbubble, P, z, yb);
         scalar Kref = std::numeric_limits<scalar>::infinity();
@@ -1322,9 +1331,17 @@ ThermodynamicProfile thermodynamicProfile(const ThermoPackage& thermo,
             (distilled(mid) < phi ? lo : hi) = mid;
         }
         const scalar lnc = 0.5 * (lo + hi);
-        sVector b(n, 0.0);
+        //  ln b_i = ln f_i - ln(1 + exp(lr_i)), in log space: with a relative
+        //  volatility of 270 on 40 stages lr_i reaches 100 and
+        //  1 - 1/(1 + exp(-lr)) rounds to 0, which seeded every stage pure heavy.
+        sVector lnb(n, -std::numeric_limits<scalar>::infinity());
         for (std::size_t i = 0; i < n; ++i)
-            b[i] = feedFlow[i] * (1.0 - 1.0 / (1.0 + std::exp(-(lnc + S * std::log(out.alpha[i])))));
+        {
+            if (!(feedFlow[i] > 0.0)) continue;
+            const scalar lr = lnc + S * std::log(out.alpha[i]);
+            const scalar softplus = (lr > 0.0) ? lr + std::log1p(std::exp(-lr)) : std::log1p(std::exp(lr));
+            lnb[i] = std::log(feedFlow[i]) - softplus;
+        }
         //  4. compositions by the total-reflux interpolation, T_j by bubble point
         constexpr scalar kFloor = 1.0e-10;
         out.x.assign(N, sVector(n, 0.0));
@@ -1333,15 +1350,25 @@ ThermodynamicProfile thermodynamicProfile(const ThermoPackage& thermo,
         for (std::size_t k = 0; k < N; ++k)
         {
             const std::size_t j = N - 1 - k;                   // from the bottom up
-            const scalar e = S * static_cast<scalar>(N - 1 - j) / static_cast<scalar>(N - 1);
+            scalar e = S * static_cast<scalar>(N - 1 - j) / static_cast<scalar>(N - 1);
+            //  a PARTIAL condenser's stage 0 holds the liquid in equilibrium with
+            //  the distillate VAPOUR, x_0 ~ d / alpha, one power of alpha below
+            //  the total condenser's x_0 ~ d.
+            if (partialCondenser && j == 0) e = std::max(0.0, e - 1.0);
             sVector& xj = out.x[j];
+            //  log-sum-exp: ln x_ji = ln b_i + e ln alpha_i, normalised on the largest
+            scalar lmax = -std::numeric_limits<scalar>::infinity();
+            sVector lx(n, -std::numeric_limits<scalar>::infinity());
+            for (std::size_t i = 0; i < n; ++i)
+                if (feedFlow[i] > 0.0)
+                { lx[i] = lnb[i] + e * std::log(out.alpha[i]); lmax = std::max(lmax, lx[i]); }
+            if (!std::isfinite(lmax)) { out.why = "a stage composition vanished"; return out; }
             scalar s = 0.0;
             for (std::size_t i = 0; i < n; ++i)
             {
-                xj[i] = (feedFlow[i] > 0.0) ? std::max(b[i] * std::pow(out.alpha[i], e) / F, 0.0) : 0.0;
+                xj[i] = std::isfinite(lx[i]) ? std::exp(lx[i] - lmax) : 0.0;
                 s += xj[i];
             }
-            if (!(s > 0.0)) { out.why = "a stage composition vanished"; return out; }
             scalar s2 = 0.0;
             for (std::size_t i = 0; i < n; ++i)
             {
@@ -1360,7 +1387,8 @@ ThermodynamicProfile thermodynamicProfile(const ThermoPackage& thermo,
     }
     catch (const std::exception& e)
     {
-        rethrowHardRefusal();           // a hard refusal is never a number (C398 TG-01)
+        //  A refusal here is a reason the profile cannot be built, said by name; the
+        //  caller (a retry, which is optional, or a case that asked for it) decides.
         out.ok = false;
         const std::string m = e.what();
         out.why = "the package refused: " + m.substr(0, m.find('\n'));
@@ -3751,24 +3779,29 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     auto thermodynamicSeed = [&](sVector& Tp, std::vector<sVector>& xp, std::string& whyNot) -> bool
     {
         const ThermodynamicProfile tp = thermodynamicProfile(
-            thermo, seedFeedFlow, P, N, D / (D + Bf));
+            thermo, seedFeedFlow, P, N, D / (D + Bf), partialCond);
         if (!tp.ok) { whyNot = tp.why; return false; }
         Tp = tp.T;  xp = tp.x;
         if (verbosity >= 2)
         {
             scalar aMax = 1.0;
             for (auto a : tp.alpha) aMax = std::max(aMax, a);
-            std::cout << "  [seed] thermodynamic profile at P = " << P << " Pa: feed bubble point "
-                      << tp.Tbubble << " K"
-                      << (tp.Tdew > 0.0 ? ", dew point " + std::to_string(tp.Tdew) + " K" : std::string())
-                      << "; relative volatilities up to " << aMax
-                      << " at the bubble point; Fenske-like split for D/F = " << D / (D + Bf)
-                      << "; stage T " << tp.T.front() << " K (top) -> " << tp.T.back()
-                      << " K (bottom)\n";
+            std::ostringstream m;                  // a fresh stream: no inherited precision or fixed flags
+            m << "  [seed] thermodynamic profile at P = " << P << " Pa: feed bubble point "
+              << tp.Tbubble << " K"
+              << (tp.Tdew > 0.0 ? ", dew point " + std::to_string(tp.Tdew) + " K" : std::string())
+              << "; relative volatilities up to " << aMax
+              << " at the bubble point; Fenske-like split for D/F = " << D / (D + Bf)
+              << "; stage T " << tp.T.front() << " K (top) -> " << tp.T.back()
+              << " K (bottom)\n";
+            std::cout << m.str();
         }
         return true;
     };
-    if (seedThermoAsked)
+    //  A declared interior wins outright: the profile is neither built nor printed,
+    //  and the case is never refused because it could not be.
+    const bool profileDeclared = (declaredInterior("stageProfile") != nullptr);
+    if (seedThermoAsked && !profileDeclared)
     {
         std::string whyNot;
         if (!thermodynamicSeed(Tseed, xseed, whyNot))
@@ -4094,54 +4127,94 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  profile, the verdict is this model's own residual, and the first
     //  attempt's iterate is kept when the retry fails too.
     std::string retryNote;              // non-empty: a retry was tried and did not rescue the column
-    auto announceRetry = [&](const std::string& rung, const std::string& outcome, bool rescued)
+    //  THE FIRST ATTEMPT'S EVIDENCE, FROZEN BEFORE A RETRY RUNS.  When the retry
+    //  fails the first iterate is the one kept and the one diagnosed, so the
+    //  diagnosis reads the trial refusal and the advisories of THAT run only
+    //  (the retry's are facts about another path).  Unfrozen (no retry), the
+    //  diagnosis reads them live, exactly as before.
+    bool        evidenceFrozen = false;
+    std::size_t evidenceEnd = 0;
+    std::string firstTrialRefusal;
+    int         retryHistoryMark = -1;  // residuals_ index where the retry's trace begins; -1 = no retry ran
+    auto freezeFirstAttempt = [&]()
     {
-        const std::string msg = "column '" + dict->name() + "' (" + rung + "): the MESH"
-            " from the default seed did NOT converge; it was re-solved from the"
-            " thermodynamic profile (the same equations, never another model) -- "
-            + outcome;
+        evidenceFrozen = true;
+        evidenceEnd = AdvisoryLog::instance().entries().size();
+        { std::lock_guard<std::mutex> lk(trialRefusalLock); firstTrialRefusal = trialRefusal;  trialRefusal.clear(); }
+        retryHistoryMark = static_cast<int>(residuals().size());
+        trialRefused.store(false);
+        seedPriced.store(false);
+    };
+    //  The announcement names the run that failed, its |F| and the choice made:
+    //  a retry that ends LOWER than the first attempt but does not converge is
+    //  still not published -- the first iterate is kept (the diagnosis is about
+    //  it) and the line says so.
+    auto announceRetry = [&](const std::string& rung, const std::string& failedRun,
+                             const std::string& outcome, bool rescued)
+    {
+        const std::string msg = "column '" + dict->name() + "' (" + rung + "): " + failedRun
+            + " did NOT converge; it was re-solved from the thermodynamic profile"
+              " (the same equations, never another model) -- " + outcome;
         AdvisoryLog::instance().add("solver", rescued ? "info" : "warning",
                                     "distillationColumn", msg);
         std::cerr << "  [solver] " << msg << "\n";
     };
+    const std::string kFirstRun = "the MESH from the default seed";
+    announceTrialRefusals();           // the first attempt's own announcement, before any retry resets it
+    //  The state the first attempt left (reaction switch, continuation, box,
+    //  fraction refusals): restored whenever its iterate is the one kept.
+    struct CmoState { bool rxn; scalar mcat, hs; bool refuse; solver::NDOptions o; };
     if (!res.converged && !fullMeshWord && retryWithThermoSeed)
     {
+        const CmoState first{ rxnActive, mCatScale, homotopyS, refuseFractions, opts };
+        auto keepFirst = [&]() {
+            rxnActive = first.rxn;  mCatScale = first.mcat;  homotopyS = first.hs;
+            refuseFractions = first.refuse;  opts = first.o;
+            trialRefused.store(false);
+        };
+        freezeFirstAttempt();
         sVector Tr;  std::vector<sVector> xr;  std::string whyNot;
         if (!thermodynamicSeed(Tr, xr, whyNot))
         {
             retryNote = "the thermodynamic profile could not be built (" + whyNot + ")";
-            announceRetry("simultaneous", "the profile could not be built: " + whyNot, false);
+            announceRetry("simultaneous", kFirstRun, "the profile could not be built: " + whyNot, false);
         }
         else
         {
             rxnActive = false;  mCatScale = 1.0;  homotopyS = 1.0;  refuseFractions = true;
-            seedPriced.store(false);  trialRefused.store(false);
             try
             {
                 const solver::NDResult r2 = cmoPhases(packSeed(Tr, xr));
                 if (r2.converged)
                 {
-                    announceRetry("simultaneous", "CONVERGED in " + std::to_string(r2.iterations)
+                    announceRetry("simultaneous", kFirstRun, "CONVERGED in " + std::to_string(r2.iterations)
                         + " Newton iterations (the default seed stopped at |F| = "
-                        + std::to_string(res.residual) + ")", true);
+                        + sciStr(res.residual) + ")", true);
                     res = r2;
+                    evidenceFrozen = false;
                 }
                 else
                 {
                     retryNote = "the retry from the thermodynamic profile stopped at |F| = "
-                        + std::to_string(r2.residual) + " after " + std::to_string(r2.iterations)
+                        + sciStr(r2.residual) + " after " + std::to_string(r2.iterations)
                         + " iterations";
-                    announceRetry("simultaneous", "it did NOT converge either (|F| = "
-                        + std::to_string(r2.residual) + "); the first attempt's iterate is kept", false);
+                    announceRetry("simultaneous", kFirstRun, "it did NOT converge either (|F| = "
+                        + sciStr(r2.residual) + " against the first attempt's "
+                        + sciStr(res.residual) + "); the FIRST attempt's iterate is kept"
+                          " whichever ended lower, because the diagnosis is about it", false);
+                    keepFirst();
                 }
             }
             catch (const std::exception& e)
             {
-                rethrowHardRefusal();
+                //  Optional by construction: a refusal during the retry (a hard one
+                //  included) must not turn a diagnosed NOT-converged column into a
+                //  refusal exit -- it is announced and the first result stands.
                 const std::string m = e.what();
                 retryNote = "the retry from the thermodynamic profile was refused: " + m.substr(0, m.find('\n'));
-                announceRetry("simultaneous", "the profile could not be priced (" + m.substr(0, m.find('\n'))
+                announceRetry("simultaneous", kFirstRun, "the profile could not be priced (" + m.substr(0, m.find('\n'))
                     + "); the first attempt's iterate is kept", false);
+                keepFirst();
             }
         }
     }
@@ -4203,10 +4276,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         fa.retryTried = retryNote;
         {
             std::lock_guard<std::mutex> lk(trialRefusalLock);
-            fa.trialRefusal = trialRefusal;
+            fa.trialRefusal = evidenceFrozen ? firstTrialRefusal : trialRefusal;
         }
         const auto adv = AdvisoryLog::instance().entries();
-        for (std::size_t k = advisoryMark; k < adv.size(); ++k)
+        const std::size_t advEnd = evidenceFrozen ? std::min(evidenceEnd, adv.size()) : adv.size();
+        for (std::size_t k = advisoryMark; k < advEnd; ++k)
             fa.advisories.emplace_back(adv[k].category, adv[k].locus + ": " + adv[k].message);
         const columnDiagnosis::Verdict vd = columnDiagnosis::diagnose(fa, lay, Fn, r.x);
         std::cerr << columnDiagnosis::render(vd, dict->name());
@@ -4663,11 +4737,21 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  answer is the full MESH's own, never another model's.
         if (!resF.converged && retryWithThermoSeed)
         {
+            announceTrialRefusals();   // the CMO-seeded run's own announcement, before the retry resets it
+            const std::string kFullFirst = "the full MESH seeded from the constant-molal-overflow profile";
+            //  the state the first attempt left, restored whenever its iterate is kept
+            const bool firstRxnOnF = rxnOnF;  const scalar firstSF = sF;
+            const scalar firstMCat = mCatScale;  const sVector firstLnOffF = lnOffF;
+            auto keepFirstF = [&]() {
+                rxnOnF = firstRxnOnF;  sF = firstSF;  mCatScale = firstMCat;  lnOffF = firstLnOffF;
+                trialRefused.store(false);
+            };
+            freezeFirstAttempt();
             sVector Tr;  std::vector<sVector> xr;  std::string whyNot;
             if (!thermodynamicSeed(Tr, xr, whyNot))
             {
                 retryNote = "the thermodynamic profile could not be built (" + whyNot + ")";
-                announceRetry("fullMESH", "the profile could not be built: " + whyNot, false);
+                announceRetry("fullMESH", kFullFirst, "the profile could not be built: " + whyNot, false);
             }
             else
             {
@@ -4678,33 +4762,38 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 }
                 if (specBoil) wr[iD] = D;
                 rxnOnF = false;  sF = 1.0;  mCatScale = 1.0;
-                seedPriced.store(false);  trialRefused.store(false);
                 try
                 {
                     const solver::NDResult r2 = fullPhases(wr);
                     if (r2.converged)
                     {
-                        announceRetry("fullMESH", "CONVERGED in " + std::to_string(r2.iterations)
+                        announceRetry("fullMESH", kFullFirst, "CONVERGED in " + std::to_string(r2.iterations)
                             + " Newton iterations (the CMO-seeded run stopped at |F| = "
-                            + std::to_string(resF.residual) + ")", true);
+                            + sciStr(resF.residual) + ")", true);
                         resF = r2;
+                        res.iterations = r2.iterations;     // the count printed is the published run's
+                        evidenceFrozen = false;
                     }
                     else
                     {
                         retryNote = "the retry from the thermodynamic profile stopped at |F| = "
-                            + std::to_string(r2.residual) + " after " + std::to_string(r2.iterations)
+                            + sciStr(r2.residual) + " after " + std::to_string(r2.iterations)
                             + " iterations";
-                        announceRetry("fullMESH", "it did NOT converge either (|F| = "
-                            + std::to_string(r2.residual) + "); the first attempt's iterate is kept", false);
+                        announceRetry("fullMESH", kFullFirst, "it did NOT converge either (|F| = "
+                            + sciStr(r2.residual) + " against the first attempt's "
+                            + sciStr(resF.residual) + "); the FIRST attempt's iterate is kept"
+                              " whichever ended lower, because the diagnosis is about it", false);
+                        keepFirstF();
                     }
                 }
                 catch (const std::exception& e)
                 {
-                    rethrowHardRefusal();
+                    //  Optional by construction (see the CMO rung): announced, never fatal.
                     const std::string m = e.what();
                     retryNote = "the retry from the thermodynamic profile was refused: " + m.substr(0, m.find('\n'));
-                    announceRetry("fullMESH", "the profile could not be priced (" + m.substr(0, m.find('\n'))
+                    announceRetry("fullMESH", kFullFirst, "the profile could not be priced (" + m.substr(0, m.find('\n'))
                         + "); the first attempt's iterate is kept", false);
+                    keepFirstF();
                 }
             }
         }
@@ -4921,6 +5010,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     kpis_["feedStage"]  = static_cast<scalar>(NF);
     kpis_["R"]          = R;
     kpis_["D"]          = D;
+    //  WHERE THE PUBLISHED CONVERGENCE HISTORY CHANGES RUN: when the answer is the
+    //  retry's, the history holds the first attempt's trace and then the retry's,
+    //  and this is the index of the retry's first entry (absent without a rescue).
+    if (retryHistoryMark >= 0 && !evidenceFrozen)
+        kpis_["retryHistoryStartsAt"] = static_cast<scalar>(retryHistoryMark);
     kpis_["B"]          = Bf;
     kpis_["T_top"]      = T[0];
     kpis_["T_bottom"]   = T[N-1];

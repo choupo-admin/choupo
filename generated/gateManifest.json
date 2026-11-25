@@ -1949,7 +1949,7 @@
     "check_column_diagnosis": {
       "exit": 0,
       "claim": "check_column_diagnosis: OK -- a column that does not converge names (A) an infeasible specification, (B) a stage that could not be priced, (C) a singular or ill-conditioned system with its stage, equation and physics, (D) a faulty equation, or says it could not tell and what it tried (probe holds each, no text carries a row number, extrapolation notices alone are not a cause); a distillate equal to the feed is refused as (A); the hard 50-stage column is diagnosed (-, and says a retry was tried); a converged column prints none; a wide-boiling column is rescued by the announced thermodynamic retry (simultaneous and full-MESH rungs), `seed thermodynamic;` starts from the profile, a bad `seed` word is refused.  NOT covered: the letter for a real column beyond these; an infeasibility only the equilibrium reach shows; failures before the first Newton iterate",
-      "seconds": 17.4
+      "seconds": 14.8
     }
   }
 }
