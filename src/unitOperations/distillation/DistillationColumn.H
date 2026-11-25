@@ -166,7 +166,11 @@ private:
                                   sVector&             T,
                                   std::vector<sVector>& x,
                                   int                  verbosity,
-                                  const char*          methodName) const;
+                                  const char*          methodName,
+                                  const char*          unitSeedWording = nullptr) const;
+    //  `unitSeedWording` replaces the log's description of the unit's own
+    //  seed when it is not the linear ramp (the `seed thermodynamic;` key,
+    //  C184 slice 2); null keeps the line every column has always printed.
 
 
     // Rigorous simultaneous-correction (MESH Newton) method --- selected

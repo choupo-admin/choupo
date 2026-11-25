@@ -247,6 +247,7 @@ distillateRecovery.tolerance n >0 ui=1e-06
 distillateRecovery.maxIter i >=1 ui=40
 P n [Pa] >0
 newton s {bounded|legacy} =bounded
+seed s {default|thermodynamic} =default
 feedQuality n >=0 <=1 ui=1.0
 method s {WangHenke|simultaneous}
 feeds a<o>

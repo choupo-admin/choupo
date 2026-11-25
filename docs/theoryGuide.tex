@@ -33858,6 +33858,106 @@ letter it prints there is the \emph{right} one is a judgement the owner of that
 plant makes.  A column that converges prints nothing of this.
 \end{pitfall}
 
+\subsection{A starting profile from the package's own equilibrium, and the retry that uses it}\label{sec:column-thermo-seed}
+
+The stage Newton of the previous subsections needs a starting profile, and
+the one every column has always been given is deliberately crude: the feed
+composition on every stage and a straight line in temperature from
+$T_f - 5\,\mathrm{K}$ at the top to $T_f + 15\,\mathrm{K}$ at the bottom.  It
+is anchored to the \emph{feed temperature}, which says nothing about where the
+column's two ends boil: a feed that is strongly subcooled or superheated, a
+mixture whose components boil $100\,\mathrm{K}$ apart, or a column at
+$16\,\mathrm{bar}$ puts both ends of the ramp far from the temperatures the
+stages will have.  Since C184 slice~2 the unit can instead start from the
+package's \emph{own} equilibrium.  The profile is used in exactly two
+situations and in no other:
+\begin{enumerate}
+\item \textbf{As a retry.}  If the MESH from the default seed returns
+  \emph{not converged}, the same equations are solved again from the
+  thermodynamic profile.  For \code{model simultaneous} this retries the
+  constant-molal-overflow Newton (both phases of a reactive column); for
+  \code{model fullMESH} it retries the full MESH from the profile's
+  $T_j,x_{ji}$ together with the constant-molal flows $V_j,L_j$.  The verdict
+  is that model's own residual: a retry never replaces the model.  When it
+  too fails, the \emph{first} attempt's iterate is kept \emph{whichever of the
+  two ended lower}, because the diagnosis is about the run the default seed
+  produced; the diagnosis reads only that run's evidence (its refused trials and
+  advisories, not the retry's), restores the state that run left, and says a
+  retry was tried.  A retry is optional: a refusal raised while it runs is
+  announced and the first result stands, never turned into a refusal exit.
+  Every retry is announced in the log and as an advisory naming the unit, the
+  rung, the run that failed, both residuals and the outcome.  When the retry's
+  answer is the published one, the convergence history holds the first
+  attempt's trace and then the retry's, and the result's
+  \code{retryHistoryStartsAt} gives the index where the retry's begins; the
+  printed iteration count is the published run's.  A column that converges
+  from the default seed is never retried, so its output is unchanged.
+\item \textbf{On request.}  \code{seed thermodynamic;} in the column's
+  \code{operation} block starts the first attempt from the profile.  A
+  \code{stageProfile} the case declares always wins, over the retry too.
+\end{enumerate}
+
+\paragraph{The four steps.}  With $z_i$ the feed composition (all feeds
+summed), $N$ stages numbered $j=0$ (top) to $N-1$ (bottom), and $P$ the
+column pressure:
+\begin{enumerate}
+\item \emph{The feed's bubble and dew points at $P$}, $T_b$ and $T_d$, from the
+  package (the same bubble-point solve the column's total condenser uses; the
+  dew point is reported, the bubble point is the anchor).
+\item \emph{Constant relative volatilities} from the K-values at $T_b$,
+  \begin{equation}\label{eq:thermo-seed-alpha}
+    \alpha_i = \frac{K_i(T_b,P,z)}{K_{\mathrm{ref}}},\qquad
+    K_{\mathrm{ref}} = \min_{i:\,z_i>0} K_i,
+  \end{equation}
+  so the heaviest component present has $\alpha=1$.
+\item \emph{A Fenske-like split that honours the declared distillate rate.}
+  With $f_i = F z_i$ the component feed flows, the distillate and bottoms
+  flows are taken to satisfy
+  \begin{equation}\label{eq:thermo-seed-split}
+    \frac{d_i}{b_i} = c\,\alpha_i^{S},\qquad
+    S = \max\!\left(1,\tfrac{N-1}{2}\right),\qquad d_i + b_i = f_i,
+  \end{equation}
+  and the constant $c$ is found by bisection on $\ln c$ so that
+  $\sum_i d_i = \dfrac{D}{D+B}\sum_i f_i$.  The exponent is half the stage
+  count because the Fenske equation is a statement at \emph{total} reflux,
+  where a column separates about as much as a column of twice as many stages
+  does at finite reflux (Gilliland's $N_{\min}\approx N/2$): it is a seed, not
+  a prediction, and it is chosen so that the seed is not sharper than the
+  column.
+\item \emph{Stage compositions and temperatures.}  Interpolating the
+  total-reflux relation between the bottoms ($j=N-1$) and the top,
+  \begin{equation}\label{eq:thermo-seed-x}
+    x_{ji} \;\propto\; b_i\,\alpha_i^{\,S\,(N-1-j)/(N-1)},\qquad
+    \sum_i x_{ji}=1,\quad x_{ji}\ge 10^{-10}\ \text{where fed},
+  \end{equation}
+  so stage $N-1$ has the bottoms' composition and stage $0$ the distillate's,
+  and each stage temperature is the bubble temperature of its own liquid,
+  $T_j = T_{\mathrm{bub}}(x_j,P)$.  Everything is evaluated in logarithms
+  ($\ln b_i = \ln f_i - \ln(1+e^{\ell_i})$ with $\ell_i=\ln c+S\ln\alpha_i$, and
+  $\ln x_{ji}$ normalised on its largest term): with $\alpha\approx 270$ on 40
+  stages $\ell_i$ exceeds 100, where $1-1/(1+e^{-\ell_i})$ rounds to zero and the
+  light key would vanish from every stage.  Under a partial condenser stage $0$
+  is the condenser, whose liquid is in equilibrium with the distillate
+  \emph{vapour}, so its exponent is one power of $\alpha$ lower
+  ($x_{0i}\propto d_i/\alpha_i$).
+\end{enumerate}
+The flows are the constant-molal-overflow ones the column already has.  A
+reactive column uses the same blended feed composition as its default seed (so
+products are present and the equilibrium row has a logarithm), and the profile
+is the \emph{reaction-off} starting point of the existing continuation.
+
+\paragraph{Validity and what it does not do.}  The relative volatilities are
+those at one temperature (the feed's bubble point); across a wide-boiling
+column they drift, which is the reason the profile is a seed and the Newton
+moves off it.  It uses one pressure, the column's: the simultaneous MESH has
+no pressure profile.  If the package cannot build it (a bubble point that does
+not converge, a refused property) a retry is announced as not possible and the
+failure stands; with \code{seed thermodynamic;} the run is refused by name,
+because a key that was asked for is never silently ignored.  The Wang--Henke
+method has no Newton and no retry.  The profile is a heuristic of this code, not a
+published correlation: Fenske's equation and Gilliland's correlation are the
+sources of the \emph{form}, and the factor $1/2$ is a judgement.
+
 % ---------------------------------------------------------------------
 \section{The enthalpy-concentration diagram: putting energy inside the
 geometry}\label{ch:ponchon}

@@ -1361,6 +1361,18 @@ is the package's at the vapour that stage sends up.
   infeasible trials refused; `legacy` (monotone search, no bounds, clamped
   residual) is declared only where the bounded one is known to stall --
   stripper02, a heel case -- and is announced when declared.
+  `seed default|thermodynamic;` in `operation` picks the starting profile
+  (C184 slice 2): `default` is the feed-temperature ramp every column has
+  always had; `thermodynamic` starts from the package's own equilibrium (the
+  feed's bubble point, relative volatilities at it, a Fenske-like split that
+  honours `distillateRate`, each stage at the bubble point of its liquid;
+  Theory Guide `sec:column-thermo-seed`).  Without the key the thermodynamic
+  profile is still the FIRST RUNG OF A RETRY: when the MESH from the default
+  seed returns not converged (`simultaneous`, and `fullMESH` separately), the
+  SAME equations are re-solved from it, announced in the log and as an
+  advisory, the verdict is that model's own residual, and the `[diagnosis]`
+  block says a retry was tried when it fails too.  A converged column is never
+  retried.  A declared `stageProfile` always wins.  `WangHenke` has neither.
 - `fullMESH`  (aliases `MESH`, `NaphtaliSandholm` -- they are NOT aliases of
   `simultaneous`: `DistillationColumn.cpp` runs all three names as the full
   MESH).  Converges the `simultaneous` CMO problem first, then promotes the
