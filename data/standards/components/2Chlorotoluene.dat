@@ -86,7 +86,7 @@ provenance
     }
     unifacGroups
     {
-        origin        derived;
+        origin        definition;
         method        "cut from the molecular structure c1(C)ccccc1([Cl]) (atom count reproduces the record's formula) into 1 ACCH3 + 1 ACCl + 4 ACH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
         citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
         reviewStatus  interim;

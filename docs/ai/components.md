@@ -52,7 +52,7 @@ group decomposition").  The decomposition follows from the molecule's structure:
 `bin/curate/unifac_groups.py --list` shows which catalogued molecules decompose
 UNIQUELY into the subgroups of `data/standards/parameters/UNIFAC/groups.dat`
 (and which stay ungrouped, with the reason), `--write NAME` puts the block and
-its provenance (`origin derived`, the structure used, the script) into a
+its provenance (`origin definition`, the structure used, the script) into a
 record, `--smiles SMILES` cuts one structure; `uniquac_rq_from_groups.py
 --write` then gives UNIQUAC its r and q from the same groups, and
 `unifac_gamma_infdil.py` checks gamma-infinity in hexane and water is finite.

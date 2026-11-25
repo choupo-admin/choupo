@@ -116,7 +116,7 @@ provenance
     }
     unifacGroups
     {
-        origin        derived;
+        origin        definition;
         method        "cut from the molecular structure c1(C)ccccc1(C(=O)O) (atom count reproduces the record's formula) into 1 AC + 1 ACCH3 + 4 ACH + 1 COOH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
         citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
         reviewStatus  interim;

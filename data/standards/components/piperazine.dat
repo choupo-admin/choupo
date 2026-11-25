@@ -108,7 +108,7 @@ provenance
     }
     unifacGroups
     {
-        origin        derived;
+        origin        definition;
         method        "cut from the molecular structure N1CCNCC1 (atom count reproduces the record's formula) into 2 CH2 + 2 CH2NH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
         citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
         reviewStatus  interim;

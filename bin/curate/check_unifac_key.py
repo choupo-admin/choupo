@@ -157,19 +157,35 @@ def main() -> int:
         g = groups_of(t)
         if g:
             vocab |= set(g)
+    #  A record whose groups block was CUT FROM ITS STRUCTURE (bin/curate/unifac_groups.py, which
+    #  refuses a group name absent from groups.dat) takes its vocabulary from the published
+    #  subgroup table itself: that table, not the set of names a hand-curated record happens to
+    #  use, is what "the catalogue's vocabulary" means for a decomposition no importer wrote.  An
+    #  invented name (S4's `OHX`) is in neither, so it still fails.
+    table = set(re.findall(r"\{\s*name\s+(\S+?);\s*mainGroup",
+                           (ROOT / "data" / "standards" / "parameters" / "UNIFAC" / "groups.dat").read_text()))
+    DERIVED_MARK = "by bin/curate/unifac_groups.py"
+    derived = {p: t for p, t in imported.items() if DERIVED_MARK in t}
+    #  The importer-only arms below ((a), (b), (c), (d), (f)) judge what chemsep_to_choupo.py wrote
+    #  against ChemSep's own ids.  A derived record's evidence is its molecular structure, not
+    #  ChemSep's decomposition, so it leaves those arms (its atom count and the gamma-infinity
+    #  window are held by bin/curate/unifac_groups.py and unifac_gamma_infdil.py).
+    imported = {p: t for p, t in imported.items() if p not in derived}
     written = 0
-    for p, t in imported.items():
+    for p, t in list(imported.items()) + list(derived.items()):
         g = groups_of(t)
         if not g:
             continue
         written += 1
+        allowed = table if p in derived else vocab
         for nm in g:
-            if nm not in vocab:
-                fails.append(f"{p.stem} declares UNIFAC group `{nm}`, which no"
-                             " curated component uses -- the vocabulary must be"
+            if nm not in allowed:
+                fails.append(f"{p.stem} declares UNIFAC group `{nm}`, which"
+                             f" {'is not a subgroup of groups.dat' if p in derived else 'no curated component uses'}"
+                             " -- the vocabulary must be"
                              " the catalogue's, never invented by the importer")
     notes.append(f"{written} imported record(s) carry groups, all in the"
-                 " catalogue's own vocabulary")
+                 f" catalogue's own vocabulary ({len(derived)} cut from structure, against groups.dat)")
 
     key, contra, nobs = UK.derive()
 

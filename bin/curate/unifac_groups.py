@@ -613,7 +613,7 @@ def decompose(m, table):
         h = m.H[a]
         if h == 4:
             raise Ungroupable("methane / a carbon with no heavy neighbour (no subgroup)")
-        take({3: "CH3", 2: "CH2", 1: "CH", 0: "C"}[h], a)
+        take(("C", "CH", "CH2", "CH3")[h], a)
     if not all(claimed):
         raise Ungroupable("internal: unclaimed atoms")
     return dict(out)
@@ -671,6 +671,7 @@ def record_info(p):
 # (bin/curate/unifac_gamma_infdil.py: gamma-infinity in hexane and in water inside (1e-3, 1e9)).
 # Withheld with the number, so the next reader sees why a derivable molecule has no groups.
 WITHHELD = {
+    "C4H4": "its record is WRITTEN by bin/curate/rrho_thermo.py (check_rrho_thermo holds its blocks to that tool's output); a groups block added here would be overwritten or refused",
     "ethyleneGlycol": "decomposes uniquely (1 _CH2OH_2) but UNIFAC gives gamma-infinity 1.5e10 in hexane, outside (1e-3, 1e9)",
 }
 
@@ -731,7 +732,7 @@ def write_record(name, d):
         blk = f"groups\n{{\n{line}}}\n\n"
         pm = re.search(r"(?m)^provenance\s*\n?\{", t)
         t = (t[:pm.start()] + blk + t[pm.start():]) if pm else (t.rstrip("\n") + "\n\n" + blk)
-    ent = (f"    unifacGroups\n    {{\n        origin        derived;\n"
+    ent = (f"    unifacGroups\n    {{\n        origin        definition;\n"
            f"        method        \"cut from the molecular structure {d['smiles']} (atom count reproduces the record's "
            f"formula) into {fmt(g)} by the rules of {SCRIPT}; no table of decompositions was consulted\";\n"
            f"        citation      \"{CITE}\";\n        reviewStatus  interim;\n    }}\n")
