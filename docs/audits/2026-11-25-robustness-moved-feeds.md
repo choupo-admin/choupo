@@ -55,4 +55,4 @@ Not converged, by case and change:
 - pfr05_cooled_multitubular (x1m30)
 - membrane22_two_stage_nf_array_dspmde (x1p10)
 
-NOT checked: correctness of any number; a case with no readable feed (68); batch, dynamic and control cases; changes of more than one feed at a time; changes larger than the ones named.
+NOT checked: correctness of any number; a case with no readable feed (68); batch, dynamic and control cases; changes of more than one feed at a time; changes larger than the ones named. NOT checked either: whether an outlet is hotter or colder than the stream that heats or cools it, whether a phase runs out, the second law, or any move of the geometry -- external review 5 (C531) found such answers at exit 0 the same day.
