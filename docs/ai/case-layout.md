@@ -2166,6 +2166,24 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `netVolume`, `requiredVolume`); the outline and the pit enter the plot.
   The draft carries none.  The 3D view draws the wall on the outline (its
   thickness drawing) and the pit as a recess.
+
+* **`serviceClearance` (C507): can the tube bundle be pulled?**  A block
+  `serviceClearance { clearance 1.5 m; source "..."; reason "..."; items ( { item "FEHE";
+  channelEnd west; reason "..."; } ... ); }`.  For each listed placed
+  shell-and-tube exchanger (kind `shellTubeHX`, lying `alongX` or `alongY`, in the open,
+  with a `tubeLength` on its design sheet) the zone from the channel-end face
+  outward, as wide and as high as the item, of length `tubeLength + clearance`, is swept for
+  the nearest blocker: another item's plan box (a vertical cylinder by its bounding
+  square), the fence line, the pipe rack when its lowest tier is below the item's top.
+  The tube length is a FACT (the sizer's); `clearance` is a CONVENTION the case owns, with
+  its `source` and `reason`, and no default is shipped.  ANNOUNCED
+  `serviceClearance` (`a` the exchanger, `b` the blocker, `value` the clear length, `limit`
+  the length needed, pinned by the `layout` golden kind).  No `serviceClearance` block, or an
+  exchanger it does not list: a line on stderr and in the advisories (info) saying the
+  withdrawal is NOT checked.  REFUSED: an item that is not a placed exchanger with a
+  tube length, listed twice, standing vertical, or a `channelEnd` that is not an end of its
+  axis, a negative `clearance`, a missing `source`/`reason`.  Not checked: bund walls and
+  kerbs, a pipe leaving its own nozzle across the zone, a crane's reach.
 * THE GMP INTERIOR (C97).  A pharmaceutical plant is a building before it is
   a plot plan: `building {}` in the same `layoutDict` declares its floors,
   its rooms (a box on a floor, a cleanliness `grade` -- EU GMP Annex 1's
