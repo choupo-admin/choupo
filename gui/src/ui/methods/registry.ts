@@ -63,7 +63,7 @@ export type MethodToolId =
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
   | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry"
-  | "sentence-to-decision" | "optimizers"
+  | "sentence-to-decision" | "optimizers" | "why-did-it-not-dry"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -86,7 +86,8 @@ export type MethodToolId =
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
-  | "column-design";
+  | "column-design"
+  | "control-valve";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1248,6 +1249,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "inventory, throughput, quality.",
     theory: "ch:dyn-cstr",
   },
+  //  COMMISSIONED 2026-11-25 (C509): "why does a correctly sized valve still
+  //  control badly?".  A CONSTRUCTION with two engine runs in the browser
+  //  (pumpSystem01 swept over the flow: the pump's rise and the line's drop
+  //  fix the valve's authority; purelaws02: the water's vapour pressure) and
+  //  the page's own model of a valve (three inherent characteristics by
+  //  convention, the installed flow, the gain, the turndown).  Choking and
+  //  cavitation are letdown.ts's.  The last card, the fail position, is
+  //  authored text and says so.
+  {
+    id: "control-valve", blurb: "See what a line does to a control valve: authority, gain, rangeability.",
+    label: "Why does a correctly sized valve still control badly?",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "A control valve shares the pump's pressure with its line, so the drop on its datasheet "
+      + "is whatever the line leaves: the engine's pump and pipe give the valve's authority at a rated "
+      + "flow. Then the inherent characteristics (linear, equal percentage, quick opening, by "
+      + "convention), the installed flow derived in four lines, the loop gain the controller feels "
+      + "against the opening and its largest-to-smallest ratio, the installed turndown of one big "
+      + "valve against a running and a starting valve, why choking and cavitation are checked at "
+      + "small flow, and, as authored text and not computed, why the fail position is not one word.",
+    theory: "sec:control-valve",
+  },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a
   //  very simple equation that fits to a design tolerance -- seems to come
@@ -1679,6 +1702,30 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so in this example the same reactor with the same feed has three steady states — and the middle one fails the open-loop slope test, a necessary condition only: the page computes no dynamics.",
     theory: "ch:cstr",
+  },
+  //  COMMISSIONED 2026-11-25 (DEV.md 4c C508), page A of the dryer redesign
+  //  ("The water, the air, the clock"): ten percent of what (the two moisture
+  //  bases), three ceilings (the air, the clock, the isotherm, each read from
+  //  the ENGINE's numbers by ordering them against declared tolerances) and
+  //  the humid day (the floor that time cannot pass).  Every physical number
+  //  is a run of a bundled witness; the TypeScript orders, takes ratios and
+  //  converts bases (dryingBalance.ts).  The tray page `drying` and the
+  //  selection page `dryer-selection` keep their ids and links.
+  {
+    id: "why-did-it-not-dry", blurb: "Find whether air, clock or isotherm stopped a dryer.",
+    label: "Why did it not dry?",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "Why a dryer leaves its product wet: the two moisture bases (ten percent "
+      + "of what, with each case's own feed and product on both), then four engine runs "
+      + "side by side -- a sugar dryer with plenty of air and with one eighth of it, a "
+      + "crystal dryer with no isotherm, a spray dryer in a short chamber -- each with a "
+      + "verdict (air-limited, time-limited, isotherm-bound or not classified) that only "
+      + "orders the engine's own numbers against tolerances printed beside it, a sweep of "
+      + "the inlet air that shows the cliff, and a tray in five airs of rising humidity "
+      + "whose floor, the equilibrium moisture, no clock passes.  The solid and "
+      + "evaporative dryers are balances without a clock, and the page says so.",
+    theory: "sec:drying-three-ceilings",
   },
   {
     id: "drying", blurb: "Read the constant- and falling-rate periods off a drying curve.", label: "Drying curve (batch tray)",

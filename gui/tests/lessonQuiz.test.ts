@@ -127,6 +127,8 @@ import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectio
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
+import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
+import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
@@ -214,6 +216,8 @@ import { LS_QUIZ, LS_STEPS } from "../src/ui/methods/leastSquaresLesson.js";
 import { LeastSquaresTool } from "../src/ui/methods/LeastSquaresTool.js";
 
 import { LETDOWN_QUIZ, LETDOWN_STEPS } from "../src/ui/methods/letdownLesson.js";
+import { CV_QUIZ, CV_STEPS } from "../src/ui/methods/controlValveLesson.js";
+import { ControlValveTool } from "../src/ui/methods/ControlValveTool.js";
 import { LetdownTool } from "../src/ui/methods/LetdownTool.js";
 
 import { LEVENSPIEL_QUIZ, LEVENSPIEL_STEPS } from "../src/ui/methods/levenspielLesson.js";
@@ -308,6 +312,11 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  "why-did-it-not-dry": {
+    quiz: WHY_QUIZ, quizName: "WHY_QUIZ",
+    lesson: WHY_STEPS, lessonName: "WHY_STEPS",
+    file: "src/ui/methods/WhyDidItNotDryTool.tsx", tool: WhyDidItNotDryTool,
+  },
   optimizers: {
     quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",
     lesson: OPT_STEPS_ALL, lessonName: "OPT_STEPS_ALL",
@@ -542,6 +551,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "least-squares": {
     quiz: LS_QUIZ, quizName: "LS_QUIZ", lesson: LS_STEPS, lessonName: "LS_STEPS",
     file: "src/ui/methods/LeastSquaresTool.tsx", tool: LeastSquaresTool,
+  },
+  "control-valve": {
+    quiz: CV_QUIZ, quizName: "CV_QUIZ", lesson: CV_STEPS, lessonName: "CV_STEPS",
+    file: "src/ui/methods/ControlValveTool.tsx", tool: ControlValveTool,
   },
   letdown: {
     quiz: LETDOWN_QUIZ, quizName: "LETDOWN_QUIZ", lesson: LETDOWN_STEPS, lessonName: "LETDOWN_STEPS",

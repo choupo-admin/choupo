@@ -145,6 +145,21 @@ DOMAINS = [
      ("expr", "0.622 * psat_water(k('airT').min) / (101325.0 - psat_water(k('airT').min))"),
      "air humidity ratio cannot exceed saturation at the knob box's coldest air temperature "
      "(Y_sat(300 K) = 0.0225 kg/kg; the knob goes to 0.04, supersaturated air the engine refuses; clamped to 0.02 on 11-22)", False),
+    (M + "WhyDidItNotDryTool.tsx", "airFlow", 0.0, None,
+     "a gas flow through a dryer is positive; the box runs from 20 to 1000 kmol/h, the page's own choice around the "
+     "case's authored 800 (C508)", False),
+    (M + "WhyDidItNotDryTool.tsx", "spec", 0.0, None,
+     "a dry-basis moisture specification is not negative and has no upper physical bound; the slider offers "
+     "0.005 to 0.1 kg/kg, the page's own choice around the tray's floor (C508)", False),
+    (M + "WhyDidItNotDryTool.tsx", "wetPct", 0.0, 100.0,
+     "a wet-basis moisture percentage lies in [0, 100]; at 100 the dry-basis moisture is infinite, so the box stops at 99 (C508)",
+     False),
+    (M + "DryingCards.tsx", "targetX", 0.0, None,
+     "a dry-basis moisture target is not negative; the slider offers 0.01 to 0.3 kg/kg, the page's own choice around the "
+     "tray's corner and floor (C508)", False),
+    (M + "DryingCurveTool.tsx", "area", 0.0, None,
+     "the tray loading (kg of dry solid per m2 of exposed surface) is positive; the box runs from 1 to 20, the page's "
+     "own choice (C508)", False),
     (M + "MerkelTool.tsx", "airMoisture", 0.0,
      ("expr", "(psat_water(k('airT').dflt) / (101325.0 - psat_water(k('airT').dflt))) * k('dryAirFlow').dflt"),
      "the water vapour carried by the default air cannot exceed saturation at its default temperature "
@@ -183,6 +198,26 @@ DOMAINS = [
     (M + "StiffChemistryTool.tsx", "logH", -10.0, -2.0,
      "log10 of the step in s: from below the radical time scale to above the 3 ms window of nox03 "
      "(endTime 3e-2 s there, writeInterval 1e-3 s); the arithmetic is defined for every step", False),
+    (M + "ControlValveTool.tsx", "W", 0.0, None,
+     "a pump's shaft power is positive and has no upper bound by physics; the page offers 1 to 20 kW "
+     "(pumpSystem01 ships 2 kW) and the engine judges whatever arrives", False),
+    (M + "ControlValveTool.tsx", "rated", 1440.0, 5760.0,
+     "the rated flow must be a point of pumpSystem01's sweep, which spans 0.4 to 1.6 kmol/s "
+     "(outerDict range, 1440 to 5760 kmol/h); the page's 1800 to 5400 lies inside it", False),
+    (M + "ControlValveTool.tsx", "min", 1440.0, 5760.0,
+     "the minimum flow must also be a point of the sweep (1440 to 5760 kmol/h)", False),
+    (M + "ControlValveTool.tsx", "x", 0.0, 1.0, "a valve opening is a fraction of full travel, in [0, 1]", False),
+    (M + "ControlValveTool.tsx", "R", 1.0, None,
+     "a rangeability is the ratio of the largest to the smallest controllable coefficient, above 1, with no "
+     "upper bound by physics; the page offers 10 to 200", False),
+    (M + "ControlValveTool.tsx", "a", 0.0, 1.0,
+     "a valve's authority is the share of the available pressure it holds wide open, in (0, 1]", False),
+    (M + "ControlValveTool.tsx", "gm", 1.0, None,
+     "a gain margin is a factor above 1 for a stable loop and has no upper bound; the page offers 1.5 to 10", False),
+    (M + "ControlValveTool.tsx", "qLoad", 0.0, 1.0, "a minimum load as a fraction of the rated flow lies in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "xmin", 0.0, 1.0, "the lowest controlling opening is a fraction of travel, in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "s", 0.0, 1.0, "a starting valve's capacity relative to the big valve's lies in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "FL", 0.0, 1.0, "the liquid pressure recovery factor lies in (0, 1]", False),
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),

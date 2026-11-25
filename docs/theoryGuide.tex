@@ -29362,6 +29362,72 @@ holdup and the regime, and lets you compare \code{LockhartMartinelli} against
 \code{homogeneous}.
 \end{tutoriallink}
 
+\subsection{A valve in its line: authority, the installed flow and the gain}\label{sec:control-valve}
+
+\emph{Why does a correctly sized control valve still control badly?}  Because
+the valve is sized at one flow and then asked to work over all of them, while
+the line it sits in changes how the pressure is shared as the flow changes.
+The engine's \code{valve} takes an outlet pressure and has no opening; what
+follows is the arithmetic of the EduTools page \code{tool=control-valve}, which
+puts a valve of the page's own on top of the engine's pump and pipe.
+
+\paragraph{The installed flow.}  The source gives a constant pressure $P_t$
+(the pump's rise less the static elevation) to the line and the valve in
+series.  The line drops $kQ^2$ and the valve the rest; a turbulent,
+incompressible, unchoked liquid valve passes $Q=C_v\sqrt{\Delta P_v}$.  Then
+$P_t = Q^2\,(k + 1/C_v^2)$.  Wide open ($C_v=C_{v,\max}$) the flow is $Q_{\max}$
+and the valve takes the fraction
+\begin{equation}
+  a \;=\; \frac{\Delta P_{v,0}}{P_t} \;=\; \frac{Q_{\max}^2/C_{v,\max}^2}{P_t}
+  \label{eq:valve-authority}
+\end{equation}
+of $P_t$, its \emph{authority}; the line takes $1-a = kQ_{\max}^2/P_t$.  With
+$q=Q/Q_{\max}$ and $f=C_v/C_{v,\max}$, dividing $P_t=Q^2(k+1/C_v^2)$ by $P_t$
+gives $1=q^2\,[(1-a)+a/f^2]$, that is
+\begin{equation}
+  q \;=\; \frac{f}{\sqrt{a+(1-a)\,f^2}} .
+  \label{eq:valve-installed}
+\end{equation}
+For $a=1$ it returns $q=f$; for $a\to0$ it returns $q\to1$ for every $f>0$
+(the valve does nothing until it is nearly shut).  The drop on the valve at the
+relative flow $q$ is $\Delta P_v=P_t\,[1-(1-a)q^2]$: largest at small flow.
+
+\paragraph{The inherent characteristics are conventions.}  With the opening $x$
+in $[0,1]$: linear $f=x$; equal percentage $f=R^{x-1}$ with the rangeability
+$R$ declared; quick opening $f=\sqrt{x}$ (the page's choice of curve).  They
+are makers' conventions, stated for a constant drop across the valve, and the
+page cites no standard for them.
+
+\paragraph{The loop gain.}  The slope of Eq.~\eqref{eq:valve-installed} in $f$
+is $a\,[a+(1-a)f^2]^{-3/2}$, so the gain the controller feels is
+\begin{equation}
+  K_v(x)=\frac{\mathrm{d}q}{\mathrm{d}x}
+  =\frac{a}{\left(a+(1-a)f^2\right)^{3/2}}\,\frac{\mathrm{d}f}{\mathrm{d}x}.
+  \label{eq:valve-gain}
+\end{equation}
+Over $x=0.1\ldots1$ the ratio of the largest to the smallest gain is, for the
+linear trim, $1.0$ at $a=1$, $2.8$ at $a=0.5$ and $10.5$ at $a=0.2$; for the
+equal-percentage trim with $R=50$, $33.8$, $13.0$ and $6.5$ for $a=1$, $0.5$,
+$0.2$ (and $4.4$ at $a=0.1$).  A loop whose gain margin is $\mathrm{GM}$ at the
+opening of lowest gain has $\mathrm{GM}/(K_{v,\max}/K_{v,\min})$ at the opening
+of highest gain.  The page ranks no trim: with a stiff source the linear valve
+has the flattest gain, and equal percentage pays when the line takes most of
+the drop.
+
+\paragraph{Where the page gets $a$.}  From the engine: the pump's rise and the
+line's drop at the rated flow, from the sweep of
+\file{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}, give
+$\Delta P_{v,0}=\Delta P_{\mathrm{pump}}-\Delta P_{\mathrm{system}}$ and
+$P_t=\Delta P_{\mathrm{pump}}-\Delta P_{\mathrm{elevation}}$.  The engine's
+pump has constant shaft power, so its rise climbs as the flow falls; the page
+holds $P_t$ at the rated flow's value and prints both.  Choking and cavitation
+use the relations of the letdown EduTools page (\code{tool=letdown}), not a
+second copy.
+
+\paragraph{Limits.}  A constant source; a liquid only; no stiction or
+hysteresis; the shapes, $R$ and the lowest controlling opening are declared
+conventions; the fail-position card of the page is authored text, not computed.
+
 % ---------------------------------------------------------------------
 \section{Power of a stirred vessel: the average-shear-rate concept}\label{sec:agitated-vessel}
 
@@ -34682,6 +34748,54 @@ the falling-rate branch using the linear (Lewis) closure $N\propto(X-X_e)$ match
 to $N_c$ at $X_c$ --- an honest first approximation that does \emph{not} resolve
 crust diffusion; calibrate $X_c$/the curve against a measured drying curve of the
 real material.
+
+\subsection{Why a dryer fails to dry: the water, the air and the clock}\label{sec:drying-three-ceilings}
+The EduTool \emph{Why did it not dry?} reads three limits off the engine's own runs.  Symbols:
+$w$ wet-basis moisture, $X$ dry-basis moisture (kg water/kg dry solid), $m_s$ dry-solid flow, $G$ dry-gas flow,
+$Y$ gas humidity (kg water/kg dry gas), $Y_{\text{sat}}(T)$ its saturation value, $T_{\text{wb}}$ the wet-bulb temperature of the
+inlet gas, $a_w$ water activity, $X_e$ the isotherm moisture, $t_{\text{res}}$ the residence time, $H$ the chamber height, $v_p$ the particle fall speed.
+
+\paragraph{Equations as implemented.}  The two bases are related by $w=X/(1+X)$, $X=w/(1-w)$ (an identity; the page converts, the engine
+reports both, \code{moisture\_pct\_wb} being $100\,w$ of $X_{\text{final}}$).  A convective dryer is bounded by
+\begin{equation}
+  m_s\,(X_{\text{in}}-X_{\text{out}}) = G\,(Y_{\text{out}}-Y_{\text{in}}),\qquad
+  Y_{\text{out}}\le Y_{\text{sat}}(T_{\text{out}}),\qquad T_{\text{out}}\ge T_{\text{wb}},
+\end{equation}
+the last bound being the unit's own floor: \code{solidDryer} solves its outlet temperature between the gas wet bulb and the inlet
+temperature (\file{SolidDryer.cpp}).  \code{evaporativeDryer} has the same bounds and no isotherm (free water).  The spray dryer alone has a
+clock, $t_{\text{res}}=H/v_p$, a result of the chamber geometry and the particle's fall speed (\file{SprayDryer.cpp}), against the time the
+droplet needs, the constant-rate time plus the falling-rate constant of the drying curve.  The floor of any run is
+$X_e(a_w)$, the case's declared sorption record at the water activity $a_w=p_v/p^{\text{sat}}(T)$ of the air, $p_v=PY/(Y+\varepsilon)$,
+$\varepsilon$ the molar-mass ratio of water to the carrier.
+
+\paragraph{The verdict.}  The page \emph{orders} the engine's numbers, in this order, against declared tolerances: (1) \emph{isotherm-bound}
+if $X_{\text{final}}\le X_e(1+0.01)$; (2) \emph{air-limited} if the exhaust water activity is $\ge 0.99$ or the outlet is within $0.5$~K of
+the gas wet bulb, and the product is above its floor; (3) \emph{time-limited} if the unit has a residence time, rule 2 did not apply and
+$X_{\text{final}}$ exceeds $X_e$ by more than $1\,\%$; otherwise \emph{not classified}, with the reason.  It decides nothing the engine did
+not print, and it prints the numbers it used.
+
+\paragraph{Validity and in-sample statement.}  \code{solidDryer} and \code{evaporativeDryer} carry no kinetics, so
+\emph{time-limited} cannot appear for them; the spray dryer is a single-size model.  The isotherm is a fit, trusted only inside the water
+activities it was fitted over.  Every case on the page is a hypothetical teaching case; the verdict is a classification of the engine's
+numbers, not a diagnosis of a plant.  Source: the unit sources named above; the cases \code{solidDryer01\_sugar},
+\code{solidDryer02\_starved\_air}, \code{evapDryer02\_energy\_limited}, \code{sprayDryer06\_rea} and \code{dryer01\_sucrose\_tray}.
+
+\subsection{Loading, the last percent and the spray chamber}\label{sec:drying-loading-tail-chamber}
+With $L=m_s/A$ the tray loading, the linear falling-rate curve of the tray case gives
+\begin{equation}
+  t_c=\frac{L}{R_c}(X_0-X_c),\qquad \tau=\frac{L}{R_c}(X_c-X_e),\qquad
+  t(\Phi_2)-t(\Phi_1)=\tau\ln\frac{\Phi_1}{\Phi_2}\quad(n=1),
+\end{equation}
+$\Phi=(X-X_e)/(X_c-X_e)$.  Hence in this model the moisture curves of different loadings coincide when drawn against $t/L$, and every halving
+of the free moisture costs the same time, so the last percent costs as much as the many before it and the time to a target grows without
+bound as the target approaches $X_e$.  The page does not apply these formulas: it runs the engine at three loadings and reads the time to a
+level off the emitted $X(t)$ column, interpolating between the two samples that bracket it (for an exponent $n<1$ the curve reaches $X_e$ in
+finite time, an artefact of the declared curve).  A real bed whose falling rate is diffusion-controlled scales faster than $L$; the curve is a
+declared choice, not a mechanism.  For the spray chamber the page runs \code{sprayDryer01\_sugar} at four heights and two wheel speeds and
+shows the residence, the constant-rate time and the falling-rate constant side by side; the exponent of the falling-rate constant against the
+droplet size is read from two runs, not asserted.  The engine's drop size is single (the Sauter mean) and the particle temperature along the chamber
+is an interpolation for display (\file{SprayDryer.cpp}), so it is not shown.  \emph{In-sample statement:} the tray and spray cases are
+hypothetical teaching cases with declared $R_c$, $X_c$ and curve.
 
 \subsection{Continuous convective dryers: co-current, counter-current and cross-flow}\label{sec:dryer-flow-arrangements}
 

@@ -414,6 +414,9 @@ const BundTool = lazy(() =>
 const LetdownTool = lazy(() =>
   import("./methods/LetdownTool.js")
     .then((m) => ({ default: m.LetdownTool })));
+const ControlValveTool = lazy(() =>
+  import("./methods/ControlValveTool.js")
+    .then((m) => ({ default: m.ControlValveTool })));
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
@@ -450,6 +453,9 @@ const ActiveSetQpTool = lazy(() =>
 const OptimizersTool = lazy(() =>
   import("./methods/OptimizersTool.js")
     .then((m) => ({ default: m.OptimizersTool })));
+const WhyDidItNotDryTool = lazy(() =>
+  import("./methods/WhyDidItNotDryTool.js")
+    .then((m) => ({ default: m.WhyDidItNotDryTool })));
 const LubScaleupTool = lazy(() =>
   import("./methods/LubScaleupTool.js")
     .then((m) => ({ default: m.LubScaleupTool })));
@@ -743,6 +749,7 @@ export function MethodsWorkspace() {
             : tool === "one-flux-many-units" ? <OneFluxManyUnitsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
+            : tool === "control-valve" ? <ControlValveTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "syngas" ? <SyngasTool />
@@ -755,6 +762,7 @@ export function MethodsWorkspace() {
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "optimizers" ? <OptimizersTool />
+            : tool === "why-did-it-not-dry" ? <WhyDidItNotDryTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
             : tool === "least-squares" ? <LeastSquaresTool />

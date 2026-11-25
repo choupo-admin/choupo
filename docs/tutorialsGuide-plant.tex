@@ -17,7 +17,7 @@ Double-effect evaporator (vapour of effect 1 heats effect 2) feeding a crystalli
 \begin{tutnarrative}
 / system/flowsheetDict (SECTOR -- COMPOSITE)
 
-Spray dryer $\to$ additional solid drying $\to$ cyclone dust separator. The solid powder goes SD $\to$ BD $\to$ product; the spray-dryer exhaust air (carrying fines) goes SD $\to$ CY, which returns clean air + recovered dust.
+Spray dryer $\to$ additional solid drying $\to$ cyclone dust separator. The solid powder goes SD $\to$ BD $\to$ product. The spray-dryer exhaust goes SD $\to$ CY, but in THIS run the cyclone is idle: the engine's spray dryer sends every particle to its powder outlet and none to the exhaust, so the exhaust reaches CY as gas only (solidsIn\_mass 0 and efficiency 0 in the golden) and Dust is zero. The cyclone is wired for a dryer that does carry fines out; today none is modelled.
 
 \end{tutnarrative}
 

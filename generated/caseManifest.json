@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1939,
+  "cases": 1940,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -26073,6 +26073,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/column21_design_curve_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/packing01_schulz_0p10bar": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32745,6 +32762,7 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -33346,6 +33364,7 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -34792,6 +34811,7 @@
     "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
     "tutorials/steady/flash/dewT01_ethanol_water",
     "tutorials/steady/flash/flash02_ethanol_water",

@@ -4002,6 +4002,38 @@
           }
         }
       ]
+    },
+    "why-did-it-not-dry": {
+      "references": [
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Chapter 12 'Drying': the moisture bases, equilibrium moisture against the humidity of the air, and the rate curve (printed pp. 655–670).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/treybal-mass-transfer-operations-3ed.pdf, PDF pp. 670-697 read (printed page = PDF page - 15) (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 12, solids drying, pp. 12-23 and 12-24.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Anderson, R. B. (1946). Modifications of the Brunauer, Emmett and Teller equation. J. Am. Chem. Soc. 68(4), 686–691.",
+          "doi": "10.1021/ja01208a049",
+          "note": "One of the three originals of the GAB isotherm.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01208a049: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
     }
   }
 }
