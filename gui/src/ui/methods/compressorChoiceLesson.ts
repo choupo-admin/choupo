@@ -110,9 +110,9 @@ export const CC_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The gas power of one section is the mass flow times the head, divided by the polytropic efficiency (Brown Eq 2.73 and 2.78).",
         eq: String.raw`W = \frac{\dot m\,H}{\eta_p},\qquad H = \frac{Z R_s T_1}{m}\left(r^{m}-1\right)` },
-      { step: "The mass flow is the density times the actual volume, and the density of a real gas is \\(P_1/(Z R_s T_1)\\).",
+      { step: "The mass flow is the density times the actual volume, and the density of a real gas is its pressure over Z R_s T_1.",
         eq: String.raw`\dot m = \rho\,Q = \frac{P_1\,Q}{Z R_s T_1}` },
-      { step: "Put the second into the first. The gas constant \\(R_s\\), and with it the molar mass, cancels.",
+      { step: "Put the second into the first. The specific gas constant, and with it the molar mass, cancels.",
         eq: String.raw`W = \frac{P_1\,Q}{m\,\eta_p}\left(r^{m}-1\right)` },
     ],
     formula: String.raw`W = \frac{P_1\,Q}{m\,\eta_p}\left(r^{m}-1\right)`,
