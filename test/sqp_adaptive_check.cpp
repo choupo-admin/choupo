@@ -224,7 +224,12 @@ void defineArms()
         p.g = {[](const sVector& x) { return x[1] - std::pow(1.0 - x[0], 3); }};
         p.lo = {0.0, 0.0}; p.hi = {5.0, 5.0}; p.x0 = {0.0, 0.5};
         Run r = run(p, baseOpts());
-        if (has(r.R.reason, "theta = 0")) return "theta = 0 stop: " + r.R.reason;
+        //  HS13 has no KKT point (LICQ fails at its optimum), so the run may
+        //  stop; what it must not do is claim that theta = 0 "has no solution"
+        //  (d = 0 satisfies the relaxed linearisation by construction)
+        if (has(r.R.reason, "has no solution")) return "false claim: " + r.R.reason;
+        if (!r.R.converged && !has(r.R.reason, "a failure of the QP solver") && has(r.R.reason, "theta = 0"))
+            return "theta = 0 stop without saying it is a solver failure: " + r.R.reason;
         return std::string();
     });
 

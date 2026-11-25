@@ -223,7 +223,7 @@ SQPResult sqp(const SQPEvaluator& eval,
     //           on a stencil a quarter as wide: noise does not change with
     //           the spacing, a jump or an oscillation the first stencil
     //           cannot resolve does (our own test).  If either stencil
-    //           failed, no level shows, or the two disagree by more than 4,
+    //           failed, no level shows, or the two disagree by more than 10,
     //           the noise is UNKNOWN: announced, fixed steps, no error bars.
     //           A floor of 1e-14 max(1,|r|) stands under a level or an exact
     //           response, never under an unknown one.
@@ -333,11 +333,11 @@ SQPResult sqp(const SQPEvaluator& eval,
                     const scalar la = ea.kind == NoiseKind::Level ? ea.level : 0.0;
                     const scalar lb = eb.kind == NoiseKind::Level ? eb.level : 0.0;
                     const scalar big = std::max(la, lb), small = std::min(la, lb);
-                    if (big > 4.0 * small && big > 10.0 * floorR)
+                    if (big > 10.0 * small && big > 10.0 * floorR)
                         unknownWhy = "the noise level of response " + respName(r)
                                    + " changes with the spacing (" + std::to_string(la) + " against "
                                    + std::to_string(lb) + "): a signal, not noise";
-                    else eps[r] = std::max(la, floorR);
+                    else eps[r] = std::max(big, floorR);
                 }
             }
         noiseKnown = unknownWhy.empty();
@@ -366,6 +366,10 @@ SQPResult sqp(const SQPEvaluator& eval,
             bool cenLast = false;
             sVector fpL, fmL;
             scalar t = std::max(1.0e-6, 10.0 * std::sqrt(epsR[0]));
+            //  the first probe must FIT: a noisy objective asks for a probe as
+            //  wide as the box (10 sqrt(9.4e-2) = 3 on a variable 1 wide), and a
+            //  probe that does not fit means no curvature, so no step
+            t = std::min(t, 0.4 * std::max(hi[j] - x[j], x[j] - lo[j]));
             for (int trial = 0; trial < 5; ++trial)
             {
                 const bool cen = (x[j] - t >= lo[j]) && (x[j] + t <= hi[j]);
@@ -722,6 +726,7 @@ SQPResult sqp(const SQPEvaluator& eval,
     std::string fdNoteSaved;
     bool needEstimate = opts.adaptiveFd;
     int  failStreak = 0;
+    int  qpFailStreak = 0;
     sVector sigEqLast, sigIneqLast;
     //  gradFresh: the gradients in hand were taken with noise, curvature and
     //  steps estimated AT THIS POINT.  A certificate needs it (F2).
@@ -796,6 +801,28 @@ SQPResult sqp(const SQPEvaluator& eval,
         }
         catch (const std::exception& ex)
         {
+            //  C496: a QP the active-set method cannot settle (a quasi-Newton B
+            //  of condition 1e6 beside rows of 1e7) is, like a failed line
+            //  search, a bad MODEL: forget B once and take the step from B = I.
+            //  A second failure in a row stops, as before.
+            if (opts.adaptiveFd && qpFailStreak == 0)
+            {
+                ++qpFailStreak; ++R.restarts;
+                for (std::size_t i = 0; i < n; ++i)
+                    for (std::size_t j = 0; j < n; ++j) B[i][j] = (i == j) ? 1.0 : 0.0;
+                if (opts.onIter)
+                {
+                    SQPTrace t;
+                    t.iteration = it; t.x = R.x; t.f = base.f; t.h = base.h; t.g = base.g;
+                    t.lambdaEq = lamEq; t.lambdaIneq = lamIneq;
+                    t.gActive.assign(nIneq, false);
+                    t.mu = mu; t.alpha = 0.0;
+                    t.note = std::string("QP subproblem failed (") + ex.what()
+                           + ") -- RESTART: B reset to I";
+                    opts.onIter(t);
+                }
+                continue;
+            }
             R.reason   = std::string("QP subproblem failed: ") + ex.what();
             R.converged = false;
             // Populate the KKT/feasibility fields at the CURRENT (failed)
@@ -1267,7 +1294,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         for (std::size_t j = 0; j < n; ++j) s[j] = xTrial[j] - R.x[j];
 
         // gradL at the new point uses the new gradients there.
-        failStreak = 0;
+        failStreak = 0; qpFailStreak = 0;
         const bool estimatedHere = opts.adaptiveFd && alpha < 0.5;
         if (estimatedHere)
             estimate(xTrial, rTrial);       // the model changed: re-estimate (Procedure I, step 2)

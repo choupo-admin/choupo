@@ -218,17 +218,34 @@ report  { file optimization_history.csv; }
 ### `method sqp;` — `options { fdMode forward|central|auto; }` (C496)
 
 `fdMode forward` (default, step `fdStep`, n+1 runs per iteration) and `central` are as before.
-`fdMode auto;` (opt-in; every shipped case runs byte-identically without it) chooses the step
-of each variable from the response's own noise (ECnoise on nine points 1e-3 apart, never the
-same point twice) and curvature, per Shi, Xuan, Oztoprak & Nocedal (arXiv 2102.09762):
-forward `h = 8^(1/4) sqrt(eps/L)`, central `h = (3 eps/M)^(1/3)`, central per variable when
-the forward error bound exceeds a tenth of the stationarity tolerance, never across a bound.
-It also relaxes the Armijo test by the merit's noise, restarts once (B = I, central) after a
-failed line search, reuses the BFGS gradients, and runs the QP in robust mode.  `fdStep` is
-ignored.  The trace prints, per iteration, each variable's step with its reason, and every
-multiplier as `lam (+-sigma)`, or `NOT RESOLVED` when the error bar exceeds the value.  The
-self-check also runs HS35/HS21/HS71 under auto, clean and with 1e-7 noise.  Theory: Theory
-Guide `sec:sqp-adaptive-fd`.  Measured on the bench of `docs/audits/2026-11-24-optimizer-bench-*`.
+`fdMode auto;` is OPT-IN (every shipped case runs byte-identically without it; gate
+`check_sqp_adaptive`).  It chooses the step of each variable from the response's own noise
+(ECnoise on nine points 1e-3 apart and again a quarter as wide, never the same point twice) and
+curvature, per Shi, Xuan, Oztoprak & Nocedal (arXiv 2102.09762): forward `h = 8^(1/4) sqrt(eps/L)`,
+central `h = (3 eps/M)^(1/3)`, central per variable when the forward error bound exceeds a tenth
+of the stationarity tolerance.  The step is FITTED TO THE BOX at every gradient evaluation (no
+evaluation leaves it; a variable whose box is narrower than 8e-9 is pinned and announced).
+Measured: it is NOT better than the shipped default or SLSQP on a clean problem; it helps where
+noise is real (table in the Theory Guide `sec:sqp-adaptive-fd` and
+`docs/audits/2026-11-24-optimizer-bench-results.md`), costs more runs on the four shipped
+flowsheets than the default, and on `optim05` it does not certify (the flowsheet cases are in
+that table).  `fdStep` is ignored.
+  - Noise is UNKNOWN when a stencil point fails, no level shows, or the two stencils disagree:
+    announced, fixed steps, NO error bars.  Never a floor.
+  - THE VERDICT: `CONVERGED` needs the gradient re-estimated at the point and its error bar (3 sd
+    of ||grad L||inf) below the tolerance; the tolerance is scaled by the size of the gradient
+    terms (and the step must be small).  The residuals met with a bar above the tolerance, or
+    unavailable, print `STATIONARY, NOT CERTIFIED`, exit 1, with the bar beside the tolerance.
+  - Multipliers print `lam (+-bar)`: 2 sd, first order, through the QP's B-weighted map; `NOT
+    RESOLVED` when the bar exceeds the value, `error bar unavailable` when it cannot be
+    defended, `inactive: exactly 0` for an inactive row.  It omits the displacement of the
+    optimum, correlations between responses and the active-set uncertainty.
+  - It also relaxes the Armijo test by the merit's noise (our simplified form, not the paper's
+    eq. 2.19), restarts once (B = I, central) after a failed line search, reuses the BFGS
+    gradients, and runs the QP in robust mode (a robust QP that fails is solved again by the
+    default QP before anything is concluded).
+The self-check also runs HS35/HS21/HS71 under auto, clean and with 1e-7 noise.  Theory: Theory
+Guide `sec:sqp-adaptive-fd`.  Witness case: `tutorials/steady/optimisation/optim09_noisy_fdmode_auto`.
 
 ### `method mads;` (C494) — nonsmooth, constrained, integer
 
