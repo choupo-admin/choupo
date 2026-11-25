@@ -310,7 +310,11 @@ batch plan, sizing, clean utilities, costing and economics on top
 * Computes: `pass:economics`: discounted cash flow, NPV, IRR, discounted and
   simple payback, the cash flow table; `key:sensitivity` moves one declared
   input at a time (a tornado, not an uncertainty analysis); optional
-  `key:land`, `key:financing`, start-up years.
+  `key:land`, `key:financing`, start-up years.  Every economics run also writes
+  the plant's books (`key:books`, nothing to declare): income statement,
+  balance sheet and cash-flow statement of the same appraisal, tied by
+  identities held every year (assets = liabilities + equity, cash = the
+  appraisal's cash flow).
 * Also computes, each opt-in and declared with its source: a building cost
   from the GMP interior's room areas priced by grade (`key:buildings`), the
   operating and the NPV break-even capacity and, per priced stream, the

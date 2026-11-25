@@ -56,6 +56,14 @@
   THE WORKING CAPITAL DOES NOT FOLLOW THE RAMP-UP: it is invested in full at
   t = 0, and the run says so ([assumed] economics).
 
+  THE BOOKS (DEV.md 4c C524; record docs/design/plant-books.md).  The run
+  also writes this appraisal as an income statement, a balance sheet and a
+  cash-flow statement (reports/economics/*.csv, three .ods sheets).  With the
+  loan below the balance sheet carries the loan (its capitalised interest in
+  the fixed assets) and the owners' paid-in capital, and assets equal
+  liabilities plus equity in every year; the log's last economics line gives
+  the worst error.
+
   THE LOAN (DEV.md 4c C110 G4; record
   docs/design/a-loan-is-the-owners-view-not-the-projects.md).  Half the FCI
   is lent at 6 %, two grace years, an eight-year annuity, the owners
