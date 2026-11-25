@@ -5651,6 +5651,7 @@
    "src/materials/Material.H",
    "src/postProcessing/EconomicsPass.H",
    "src/postProcessing/EstimateClass.H",
+   "src/postProcessing/PlantBooks.H",
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/costing/CostingModel.H",
    "src/result/ClosureVariable.H",
@@ -5720,6 +5721,12 @@
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H"
+  ],
+  "src/postProcessing/PlantBooks.cpp": [
+   "src/core/OdsWriter.H",
+   "src/core/ResultRecords.H",
+   "src/core/Types.H",
+   "src/postProcessing/PlantBooks.H"
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
@@ -8847,6 +8854,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/StabilityTest.H",
    "src/streams/Carried.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
@@ -8859,6 +8867,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/phase/Phase.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -13353,6 +13362,7 @@
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
    "src/core/ReadLog.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -19762,6 +19772,7 @@
   "src/core/OdsWriter.H": [
    "src/core/OdsWriter.cpp",
    "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/reporting/SpreadsheetReport.cpp"
   ],
   "src/core/Origin.H": [
@@ -20814,6 +20825,7 @@
    "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/LiquidTransportDeclarations.cpp",
    "src/thermo/transport/TransportModel.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
@@ -20872,6 +20884,7 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
@@ -21153,6 +21166,7 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
@@ -21830,6 +21844,10 @@
   "src/postProcessing/PinchPass.H": [
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp"
+  ],
+  "src/postProcessing/PlantBooks.H": [
+   "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PlantBooks.cpp"
   ],
   "src/postProcessing/PostProcessor.H": [
    "src/applications/choupoSolve/main.cpp",
@@ -23741,6 +23759,7 @@
   ],
   "src/solver/StabilityTest.H": [
    "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
    "src/solver/StabilityTest.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp"
   ],
@@ -28297,6 +28316,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
    "src/solver/StabilityTest.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
