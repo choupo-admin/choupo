@@ -39,7 +39,7 @@
 import type { ChartRegionSheet, CompressorSheet } from "../../case/designSheet.js";
 import { stage, staged } from "./compression.js";
 
-/** The engine's own conversion, src/postProcessing/sizing/CompressorDesign.cpp:36. */
+/** The engine's own conversion (`cfm_per_m3s` in CompressorDesign.cpp). */
 export const CFM_PER_M3S = 2118.8800032893;
 
 /** The chart's outer limits, the engine's own: it refuses above 1e6 cfm and
@@ -59,7 +59,7 @@ export interface Chart {
 
 /** The chart a sized compressor's sheet published, or the reason there is none. */
 export function readChart(c: CompressorSheet | null | undefined): Chart | { error: string } {
-  if (!c) return { error: "the run has no compressor design sheet" };
+  if (!c) return { error: "the run carries no compressor design sheet" };
   if (c.chart.length === 0)
     return { error: "the sheet carries no machine chart (a `design {}` block is what makes the engine publish it)" };
   return { regions: c.chart };
@@ -129,10 +129,10 @@ export function readDuty(
            mechLoss: number; nStages: number; rStage: number;
            stages: { n: number; Zavg: number; etaPoly: number; head: number; Tin: number }[] },
 ): DutyRead | { error: string } {
-  if (!c) return { error: "the run has no compressor design sheet" };
+  if (!c) return { error: "the run carries no compressor design sheet" };
   if (!(c.inletFlowCfm > 0)) return { error: "the sheet does not publish the inlet flow" };
   const s1 = sheet.stages[0];
-  if (!s1) return { error: "the sheet has no stage 1" };
+  if (!s1) return { error: "the sheet lists no stage 1" };
   return {
     cfm: c.inletFlowCfm, m3h: m3hFromCfm(c.inletFlowCfm), ratio: c.overallRatio,
     MW: sheet.MW, mdot: sheet.mdot, T1: sheet.Tin, P1: sheet.Pin, P2: sheet.Pout,
