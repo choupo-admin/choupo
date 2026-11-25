@@ -95,6 +95,7 @@
     "rachfordRice": { "guide": "theory", "anchor": "ch:rr",          "title": "K-values and Rachford-Rice" },
     "nelderMead":   { "guide": "theory", "anchor": "ch:nelder-mead", "title": "Direct search: Nelder-Mead simplex" },
     "mads":         { "guide": "theory", "anchor": "ch:mads",         "title": "Derivative-free constrained optimisation: MADS" },
+    "bayesOpt":     { "guide": "theory", "anchor": "ch:bayesopt",     "title": "Bayesian optimisation for an expensive simulation" },
     "gibbsMin":     { "guide": "theory", "anchor": "ch:lle-gibbs",   "title": "Liquid-liquid equilibrium by Gibbs minimisation" },
     "rk4":          { "guide": "theory", "anchor": "ch:rk4",         "title": "Runge-Kutta 4 (PFR / batch)" },
     "stiffOde":     { "guide": "theory", "anchor": "ch:stiff-ode",   "title": "Stiff integration: Rosenbrock23" },

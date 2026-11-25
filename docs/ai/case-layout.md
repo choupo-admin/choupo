@@ -1893,6 +1893,17 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   a missing pipe never looks like a finished drawing; one that reaches
   neither end is not marked at all (no point of the plan is its) and is
   listed in words beside the view and in the pipe register.
+  A UNIT INSIDE A PLACED SHELL (converter beds and inter-bed coolers; the
+  converterShell's `encloses` + the unit's sector stamp, `shellHostOf`) has no
+  nozzle of its own: a pipe ending at it lands on the shell's side at the
+  unit's height in the stack; a stream with BOTH ends inside the same shell
+  is listed in `layout.insideShell`, no pipe.  A process pipe with an end
+  that has no place on the plan is `notRouted` AND a `pipeNotRouted` finding
+  with the reason ONLY when the end is a unit the layout should have placed
+  (sized but unplaced, or its sizer refused); solids, indoor, two-consumer
+  streams and a stream to an UNSIZED unit or an unattached junction are
+  rules, not findings.  The GUI's pipe register says the `insideShell`
+  streams in one line per shell.
   SOLIDS ARE NOT PIPED (C97): a stream with no fluid phase that carries a
   solid -- a powder, granules, tablets -- is listed as not routed, "solids
   only: moved in containers or by conveyor", with `solids` set and no

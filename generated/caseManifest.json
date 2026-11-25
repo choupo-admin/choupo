@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1940,
+  "cases": 1943,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -26073,6 +26073,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/column21_design_curve_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/packing01_schulz_0p10bar": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28525,6 +28542,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/hxBought01_margin_and_stock": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/hxWorkflow1_design_from_duty": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29439,6 +29470,22 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim08_bayesian_membrane": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
    },
    "roles": [],
    "hasGolden": true
@@ -32763,6 +32810,7 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -32924,6 +32972,7 @@
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
     "tutorials/steady/heat/hx02_condensing_steam",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -32979,6 +33028,7 @@
     "tutorials/steady/optimisation/optim05_reactor_npv",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",
@@ -33365,6 +33415,7 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -33389,6 +33440,7 @@
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
@@ -33837,6 +33889,7 @@
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -34812,6 +34865,7 @@
     "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
+    "tutorials/steady/distillation/column21_design_curve_ethanol_water",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
     "tutorials/steady/flash/dewT01_ethanol_water",
     "tutorials/steady/flash/flash02_ethanol_water",
@@ -34952,6 +35006,7 @@
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
    "eNRTL": [
@@ -36475,6 +36530,7 @@
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
     "tutorials/steady/heat/hx02_condensing_steam",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -36528,6 +36584,7 @@
     "tutorials/steady/optimisation/optim05_reactor_npv",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
+    "tutorials/steady/optimisation/optim08_bayesian_membrane",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",

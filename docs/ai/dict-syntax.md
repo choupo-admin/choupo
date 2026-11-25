@@ -933,7 +933,11 @@ over design variables.  Three methods:
   `tolX`, `seed`; no multipliers).  For non-smooth or integer problems; witness
   `optim07_mads_mixed_column`.
 
-`sqp` and `mads` accept a `constraints (...)` list (asking Nelder-Mead for
+* `method bayesian;` — **Bayesian optimisation** (Gaussian process, expected improvement x
+  probability of feasibility) for an expensive simulation; options `budget`, `seed`, `eiTol`,
+  `nInit`; no equality constraints and no multipliers; witness `optim08_bayesian_membrane`.
+
+`sqp`, `mads` and `bayesian` accept a `constraints (...)` list (asking Nelder-Mead for
 constraints is a loud error — add a penalty term or switch method):
 
 ```

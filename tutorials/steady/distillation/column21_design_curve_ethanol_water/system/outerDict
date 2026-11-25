@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  column21_design_curve_ethanol_water -- outer driver.
+
+  The specification of the design curve, FIXED: both key purities.  Two
+  unknowns (the reflux ratio R and the distillate rate D, the `variables` of
+  flowsheetDict), two targets (the ethanol mole fraction of the distillate and
+  the water mole fraction of the bottoms).  At every integer stage count the
+  designSpec returns the reflux that meets BOTH, so every point of the curve
+  R(N) is on specification.  Run again with another `nStages` for the next
+  point.
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable R;  initial 3.0;  min 0.5;  max 400.0; }
+    { variable D;  initial 32.0 kmol/h;  min 20.0 kmol/h;  max 45.0 kmol/h; }
+);
+
+targets
+(
+    { path  column.x_D_LK;   value 0.85;   tol 1.0e-5; }
+    { path  column.x_B_HK;   value 0.99;   tol 1.0e-5; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0e-5;
+    fdStep       1.0e-4;
+}
+
+report
+{
+    file         designspec_history.csv;
+}

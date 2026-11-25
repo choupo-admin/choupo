@@ -183,7 +183,7 @@ private:
     // feasibility map parses the same block, so the two can never drift.
     using Constraint = ConstraintSpec;
 
-    enum class Method { NelderMead, Sqp, Mads };
+    enum class Method { NelderMead, Sqp, Mads, Bayesian };
 
     std::vector<Var>        vars_;
     std::vector<Constraint> constraints_;
@@ -245,6 +245,7 @@ private:
     int runNelderMead();
     int runSqp();
     int runMads();
+    int runBayesian();   // method bayesian (src/solver/BayesOpt.H, C499)
 };
 
 } // namespace Choupo

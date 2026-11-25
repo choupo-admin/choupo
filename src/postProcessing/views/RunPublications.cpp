@@ -37,25 +37,55 @@ Description
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace Choupo {
 namespace views {
 
 namespace {
 
-//  A PROFILE COLUMN's unit where its name says it (the part after the last `_`
-//  when that is a registered, linear, dimensioned unit).  KPIs do NOT do this:
-//  they carry the unit their unit declared (UnitOperation::kpiUnits, C443).
+//  A PROFILE COLUMN's unit where its name says it.  KPIs do NOT do this: they
+//  carry the unit their unit declared (UnitOperation::kpiUnits, C443).
 //  Profile columns are still read this way: DEBT, named in the C443 report.
+//
+//  The name is split at its underscores and the LONGEST tail that is a
+//  registered, linear, dimensioned unit once its parts are joined with `/`
+//  wins: `extent_kmol_h` is kmol/h (it was read as `h`, hours, for a column in
+//  kilomoles per hour -- C477, 2026-11-25), `flow_kg_h` is kg/h, `dP_column_kPa`
+//  is kPa.  A name whose tail would be a COMPOUND the registry does not hold --
+//  `r_mol_gcat_s`, mol per gram of catalyst per second -- publishes NO unit
+//  (the view's author declares it, said aloud), never the `s` its last word
+//  happens to spell: it is recognised by a registered unit word standing before
+//  the last word with a word between that is no unit (`mol`, `gcat`).
 std::string unitFromName(const std::string& name)
 {
-    const auto us = name.rfind('_');
-    if (us == std::string::npos || us + 1 >= name.size()) return std::string();
-    const std::string suffix = name.substr(us + 1);
-    const auto spec = units::lookupUnit(suffix);
-    if (!spec || spec->affine) return std::string();
-    if (spec->dims == Dims::dimensionless) return std::string();
-    return suffix;
+    std::vector<std::size_t> us;
+    for (std::size_t i = 0; i < name.size(); ++i)
+        if (name[i] == '_') us.push_back(i);
+    auto registered = [](const std::string& u) {
+        const auto spec = units::lookupUnit(u);
+        return spec && !spec->affine && spec->dims != Dims::dimensionless;
+    };
+    for (const std::size_t i : us)
+    {
+        if (i == us.back()) continue;          // the last word alone: below
+        std::string tail = name.substr(i + 1);
+        if (tail.empty()) continue;
+        for (auto& ch : tail) if (ch == '_') ch = '/';
+        if (registered(tail)) return tail;
+    }
+    //  no compound resolved: the last word alone, unless an earlier word of
+    //  the name (not the leading one) is itself a unit -- a compound the
+    //  registry lacks, which a last word must not stand for
+    if (us.empty() || us.back() + 1 >= name.size()) return std::string();
+    const std::string last = name.substr(us.back() + 1);
+    if (!registered(last)) return std::string();
+    for (std::size_t k = 0; k + 1 < us.size(); ++k)
+    {
+        const std::size_t e = us[k + 1];
+        if (registered(name.substr(us[k] + 1, e - us[k] - 1))) return std::string();
+    }
+    return last;
 }
 
 std::string profileColumnUnit(const std::string& name)
@@ -68,6 +98,11 @@ std::string profileColumnUnit(const std::string& name)
 }
 
 } // namespace
+
+std::string profileColumnUnitOf(const std::string& name)
+{
+    return profileColumnUnit(name);
+}
 
 std::vector<Publication> publicationsOfRun(const SimulationResult& r)
 {

@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column20_mtbe_kinetic_mesh -- the views the lesson opens on (DEV.md 4c C477).
+
+  The lesson: with a rate law and a catalyst mass instead of an equilibrium
+  constant, the extent of each reactive stage is COMPUTED, and the conversion
+  is the sum of five stages that react where the liquid is richest in methanol
+  and isobutene.
+
+  The plots: the liquid composition of the three reacting components stage by
+  stage, MTBE building up through the reactive zone; and the extent of reaction
+  each reactive stage makes (rate x catalyst mass), where the conversion is
+  made.  (Until 2026-11-25 the second was not drawn: the views reader took the
+  unit of `extent_kmol_h` from the part after the last underscore and published
+  `h`; the reader now takes the compound suffix whole, kmol/h.)
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Liquid composition of the reacting components, stage by stage";
+        xAxis   { label "stage (1 = partial condenser, 15 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Read it: MTBE (small, note the scale) is made in stages 6-10 and carried down to the reboiler, where methanol reaches 0.79 and isobutene is stripped out. Methanol is lean in the reactive zone (about 0.05-0.19), which is what limits the rate. The markers show MTBE at the first reactive stage (6) and at stage 10, the last reactive stage and the feed stage of both feeds.";
+        series
+        (
+            { name methanol; label "methanol";   unitOp mtbeColumn; table profile; x stage; y x_methanol;             style lines; }
+            { name isobutene; label "isobutene"; unitOp mtbeColumn; table profile; x stage; y x_isoButene;            style lines; }
+            { name mtbe;      label "MTBE";      unitOp mtbeColumn; table profile; x stage; y x_methylTertButylEther; style lines; }
+            { name firstReactive; label "first reactive stage (6)"; unitOp mtbeColumn; table profile; select { stage 6; }  x stage; y x_methylTertButylEther; style markers; }
+            { name feedStage;     label "feed stage (10), last reactive stage"; unitOp mtbeColumn; table profile; select { stage 10; } x stage; y x_methylTertButylEther; style markers; }
+        );
+    }
+    {
+        name    extent_by_stage;
+        type    profile;
+        title   "Where the conversion is made: the extent of reaction of each reactive stage";
+        xAxis   { label "stage (1 = partial condenser, 15 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "extent of reaction"; unit "kmol/h"; scale linear; }
+        note    "Read it: only stages 6-10 carry catalyst, so only they react (the other ten are zero by construction, not by chemistry). The extent is largest at stage 7, 3.73 kmol/h, and falls to 2.67 kmol/h at stage 10, the last reactive stage and the feed stage; the five stages sum to 16.9 kmol/h. This is where the rate-limited conversion happens: the rate law, not an equilibrium constant, sets each bar of this profile, so more catalyst on the stages that react is what raises it.";
+        series
+        (
+            { name extent; label "extent of reaction per stage"; unitOp mtbeColumn; table profile; x stage; y extent_kmol_h; style linesMarkers; }
+        );
+    }
+);

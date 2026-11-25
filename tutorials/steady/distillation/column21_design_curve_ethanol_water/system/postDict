@@ -1,0 +1,85 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column21_design_curve_ethanol_water -- post-processing chain: the column's
+  five items sized and costed, so that the capital cost of each point of the
+  design curve is the engine's own number (Turton bare-module, as
+  column09_tray_hydraulics declares it: shell, trays, condenser, reboiler,
+  reflux drum).  The service declarations are column09's, except the
+  reboiler's LMTD: the bottoms here are nearly pure water at about 100 C
+  against LP steam at 127 C, so LMTD 25 K (U 800 W/m2/K, declared).
+  The cost model of the lesson built on these numbers (an annualised
+  capital plus an energy bill) is on the page, not here.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    column;
+            type        distillationColumn;
+            material    carbonSteel;
+            designRules
+            {
+                //  The same spacing the unit's `hydraulics {}` block declares.
+                //  It is what turns a stage COUNT into a tower HEIGHT.
+                traySpacing     0.50;       // m
+                pressureDesign  2.0;        // bar (atmospheric column, x2 margin)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+
+                //  The TRAYS' material class, which prices them (F_BM): one of
+                //  carbonSteel | stainlessSteel | nickelAlloy.  Carbon steel
+                //  here, like the shell -- a hydrocarbon service with no
+                //  corrosion argument for anything better.
+                trayMaterial    carbonSteel;
+
+                //  The two end spaces are left UNDECLARED on purpose, so this
+                //  case shows what an engine default looks like when it is
+                //  announced: the run prints `[assumed] distillationColumn
+                //  'column09': disengagementHeight ...` and the shell's sheet
+                //  carries an `assumed ( ... )` line naming both.  Declare
+                //  `disengagementHeight` and `sumpHeight` here to own them.
+
+                condenser
+                {
+                    U               500.0;      // W/m2/K -- declared, see header
+                    LMTD            48.0;       // K
+                    pressureDesign  2.0;        // bar
+                }
+
+                reboiler
+                {
+                    U               800.0;      // W/m2/K -- declared, see header
+                    LMTD            25.0;       // K
+                    pressureDesign  2.0;        // bar
+                }
+
+                refluxDrum
+                {
+                    residenceTime   300.0;      // s -- 5 minutes of condensate
+                    pressureDesign  2.0;        // bar
+                    L_over_D        3.0;
+                    corrosionAllow  0.003;      // m
+                    jointEfficiency 1.0;
+                }
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Turton;
+    year        2026;
+    cepci       820;        // target-year CEPCI
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;
+}

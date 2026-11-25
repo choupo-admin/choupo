@@ -1243,6 +1243,13 @@ struct LayoutUtilityLine
     std::string reason;
 };
 
+//  A stream whose two ends are units inside the SAME placed shell (a
+//  converter's beds and inter-bed exchange): no pipe, listed by name.
+struct LayoutInsideShell
+{
+    std::string stream, item, fromUnit, toUnit;
+};
+
 struct LayoutNotRouted
 {
     std::string stream;
@@ -1682,6 +1689,7 @@ struct PlantLayoutRecord
     std::vector<LayoutJunction>        junctions;
     std::vector<LayoutPipe>            pipes;
     std::vector<LayoutNotRouted>       notRouted;
+    std::vector<LayoutInsideShell>     insideShell;
     //  C207: the line list (empty unless the case declares `lineDesign {}`).
     std::vector<LineSheet>             lines;
     std::string                        lineBasis;   // the declared rules, in words

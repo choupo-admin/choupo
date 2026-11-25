@@ -3475,6 +3475,16 @@ the active constraints.  Options: \code{maxEvaluations}, \code{tolX}, \code{seed
 example: \file{optim07\_mads\_mixed\_column}, the column of \file{optim06\_integer\_stages} with
 stages and reflux searched together in one run (theory: Theory Guide, MADS).
 
+\code{method bayesian;} is the fourth, opt-in method, for a simulation that takes minutes: a
+Gaussian-process surrogate of the objective and of each constraint, the next simulation chosen by
+expected improvement times the probability of feasibility, the budget counted in simulations
+(\code{options \{ budget; seed; eiTol; nInit; \}}).  It prints the prediction before each run and
+the outcome after it, counts failed evaluations without ever using them as numbers, accepts
+inequality constraints only, and has no multipliers, so finish with \code{method sqp} from its best
+point.  It was measured to need fewer simulations than the SQP on a cheap smooth case and not fewer
+on a reactive column that fails in part of its box (theory: Theory Guide, Bayesian optimisation).
+Worked example: \file{optim08\_bayesian\_membrane}.
+
 \paragraph{Parameter estimation.}  Regression of model parameters
 against experimental data lives in \code{choupoProps} as the
 \code{fitParameters} operation (\S\ref{sec:props}); the old

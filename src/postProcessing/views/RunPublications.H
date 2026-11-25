@@ -60,6 +60,10 @@ Description
 namespace Choupo {
 namespace views {
 
+//  The unit a profile column's NAME says it is in (empty: it says none).  Public
+//  so test/profile_units.cpp holds the reader on the keys that went wrong.
+std::string profileColumnUnitOf(const std::string& name);
+
 std::vector<Publication> publicationsOfRun(const SimulationResult& r);
 
 } // namespace views

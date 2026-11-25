@@ -110,7 +110,10 @@ building { ... }                                           // §4
 * The pipe router is deterministic: up from the port's stub to its
   lane, along the rack (plan x), down to the target's port.  Plant INLETS arrive at
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
-  MATERIAL stream is routed or listed `notRouted` with its reason.  SOLIDS ARE
+  MATERIAL stream is routed or listed `notRouted` with its reason; an unreachable
+  end that is a sized-but-unplaced or refused unit is also a `pipeNotRouted`
+  finding, and a unit inside a placed converter shell pipes to the shell
+  (`layout.insideShell`: streams with both ends in it).  SOLIDS ARE
   NOT PIPED (powder, tablets: containers or conveyors), a unit with no placed
   item leaves its streams unrouted, and the router does not steer round
   items: a segment through a footprint is announced `pipeClash`.  No pressure

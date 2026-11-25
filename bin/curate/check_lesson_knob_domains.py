@@ -245,6 +245,27 @@ DOMAINS = [
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
+    (M + "RelaxationTool.tsx", "logEta", None, 0.0,
+     "log10 of the inner tolerance factor eta (inner tolerance = eta x the last outer change): eta <= 1, since an "
+     "inner solve looser than the outer change it serves steers nothing; any positive eta below is valid, only tighter", False),
+    (M + "bayesOpt/BayesOptCard.tsx", "ell", 0.0, None,
+     "an RBF length scale is positive and has no upper bound (Rasmussen and Williams 2006, eq. 2.31); the card "
+     "runs on x in [0, 1], so 0.01 to 0.5 spans a wiggle to a near-straight line", False),
+    (M + "bayesOpt/BayesOptCard.tsx", "noise", 0.0, None,
+     "a noise standard deviation is non-negative and has no upper bound (Rasmussen and Williams 2006, eq. 2.31)", False),
+    (M + "ColumnDesignTool.tsx", "xD", 0.0, 1.0,
+     "a distillate mole fraction lies in [0, 1]; the page deliberately lets it pass the azeotrope of the real "
+     "mixture, where the card says no column can make it", False),
+    (M + "ColumnDesignTool.tsx", "energyPrice", 0.0, None,
+     "a price of heat is non-negative and has no upper bound by physics; the page offers 0.01 to 0.2 EUR/kWh "
+     "around the engine's low-pressure steam price", False),
+    (M + "ColumnDesignTool.tsx", "capitalCharge", 0.0, 1.0,
+     "the yearly charge on installed cost, a capital-recovery factor: above 1/yr the equipment would pay "
+     "back in under a year; the page offers 0.05 to 0.4", False),
+    (M + "FilterPressTool.tsx", "cleaning", 0.0, None,
+     "a press's dead time (discharge and cleaning) is positive and has no upper physical bound; the engine refuses a "
+     "negative `cleaningTime` (CakeFilter.cpp, the batchPress argument check); the box runs from 5 to 90 min, the page's own choice around the case's "
+     "authored 20 min (C511)", False),
 ]
 
 

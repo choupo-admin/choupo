@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 106,
-  "registryTools": 106,
+  "liveTools": 109,
+  "registryTools": 109,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -960,6 +960,20 @@
       "href": "/app/?workspace=methods&tool=residue-curves"
     },
     {
+      "id": "column-design",
+      "label": "Column design (real mixture)",
+      "blurb": "Reflux against stages, cost optimum and the shortcut's error, real mixture.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The general case of column design with the ideal mixture as its control: what a simple column can make from a feed (the lever rule, and the azeotrope no column crosses); the rigorous curve of reflux against stage count at a fixed specification, with its two asymptotes; the cost optimum of stages against energy and how the price of heat moves it; and the shortcut set beside the rigorous result, agreeing on the ideal mixture and parting near the azeotrope.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=column-design"
+    },
+    {
       "id": "levenspiel",
       "label": "Reactor sizing (Levenspiel)",
       "blurb": "Compare PFR and CSTR volumes for the same conversion.",
@@ -1358,7 +1372,7 @@
       "label": "Three ways to optimise a flowsheet",
       "blurb": "Compare Nelder-Mead, SQP and MADS on a smooth and a stepped landscape.",
       "discipline": "Flowsheeting & numerics",
-      "teaches": "Which optimiser to trust and how to read what it says: one problem (a cost, a purity limit, a stage count beside a reflux ratio) drawn whole, in a smooth and a stepped version, and Nelder-Mead, SQP and MADS stepped on both.  Nelder-Mead compares values and takes no constraint; SQP builds a quadratic model, honours the limit and prints a Lagrange multiplier that is a shadow price, and on the staircase its finite-difference slope is zero so it converges where it started; MADS polls a mesh, keeps the integer whole and has a convergence theory for non-smooth functions.  Then the shipped integer-stages case optim06 read row by row, the multiplier checked against the engine by moving the limit, and a decision card with McKinnon's counter-example.",
+      "teaches": "Which optimiser to trust and how to read what it says: one problem (a cost, a purity limit, a stage count beside a reflux ratio) drawn whole, in a smooth and a stepped version, and Nelder-Mead, SQP and MADS stepped on both.  Nelder-Mead compares values and takes no constraint; SQP builds a quadratic model, honours the limit and prints a Lagrange multiplier that is a shadow price, and on the staircase its finite-difference slope is zero so it converges where it started; MADS polls a mesh, keeps the integer whole and has a convergence theory for non-smooth functions.  Then the shipped integer-stages case optim06 read row by row, the multiplier checked against the engine by moving the limit, and a decision card with McKinnon's counter-example.  A last section sketches Bayesian optimisation (a Gaussian-process model and expected improvement) for the case where one simulation is the expensive thing, with the engine's measured comparison against sqp stated in one sentence.",
       "origins": [
         "engine",
         "page",
@@ -1699,6 +1713,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=calculated-to-bought"
+    },
+    {
+      "id": "filter-press-cycle",
+      "label": "When do I open the press?",
+      "blurb": "Find the cake size that gives a press its best rate.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The filter-press cycle: Ruth's constant-pressure law (t/V a straight line in V, its slope and intercept the engine's own K_p and B), the cycle as filtration, washing and a dead time, and the average rate over the whole cycle, which has a maximum where the time that grows as V squared equals the dead time.  The page moves the dead time and draws the average rate against the volume per cycle with six engine runs of the case on the curve, marks the optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice the best volume loses exactly the same share.",
+      "origins": [
+        "engine",
+        "page"
+      ],
+      "href": "/app/?workspace=methods&tool=filter-press-cycle"
     }
   ]
 }

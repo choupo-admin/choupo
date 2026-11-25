@@ -86,7 +86,9 @@ export type MethodToolId =
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
-  | "control-valve" | "compressor-choice" | "calculated-to-bought";
+  | "column-design"
+  | "control-valve" | "compressor-choice" | "calculated-to-bought"
+  | "filter-press-cycle";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1482,6 +1484,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "for five ternaries, with each pair's fit grade shown, a pressure "
       + "control, and published azeotropes beside the engine's.",
   },
+  //  C501 (2026-11-25): column design for a REAL mixture, the ideal one as its
+  //  control.  Four cards: feasibility (the lever rule and the azeotrope), the
+  //  rigorous R against N curve at a fixed specification (a RECORDED engine
+  //  run of a designSpec per stage count), the cost optimum, and the shortcut
+  //  beside the rigorous result.  gui/src/case/columnDesign.ts holds the
+  //  arithmetic, the recording is bin/curate/c501_column_design_table.py.
+  {
+    id: "column-design", blurb: "Reflux against stages, cost optimum and the shortcut's error, real mixture.",
+    label: "Column design (real mixture)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    theory: "ch:column-design",
+    teaches: "The general case of column design with the ideal mixture as its "
+      + "control: what a simple column can make from a feed (the lever rule, "
+      + "and the azeotrope no column crosses); the rigorous curve of reflux "
+      + "against stage count at a fixed specification, with its two "
+      + "asymptotes; the cost optimum of stages against energy and how the "
+      + "price of heat moves it; and the shortcut set beside the rigorous "
+      + "result, agreeing on the ideal mixture and parting near the azeotrope.",
+  },
   {
     id: "levenspiel", blurb: "Compare PFR and CSTR volumes for the same conversion.", label: "Reactor sizing (Levenspiel)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
@@ -2176,7 +2198,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "convergence theory for non-smooth functions.  Then the shipped "
       + "integer-stages case optim06 read row by row, the multiplier checked "
       + "against the engine by moving the limit, and a decision card with "
-      + "McKinnon's counter-example.",
+      + "McKinnon's counter-example.  A last section sketches Bayesian "
+      + "optimisation (a Gaussian-process model and expected improvement) "
+      + "for the case where one simulation is the expensive thing, with the "
+      + "engine's measured comparison against sqp stated in one sentence.",
     theory: "ch:sqp",
   },
   {
@@ -2913,6 +2938,25 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "size and the flow area it adds over the smallest bore the velocity window allows; and "
       + "the compressor driver's margin with a frame ladder you declare.",
     theory: "sec:hx-bought",
+  },
+  //  COMMISSIONED 2026-11-25 (DEV.md 4c C511): a plate-and-frame press has a
+  //  dead time; the average rate over a whole cycle peaks, and flatly.  The
+  //  engine's own press (filter02_caco3_pressWashing) gives K_p, B, the wash
+  //  and the cycle; the curve is algebra on them (filterCycle.ts) and six more
+  //  engine runs of the same case sit on it.
+  {
+    id: "filter-press-cycle", blurb: "Find the cake size that gives a press its best rate.",
+    label: "When do I open the press?",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page"],
+    teaches: "The filter-press cycle: Ruth's constant-pressure law (t/V a straight line in V, its "
+      + "slope and intercept the engine's own K_p and B), the cycle as filtration, washing and a dead "
+      + "time, and the average rate over the whole cycle, which has a maximum where the time that "
+      + "grows as V squared equals the dead time.  The page moves the dead time and draws the average "
+      + "rate against the volume per cycle with six engine runs of the case on the curve, marks the "
+      + "optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice "
+      + "the best volume loses exactly the same share.",
+    theory: "sec:cakeFilter-batchPress",
   },
 ];
 

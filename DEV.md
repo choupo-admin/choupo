@@ -14836,6 +14836,32 @@ accepts today, and that is a policy call.
 > naming the stage and equation (the row of the flattened system maps
 > differently in the CMO and full-MESH layouts).  Gate
 > `check_distillation_seed` (three sabotages).
+> SLICE 1 BUILT 2026-11-24 (branch c184-diagnosis, not landed): THE FEASIBILITY
+> DIAGNOSIS.  `src/unitOperations/distillation/ColumnDiagnosis.{H,cpp}`, called
+> only when a column's Newton returns NOT converged (simultaneous MESH, full
+> MESH; Wang-Henke gets the spec check only).  It prints a `[diagnosis]` block
+> and an advisory: (A) the declared rates leave no bottoms, a negative reflux, a
+> starved stage -- DECLARED numbers only; (B) the stage pricing refused a trial
+> (its first message quoted); (C) the equilibrated Jacobian at the best iterate
+> is singular or above 1e9, the weakest equations and least-determined unknowns
+> NAMED as stage, component and balance with the physics when readable; (D) a
+> non-finite or empty equation; else "could not tell" with what was tried.  No
+> row number anywhere; NewtonND untouched (its NDResult is read, not edited).
+> DECISIONS WITH THEIR REASON: (1) the best iterate's component and stage flows
+> are NOT read for (A): a first version called a feasible 50-stage column at R =
+> 60 "probably infeasible" from the signs an unconverged iterate shows at
+> |F| = 0.7, and was cut back to declared numbers; (2) extrapolation notices are
+> notes, never a cause: a benzene/toluene column raises them and converges, and
+> the first version labelled a hard column (B) on that evidence; (3) the
+> conditioning threshold 1e9 is the reciprocal of the finite-difference
+> Jacobian's own accuracy, not a derived number.  Step 0 (docs/audits/
+> 2026-11-24-c184-step0.md): all 57 corpus column cases converge today;
+> stripper01 and column13 run the BOUNDED Newton (BRAIN was stale), only
+> stripper02 and phase 1 of the reactive columns run the legacy one.  Evidence:
+> 57 cases base vs branch byte-identical (converged/, reports/, exit codes, logs);
+> `bin/runTests --scope` on them PASS 62 / FAIL 0; gate check_column_diagnosis.
+> NOT DONE: slices 2-4; the verdict on a real failing plant; a purity the feed
+> cannot reach is not detected.
 > **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
 > 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
 > estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is

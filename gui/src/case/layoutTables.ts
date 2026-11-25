@@ -115,6 +115,10 @@ export interface PipeRegisterView {
    *  mark (DEV.md 4c C100): indoor piping, which the layout does not route --
    *  each with the engine's reason. */
   indoor: { stream: string; reason: string }[];
+  /** Streams with both ends inside ONE placed shell (a converter's beds): no
+   *  pipe by construction, so they are said in ONE line per shell rather than
+   *  left out of the register -- `Inside the shell CONVERTER/shell (...)`. */
+  insideShell: { item: string; streams: string[]; line: string }[];
 }
 
 /** The pipe register: one row per pipe the engine routed, then what it did
@@ -122,7 +126,10 @@ export interface PipeRegisterView {
 export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
   const pipes = layout.pipes ?? [];
   const notRouted = layout.notRouted ?? [];
-  if (pipes.length === 0 && notRouted.length === 0) return null;
+  const inside = layout.insideShell ?? [];
+  if (pipes.length === 0 && notRouted.length === 0 && inside.length === 0) return null;
+  const shells = new Map<string, string[]>();
+  for (const n of inside) shells.set(n.item, [...(shells.get(n.item) ?? []), n.stream]);
   const fx = (v: number | undefined, d: number) =>
     v === undefined || !Number.isFinite(v) ? "" : v.toFixed(d);
   const rows = pipes.map((p): PipeRow => {
@@ -156,6 +163,11 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
     solids: notRouted.filter((n) => n.solids).map((n) => n.stream),
     indoor: notRouted.filter((n) => n.indoor && !n.anchor)
       .map((n) => ({ stream: n.stream, reason: n.reason })),
+    insideShell: [...shells].map(([item, streams]) => ({
+      item, streams,
+      line: `Inside the shell ${item} (no pipe: both ends are units it holds): ${
+        streams.map((s) => s.replace(/^[^.]*\./, "")).join(", ")}`,
+    })),
   };
 }
 
