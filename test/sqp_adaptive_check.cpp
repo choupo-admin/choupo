@@ -410,6 +410,20 @@ void defineArms()
         if (r.outside > 0) return std::to_string(r.outside) + " evaluations outside the box";
         return std::string();
     });
+    //  optim05's geometry: T_feed in [348, 352.5] K scaled by 350 is [0.99429, 1.00714],
+    //  a box narrower than the largest step (0.05 scaled = 17.5 K); the first version
+    //  simulated 367.5 K against the declared 352.5 K.  An objective of 6.6e8 with
+    //  absolute noise 2e-4 (relative 3e-13) and its minimum beyond both bounds.
+    add("box_optim05_geometry", []() -> std::string {
+        Prob p;
+        p.f = [](const sVector& x) { return 6.6e8 + 1.0e8 * (0.01 * (x[0] - 9.0) * (x[0] - 9.0) + (x[1] - 1.2) * (x[1] - 1.2)); };
+        p.g = {[](const sVector& x) { return x[0] - 7.5; }};
+        p.lo = {0.25, 348.0 / 350.0}; p.hi = {7.5, 352.5 / 350.0}; p.x0 = {1.0, 1.0}; p.noise = 2.0e-4;
+        SQPOptions o = baseOpts(); o.typX = {1.0, 1.0};
+        Run r = run(p, o);
+        if (r.outside > 0) return std::to_string(r.outside) + " evaluations outside the box (T above 352.5 K)";
+        return std::string();
+    });
     add("box_failed_side_fallback", []() -> std::string {
         //  the forward side fails: the fallback side must be inside the box too
         Prob p;

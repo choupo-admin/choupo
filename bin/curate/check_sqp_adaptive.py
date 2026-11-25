@@ -6,7 +6,7 @@
     bin/curate/check_sqp_adaptive.py
 
 THE REAL DEFECTS THIS WOULD HAVE CAUGHT (the Opus review of C496,
-docs/audits/2026-11-24-c496-opus-review.md; eighteen of the nineteen arms were
+docs/audits/2026-11-24-c496-opus-review.md; eighteen of the twenty arms were
 RED on the code that was about to land):
   * a step estimated at x = 0 and reused at x = 0.575 certified "KKT conditions
     satisfied" on a function whose gradient there is -0.5 (the certificate was
@@ -51,7 +51,7 @@ SCAN_ROOTS = ("src/solver/SQP.cpp", "src/solver/SQP.H", "src/solver/ActiveSetQP.
               "src/solver/ActiveSetQP.H", "test/sqp_adaptive_check.cpp",
               "test/sqp_default_path.cpp", "bin/curate/sqp_default_path.expected")
 
-MIN_ARMS = 19
+MIN_ARMS = 20
 SOURCES = ["SQP.cpp", "ActiveSetQP.cpp", "NewtonND.cpp", "LU.cpp", "BlockTridiagonal.cpp"]
 NUM = re.compile(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?|nan|inf")
 
