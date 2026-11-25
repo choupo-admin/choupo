@@ -447,6 +447,9 @@ const ActiveSetQpTool = lazy(() =>
 const OptimizersTool = lazy(() =>
   import("./methods/OptimizersTool.js")
     .then((m) => ({ default: m.OptimizersTool })));
+const WhyDidItNotDryTool = lazy(() =>
+  import("./methods/WhyDidItNotDryTool.js")
+    .then((m) => ({ default: m.WhyDidItNotDryTool })));
 const LubScaleupTool = lazy(() =>
   import("./methods/LubScaleupTool.js")
     .then((m) => ({ default: m.LubScaleupTool })));
@@ -751,6 +754,7 @@ export function MethodsWorkspace() {
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "optimizers" ? <OptimizersTool />
+            : tool === "why-did-it-not-dry" ? <WhyDidItNotDryTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
             : tool === "least-squares" ? <LeastSquaresTool />
