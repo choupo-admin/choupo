@@ -34,6 +34,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  the one copy home of a shipped case (C421)
 CASE = ROOT / "tutorials/batch/reactor/batch02_adiabatic"
 SRC = ROOT / "src/unitOperations/batch/BatchReactor.cpp"
 TOL = 1.0e-7
@@ -81,13 +83,13 @@ def main():
         tmp = Path(tmp)
         full = tmp / "full"
         part = tmp / "part"
-        shutil.copytree(CASE, full)
+        case_records.copytree(CASE, full, inline_kinetics=True)
         r = run(full)
         k0 = kpis(r.stdout)
         if r.returncode != 0 or not k0:
             print("FAIL (a): the uninterrupted run did not finish:\n" + r.stderr[-400:])
             return 1
-        shutil.copytree(CASE, part)
+        case_records.copytree(CASE, part, inline_kinetics=True)
         shutil.rmtree(part / "0")
         shutil.copytree(full / "300", part / "0")
         cf = part / "system/controlDict"
