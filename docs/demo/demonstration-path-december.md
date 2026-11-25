@@ -78,6 +78,10 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
    negative NPV is the lesson, not a defect.
 7. **3D layout.**  Open the layout tab: roads, fence, gates, piped stores and
    the utilities block; say that the process block is still small on the plot.
+   On a machine with a graphics card the view is up at once (laptop, Intel GPU,
+   2026-11-24: run 34 s, 3D in 0.1 s, about 60 frames/s); on one without (a
+   software rasteriser) it froze for minutes (docs/audits/2026-11-24-peq-3d-freeze.md).
+   If the view is slow on the day, the Quality control's Fast setting is the remedy.
 
 ## 5. One EduTool, chosen for these colleagues
 
@@ -116,6 +120,6 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
       change lands before the day.
 - [ ] Vitor rehearses the whole path once in the browser, on the machine and
       the network of the day, and notes any screen that surprised him.
-- [ ] The 107 advisories under the plant's run header: decide whether the
+- [ ] The about 160 advisories under the plant's run header: decide whether the
       header folds them (C479 follow-up) or say "these are the model's
       validity notes, each with its reason".

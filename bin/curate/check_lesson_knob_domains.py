@@ -186,6 +186,14 @@ DOMAINS = [
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
+    (M + "RelaxationTool.tsx", "logEta", None, 0.0,
+     "log10 of the inner tolerance factor eta (inner tolerance = eta x the last outer change): eta <= 1, since an "
+     "inner solve looser than the outer change it serves steers nothing; any positive eta below is valid, only tighter", False),
+    (M + "bayesOpt/BayesOptCard.tsx", "ell", 0.0, None,
+     "an RBF length scale is positive and has no upper bound (Rasmussen and Williams 2006, eq. 2.31); the card "
+     "runs on x in [0, 1], so 0.01 to 0.5 spans a wiggle to a near-straight line", False),
+    (M + "bayesOpt/BayesOptCard.tsx", "noise", 0.0, None,
+     "a noise standard deviation is non-negative and has no upper bound (Rasmussen and Williams 2006, eq. 2.31)", False),
 ]
 
 

@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column05_reactive_methylacetate -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: reactive distillation makes methyl acetate and removes it from the reaction
+  zone as it forms; the composition profile shows the product enriched at the top and the
+  water leaving at the bottom (Poepken et al. 2001, run S-1).
+
+  The plot: the four liquid mole fractions stage by stage with the feed stage marked.  The
+  measured profile of run S-1 (Fig. 6, read from a plot) is NOT overlaid: its stations are
+  heights and a text label, with no numeric stage column the views can read, and adding
+  one would be a case edit beyond this dictionary.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Reactive column: liquid composition by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the markers are the acid feed (stage 10) and the methanol feed (stage 20); stages 11-19 are the reactive zone. Read it: methyl acetate is almost pure (about 0.99) from the top down to the acid feed and falls through the reactive zone, while water and methanol collect below it; the acid is consumed inside the zone. Compare with the measured Fig. 6 of Poepken et al. (2001) in constant/experimental: the measured profile is not drawn here.";
+        series
+        (
+            { name x_methylAcetate; label "methyl acetate"; unitOp rdColumn; table profile; x stage; y x_methylAcetate; style linesMarkers; }
+            { name x_methanol; label "methanol"; unitOp rdColumn; table profile; x stage; y x_methanol; style linesMarkers; }
+            { name x_aceticAcid; label "acetic acid"; unitOp rdColumn; table profile; x stage; y x_aceticAcid; style linesMarkers; }
+            { name x_water; label "water"; unitOp rdColumn; table profile; x stage; y x_water; style linesMarkers; }
+            { name x_methylAcetate_10; label "acid feed (stage 10)"; unitOp rdColumn; table profile; select { stage 10; } x stage; y x_methylAcetate; style markers; }
+            { name x_methylAcetate_20; label "methanol feed (stage 20)"; unitOp rdColumn; table profile; select { stage 20; } x stage; y x_methylAcetate; style markers; }
+        );
+    }
+    {
+        name    temperature_by_stage;
+        type    profile;
+        title   "Reactive column: temperature by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "stage temperature"; unit "K"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the markers are the acid feed (10) and methanol feed (20). Read it: the temperature is nearly flat at the methyl acetate boiling region down to the acid feed, steps up to about 338 K where the acid enters the reactive zone, and rises to the reboiler through the water-rich stripping section.";
+        series
+        (
+            { name T; label "stage temperature"; unitOp rdColumn; table profile; x stage; y T; style linesMarkers; }
+            { name T_10; label "acid feed (stage 10)"; unitOp rdColumn; table profile; select { stage 10; } x stage; y T; style markers; }
+            { name T_20; label "methanol feed (stage 20)"; unitOp rdColumn; table profile; select { stage 20; } x stage; y T; style markers; }
+        );
+    }
+);

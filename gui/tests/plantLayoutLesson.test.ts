@@ -355,36 +355,36 @@ describe("plant layout: the lesson text", () => {
       "PlantLayout.cpp:409": "it.dx = D; it.dy = D; it.dz = L",
       "PlantLayout.cpp:224-227": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
       "PlantLayout.cpp:235": '"sieveTrays"',
-      "PlantLayout.cpp:5086": "already published its size",
-      "PlantLayout.cpp:5128": "No size is",
+      "PlantLayout.cpp:5178": "already published its size",
+      "PlantLayout.cpp:5220": "No size is",
       "PlantLayout.cpp:163": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
-      "PlantLayout.cpp:5293-5295": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
+      "PlantLayout.cpp:5385-5387": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
       "PlantLayout.cpp:291": "`measure` is not declared",
-      "PlantLayout.cpp:5079": "it.kind   = s->second.equipmentType",
+      "PlantLayout.cpp:5171": "it.kind   = s->second.equipmentType",
       "PlantLayout.cpp:334": "is declared twice",
-      "PlantLayout.cpp:5297": 'addFinding("separation"',
-      "PlantLayout.cpp:6294-6295": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
-      "PlantLayout.cpp:6310": "std::ceil(x * 100.0",
+      "PlantLayout.cpp:5389": 'addFinding("separation"',
+      "PlantLayout.cpp:6394-6395": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
+      "PlantLayout.cpp:6410": "std::ceil(x * 100.0",
       "PlantLayout.cpp:107-108": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
-      "PlantLayout.cpp:5210-5211": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
-      "PlantLayout.cpp:5387": "w.fromDeg + 180.0",
-      "PlantLayout.cpp:5397-5400": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
-      "PlantLayout.cpp:5396": "dist > w.reach",
+      "PlantLayout.cpp:5302-5303": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
+      "PlantLayout.cpp:5479": "w.fromDeg + 180.0",
+      "PlantLayout.cpp:5489-5492": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
+      "PlantLayout.cpp:5488": "dist > w.reach",
       "PlantLayout.cpp:132": "carries no unit",
       "PlantLayout.cpp:247": 'lookupWord("ignition")',
-      "PlantLayout.cpp:5363-5366": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
+      "PlantLayout.cpp:5455-5458": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
       "PlantLayout.cpp:187": "scalar pointToFootprint",
       //  The pipes (C80): the rack route, the length, the default rack.
-      "PlantLayout.cpp:1964-1996":
+      "PlantLayout.cpp:2045-2077":
         /p\.routedBy = "rack";[\s\S]*pts\.push_back\(\{ dep\[0\], dep\[1\], z \}\);[\s\S]*pts\.push_back\(\{ dep\[0\], y, z \}\);[\s\S]*pts\.push_back\(\*q\);[\s\S]*sourcePart\(ly, lz\);\s*targetPart\(ly, lz\);/,
-      "PlantLayout.cpp:2112": "p.length += segLength(p.route[i - 1], p.route[i]);",
-      "PlantLayout.cpp:2162": "if (!rack.declared)",
+      "PlantLayout.cpp:2193": "p.length += segLength(p.route[i - 1], p.route[i]);",
+      "PlantLayout.cpp:2243": "if (!rack.declared)",
       //  The plot (C82): the envelope grown by the margin, its area, the
       //  footprints' own area, the undeclared margin announced.
-      "PlantLayout.cpp:2934-2936":
+      "PlantLayout.cpp:3015-3017":
         /pl\.xMin = x0 - pl\.margin;[\s\S]*pl\.plotArea = \(pl\.xMax - pl\.xMin\) \* \(pl\.yMax - pl\.yMin\);/,
-      "PlantLayout.cpp:2946": "pl.footprintArea += planArea(i);",
-      "PlantLayout.cpp:3014": "if (!pl.marginDeclared)",
+      "PlantLayout.cpp:3027": "pl.footprintArea += planArea(i);",
+      "PlantLayout.cpp:3095": "if (!pl.marginDeclared)",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

@@ -127,3 +127,42 @@ costing
     cepci2001   397;        // Turton base-year basis
     usdToEur    0.92;
 }
+
+/*---------------------------------------------------------------------------*\
+  The figure the lesson opens on (DEV.md 4c C477).
+
+  The lesson: a converged column is not yet a feasible one; the hydraulics pass
+  sized the tower so that no tray passes 80 % of its flooding velocity.
+
+  The plot: how close each tray runs to flooding, tray by tray, and the downcomer
+  liquid backup beside it.  It declares how the run is DRAWN over what the column
+  already publishes; it computes nothing and changes no number.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    flood_by_tray;
+        type    profile;
+        title   "How close each tray runs to flooding: the design target is 80 %";
+        xAxis   { label "stage (1 = top tray)"; unit "-"; scale linear; }
+        yAxis   { label "approach to flooding velocity (1 = flooding)"; unit "-"; scale linear; }
+        note    "Read it: the worst tray is the highest point (stage 7, just above the feed, exactly 0.80: the diameter was chosen for it), and 1.0 is flooding. The drop at the feed is the stripping section's smaller vapour flow; the last stage is the reboiler and has no tray, so its zero is not a tray at all.";
+        series
+        (
+            { name flood; label "fraction of the flooding velocity"; unitOp column09; table profile; x stage; y floodApproach; style linesMarkers; }
+        );
+    }
+    {
+        name    backup_by_tray;
+        type    profile;
+        title   "Downcomer liquid backup, tray by tray";
+        xAxis   { label "stage (1 = top tray)"; unit "-"; scale linear; }
+        yAxis   { label "downcomer backup"; unit "mm"; scale linear; }
+        note    "Read it: the backup follows the same shape as the flooding approach and peaks at the same tray; compare its peak with the downcomer limit in the run's hydraulics table. The last stage is the reboiler (no tray, zero).";
+        series
+        (
+            { name backup; label "backup in the downcomer"; unitOp column09; table profile; x stage; y h_backup_mm; style linesMarkers; }
+        );
+    }
+);

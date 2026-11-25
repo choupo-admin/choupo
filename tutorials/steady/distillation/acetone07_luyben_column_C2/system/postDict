@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  acetone07_luyben_column_C2 -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: C2 takes C1's bottoms and sends water to the bottom; the isopropanol/water
+  azeotrope limits how far the isopropanol can be concentrated overhead.
+
+  The plot: the isopropanol and water liquid mole fractions stage by stage, with the
+  feed stage marked; the isopropanol curve flattens where the azeotrope pinches.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    azeotrope_pinch_by_stage;
+        type    profile;
+        title   "C2: isopropanol and water by stage -- the azeotrope pinch";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler. The marker is the feed stage (16). Read it: above the feed the isopropanol fraction creeps up by only a few points per stage and the liquid and vapour curves nearly meet at the top, instead of the isopropanol reaching 1; that slow zone is the pinch against the azeotrope the column cannot cross. Below the feed the stripping section drops it quickly to almost pure water, and the water fraction mirrors it. Acetone (a trace here, below 0.0002) is left out.";
+        series
+        (
+            { name x_isopropanol; label "isopropanol (liquid)"; unitOp C2; table profile; x stage; y x_isopropanol; style linesMarkers; }
+            { name x_water; label "water (liquid)"; unitOp C2; table profile; x stage; y x_water; style linesMarkers; }
+            { name y_isopropanol; label "isopropanol (vapour)"; unitOp C2; table profile; x stage; y y_isopropanol; style linesMarkers; }
+            { name x_isopropanol_16; label "feed stage (16)"; unitOp C2; table profile; select { stage 16; } x stage; y x_isopropanol; style markers; }
+        );
+    }
+);

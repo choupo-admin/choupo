@@ -450,6 +450,16 @@ strengthened):
       item -- caught by the needle, not by the exit code.
   S52 a lying cylinder displaces its bounding box                       -> (p)
       2334.47 m3 against the segments' 1681.47 recomputed here.
+  The six converter pipes, 2026-11-24, by hand, PlantLayout.cpp restored by
+  copy and rebuilt after, arms (g) and (h), both CAUGHT in one run:
+  S53 `shellHostOf` returns "" (a unit inside a placed shell has no host)  -> (h)
+      the reference plant's six pipes unrouted, the four inside-shell
+      streams not listed, PreheatedFeed / HotEffluent not on the shell.
+  S54 the `pipeNotRouted` finding not raised                             -> (g), (h)
+      the refused separator's streams and every notRouted stream that is no
+      rule (solids, indoor, two consumers) with no finding saying so.
+  The real defect: the plan said "0 findings" beside six unrouted process
+  pipes of the converter, because only rule violations were counted.
   S53 a pipe through a wall tested ABOVE its top                        -> (p)
       the 0.1 m route through the kerb announces nothing.
   S54 a depth allowance over the catch area only (the pit dropped)      -> (p)
@@ -1232,9 +1242,19 @@ def arm_draft(work):
     if "A DRAFT" not in text or "PROPOSAL, NOT A LAYOUT" not in text:
         fail("(e) the draft is not headed as a DRAFT the student must own")
     lay = ((result_json(out) or {}).get("layout")) or {}
-    if not lay or lay.get("findings"):
+    #  A draft is a PARTIAL proposal: the items it leaves unplaced leave their
+    #  pipes unrouted, and since 2026-11-24 each of those is a `pipeNotRouted`
+    #  finding with its reason (the plan never says "0 findings" beside a
+    #  missing pipe).  Every OTHER finding is still a defect of the draft, and
+    #  each pipeNotRouted must be a stream the notRouted list also carries.
+    unrouted_listed = {n["stream"] for n in lay.get("notRouted", [])}
+    other = [f["id"] for f in lay.get("findings", [])
+             if f["kind"] != "pipeNotRouted"]
+    stray = [f["id"] for f in lay.get("findings", [])
+             if f["kind"] == "pipeNotRouted" and f["a"] not in unrouted_listed]
+    if not lay or other or stray:
         fail(f"(e) the draft's own check: block {'present' if lay else 'ABSENT'},"
-             f" findings {[f['id'] for f in lay.get('findings', [])]}")
+             f" findings {other + stray}")
     if sorted(a["sector"] for a in lay.get("areas", [])) != ["DRYING", "FERMENTATION"]:
         fail(f"(e) the draft's areas are {[a['sector'] for a in lay.get('areas', [])]}")
     for u in ("CONCENTRATION.Evap1", "CONCENTRATION.Cryst"):
@@ -1354,6 +1374,12 @@ def arm_refused_sizer(work):
     if len(ids) != WITNESS_ITEMS - 1:
         fail(f"(g) {len(ids)} items placed, expected the witness's {WITNESS_ITEMS} less the"
              " separator")
+    #  a pipe the plan lacks is a finding, with the reason (2026-11-24)
+    pn = [x for x in lay["findings"] if x["kind"] == "pipeNotRouted"]
+    if not pn or not all("NOT ROUTED" in x["message"] for x in pn) or             {x["a"] for x in pn} != {n["stream"] for n in lay.get("notRouted", [])
+                                     if "sizer refused" in n["reason"]}:
+        fail("(g) the streams left unrouted by the refused separator are not each a"
+             f" pipeNotRouted finding: {[x['id'] for x in pn]}")
     f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
     if len(f) != 1:
         fail(f"(g) no sizingRefused finding for the separator; findings "
@@ -1614,10 +1640,16 @@ def arm_pipes(work):
         ids = stream_identities(j)
         routed = [p["stream"] for p in lay["pipes"] if not p.get("branch")]
         listed = [n["stream"] for n in lay.get("notRouted", [])]
+        #  a stream inside a placed shell (both ends units the shell encloses)
+        #  is no pipe and is listed apart, by name (2026-11-24)
+        inside = [n["stream"] for n in lay.get("insideShell", [])]
+        if set(inside) & (set(routed) | set(listed)):
+            fail(f"(h) {tag}: a stream is inside a shell and also routed or not routed")
+        listed_all = listed + inside
         if len(set(routed)) != len(routed) or set(routed) & set(listed):
             fail(f"(h) {tag}: a stream is routed twice, or both routed and listed")
-        missing = ids - set(routed) - set(listed)
-        extra = (set(routed) | set(listed)) - ids
+        missing = ids - set(routed) - set(listed_all)
+        extra = (set(routed) | set(listed_all)) - ids
         if missing:
             fail(f"(h) {tag}: stream(s) neither routed nor listed: {sorted(missing)}")
         if extra:
@@ -1633,6 +1665,30 @@ def arm_pipes(work):
         overrides = re.search(r"^pipes\s*\n\{", (case / "system" / "layoutDict").read_text(),
                               re.M) is not None
         total += check_routes(tag, lay, require_rack_route=not overrides)
+        #  A process pipe the plan lacks is a finding: every notRouted stream
+        #  that is no rule (solids, indoor, two consumers) has one.
+        fnd = {f["a"] for f in lay.get("findings", []) if f["kind"] == "pipeNotRouted"}
+        for nr in lay.get("notRouted", []):
+            by_rule = (nr.get("solids") or nr.get("indoor")
+                       or "a pipe has two ends" in nr.get("reason", ""))
+            if not by_rule and nr["stream"] not in fnd:
+                fail(f"(h) {tag}: {nr['stream']} is not routed and no pipeNotRouted"
+                     " finding says so")
+        if tag == "greenAmmoniaPEQ":
+            #  THE SIX CONVERTER PIPES (2026-11-24): the beds and inter-bed
+            #  coolers live inside the placed shell; the two outer pipes land
+            #  on it, the four between them are inside it, none is lost
+            pk = {p["stream"]: p for p in lay["pipes"]}
+            if sorted(n["stream"] for n in lay.get("insideShell", [])) != sorted(
+                    ["CONVERTER.Bed1Out", "CONVERTER.Bed2Feed",
+                     "CONVERTER.Bed2Out", "CONVERTER.Bed3Feed"]):
+                fail(f"(h) {tag}: the four streams between the converter's beds are"
+                     f" not listed inside the shell: {lay.get('insideShell')}")
+            if pk.get("PreheatedFeed", {}).get("to") != "CONVERTER/shell" or                     pk.get("CONVERTER.HotEffluent", {}).get("from") != "CONVERTER/shell":
+                fail(f"(h) {tag}: PreheatedFeed / CONVERTER.HotEffluent are not routed"
+                     " to / from the converter shell")
+            if listed:
+                fail(f"(h) {tag}: the reference plant leaves pipes unrouted: {listed}")
         check_solids(tag, j, lay)
         check_plot(tag, case, lay, out, err, j)
         # the rack: declared in all three (ammonia02 since C93, when its tank

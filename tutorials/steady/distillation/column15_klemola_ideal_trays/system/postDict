@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column15_klemola_ideal_trays -- the views the lesson opens on (DEV.md 4c C477).
+
+  The lesson: the control arm of column14.  The same column with every tray
+  an equilibrium stage (E_MV = 1) instead of the measured 1.191; what the
+  efficiency buys is read by setting these figures beside column14's.
+
+  The plots: the same two profiles column14 declares, under the same names,
+  axes and ranges, so the two cases' figures overlay by eye: the stage
+  temperature, and the liquid composition of the two key components on a log
+  axis.  One run draws one column, so column14's curves are not on this
+  figure; the note says what to look for.
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    profile_temperature;
+        type    profile;
+        title   "Temperature profile with ideal trays (E_MV = 1)";
+        xAxis   { label "stage (1 = top tray, 75 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "degC"; scale linear; }
+        note    "Read it beside column14's temperature profile (same axes): the two arms differ only in the tray efficiency (1.0 here, the measured 1.191 there), and on the major components the two curves are almost the same: the top sits at 314.116 K here against 314.250 K there, the reboiler at 329.435 K against 329.437 K. The marker is the feed tray (stage 37). One pressure is declared for every stage, so the stripping section reads low, as in column14.";
+        series
+        (
+            { name temperature; label "Choupo, E_MV = 1"; unitOp splitter; table profile; x stage; y T; style lines; }
+            { name feedTray;    label "feed tray (stage 37)"; unitOp splitter; table profile; select { stage 37; } x stage; y T; style markers; }
+        );
+    }
+    {
+        name    profile_composition;
+        type    profile;
+        title   "Liquid composition of the two key components with ideal trays (E_MV = 1)";
+        xAxis   { label "stage (1 = top tray, 75 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale log; }
+        note    "Read it beside column14's composition profile (same log axis): i-butane is about 0.95 at the top and falls through the feed tray to a trace at the reboiler, n-butane does the opposite. The log axis is what shows the efficiency: on a linear axis the major components of the two arms are nearly indistinguishable, but the minor key of each product (n-butane carried overhead, i-butane lost to the bottoms) differs by a real factor (about 10x overhead), because at 74 trays the extra separating power goes into the impurity that is left. No measured tray profile exists to compare with. The marker is the feed tray.";
+        series
+        (
+            { name iC4;      label "i-butane"; unitOp splitter; table profile; x stage; y x_isoButane; style lines; }
+            { name nC4;      label "n-butane"; unitOp splitter; table profile; x stage; y x_nButane;   style lines; }
+            { name feedTray; label "feed tray (stage 37)"; unitOp splitter; table profile; select { stage 37; } x stage; y x_isoButane; style markers; }
+        );
+    }
+);
