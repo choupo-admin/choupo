@@ -1707,6 +1707,8 @@ state.P n [Pa] >0
 grid o
 grid.n i >=2
 feed o
+stability o
+stability.feed o
 output o
 output.file* s
 ```

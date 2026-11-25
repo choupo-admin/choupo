@@ -4067,6 +4067,40 @@
         }
       ]
     },
+    "how-many-phases": {
+      "references": [
+        {
+          "text": "Michelsen, M. L. (1982). The isothermal flash problem. Part I. Stability. Fluid Phase Equilib. 9(1), 1–19.",
+          "doi": "10.1016/0378-3812(82)85001-2",
+          "note": "The tangent-plane criterion of stability that the engine's michelsenTPD implements.  The paper itself was not read for this page: it is cited as the origin of the criterion, and the page's equations are re-derived from the chemical potential and checked against the engine's tables.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0378-3812(82)85001-2: author Michelsen, title 'The isothermal flash problem. Part I. Stability', container Fluid Phase Equilibria, volume 9, pages 1-19, year 1982 matched (the paper not read)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Michelsen, M. L. (1982). The isothermal flash problem. Part II. Phase-split calculation. Fluid Phase Equilibria 9(1), 21–40.",
+          "doi": "10.1016/0378-3812(82)85002-4",
+          "note": "The companion paper: the phase-split calculation that follows a negative stability test.  Not read for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0378-3812(82)85002-4: title 'The isothermal flash problem. Part II. Phase-split calculation', pages 21-40, year 1982 matched (the paper not read)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Winkelman, J. G. M.; Kraai, G. N.; Heeres, H. J. (2009). Binary, ternary and quaternary liquid–liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures. Fluid Phase Equilibria 284(2), 71–79.",
+          "doi": "10.1016/j.fluid.2009.06.013",
+          "note": "The UNIQUAC set for water and 1-butanol (their Table 2, p. 73) that the engine's case uses, and the measured mutual solubilities the case's README compares with.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2009.06.013: authors Winkelman, Kraai, Heeres, title, container Fluid Phase Equilibria, volume 284, pages 71-79, year 2009 matched; the Table 2 parameters are those of the engine's case record nButanol-water.dat",
+            "date": "2026-11-25"
+          }
+        }
+      ]
+    },
     "gas-line": {
       "references": [
         {

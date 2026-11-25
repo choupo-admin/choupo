@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 110,
-  "registryTools": 110,
+  "liveTools": 111,
+  "registryTools": 111,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1738,6 +1738,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=gas-line"
+    },
+    {
+      "id": "how-many-phases",
+      "label": "How many phases? Gibbs energy and the tangent plane",
+      "blurb": "Find out why equal fugacities do not prove a split.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Why equilibrium is the global minimum of the Gibbs energy and equal fugacities are only necessary: the molar Gibbs energy of mixing of water and n-butanol with its two humps, the common tangent through the two coexisting liquids and the lever rule on a feed you move, the activities whose equality has a trivial solution and a true one, and Michelsen's tangent-plane distance along a trial composition, negative somewhere when a phase is absent.  Every curve is the engine's own run of a propertyScanBinary case; the page adds the lever rule and the tangent algebra.",
+      "origins": [
+        "engine",
+        "page"
+      ],
+      "href": "/app/?workspace=methods&tool=how-many-phases"
     }
   ]
 }

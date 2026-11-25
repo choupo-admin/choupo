@@ -811,6 +811,21 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["filterPressCycle.test.ts"],
     stdout: true,
   },
+  //  The "How many phases?" page: the tables of propertyScanBinary's
+  //  `stability` block (the series views the case writes under
+  //  postProcessing/lle/) and the engine's log with its own Michelsen line.
+  {
+    caseDir: "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
+    file: "postProcessing/lle",
+    readBy: ["howManyPhases.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
+    file: "log.choupoProps",
+    readBy: ["howManyPhases.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
