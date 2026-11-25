@@ -5687,6 +5687,10 @@ accepts today, and that is a policy call.
 > temperature in the spray dryer: after 2 December.  Read back by the architect: the gains (2.8, 33.8), the dryer
 > goldens, evapDryer02's false sentence, the idle cyclone.
 
+> **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
+> packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
+> from primaries, one correlation (Onda or Billet-Schultes) measured against published data.  Meets C319.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
