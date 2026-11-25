@@ -334,89 +334,92 @@ provenance block), and the three are different kinds of number:
 | stream | price | what it is |
 |---|---|---|
 | ammonia, sold | 0.530 EUR/kg | the EU's **import unit value** of anhydrous ammonia in 2025 (Eurostat Comext, CN 28141000, extra-EU27: 1 427 171 639 EUR for 2 693 549 t, so 1 427 171 639 / 2 693 549 000 kg = 0.5298 EUR/kg), a customs value at the EU border used here as the **market price of conventional ammonia**; all twelve months of 2025 are in the data and the dataset does not state whether the year is final; not a price at the gate, not a contract price |
-| hydrogen, bought | 1.5 EUR/kg | **the author's choice** (C526), made inside the range 0.74-4.07 EUR/kg that the project brief quotes from ACER's European hydrogen markets, 2025 Monitoring Report (2 Dec 2025, data item 972). **Read back against the report on 2026-11-25: that range is not in the text of the pdf**, nor is the item number; page 40 gives conventional (SMR) hydrogen at "a bit higher than 2 EUR/kg", with CCS 2.8, and renewable (RFNBO) hydrogen at "around 8 EUR/kg, ranging between 7-10 EUR/kg". The range stays a quoted figure, unconfirmed, until the data item is read. The earlier base of this case, 8.0 EUR/kg, is ACER's RFNBO cost and is the scenario at which the plant loses (below) |
+| hydrogen, bought | 2.0 EUR/kg | ACER's statement of the average **cost of conventional hydrogen** (from natural gas, SMR) in the EU in 2025: "in 2025 (January to October), the average cost of conventional hydrogen produced via SMR was a bit higher than 2 EUR/kg" (European hydrogen markets, 2025 Monitoring Report, 2 Dec 2025, p. 40 para 78; "just over 2 EUR/kg" on p. 5; read 2026-11-25 from the pdf). **How the number was read:** the source prints no figure, only those words, so the case takes 2.0, with no uplift for "a bit". The source states a cost, no delivered price and no pressure: that the plant pays it at its fence is **this case's reading**. ACER's cost of **renewable (RFNBO) hydrogen**, "around 8 EUR/kg, ranging between 7-10 EUR/kg" (same paragraph), is the high end of the sensitivity |
 | nitrogen, bought | 0.0175 EUR/kg | a **modelled production cost** from Table 2 of OIES paper ET40 (October 2024): the highest of the six "Present" values, 18.98 USD/t (Chile Atacama, PV), at 1.08238 USD per EUR (ECB, 2024 average); not a merchant price, and about 1 % of the raw-material bill |
 
 No transaction or contract price of renewable ammonia could be read, so none
 is assumed: **the case sells at the market price of the conventional product**
 (0.530 EUR/kg), and what the plant needs beyond that is not an input, it is
 what the engine's break-even prints (below). The ends of the `sensitivity {}`
-are each on the basis of its base price, cited in the provenance block:
-ammonia 0.380-0.692 EUR/kg (the lowest and highest monthly EU import unit
-value of 2025, June and November, from the same Eurostat dataset); hydrogen
-0.74-4.07 EUR/kg (the brief's range, above); nitrogen 0.0159-0.0175 EUR/kg
-(OIES Table 2, six "Present" values, 2024). Figures of another kind are
-context in the blocks, not ends: a US free-on-board estimate and a nine-month
-2026 value for ammonia, and 4.95 EUR/kg for hydrogen, the average offtake
-price ACER calculated for ammonia producers from the bids of a subsidised
-auction (p. 26).
+are each on the basis of its base price: ammonia 0.380-0.692 EUR/kg (the
+lowest and highest monthly EU import unit value of 2025, June and November,
+from the same Eurostat dataset); hydrogen 1.5 EUR/kg, an **assumption** (a
+site with cheap hydrogen, below the 2025 conventional cost; read from no
+source), and 8.0 EUR/kg, ACER's cited cost of renewable hydrogen; nitrogen
+0.0159-0.0175 EUR/kg (OIES Table 2, six "Present" values, 2024). Figures of
+another kind are context in the provenance blocks, not ends: a US
+free-on-board estimate and a nine-month 2026 value for ammonia; 2.8 EUR/kg for
+SMR with carbon capture and 4.95 EUR/kg, the average offtake price ACER
+calculated for ammonia producers from the bids of a subsidised auction
+(pp. 40 and 26).
 
-**At 1.5 EUR/kg of hydrogen the plant pays.** The hydrogen costs
-0.1803 kg H₂/kg NH₃ x 1.5 = 0.27 EUR per kg of ammonia, about half of what
-the conventional ammonia sells for (0.530). NPV is +96.3<!--golden: kpi economics NPV *1e-6--> M EUR at the 10 % discount rate over 15 years,
-IRR 20.2<!--golden: kpi economics IRR *100--> %, discounted payback 6.5<!--golden: kpi economics paybackYears--> years (the plot is 33 915 m²<!--golden: kpi economics landArea-->, land included).
-(Before 2026-11-25 the base was 8.0 EUR/kg, NPV about -3 288 M EUR; before
-2026-11-13 the prices had no source at all: hydrogen 4.50, ammonia 1.00 and
-nitrogen 0.05 EUR/kg, NPV -405 M EUR.)
+**Bought at the cited conventional price of hydrogen, this plant does not
+pay.** The hydrogen costs 0.1803 kg H₂/kg NH₃ x 2.0 = 0.36 EUR per kg of
+ammonia, two thirds of what the conventional ammonia sells for (0.530), and the
+rest of the cost of manufacture takes the remainder: NPV is
+-164.0<!--golden: kpi economics NPV *1e-6--> M EUR at the 10 % discount rate over 15 years, there is no IRR,
+and the discounted payback is never reached. (The plot is
+33 915 m²<!--golden: kpi economics landArea-->, land included. Before 2026-11-25 the hydrogen price
+was 8.0 EUR/kg, NPV -3 288 M EUR; before 2026-11-13 the prices had no
+source at all: hydrogen 4.50, ammonia 1.00 and nitrogen 0.05 EUR/kg, NPV
+-405 M EUR.)
 
 ### Hydrogen price scenarios: where the plant pays and where it does not
 
-The same plant, the same converged run, four prices of hydrogen. The first,
-second and third rows are the `sensitivity {}` block's own numbers (the case's
-base and the two ends of the brief's range, priced by the same cash flow on the
-same run, pinned to the golden); the fourth is the earlier base, ACER's cost of
-renewable (RFNBO) hydrogen, measured on 2026-11-25 by running a scratch copy of
-this case with `price 8.0;` (not pinned: it is not a row of this case's run).
+The same plant, the same converged run, three prices of hydrogen: the
+`sensitivity {}` block's two ends and the base, priced by the same cash flow
+on the same run, every row pinned to the golden.
 
 | hydrogen, EUR/kg | NPV, M EUR | IRR | discounted payback | reading |
 |---|---|---|---|---|
-| 0.74 | +491.9<!--golden: kpi economics sens_price_H2Feed_NPV_low *1e-6--> | 57.1<!--golden: kpi economics sens_price_H2Feed_IRR_low *100--> % | 2.0<!--golden: kpi economics sens_price_H2Feed_payback_low--> y | the low end of the brief's range |
-| **1.5 (base)** | **+96.3**<!--golden: kpi economics NPV *1e-6--> | 20.2<!--golden: kpi economics IRR *100--> % | 6.5<!--golden: kpi economics paybackYears--> y | the author's choice; the plant pays |
-| 4.07 | -1 241.6<!--golden: kpi economics sens_price_H2Feed_NPV_high *1e-6--> | none | never | the high end of the range: past break-even, the plant loses |
-| 8.0 | -3 287.5 | none | never | ACER's cost of RFNBO hydrogen (p. 40), the former base: the plant loses |
+| 1.5 | +96.3<!--golden: kpi economics sens_price_H2Feed_NPV_low *1e-6--> | 20.2<!--golden: kpi economics sens_price_H2Feed_IRR_low *100--> % | 6.5<!--golden: kpi economics sens_price_H2Feed_payback_low--> y | an ASSUMPTION: a site with cheap hydrogen; the plant pays |
+| **2.0 (base)** | **-164.0**<!--golden: kpi economics NPV *1e-6--> | none | never | ACER's cost of conventional (SMR) hydrogen: the plant does not pay |
+| 8.0 | -3 287.5<!--golden: kpi economics sens_price_H2Feed_NPV_high *1e-6--> | none | never | ACER's cost of renewable (RFNBO) hydrogen: the plant loses 3.3 billion EUR |
 
-The **highest price of hydrogen the plant can bear** (NPV = 0, every other price
-held; found by pricing the same appraisal again) is **1.685 EUR/kg**<!--golden: kpi economics breakEven_price_H2Feed-->, the same in
-every row (the NPV is a straight line in the hydrogen price here). It lies
-inside the brief's range, above the base (1.5) and below the 4.07 end, which is
-why the table changes sign between its second and third rows; the 8.0 cost is
-4.7 times what the plant can bear. The **minimum selling price of ammonia**
-at the base hydrogen price is **0.488 EUR/kg**<!--golden: kpi economics breakEven_price_ProductNH3-->, 92 % of the conventional market price of 0.530: the plant pays without a premium. At 8.0 the same break-even reads 1.952 EUR/kg, 3.7 times the market price
-(scratch run, not pinned): that is the premium a renewable-ammonia buyer would
-have to pay for the plant to break even at ACER's cost.
-**The lesson of the table is that this plant's economics are decided by
-the price of its hydrogen, not by its equipment**: the tornado of the run
-(`reports/economics/sensitivity.csv`, printed sorted by NPV swing) puts the
-hydrogen price first, ahead of the ammonia price and of the capital band
-(FCI, -30 % / +50 %).
+The **highest price of hydrogen the plant can bear** (NPV = 0, every other
+price held; found by pricing the same appraisal again) is
+**1.685 EUR/kg**<!--golden: kpi economics breakEven_price_H2Feed-->: **below** the cited 2.0 and above the assumed 1.5, which is why
+the first row pays and the second does not. The NPV is a straight line in the
+hydrogen price here, so this one number serves every row. The **minimum
+selling price of ammonia** at the base hydrogen price is
+**0.601 EUR/kg**<!--golden: kpi economics breakEven_price_ProductNH3-->, 13 % above the conventional market price of 0.530: the premium
+is small at 2.0 and large at 8.0 (there it reads about 1.95 EUR/kg, 3.7 times
+the market, a figure of an earlier run of this case). **The lesson is that this
+plant's economics are decided by the price of its hydrogen, not by its
+equipment, and that a plant which BUYS hydrogen at the going cost of the
+natural-gas route does not pay: it pays only below 1.685 EUR/kg.** That is why
+ammonia plants make their own hydrogen from natural gas, inside the battery
+limit, instead of buying it; the case that does so is the next slice of this
+work (C526). The tornado of the run (`reports/economics/sensitivity.csv`,
+printed sorted by NPV swing) puts the hydrogen price first, ahead of the
+ammonia price and of the capital band (FCI, -30 % / +50 %).
 
-**Which tax reading these NPVs are.** By default a loss year's negative tax is
-a credit: the owner is assumed to have other taxable profit to set the loss
-against. At the base price every year has taxable income and the reading
-changes nothing; at 8.0 EUR/kg every one of the 15 operating years is a loss
-and the credit is worth 852 M EUR of the NPV (1 674 M EUR of tax credited,
-undiscounted: the run announces it with the KPIs `lossYears`,
-`taxCreditOnLoss`, `taxCreditOnLoss_NPV`); a stand-alone project has no such
-profit, and declaring `taxOnLoss none;` in the `economics` block would
-lower the 8.0 row to about -4 140 M EUR (scratch run, 2026-11-24, at the older
-plot). Neither reading carries a loss forward. At the break-even prices every
-operating year has a positive taxable income, so the two break-evens are the
-same under either reading.
+**Which tax reading these NPVs are.** The plant loses money in every one of its
+15<!--golden: kpi economics lossYears--> operating years, and by default the cash flow treats each year's
+negative tax as a credit: it assumes the owner has other taxable profit to set
+the loss against. At the base price that credit is worth
+26.1<!--golden: kpi economics taxCreditOnLoss_NPV *1e-6--> M EUR of the NPV (44.9<!--golden: kpi economics taxCreditOnLoss *1e-6--> M EUR of tax credited over the 15
+years, undiscounted; the run announces it, with the KPIs `lossYears`,
+`taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A stand-alone project has no
+such profit; declaring `taxOnLoss none;` in the `economics` block would lower
+the NPV by that amount, to -190.1<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> M EUR. Neither reading carries a loss
+forward. At the break-even prices every operating year has a positive taxable
+income, so the two break-evens are the same under either reading.
 
 **What this table is not.** The case sells ammonia at the market price of the
-CONVENTIONAL product; no premium for renewable ammonia is assumed. What
-electrolytic hydrogen at ACER's 8 EUR/kg does to this plant is the last row:
-it turns a plant that pays into one that loses 3.3 billion EUR. Both numbers
-inherit every assumption of the case (the other prices, the capital, the
-utility bill that is a lower bound) and say what the plant needs, not what the
-market will pay. For comparison only, and not like for like: IRENA's
-Innovation Outlook, Renewable Ammonia (2022) estimates "the range of
-USD 720 - 1 400 per tonne" for the production cost of renewable ammonia in
-new plants today (pdf p. 16), 720 being the estimate for the best solar and
-wind sites (p. 12): 0.68 to 1.33 EUR/kg at the ECB 2022 annual average of
-1.05305 USD per EUR (read 2026-11-13 from the ECB data API,
+CONVENTIONAL product; no premium for renewable ammonia is assumed, and the
+8.0 row is the price of buying electrolytic hydrogen, not a plant that
+makes it. Both numbers inherit every assumption of the case (the other prices,
+the capital, the utility bill that is a lower bound) and say what the plant
+needs, not what the market will pay. For comparison only, and not like for
+like: IRENA's Innovation Outlook, Renewable Ammonia (2022) estimates "the
+range of USD 720 - 1 400 per tonne" for the production cost of renewable
+ammonia in new plants today (pdf p. 16), 720 being the estimate for the best
+solar and wind sites (p. 12): 0.68 to 1.33 EUR/kg at the ECB 2022 annual
+average of 1.05305 USD per EUR (read 2026-11-13 from the ECB data API,
 EXR/A.USD.EUR.SP00.A, 1.0530486), with hydrogen made on site; this plant buys
 hydrogen from the outside.
+
 
 ### Utilities: what serves each duty, and the converter's steam credit
 
@@ -494,7 +497,7 @@ the fixed capital — the fixed capital excludes the electrolysers and the
 ASU while the raw materials and product are priced in full; with the
 buffer's vessels in the fixed capital the net working capital is still about
 three times the 15 % figure. The hydrogen the buffer holds adds little to the working capital
-(26.6 t at 1.5 EUR/kg, 40 kEUR<!--golden: kpi economics WC_rawMaterialStock *1e-3-->; 213 kEUR at the former 8.0); what it adds to the fixed capital is the lesson.
+(26.6 t at 2.0 EUR/kg, 53 kEUR<!--golden: kpi economics WC_rawMaterialStock *1e-3-->; 213 kEUR at 8.0); what it adds to the fixed capital is the lesson.
 
 ## Plant layout
 

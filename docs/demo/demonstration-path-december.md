@@ -61,28 +61,27 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
    fixed 11-23; before, the curves ran past the exchanger's ends).  Duty
    64 381 kW (`expected`, `kpi FEHE Q_kW`).
 4. **Pinch.**  The plant's pinch includes the converter segment (C302).
-5. **Equipment and cost.**  Total capital investment 146.2 M EUR (`kpi
-   economics TCI`; 167.9 before the hydrogen price moved from 8.0 to 1.5 EUR/kg, which shrank the working capital).  The ten H2 buffer vessels are one grouped row of the
+5. **Equipment and cost.**  Total capital investment 147.9 M EUR (`kpi
+   economics TCI`; 167.9 before the hydrogen price moved from 8.0 to 2.0 EUR/kg, which shrank the working capital).  The ten H2 buffer vessels are one grouped row of the
    equipment table, the hydrogen stock, 43.4 % of its cost (on screen,
    browser pass 2026-11-24).
 6. **The economics, framed before it is opened.**  The appraisal opens on an
-   NPV of +96.3 M EUR, IRR 20.2 %, discounted payback 6.5 years (`kpi economics
-   NPV`, `IRR`, `paybackYears`).  Say first, then open it: every price is
-   public, dated and cited (constant/economics): ammonia at its 2025 EU import
-   value, 0.530 EUR/kg (Eurostat), which is the market price of CONVENTIONAL
-   ammonia; hydrogen at 1.5 EUR/kg, the author's choice inside the range
-   0.74-4.07 EUR/kg the brief quotes from ACER (the range is NOT in the text
-   of ACER's report; say so if asked, README and provenance do).  Hydrogen
-   alone costs 0.1803 x 1.5 = 0.27 EUR per kg of ammonia made.  **The lesson
-   is the scenario table of the README ('Hydrogen price scenarios') and the
-   tornado of the run:** the plant can bear hydrogen up to 1.685 EUR/kg (`kpi
-   economics breakEven_price_H2Feed`) and sells ammonia down to 0.488 EUR/kg
-   (`breakEven_price_ProductNH3`) before the NPV falls to zero; at 0.74 it
-   earns +492 M EUR, at 4.07 it loses 1 242 M EUR, and at 8.0 EUR/kg, ACER's
-   cost of electrolytic (RFNBO) hydrogen, it loses 3 287 M EUR (a scratch
-   re-pricing, not pinned).  The answer a student should reach is the one
-   the industry reached: ammonia from electrolytic hydrogen waits on the
-   price of hydrogen, and the plant's own equipment is not what decides it.
+   NPV of -164 M EUR, no IRR, no payback (`kpi economics NPV`).  Say first,
+   then open it: every price is public, dated and cited (constant/economics):
+   ammonia at its 2025 EU import value, 0.530 EUR/kg (Eurostat), the market
+   price of CONVENTIONAL ammonia; hydrogen at ACER's 2025 cost of conventional
+   (natural-gas) hydrogen, "a bit higher than 2 EUR/kg" (p. 40), read as 2.0.
+   Hydrogen alone costs 0.1803 x 2.0 = 0.36 EUR per kg of ammonia made.
+   **Bought at that price the plant does not pay**: it pays only below 1.685
+   EUR/kg (`kpi economics breakEven_price_H2Feed`), which is why ammonia plants
+   make their own hydrogen from natural gas instead of buying it (the case that
+   does so is the next slice, C526).  The scenario table of the README
+   ('Hydrogen price scenarios') shows the three rows: an assumed 1.5 EUR/kg
+   (NPV +96 M EUR, IRR 20 %, payback 6.5 years), the cited 2.0 (-164 M EUR) and
+   ACER's cost of renewable hydrogen, 8.0 (-3 287 M EUR); the minimum selling
+   price of ammonia at the base is 0.601 EUR/kg (`breakEven_price_ProductNH3`),
+   13 % above the market.  The answer a student should reach: the plant's
+   economics are decided by the price of its hydrogen, not its equipment.
 7. **3D layout.**  Open the layout tab: roads, fence, gates, piped stores and
    the utilities block; say that the process block is still small on the plot.
    On a machine with a graphics card the view is up at once (laptop, Intel GPU,
@@ -115,8 +114,8 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
 - [x] Re-read every quoted number from its file (above).  Done 2026-11-24 after the
       C256 landing (afd3f8ff91): FEHE 64 380.7 kW and its four temperatures, TCI
       167.86 M EUR, NPV -3 287.7 M EUR, break-even 1.952 and 1.685 EUR/kg read from
-      the PEQ `expected` (SUPERSEDED 2026-11-25, C526: hydrogen 1.5 EUR/kg, TCI 146.2,
-      NPV +96.3, break-evens 0.488 and 1.685; item 6 above carries the new numbers); column19 duties from its `expected`; every case of the path
+      the PEQ `expected` (SUPERSEDED 2026-11-25, C526: hydrogen 2.0 EUR/kg, TCI 147.9,
+      NPV -164, break-evens 0.601 and 1.685; item 6 above carries the new numbers); column19 duties from its `expected`; every case of the path
       PASSED in the full sweep of that morning, both EduTools in `--gui` 49/0.
 - [x] C479 landed: the MTBE comparison and the grouped buffer row are on
       screen (browser pass 2026-11-24, docs/audits/2026-11-24-demo-browser-pass.md).
