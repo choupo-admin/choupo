@@ -130,6 +130,8 @@ import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
 import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
 import { PRESS_QUIZ, PRESS_STEPS } from "../src/ui/methods/filterPressCycleLesson.js";
 import { FilterPressTool } from "../src/ui/methods/FilterPressTool.js";
+import { PHASES_QUIZ, PHASES_STEPS } from "../src/ui/methods/howManyPhasesLesson.js";
+import { HowManyPhasesTool } from "../src/ui/methods/HowManyPhasesTool.js";
 import { GAS_QUIZ, GAS_STEPS } from "../src/ui/methods/gasLineLesson.js";
 import { GasLineTool } from "../src/ui/methods/GasLineTool.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
@@ -334,6 +336,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: GAS_QUIZ, quizName: "GAS_QUIZ",
     lesson: GAS_STEPS, lessonName: "GAS_STEPS",
     file: "src/ui/methods/GasLineTool.tsx", tool: GasLineTool,
+  },
+  "how-many-phases": {
+    quiz: PHASES_QUIZ, quizName: "PHASES_QUIZ",
+    lesson: PHASES_STEPS, lessonName: "PHASES_STEPS",
+    file: "src/ui/methods/HowManyPhasesTool.tsx", tool: HowManyPhasesTool,
   },
   optimizers: {
     quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",

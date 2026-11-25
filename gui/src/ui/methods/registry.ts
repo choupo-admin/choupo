@@ -89,7 +89,8 @@ export type MethodToolId =
   | "column-design"
   | "control-valve" | "compressor-choice" | "calculated-to-bought"
   | "filter-press-cycle"
-  | "gas-line";
+  | "gas-line"
+  | "how-many-phases";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2977,6 +2978,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "numbers equal to the recorded run of pipe09_isothermal_gas_line at the case's own "
       + "flow and length.",
     theory: "sec:pipe-gasline",
+  },
+  //  COMMISSIONED 2026-11-25 (SESSIONS.md, the how-many-phases EduTool): at
+  //  fixed T and P equilibrium is the GLOBAL minimum of G; equal fugacities are
+  //  only necessary (the trivial K = 1 pair, a local split, the wrong number of
+  //  phases also meet them) and Michelsen's tangent-plane test decides whether a
+  //  phase is absent.  Every curve is a table of the engine's own run of
+  //  tutorials/props/scan/binary04_tangent_plane_water_nbutanol (the optional
+  //  `stability` block of propertyScanBinary).
+  {
+    id: "how-many-phases", blurb: "Find out why equal fugacities do not prove a split.",
+    label: "How many phases? Gibbs energy and the tangent plane",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page"],
+    teaches: "Why equilibrium is the global minimum of the Gibbs energy and equal fugacities are only "
+      + "necessary: the molar Gibbs energy of mixing of water and n-butanol with its two humps, the common "
+      + "tangent through the two coexisting liquids and the lever rule on a feed you move, the activities "
+      + "whose equality has a trivial solution and a true one, and Michelsen's tangent-plane distance along "
+      + "a trial composition, negative somewhere when a phase is absent.  Every curve is the engine's own "
+      + "run of a propertyScanBinary case; the page adds the lever rule and the tangent algebra.",
+    theory: "sec:tangent-plane",
   },
 ];
 

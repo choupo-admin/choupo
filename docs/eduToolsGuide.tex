@@ -3806,6 +3806,34 @@ thickness against a frame.  References: Ruth (1935), Geankoplis, Hersel and Lepe
 McCabe, Smith and Harriott (7th ed.).  Theory: Section~\ref{sec:cakeFilter-batchPress}.
 \declaredanchor{sec:cakeFilter-batchPress}
 
+\subsection*{How many phases? Gibbs energy and the tangent plane \quad(\code{tool=how-many-phases})}\label{sec:edu-how-many-phases}
+A solver has found two liquids with equal activities in both components: is that the answer?  Equal fugacities are
+only \emph{necessary} at fixed $T$ and $P$.  The trivial pair ($x'=x''$, $K_i=1$) meets them at every composition, a
+split that is only a local minimum can meet them, and so can a split into the wrong number of phases; equilibrium is
+the \emph{global} minimum of $G$, and Michelsen's tangent-plane test decides whether a phase is absent from an answer.
+Five steps and five cards on water and 1-butanol at 298.15~K and 1~bar (the cited UNIQUAC set of
+\code{binary01\_lle\_water\_nbutanol}), every curve a table of the engine's own run, in the browser, of
+\code{binary04\_tangent\_plane\_water\_nbutanol}: \code{propertyScanBinary} with its optional \code{stability} block.
+\emph{Card 1} draws $g_\mathrm{mix}/RT = x_1\ln a_1 + x_2\ln a_2$ from the \code{gmix} table, the curve with two
+humps.  \emph{Card 2} adds the common tangent through the two liquids of the flash ($x_1 = 0.5100$ and $0.9808$) and a
+slider for the feed $z$ (stepping on the engine's 100 nodes): inside the gap the feed splits, the lever rule gives the
+fractions (0.384 and 0.616 at $z = 0.80$, equal to the flash's own) and the mixture's $G$ falls to the tangent;
+outside it stays one liquid.  \emph{Card 3} draws $a_1(x_1)$ and $a_2(x_1)$ and the four solutions of equal activities:
+the trivial pair, the engine's pair (equal activities in the two liquids to the flash's tolerance), the pair read off
+the sampled curves, and the same pair for a feed outside the gap, whose fractions are negative or above one (the wrong
+number of phases); it says why a Newton method on these equations can land on the trivial one and cites the lines of
+\code{IsothermalFlash.cpp} that minimise $G$ instead.  \emph{Card 4} plots Michelsen's distance
+$\mathrm{tm}(y) = \sum_i y_i[\ln a_i(y) - \ln a_i(z)]$ for the slider's feed with its stationary points marked: below
+zero anywhere means unstable.  For the engine's declared feed ($z = 0.80$) the page's $\mathrm{tm}$ equals the engine's
+\code{tpd} table to $10^{-9}$, goes down to $-0.0359$ on the grid, and the engine's own \code{michelsenTPD} returns
+$-0.0366$ (its modified form, $1 - \sum Y$ at a stationary point) at $y_1 = 0.982$.  \emph{Card 5} quotes the log of the
+flash: its Michelsen line and the two phases it found, equal to card 2's.  Limits stated on the page: one binary on one
+liquid surface (this binary has the trivial and the true solution and no local split), a grid reading near the binodal
+ends, one declared feed for the engine's test, and the two forms of $\mathrm{tm}$ quoted separately.  References:
+Michelsen (1982, Parts I and II; the paper was not read for this page and is cited as the origin of the criterion) and
+Winkelman, Kraai and Heeres (2009) for the UNIQUAC set.  Theory: Section~\ref{sec:tangent-plane}.
+\declaredanchor{sec:tangent-plane}
+
 \subsection*{Drying curve, batch tray \quad(\code{tool=drying})}
 The two classical drying plots side by side on one run --- moisture
 against time, and rate against moisture --- with the critical moisture

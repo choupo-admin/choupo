@@ -468,6 +468,9 @@ const FilterPressTool = lazy(() =>
 const GasLineTool = lazy(() =>
   import("./methods/GasLineTool.js")
     .then((m) => ({ default: m.GasLineTool })));
+const HowManyPhasesTool = lazy(() =>
+  import("./methods/HowManyPhasesTool.js")
+    .then((m) => ({ default: m.HowManyPhasesTool })));
 const LubScaleupTool = lazy(() =>
   import("./methods/LubScaleupTool.js")
     .then((m) => ({ default: m.LubScaleupTool })));
@@ -779,6 +782,7 @@ export function MethodsWorkspace() {
             : tool === "calculated-to-bought" ? <CalculatedToBoughtTool />
             : tool === "filter-press-cycle" ? <FilterPressTool />
             : tool === "gas-line" ? <GasLineTool />
+            : tool === "how-many-phases" ? <HowManyPhasesTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
             : tool === "least-squares" ? <LeastSquaresTool />
