@@ -78,7 +78,7 @@ export const METHANE_STEPS: readonly LessonStep[] = [
       + "to call an ignition.  A mechanism is not a mixture: the species a case holds do nothing "
       + "until a reaction names them.",
     note: "How a case asks for sets: reactionSets in constant/reactions, read by "
-      + "src/thermo/reaction/KineticsLibrary.cpp:388-389.  The library records are in data/standards/kinetics/.",
+      + "src/thermo/reaction/KineticsLibrary.cpp:461-462.  The library records are in data/standards/kinetics/.",
   },
   {
     n: 3,

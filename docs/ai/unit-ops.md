@@ -302,16 +302,25 @@ reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its 
 SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
 `order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
 Gate `check_elementary_rates` (s, d, b, B).
-**THE REACTION LIBRARY (C458 slice 1; Theory Guide `sec:kinetics-library`).**  One record per elementary gas-phase reaction under
-`data/standards/kinetics/` (`recordType elementaryReaction`; the file name is the CANONICAL EQUATION -- species sorted within each side,
-reversible oriented smaller side first, `+M` / `(+M)` suffix, `~` for an irreversible one, `@1`/`@2` for a summed duplicate:
-`H+O2=O+OH.dat`, `H+O2(+M)=HO2(+M).dat`), in the same `stoichiometry` / `kinetics` grammar as a case, WITHOUT `order` (derived = -nu; an
+**THE REACTION LIBRARY (C458, C339; Theory Guide `sec:kinetics-library`).**  One FOLDER per elementary gas-phase reaction under
+`data/standards/kinetics/` and one FILE per published SOURCE in it (`recordType elementaryReaction`; the folder name is the CANONICAL
+EQUATION -- species sorted within each side, reversible oriented smaller side first, `+M` / `(+M)` suffix, `~` for an irreversible one,
+`@1`/`@2` for a summed duplicate; the file is the source: `H+O2=O+OH/OConaire2004.dat`, `H+O2=O+OH/MillerBowman1989.dat`, so two published
+rate constants of one reaction coexist; no `: * ? < > " \ |` or space in a name, no two names equal ignoring case).  Species are the
+catalogue's (`water`, `ethane`); `printedEquation "H + O2 = O + OH";` is the equation as the source prints it, shown beside the canonical
+name wherever the run names a reaction.  A species on both sides (`2H+H2=2H2`) is a `spectators true;` record (`order` left, `orderRev`
+right).  The grammar is the same `stoichiometry` / `kinetics` grammar as a case, WITHOUT `order` (derived = -nu; an
 `order` is refused unless the record says `global true;`), plus `sets { OConaire2004 R1_H_O2_O_OH; }` (the set and the mechanism's own
 label), `source { citation; doi; table; page; }` and `provenance`.  A case asks for a set in its `constant/reactions`:
-`reactionSet OConaire2004;` (or `reactionSets ( A B );`, or `reactionRecords ( { record "H+O2=O+OH"; name myR1; } );`) and its units list
+`reactionSet OConaire2004;` (or `reactionSets ( A B );`, or `reactionRecords ( { record "H+O2=O+OH"; source MillerBowman1989; name myR1; } );`
+-- `source` is REQUIRED when the library holds the equation from more than one source: the run is refused, listing them, a set draws one source
+per equation) and its units list
 the labels (`reactions ( R1_H_O2_O_OH ... )`) exactly as before -- inline entries beside it stay legal.  Precedence: the case's
 `constant/kinetics/` (a record there declares `variationOf "<stem>";`), then `data/standards/kinetics/`, then `data/local/kinetics/`
-(UNVERIFIED).  Sets seeded: `OConaire2004` (21 entries, Table I, journal p. 607) and `Glarborg2018` (Zeldovich and N2O, page unrecorded).
+(UNVERIFIED), per (equation, source).  Sources: `OConaire2004` (21 entries, Table I, journal p. 607), `Glarborg2018` (Zeldovich and N2O,
+Tables 2 and 5, pp. 34 and 41, read twice 2026-11-25) and `MillerBowman1989` (the whole of Appendix A, 235 reactions, and Appendix B, 73;
+sets `MillerBowman1989_AppA`, `MillerBowman1989_AppB`, the C1 chain `MillerBowman1989` and its stage sets; Appendix B's differing values in
+`MillerBowman1989_B.dat`).
 Read by `batchReactor`, `dynamicCSTR`, the flowsheet reactors and `reactionGibbs`.  The run prints the sets used and, for a set whose
 declared thermo is a catalogue home, K_c(set)/K_c(run) per reaction; for an explicit reverse (`A_rev`/`Ea_rev`, or two irreversible
 entries that are each other's reverse) k_f/k_r against K_c(T) in `batchReactor`.  Witnesses: `ignition01_h2o2` and its variants,

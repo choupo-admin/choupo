@@ -41076,11 +41076,13 @@ three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
 grid and $T$ within 0.25~K along the trajectory
 (\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
 
-\subsection{The gas-phase reaction library: one record per reaction}\label{sec:kinetics-library}
+\subsection{The gas-phase reaction library: one folder per reaction, one file per source}\label{sec:kinetics-library}
 The elementary reactions of a gas-phase mechanism have a home of their own,
 \file{data/standards/kinetics/}, built like the binary-pair catalogues: ONE
-record per reaction (\code{recordType elementaryReaction}), a case that asks for
-a \emph{set} by name, and the precedence case $>$ standards $>$ \file{data/local}.
+FOLDER per reaction and, in it, ONE FILE per published source of its rate
+constant (\code{recordType elementaryReaction}), a case that asks for
+a \emph{set} by name, and the precedence case $>$ standards $>$ \file{data/local},
+decided per (reaction, source).
 Before it, the 21 reactions of the H$_2$/O$_2$ mechanism of
 \'O~Conaire, Curran, Simmie, Pitz and Westbrook (Int.\ J.\ Chem.\ Kinet.\ 36
 (2004) 603, Table~I) were written out by copy in eleven case files, so a constant
@@ -41102,6 +41104,7 @@ stoichiometry ( { component H; nu -1; } { component O; nu 1; }
                 { component O2; nu -1; } { component OH; nu 1; } );
 kinetics { type modifiedArrhenius;  A 1.91e14;  b 0.00;  Ea 16.44;
            units { A "cm3/mol/s"; Ea "kcal/mol"; } }
+printedEquation   "H + O2 = O + OH";
 sets   { OConaire2004 R1_H_O2_O_OH; }
 source { citation "O Conaire, Curran, Simmie, Pitz and Westbrook, ...";
          doi "10.1002/kin.20036"; table "Table I"; page 607; reaction 1; }
@@ -41113,9 +41116,22 @@ that the side whose sorted list is smaller comes first (the reverse is the SAME
 reaction), \code{+M} and \code{(+M)} are suffixes of each side and distinct from
 the bare reaction, an irreversible reaction is written \code{A+B\textasciitilde{}C+D}
 as written, and a summed duplicate (CHEMKIN DUPLICATE, the pairs~14 and~19 of
-Table~I) carries \code{@1}, \code{@2}.  The file stem IS that string
-(\code{H+O2=O+OH.dat}, \code{H+O2(+M)=HO2(+M).dat}); the reader refuses a record
-whose name is not the canonical equation of its content.  The mechanism's own
+Table~I) carries \code{@1}, \code{@2}.  The FOLDER's name IS that string
+(\file{kinetics/H+O2=O+OH/}, \file{kinetics/H+O2(+M)=HO2(+M)/}) and each
+\emph{source} is a file in it, named for the source
+(\file{kinetics/H+O2=O+OH/OConaire2004.dat}, \file{.../MillerBowman1989.dat}): two
+published constants of one reaction coexist, side by side, and neither is the
+reaction.  The reader refuses a record whose folder is not the canonical equation
+of its content, a file lying loose in \file{kinetics/}, and a name Windows or macOS
+would refuse (one holding a colon, asterisk, question mark, angle bracket, double quote, backslash or vertical bar, a space, or two names equal ignoring case; the gate
+holds the same rule).  The species of a record are the catalogue's (\code{water}, \code{ethane});
+the equation AS THE SOURCE PRINTS IT, with the paper's own symbols and its own
+orientation, is kept in \code{printedEquation} and shown beside the canonical name wherever the run
+names a reaction.  A species on BOTH sides (a catalyst or an unchanged collider: $2\,\mathrm{H}+\mathrm{H_2}\rightleftharpoons 2\,\mathrm{H_2}$,
+$\mathrm{HCCOH}+\mathrm{H}\rightleftharpoons\mathrm{CH_2CO}+\mathrm{H}$) makes a \code{spectators true;} record: its
+\code{order} (left) and \code{orderRev} (right) are the multiplicities, the equation is read from them (the net
+coefficient alone cannot tell $2\mathrm{H}+\mathrm{H_2}$ from $2\mathrm{H}+\mathrm{CO_2}$), and $\mathrm{orderRev}-\mathrm{order}=\nu$ is checked.
+The mechanism's own
 label (\code{R1\_H\_O2\_O\_OH}) is the record's alias WITHIN a set, so a unit's
 \code{reactions ( R1\_H\_O2\_O\_OH \ldots )} list does not change.
 
@@ -41124,7 +41140,11 @@ and $0$ for a product, and an \code{order} written on one is refused by name; a
 record that declares them (a global rate law) says \code{global true;} and writes
 every order.  An explicit reverse is allowed (below).
 
-\emph{A set} is derived from the records: those whose \code{sets \{\}} names it.
+\emph{A set} is derived from the records: those whose \code{sets \{\}} names it, and it draws ONE
+source per equation (a set naming one equation from two sources is refused, by name).  A \code{reactionRecords} entry names
+a reaction and, when the library holds it from several sources, the source:
+\code{\{ record "H+O2=O+OH"; source MillerBowman1989; name myR1; \}}; with no source and two or more
+carrying it the run is REFUSED, listing them -- the case chooses, the library never does.
 A case writes \code{reactionSet OConaire2004;} (or \code{reactionSets ( A B );},
 or \code{reactionRecords ( \{ record "H+O2=O+OH"; name myR1; \} );}) in its
 \code{constant/reactions}, and the engine hands every unit the very entries the
@@ -41168,30 +41188,35 @@ the ratio is~1; a ratio away from 1 is the mechanism's own thermodynamic
 inconsistency, shown, not corrected.
 
 \emph{Validity and what is not claimed.}  The record's numbers are those of the
-source, as read from its page; the seed holds 21 O~Conaire entries, each equal to
-journal page~607 as the review of 2026-11-21 read it, and the Zeldovich and
+source, as read from its page; the library holds 21 O~Conaire entries, each equal to
+journal page~607 as the review of 2026-11-21 read it, and the eight Zeldovich and
 N$_2$O reactions of Glarborg et al.\ (Prog.\ Energy Combust.\ Sci.\ 67 (2018) 31,
-Tables~2 and~5), whose page nobody in this tree has read (\code{page unrecorded},
-\code{interim}).  The carbon chain of Miller and Bowman (\emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287,
-Appendix~A, journal pp.~331 and~332) is seeded as one record per reaction: the C$_1$ chain from CH$_4$ to CO$_2$
+Tables~2 and~5, journal pp.~34 and~41), each read from the page image twice on 2026-11-25 (no digit differed from
+the values the cases carried; gate arm a5).  The whole of Miller and Bowman (\emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287,
+Appendix~A, 235 reactions on journal pp.~331--336, and Appendix~B, 73 reactions on pp.~337--338) is one record per
+reaction in the source \code{MillerBowman1989}, the numbers taken from the review's table and from nothing else;
+Appendix~A is the set \code{MillerBowman1989\_AppA}, Appendix~B the set \code{MillerBowman1989\_AppB}.  Where
+Appendix~B repeats a reaction with the same numbers the one record is a member of both sets; where B prints other numbers
+(the efficiencies of $\mathrm{H}+\mathrm{O_2}+\mathrm{M}$ and of $2\mathrm{H}+\mathrm{M}$, the $A$ of
+$\mathrm{N_2O}+\mathrm{M}$) B's value is a second file of that folder, \file{MillerBowman1989\_B.dat}, which the set
+\code{MillerBowman1989\_AppB} draws.  Its hydrogen--oxygen reactions sit beside \'O~Conaire's in the same folders.
+The C$_1$ chain from CH$_4$ to CO$_2$
 (reactions 2 to 64 that name only C$_1$ species, H and~O, without the singlet CH$_2$ and the CH$_2$OH branch) and the
-ethane route (reactions 1, 65 to 68, 74, 75).  They belong to the set \code{MillerBowman1989} and to one of five stage
+ethane route (reactions 1, 65 to 68, 74, 75) keep the set \code{MillerBowman1989} and one of five stage
 sets (\code{MB1989\_attack}, \code{MB1989\_methyl}, \code{MB1989\_formyl}, \code{MB1989\_carbonMonoxide},
 \code{MB1989\_ethane}) so that a case, or a student, adds them one step at a time; every constant is equal to the
 table the review of 2026-11-22 read from the page images (the gate's arm a4), and every record says that it is one
-mechanism's value and not an evaluated constant.  The hydrogen-oxygen reactions of that appendix are NOT seeded: the
-library already holds the \'O~Conaire expression for each of those equations, and one equation has one record.  The
+mechanism's value and not an evaluated constant.  The
 EduTool \emph{Assemble methane combustion} runs the sets as a ladder.  The library does not choose between two measurements of one
-reaction, does not carry a reaction's validity range beyond the source's, and
+reaction (the case does), does not carry a reaction's validity range beyond the source's, and
 holds no pressure-dependent table yet (\code{plog} records are admitted by the
 grammar and none is seeded).  \emph{Identity of a summed reaction, and an open question.}  The terms of a summed
 reaction are \code{X@1}, \code{X@2}, \ldots, numbered from~1 without a gap and at
 least two; a bare \code{X} beside them, or a lone \code{X@1}, is refused by name.  A
-collider-specific fall-off (\code{(+AR)}) carries the collider in its stem.  What the
-library does NOT decide is how to hold SEVERAL alternative rate expressions for one
-equation (two evaluations of the same reaction, which a case must choose between
-rather than add): the \code{@n} suffix means ``summed'', never ``alternative''.
-That decision is needed before a second mechanism is imported.
+collider-specific fall-off (\code{(+AR)}) carries the collider in its stem.  SEVERAL alternative rate
+expressions for one equation (two evaluations of the same reaction, which a case must choose between
+rather than add) are the several FILES of the folder: the \code{@n} suffix means ``summed'', never
+``alternative'', and the terms of a summed reaction are counted per source.
 Gate: \code{bin/curate/check\_kinetics\_library.py}.
 
 \subsection{Steam cracking of ethane: the molecular scheme of Sundaram and Froment}\label{sec:cracking-molecular}

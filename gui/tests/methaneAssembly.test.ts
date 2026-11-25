@@ -295,7 +295,7 @@ describe("methane-assembly: the lesson", () => {
     const CLAIMS: Record<string, string | RegExp> = {
       "src/applications/choupoBatch/main.cpp:2507": "if (d > best) { best = d; tIgn = tr[k].first; }",
       "src/unitOperations/batch/BatchReactor.cpp:926": "else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;",
-      "src/thermo/reaction/KineticsLibrary.cpp:388-389": /reactionSets[\s\S]*lookupWordList\("reactionSets"\)/,
+      "src/thermo/reaction/KineticsLibrary.cpp:461-462": /reactionSets[\s\S]*lookupWordList\("reactionSets"\)/,
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {
