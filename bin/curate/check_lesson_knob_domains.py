@@ -198,6 +198,26 @@ DOMAINS = [
     (M + "StiffChemistryTool.tsx", "logH", -10.0, -2.0,
      "log10 of the step in s: from below the radical time scale to above the 3 ms window of nox03 "
      "(endTime 3e-2 s there, writeInterval 1e-3 s); the arithmetic is defined for every step", False),
+    (M + "ControlValveTool.tsx", "W", 0.0, None,
+     "a pump's shaft power is positive and has no upper bound by physics; the page offers 1 to 20 kW "
+     "(pumpSystem01 ships 2 kW) and the engine judges whatever arrives", False),
+    (M + "ControlValveTool.tsx", "rated", 1440.0, 5760.0,
+     "the rated flow must be a point of pumpSystem01's sweep, which spans 0.4 to 1.6 kmol/s "
+     "(outerDict range, 1440 to 5760 kmol/h); the page's 1800 to 5400 lies inside it", False),
+    (M + "ControlValveTool.tsx", "min", 1440.0, 5760.0,
+     "the minimum flow must also be a point of the sweep (1440 to 5760 kmol/h)", False),
+    (M + "ControlValveTool.tsx", "x", 0.0, 1.0, "a valve opening is a fraction of full travel, in [0, 1]", False),
+    (M + "ControlValveTool.tsx", "R", 1.0, None,
+     "a rangeability is the ratio of the largest to the smallest controllable coefficient, above 1, with no "
+     "upper bound by physics; the page offers 10 to 200", False),
+    (M + "ControlValveTool.tsx", "a", 0.0, 1.0,
+     "a valve's authority is the share of the available pressure it holds wide open, in (0, 1]", False),
+    (M + "ControlValveTool.tsx", "gm", 1.0, None,
+     "a gain margin is a factor above 1 for a stable loop and has no upper bound; the page offers 1.5 to 10", False),
+    (M + "ControlValveTool.tsx", "qLoad", 0.0, 1.0, "a minimum load as a fraction of the rated flow lies in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "xmin", 0.0, 1.0, "the lowest controlling opening is a fraction of travel, in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "s", 0.0, 1.0, "a starting valve's capacity relative to the big valve's lies in (0, 1)", False),
+    (M + "ControlValveTool.tsx", "FL", 0.0, 1.0, "the liquid pressure recovery factor lies in (0, 1]", False),
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
