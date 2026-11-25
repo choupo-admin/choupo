@@ -5740,6 +5740,13 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C529, C530 (Vitor, 2026-11-25).**  C529: EXTERNAL REVIEW 4 -- EvaporativeDryer prices the first solid only (order moves
+> T_out 19 K), CoolingTower sees the majority gas only, an infeasible `maxExhaustHumidity` is accepted; the idiom (first or
+> largest component by index, bisection without a bracket) is searched in every unit; synthetic two-solid and two-gas
+> variants join the proofs because the shipped corpus cannot see it.  C530: the Explorer dead-ended on a component with no
+> UNIFAC groups (338 of 656 records have none): groups from structure, a model that cannot price is disabled with its
+> reason, a refusal carries the next step.
+
 > **C528. EDUTOOL: HOW MANY PHASES? (Vitor to the cloud, 2026-11-25.)**  The Gibbs energy of mixing and the tangent
 > plane on water + n-butanol; the three equal-fugacity solutions, the Michelsen verdict, the engine's flash.  Opt-in
 > extension (a `stability` block), binary01 byte-identical.  Accepted before the freeze if validated by noon of the 30th.

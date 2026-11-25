@@ -770,12 +770,13 @@ IPResult InteriorPoint::solve(const NLPProblem& user, const IPOptions& options)
         DenseMatrix J;
         if (fx.objectiveGradient(x0, g) && fx.constraintJacobian(x0, J))
         {
-            scalar sf = std::min(1.0, par.gMax / std::max(infNorm(g), 1e-300));
+            const scalar gn = infNorm(g);
+            scalar sf = gn > par.gMax ? par.gMax / gn : 1.0;
             sVector sc(J.size(), 1.0);
             std::size_t nScaled = 0;
             for (std::size_t j = 0; j < J.size(); ++j)
             {
-                sc[j] = std::min(1.0, par.gMax / std::max(infNorm(J[j]), 1e-300));
+                { const scalar jn = infNorm(J[j]); sc[j] = jn > par.gMax ? par.gMax / jn : 1.0; }
                 if (sc[j] < 1.0) ++nScaled;
             }
             if (sf < 1.0 || nScaled > 0)

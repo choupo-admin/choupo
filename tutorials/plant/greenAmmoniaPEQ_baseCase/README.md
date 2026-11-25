@@ -356,7 +356,7 @@ a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
-2.7 times what the ammonia sells for (0.530). NPV is -3 288<!--golden: kpi economics NPV *1e-6--> M EUR and there
+2.7 times what the ammonia sells for (0.530). NPV is -3 287<!--golden: kpi economics NPV *1e-6--> M EUR and there
 is no IRR. (The hydrogen price was an assumed 4.50 EUR/kg, the ammonia 1.00
 and the nitrogen 0.05 EUR/kg before 2026-11-13, giving NPV −405 M EUR; those
 figures had no source.)
@@ -369,9 +369,9 @@ of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
--4 140.1 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
+-4 139.9 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
 this case with `taxOnLoss none;` added to the `economics` block printed
-an NPV of -4140.1 MEUR, `taxCreditOnLoss` 0 and the break-evens unchanged,
+an NPV of -4140.1 MEUR, on the plot of before 2026-11-25, `taxCreditOnLoss` 0 and the break-evens unchanged,
 run again on 2026-11-24). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`

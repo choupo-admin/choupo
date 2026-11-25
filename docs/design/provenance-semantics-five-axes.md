@@ -317,7 +317,7 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2379 direct + 6519 per-value = 8898 across 4048 files**
+**census: 2379 direct + 6727 per-value = 9106 across 4256 files**
 
 (recounted 2026-11-19, the NASA species-table home `standards/thermoTables/NASA-TP-2002-211556/`: 858 records, one per species, each carrying three per-value entries (the coefficients, H and S at 298.15 K, all `literature` from NASA/TP-2002-211556, public domain): +0 direct, +2574 per-value, +858 files; and, before it,
 

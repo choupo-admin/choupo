@@ -66,7 +66,7 @@ Open the app at `/app`.  A case opens with `?case=<name>`, an EduTool with
    equipment table, the hydrogen stock, 43.4 % of its cost (on screen,
    browser pass 2026-11-24).
 6. **The economics, framed before it is opened.**  The appraisal opens on an
-   NPV of -3 288 M EUR (`kpi economics NPV`).  Say first, then open it: every
+   NPV of -3 287 M EUR (`kpi economics NPV`).  Say first, then open it: every
    price is public, dated and cited (constant/economics): ammonia at its 2025
    EU import value, 0.530 EUR/kg (Eurostat), hydrogen at the EU average cost of
    renewable hydrogen, 8.0 EUR/kg (ACER, October 2025).  Hydrogen alone costs

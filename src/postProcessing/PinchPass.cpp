@@ -755,9 +755,9 @@ int PinchPass::run(SimulationResult& result)
                 r.penalty = 0.0; r.QmaxMER = r.Qmax; r.mer = true;
                 if (r.Qmax > 1.0e-9)
                 {
-                    auto penaltyAt = [&](scalar Q) -> scalar
+                    auto penaltyAt = [&, &hot = H, &cold = C](scalar Q) -> scalar
                     {
-                        const auto t = targetsOf(afterMatch(H, C, Q));
+                        const auto t = targetsOf(afterMatch(hot, cold, Q));
                         return t.first - baseTargets.first;
                     };
                     r.penalty = penaltyAt(r.Qmax);
