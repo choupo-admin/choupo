@@ -30,7 +30,7 @@
   WHAT IS THE PAGE'S, marked so: the point-in-region rule (held to the
   engine's own pick), the driver-limited ceiling, the mass balance of the
   recycle.  AUTHORED: the grid of card 3.  DECLARED BY YOU: the surge flow and
-  the shut-off head (the engine has no characteristic map).
+  the shut-off head (the engine holds no characteristic map).
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -273,7 +273,7 @@ export function CompressorChoiceTool(): JSX.Element {
               <>The point is outside every region, and the engine takes <b>reciprocating</b>, the only family that reaches the highest ratios. </>
             )}
             {pick && pick.how === "beyondFlow" && (
-              <>Above 10⁶ cfm the engine refuses and asks you to declare the machine and the parallel trains. </>
+              <>Above 10⁶ cfm the engine stops and asks you to declare the machine and the parallel trains. </>
             )}
             {atEngine && A.compressor?.compressor && (
               <>For the air machine's own duty the engine said: “{A.compressor.compressor.selection}”.</>
@@ -407,7 +407,7 @@ export function CompressorChoiceTool(): JSX.Element {
       )}
       <PanelNote>
         The engine's own staging ({dutyA?.nStages ?? "—"} sections) at the exponent n = {fx(dutyA?.n, 3)} of its stage 1, the efficiency held at its design value; the
-        casing and rod-load limits of a real machine are not in the ceiling, and the shut-off multiple is yours (the engine has no characteristic map).
+        casing and rod-load limits of a real machine are not in the ceiling, and the shut-off multiple is yours (the engine holds no characteristic map).
       </PanelNote>
     </Box>
   );
