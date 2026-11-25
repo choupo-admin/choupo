@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column10_flooding -- the view the lesson opens on (DEV.md 4c C477).
+
+  The lesson: the same column as column09, built too narrow; the stage
+  equations converge all the same, and only the hydraulics say the tower cannot
+  pass its traffic.
+
+  The plot: how close each tray runs to flooding, and the downcomer liquid
+  backup, tray by tray; the rectifying trays are the ones near the limit.
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    flood_by_tray;
+        type    profile;
+        title   "A narrow column converges, but its trays run at the edge of flooding";
+        xAxis   { label "stage (1 = top tray)"; unit "-"; scale linear; }
+        yAxis   { label "approach to flooding velocity (1 = flooding)"; unit "-"; scale linear; }
+        note    "Read it: 1.0 is flooding and the design target is 0.80. Every rectifying tray (stages 1-7) is far above the 0.80 that column09's wider tower was sized for, the worst one just above the feed; the stripping trays carry less vapour and sit lower. The last stage is the reboiler and has no tray, so its zero is not a tray. The separation printed in the stream table is identical to column09's: only this figure says the tower could not hold it.";
+        series
+        (
+            { name flood; label "fraction of the flooding velocity"; unitOp column10; table profile; x stage; y floodApproach; style linesMarkers; }
+        );
+    }
+    {
+        name    backup_by_tray;
+        type    profile;
+        title   "Downcomer liquid backup: the second limit of the narrow tower";
+        xAxis   { label "stage (1 = top tray)"; unit "-"; scale linear; }
+        yAxis   { label "downcomer backup"; unit "mm"; scale linear; }
+        note    "Read it: the backup follows the flooding profile and peaks at the same tray; set its peak against the downcomer limit printed in the run's hydraulics table (a narrower column would flood from below, for this second reason). The last stage is the reboiler (no tray, zero).";
+        series
+        (
+            { name backup; label "backup in the downcomer"; unitOp column10; table profile; x stage; y h_backup_mm; style linesMarkers; }
+        );
+    }
+);
