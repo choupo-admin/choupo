@@ -38,6 +38,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from add_formula_from_chemsep import atomic_weights, parse_structure  # noqa: E402
 
+SCAN_ROOTS = ("data/standards/components/*.dat", "data/standards/species/*.dat",
+              "data/standards/thermoTables/*/*.dat")
+
 TOL = 1e-4
 TOL_AIM = 1e-5
 # Records in (1e-5, 1e-4], per home, measured 2026-11-25 on the tree this gate
