@@ -218,6 +218,8 @@ import { LeastSquaresTool } from "../src/ui/methods/LeastSquaresTool.js";
 import { LETDOWN_QUIZ, LETDOWN_STEPS } from "../src/ui/methods/letdownLesson.js";
 import { CV_QUIZ, CV_STEPS } from "../src/ui/methods/controlValveLesson.js";
 import { ControlValveTool } from "../src/ui/methods/ControlValveTool.js";
+import { CB_QUIZ, CB_STEPS } from "../src/ui/methods/calculatedToBoughtLesson.js";
+import { CalculatedToBoughtTool } from "../src/ui/methods/CalculatedToBoughtTool.js";
 import { LetdownTool } from "../src/ui/methods/LetdownTool.js";
 
 import { LEVENSPIEL_QUIZ, LEVENSPIEL_STEPS } from "../src/ui/methods/levenspielLesson.js";
@@ -550,6 +552,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "control-valve": {
     quiz: CV_QUIZ, quizName: "CV_QUIZ", lesson: CV_STEPS, lessonName: "CV_STEPS",
     file: "src/ui/methods/ControlValveTool.tsx", tool: ControlValveTool,
+  },
+  "calculated-to-bought": {
+    quiz: CB_QUIZ, quizName: "CB_QUIZ", lesson: CB_STEPS, lessonName: "CB_STEPS",
+    file: "src/ui/methods/CalculatedToBoughtTool.tsx", tool: CalculatedToBoughtTool,
   },
   letdown: {
     quiz: LETDOWN_QUIZ, quizName: "LETDOWN_QUIZ", lesson: LETDOWN_STEPS, lessonName: "LETDOWN_STEPS",
