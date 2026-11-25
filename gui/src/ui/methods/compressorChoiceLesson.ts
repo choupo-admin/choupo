@@ -118,6 +118,12 @@ export const CC_STEPS: readonly LessonStep[] = [
     formula: String.raw`W = \frac{P_1\,Q}{m\,\eta_p}\left(r^{m}-1\right)`,
     where: [
       { sym: "W", means: "the gas power of one compression section", unit: "W" },
+      { sym: "\\dot m", means: "the mass flow through the section", unit: "kg/s" },
+      { sym: "H", means: "the head: the work per kilogram that raises the gas from the suction to the discharge pressure", unit: "J/kg" },
+      { sym: "Z", means: "the mean compressibility factor of the gas along the path", unit: "–" },
+      { sym: "R_s", means: "the specific gas constant, the universal constant over the molar mass", unit: "J/(kg K)" },
+      { sym: "T_1", means: "the suction temperature", unit: "K" },
+      { sym: "\\rho", means: "the gas density at the suction", unit: "kg/m³" },
       { sym: "P_1", means: "the suction pressure", unit: "Pa" },
       { sym: "Q", means: "the actual volume flow at the suction", unit: "m³/s" },
       { sym: "m", means: "the path exponent of the compression, (n−1)/n, from the engine's stage 1", unit: "–" },
@@ -198,7 +204,7 @@ export const CC_STEPS: readonly LessonStep[] = [
     body: "A centrifugal machine cannot work below a minimum flow. When the demand falls below it, a valve opens and sends part of the discharge back to the suction, "
       + "so that the machine still passes the minimum while the plant takes less. The page asks the engine to compress the TOTAL flow that the machine must pass, "
       + "and so prints what it costs: the power at the total flow, the share of the gas that goes round, and the energy per kilogram actually delivered. "
-      + "The minimum itself is yours: the engine has no characteristic map, so the surge flow is a fraction of the design flow that you declare, never a computed one. "
+      + "The minimum itself is yours: the engine holds no characteristic map, so the surge flow is a fraction of the design flow that you declare, never a computed one. "
       + "The recycle comes back hot unless it passes a cooler: a second run takes the suction temperature up and the discharge follows. "
       + "Misconception this breaks: the recycle valve costs nothing, and the recycle gas is cold.",
     formula: String.raw`Q_t=\max\left(Q_d,\; f_s\,(1+\mu_s)\,Q_{\mathrm{des}}\right),\qquad \varphi=\frac{Q_t-Q_d}{Q_t},\qquad T_{\mathrm{mix}}=(1-\varphi)\,T_f+\varphi\,T_{\mathrm{out}}`,
@@ -225,7 +231,7 @@ export const CC_LIMITS: readonly LessonLimit[] = [
       + "and a point near an edge is not decided by this chart. Where two regions overlap the engine takes the first in its list, a tie-break the source does not give." },
   { id: "no-map",
     title: "No characteristic map, so no surge line and no speed control",
-    body: "The engine's compressor is one adiabatic pass at the flow it is given. It has no head-flow map, so a surge line cannot be computed: the minimum flow of step 5 is a fraction "
+    body: "The engine's compressor is one adiabatic pass at the flow it is given. It holds no head-flow map, so a surge line cannot be computed: the minimum flow of step 5 is a fraction "
       + "you declare, and the shut-off head of step 4 is a multiple you declare. Surge itself is a dynamic instability set by the map and by the volume downstream; this page "
       + "shows only the steady cost of staying away from it. Speed control and suction throttling would need the same map, and the unloading of a reciprocating machine "
       + "a source this page has not read; neither is drawn." },
