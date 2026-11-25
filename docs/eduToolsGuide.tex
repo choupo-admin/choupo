@@ -3412,6 +3412,45 @@ and the problems the engine proves it on.  The original 2006 and 2009 papers
 were not available to the page's author, which the page says.
 \declaredanchor{ch:sqp}
 
+\subsection*{How does an interior-point method find the minimum? \quad(\code{tool=interior-point})}\label{sec:edu-interior-point}
+\textit{\small Tool:} \code{tool=interior-point}, on the numerics shelf.  The
+student's question: what does Choupo's interior-point optimizer
+(\code{src/solver/ip/}, used by the Gibbs reactor's \code{model
+interiorPoint;}) do at each iteration?  The page is written for a student with
+weak algebra: every card is a picture and one plain sentence first, then at
+most one short formula glossed symbol by symbol, then the engine file and
+line, then one question the picture answers.  Everyday words come first and
+the technical word is given once: a \emph{cushion} along every wall (the
+barrier), a \emph{list of points not to be worse than} (the filter), \emph{first
+get back inside the rules} (restoration), \emph{is the ground a bowl or a
+saddle} (the inertia correction).  There is no matrix algebra on the page; the
+page links to \emph{Linear algebra without pain}.  Every picture is a
+\emph{recorded} engine run, written by
+\code{bin/curate/interior\_point\_edutool\_table.py} to
+\code{gui/src/case/interiorPointRecorded.json}: the page runs no optimizer in
+the browser and says so in a badge.  Six cards.  (1)~\emph{The cushion}: the
+iterates of HS21 (a two-variable problem whose answer is on a wall) over the
+level curves of its height, with the cushion strength $\mu$ and the distance
+to the wall at every iterate (the distance and the level curves are the
+page's arithmetic on the recorded path).  (2)~\emph{The list}: the iterates of
+WB2000, the run that needs restoration, in the plane of rule-breaking
+against cushioned height, each marked by its type (a shape, never a colour
+alone), with the corners of the current list; the trace records the accepted
+trial and the number of trials, never a rejected trial, and the page says so.
+(3)~\emph{Bowl or saddle}: the stiffness ladder of Algorithm IC on HS6, HS7,
+HS38 and WB2000, each failed try with the count it got against the count the
+run wanted.  (4)~\emph{The price tags}: the Gibbs reactor of
+\code{gibbs14\_interior\_point}, its iteration log and its multipliers beside
+the element potentials ($\pi=-\lambda$).  (5)~\emph{Why a mixture needs no
+cushion}: the table of review R1, the finishing correction with the cushion
+on the condensed phase only (the default) against a cushion on every amount.
+(6)~\emph{When a published answer is not the answer}: HS116, where the
+collection's optimum is not the minimum.  A test
+(\code{gui/tests/interiorPointLesson.test.ts}) reads every cited line back
+against the tree and holds the numbers the prose prints to the recorded run;
+the one reference, W\"achter and Biegler (2006), was verified on Crossref.
+\declaredanchor{sec:ip-barrier}
+
 \subsection*{From a database to binary parameters \quad(\code{tool=database-to-parameters})}
 Choupo's curation pipeline as a lesson: a ThermoML file is read in the
 browser (the same reader the curation tool is held to), the usable blocks

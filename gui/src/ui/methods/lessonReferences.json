@@ -3608,6 +3608,20 @@
         }
       ]
     },
+    "interior-point": {
+      "references": [
+        {
+          "text": "Wächter, A.; Biegler, L. T. (2006). On the implementation of an interior-point filter line-search algorithm for large-scale nonlinear programming. Mathematical Programming 106(1), 25–57.",
+          "doi": "10.1007/s10107-004-0559-y",
+          "note": "The algorithm the page draws: the barrier problem, the filter, the restoration phase and the inertia correction. Choupo's code was read against the 2004 preprint of this paper (equation numbers are the preprint's, as the Theory Guide says); the page quotes no equation of it.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/s10107-004-0559-y: authors Wächter and Biegler, title, container Mathematical Programming, volume 106, pages 25-57 and year matched (online 2005, volume year 2006)",
+            "date": "2026-11-25"
+          }
+        }
+      ]
+    },
     "stiff-chemistry": {
       "references": [
         {

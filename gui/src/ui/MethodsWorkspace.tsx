@@ -261,6 +261,9 @@ const PropertyOriginsTool = lazy(() =>
 const FourWaysMixtureTool = lazy(() =>
   import("./methods/FourWaysMixtureTool.js")
     .then((m) => ({ default: m.FourWaysMixtureTool })));
+const InteriorPointTool = lazy(() =>
+  import("./methods/InteriorPointTool.js")
+    .then((m) => ({ default: m.InteriorPointTool })));
 const StiffChemistryTool = lazy(() =>
   import("./methods/StiffChemistryTool.js")
     .then((m) => ({ default: m.StiffChemistryTool })));
@@ -712,6 +715,7 @@ export function MethodsWorkspace() {
             : tool === "sentence-to-decision" ? <SentenceToDecisionTool />
             : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
             : tool === "stiff-chemistry" ? <StiffChemistryTool />
+            : tool === "interior-point" ? <InteriorPointTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />

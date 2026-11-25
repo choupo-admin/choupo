@@ -60,6 +60,7 @@ Standalone test of the interior-point optimizer (slice A2, src/solver/ip/):
      bound multiplier and finds x_3 to 1e-6 RELATIVE; with the ordinary barrier
      the same run leaves x_3 with the error mu / z of design record sec. 2.9.
      The row prints both and demands the guard row pass and be the better.
+Option `--iterates` (with `-v NAME`): also print the path in x (see g_printIterates).
 Prints one line per check and "INTERIOR_POINT_OK" at the end; exit 1 on a
 failure.  Build (standalone; bin/curate/check_interior_point.py builds and runs it):
     g++ -std=c++17 -O2 -Isrc test/interior_point_hs.cpp src/solver/ip/DenseLDLT.cpp ... (every .cpp of src/solver/ip) -o /tmp/interior_point_hs
@@ -89,6 +90,14 @@ namespace
 using Vec = sVector;
 
 int g_failures = 0;
+
+//  `--iterates`: print every point at which the objective's gradient is asked, as
+//  an `ITERATE x ...` line inside the live trace.  The gradient is evaluated once
+//  at each new accepted iterate, so the lines are the run's path in x; the EduTool
+//  "How does an interior-point method find the minimum?" is recorded from them
+//  (bin/curate/interior_point_edutool_table.py).  Off by default: the output is then
+//  byte-identical to what the gate reads.
+bool g_printIterates = false;
 
 // ---------------------------------------------------------------------------
 //  A function with its hand derivatives.
@@ -176,7 +185,18 @@ public:
         f = obj.val(x);
         return std::isfinite(f);
     }
-    bool objectiveGradient(const Vec& x, Vec& g) const override { touch(x); obj.grad(x, g); return true; }
+    bool objectiveGradient(const Vec& x, Vec& g) const override
+    {
+        touch(x);
+        if (g_printIterates)
+        {
+            std::printf("ITERATE");
+            for (scalar xi : x) std::printf(" %.10g", xi);
+            std::printf("\n");
+        }
+        obj.grad(x, g);
+        return true;
+    }
     bool constraints(const Vec& x, Vec& c) const override
     {
         touch(x);
@@ -1025,6 +1045,7 @@ int main(int argc, char** argv)
     {
         const std::string a = argv[i];
         if (a == "-v") verbose = true;
+        else if (a == "--iterates") g_printIterates = true;
         else only = a;
     }
 
