@@ -32,35 +32,52 @@ Description
     THE GAS-PHASE REACTION LIBRARY (DEV.md 4c C458, second half; the home of
     elementary reactions, built like the binary-pair catalogues).
 
-    ONE RECORD PER REACTION under data/standards/kinetics/ (`recordType
-    elementaryReaction`), in the grammar a case's constant/reactions already
-    uses (stoichiometry, kinetics { type modifiedArrhenius | thirdBody |
-    falloff | plog ... }), plus a `source` block (citation, table, page) and
-    `sets { <set> <label>; }`.
+    ONE FOLDER PER REACTION, ONE FILE PER SOURCE (C339, 2026-11-25) under
+    data/standards/kinetics/:
 
-    IDENTITY is the CANONICAL EQUATION: the species sorted within each side
-    (a species of coefficient 2 repeated), the reversible reaction oriented
-    so the lexicographically smaller side comes first (reverse = the same
-    reaction), `+M` and `(+M)` as distinct suffixes of each side.  The file
-    stem IS that string:
+        kinetics/H+O2=O+OH/OConaire2004.dat
+        kinetics/H+O2=O+OH/MillerBowman1989.dat
+
+    Each file is a `recordType elementaryReaction`, in the grammar a case's
+    constant/reactions already uses (stoichiometry, kinetics { type
+    modifiedArrhenius | thirdBody | falloff | plog ... }), plus a `source` block
+    (citation, table, page), `printedEquation "H + O2 = O + OH";` (the equation
+    AS THE SOURCE PRINTS IT, shown beside the canonical name wherever the run
+    names a reaction) and `sets { <set> <label>; }`.  The species names are the
+    catalogue's.
+
+    IDENTITY of the REACTION is the CANONICAL EQUATION: the species sorted within
+    each side (a species of coefficient 2 repeated), the reversible reaction
+    oriented so the lexicographically smaller side comes first (reverse = the same
+    reaction), `+M` and `(+M)` as distinct suffixes of each side.  The FOLDER name
+    IS that string:
 
         H+O2=O+OH      H+H+M=H2+M      H+O2(+M)=HO2(+M)      H+O2~O+OH
                                                          (irreversible: `~`,
                                                           as written)
 
-    and a summed DUPLICATE (CHEMKIN DUPLICATE) carries `@1`, `@2`.  The
-    mechanism's own label (R1, A12) is the record's alias WITHIN a set.
-    ORDERS are derived (= -nu of a reactant, 0 for a product) and refused on
-    an elementary record; a record marked `global true;` declares them.
+    and a summed DUPLICATE (CHEMKIN DUPLICATE) carries `@1`, `@2` (counted PER
+    SOURCE).  The SOURCE is the file's stem (no `: * ? < > " \ |` or space, no two
+    names equal ignoring case: Windows, macOS).  The mechanism's own label (R1,
+    A12) is the record's alias WITHIN a set.  ORDERS are derived (= -nu of a
+    reactant, 0 for a product) and refused on an elementary record; a record marked
+    `global true;` declares them; a record marked `spectators true;` (a species on
+    both sides: 2H + H2 = 2H2) declares `order` (left) and `orderRev` (right) and
+    its equation is read from those multiplicities.  A file lying loose in
+    kinetics/ (the one-record-per-equation layout of before C339) is refused.
 
     A case asks a set by name in its constant/reactions:
 
         reactionSet  OConaire2004;              // or  reactionSets ( A B );
-        reactionRecords ( { record "H+O2=O+OH"; name myR1; } );
+        reactionRecords ( { record "H+O2=O+OH"; source MillerBowman1989; name myR1; } );
 
     and `materialise` returns the dictionary the case would have written
-    inline, entry for entry, so every unit reads it unchanged.  PRECEDENCE,
-    as for a binary pair: the case's constant/kinetics/, then
+    inline, entry for entry, so every unit reads it unchanged.  A set draws ONE
+    source per equation (two in one set is refused).  `source` of a
+    `reactionRecords` entry is REQUIRED when the library holds the equation from
+    more than one source: the run is refused, listing them (the case chooses, the
+    library never does).  PRECEDENCE, as for a binary pair, per (equation,
+    source): the case's constant/kinetics/<equation>/, then
     data/standards/kinetics/, then data/local/kinetics/ (announced UNVERIFIED).
 
     A mixture of sets is announced, neutrally; a WARNING only when a record
@@ -110,7 +127,9 @@ struct Origin
 {
     std::string set;      // the set it was asked through ("" when by record)
     std::string label;    // the entry name in the case
-    std::string stem;     // the record's canonical stem
+    std::string stem;     // the record's canonical stem (the reaction's folder)
+    std::string source;   // the source (the file's stem): OConaire2004, MillerBowman1989, ...
+    std::string printed;  // the equation as that source prints it (`printedEquation`), "" if none
     std::string tier;     // case | standards | local
     DictPtr     setDict;  // the set's record (may be null)
 };
