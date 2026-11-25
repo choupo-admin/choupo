@@ -68,6 +68,28 @@
       "description": "Co-current (v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas).",
       "default": "co"
     },
+    "carryOver": {
+      "type": "object",
+      "title": "Fines carried out with the exhaust (opt-in)",
+      "description": "Absent: every particle leaves in the powder (the cyclone behind the dryer is idle). Declared, a share c of the dry solid leaves on the exhaust stream's own solid (its `solids` and `psd`), the rest is the powder; mass, elements and energy close because the solid is only moved between the two outlets at T_out. The share is the CASE's, never predicted (no source read gives one): exactly one of `fraction` (the mass share, both outlets keeping the same size distribution) or `cutDiameter` (every size class of the powder's own distribution below it leaves with the exhaust). The residual water stays on the powder (announced). KPIs powder_dry and powder_flow become the powder outlet's; fines_flow and carryOver are added. Theory Guide sec:spray-dryer-fines.",
+      "properties": {
+        "fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "title": "Share of the dry solid carried out",
+          "unit": "-"
+        },
+        "cutDiameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Cut diameter",
+          "description": "Particle size classes below it leave with the exhaust.",
+          "unit": "m"
+        }
+      },
+      "additionalProperties": false
+    },
     "atomiser": {
       "type": "object",
       "title": "Atomiser sub-model",

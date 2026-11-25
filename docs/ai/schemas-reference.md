@@ -133,6 +133,7 @@ The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its
 | `k_Y` | ✓ | number | kg/(m2.s) | Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). SAMPLE/EQUIPMENT data (air velocity, tray geom… |
 | `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivab… |
 | `dryingCurve` |   | object | — | The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c… |
+| `solidTemperature` |   | string | - | `held` (default): the surface sits at the air's wet bulb for the whole run, the solid's temperature is not integrated. `integrated`: the … |
 | `moisture` |   | string | - | Which component is the moisture. Needed only when the tray holds more than one volatile besides the declared carrier — otherwise the sing… |
 | `air` | ✓ | object | — | The drying air, declared CONSTANT and not integrated — the FixedBedAdsorber's constant-carrier posture. `T` its temperature [K], `Y` its … |
 
@@ -1480,6 +1481,7 @@ Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Compu
 | `chamberDiameter` |   | number | m | Diameter of the drying chamber; sets the gas superficial velocity v_gas = Q_gas/(pi D^2/4) and hence the residence time. |
 | `chamberHeight` |   | number | m | Height the particle falls through; residence time = chamberHeight / particle fall velocity, which sets the residual moisture. |
 | `flow` |   | string | — | Co-current (v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas). |
+| `carryOver` |   | object | — | Absent: every particle leaves in the powder (the cyclone behind the dryer is idle). Declared, a share c of the dry solid leaves on the ex… |
 | `atomiser` |   | object | — | Selects HOW the feed is broken into droplets, which sets the droplet size and therefore the drying time. Absent, the rotary-wheel keys ar… |
 
 ## `steamTables`  (steamTables operation)

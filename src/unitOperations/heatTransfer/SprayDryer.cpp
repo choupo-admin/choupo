@@ -906,9 +906,15 @@ int SprayDryer::solve(const DictPtr& dict,
                 const scalar frac = std::min(1.0, std::max(0.0, (X_in - Xz) / span));
                 const scalar yw   = yAir[iSolv] + (y_w_ex - yAir[iSolv]) * frac;
                 const scalar Tgz  = T_air + (Tex - T_air) * frac;
-                // Particle T: at the wet-bulb while the surface is wet, rising toward
-                // the gas as it dries.  REA measures "wetness" by psi (1->0); the CDC
-                // by the moisture position between Xc and X_eq.
+                // Particle T: A DRAWING, not a solved temperature (C512): at the wet-bulb
+                // while the surface is wet, rising toward the gas as it dries, by
+                // interpolation on the moisture position -- and the gas it rises toward
+                // (`T_gas` here) is itself drawn on the drying progress, not a gas energy
+                // balance along z, so a particle balance with the film h would integrate
+                // against a drawing.  The profile's column says so in its own name
+                // (`T_particle_drawn`).  The solved solid temperature is the tray
+                // dryer's (batchDryer `solidTemperature integrated`).  REA measures
+                // "wetness" by psi (1->0); the CDC by the moisture position between Xc and X_eq.
                 const scalar wetness = rea
                     ? reaPsi(Xz)
                     : (Xz > X_cr ? 1.0 : (Xz - X_eq) / std::max(1.0e-9, X_cr - X_eq));
@@ -920,7 +926,7 @@ int SprayDryer::solve(const DictPtr& dict,
                 axialProfile.columns["d_micron"].push_back(dz * 1.0e6);
                 axialProfile.columns["yWater_gas"].push_back(yw);
                 axialProfile.columns["T_gas"].push_back(Tgz);
-                axialProfile.columns["T_particle"].push_back(Tpz);
+                axialProfile.columns["T_particle_drawn"].push_back(Tpz);
             }
             // Mark where the constant-rate period ends (X crosses Xc).
             if (X_in > X_cr && residence > 0.0)
@@ -1347,6 +1353,51 @@ int SprayDryer::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     produced_.clear();
 
+    //  FINES CARRIED OUT WITH THE EXHAUST (opt-in, docs/design/spray-dryer-fines.md).
+    //  Absent -> every particle leaves in the powder, as before (byte-identical).
+    //  Declared, `carryOver { fraction f; }` or `carryOver { cutDiameter d; }`
+    //  (one of the two), the share c of the dry solid leaves on the exhaust
+    //  stream's own `s` (a gas that carries a solid, which a cyclone downstream
+    //  reads); the rest is the powder.  The share is the CASE's, never computed.
+    scalar carry = 0.0;
+    bool   carryCut = false;
+    std::vector<scalar> dFine, mfFine, dCoarse, mfCoarse;
+    if (oper->found("carryOver"))
+    {
+        auto co = oper->subDict("carryOver");
+        const bool hasF = co->found("fraction"), hasC = co->found("cutDiameter");
+        for (const auto& k : co->keys())
+            if (k != "fraction" && k != "cutDiameter")
+                throw std::runtime_error(sdWho + ": `carryOver` reads `fraction` or `cutDiameter`; '" + k
+                    + "' is not one of them.");
+        if (hasF == hasC)
+            throw std::runtime_error(sdWho + ": `carryOver` needs exactly ONE of `fraction f;` (the mass share of"
+                " the dry solid that leaves with the exhaust, 0..1) or `cutDiameter d;` (the particle size below"
+                " which a particle leaves with the exhaust, read on the powder's own size distribution).");
+        if (hasF)
+        {
+            carry = co->lookupScalar("fraction");
+            if (!(carry >= 0.0 && carry <= 1.0))
+                throw std::runtime_error(sdWho + ": carryOver fraction must lie in [0, 1]; got "
+                    + std::to_string(carry) + ".");
+        }
+        else
+        {
+            const scalar dc = co->lookupScalar("cutDiameter", Dims::length);
+            if (!(dc > 0.0))
+                throw std::runtime_error(sdWho + ": carryOver cutDiameter must be > 0 m.");
+            carryCut = true;
+            for (std::size_t k = 0; k < dCen.size(); ++k)
+            {
+                if (dCen[k] < dc) { dFine.push_back(dCen[k]);   mfFine.push_back(mf[k]);   carry += mf[k]; }
+                else              { dCoarse.push_back(dCen[k]); mfCoarse.push_back(mf[k]); }
+            }
+            for (auto& w : mfFine)   if (carry > 0.0)         w /= carry;
+            for (auto& w : mfCoarse) if (carry < 1.0 - 1e-15) w /= (1.0 - carry);
+        }
+    }
+    const bool carrying = oper->found("carryOver") && carry > 0.0;
+
     ProcessStream powder;
     powder.name = "powder";
     // The powder carries its dry solid in s[] AND the residual moisture as
@@ -1366,6 +1417,11 @@ int SprayDryer::solve(const DictPtr& dict,
     powder.s = nSolidOf;                 // every solid of the feed
     powder.psd.diameter = dCen;          // Rosin-Rammler spread, not a single d32
     powder.psd.massFrac = mf;
+    if (carrying)                        // the fines left with the exhaust; the water stays on the powder
+    {
+        for (auto& v : powder.s) v *= (1.0 - carry);
+        if (carryCut) { powder.psd.diameter = dCoarse; powder.psd.massFrac = mfCoarse; }
+    }
 
     //  On the case's size grid when it declares one (C361): the population
     //  balance keeps its own classes for the profile; the STREAM hands the
@@ -1389,6 +1445,27 @@ int SprayDryer::solve(const DictPtr& dict,
     scalar Fout = 0.0; for (auto v : nout) Fout += v;
     exhaust.F = Fout; exhaust.z.assign(n, 0.0);
     if (Fout > 0.0) for (std::size_t i = 0; i < n; ++i) exhaust.z[i] = nout[i] / Fout;
+    if (carrying)
+    {
+        exhaust.s = nSolidOf;
+        for (auto& v : exhaust.s) v *= carry;
+        exhaust.psd.diameter = carryCut ? dFine  : dCen;
+        exhaust.psd.massFrac = carryCut ? mfFine : mf;
+        if (dict->found("sizeGrid"))
+        {
+            const std::string why = putPsdOnGrid(exhaust.psd,
+                SizeGrid::fromDict(dict->subDict("sizeGrid")));
+            if (!why.empty() && verbosity >= 1)
+                std::cout << "  [psd-grid] exhaust fines: " << why << "\n";
+        }
+        if (verbosity >= 1)
+            std::cout << "  [carryOver] " << std::fixed << std::setprecision(2) << (100.0 * carry)
+                      << " % of the dry solid (" << std::scientific << std::setprecision(3) << (carry * m_solid)
+                      << " kg/s) leaves with the exhaust (" << (carryCut ? "the particles below the declared cut"
+                      : "the declared share, the same size distribution as the powder")
+                      << "); the residual water stays on the powder (the fines are the smallest particles and"
+                         " the first to dry -- an announced assumption).\n";
+    }
     produced_.push_back(exhaust);
 
     // -------------------------------------------------------------------
@@ -1459,6 +1536,15 @@ int SprayDryer::solve(const DictPtr& dict,
         kpis_["powder_flow"]      = m_solid + mLiq;
         kpis_["solventsInFeed"]   = scalar(solvents.size());
         kpis_["exhaustSaturated"] = energy_limited ? 1.0 : 0.0;
+    }
+
+    if (carrying)
+    {
+        //  The powder outlet is the coarse part; the fines are their own row.
+        kpis_["powder_dry"]  = (1.0 - carry) * m_solid;
+        kpis_["powder_flow"] = (1.0 - carry) * m_solid + kpis_["water_residual"];
+        kpis_["fines_flow"]  = carry * m_solid;           // kg/s of dry solid on the exhaust
+        kpis_["carryOver"]   = carry;
     }
 
     // -------------------------------------------------------------------

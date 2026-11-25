@@ -2949,6 +2949,22 @@ dryingCurve  sucroseDrying;          // -> constant/dryingKinetics
 Component must have a `sorption {}` block (typically case-local
 overlay per axiom 4) for the GAB isotherm + Xc.
 
+**Fines on the exhaust** (opt-in, C512, Theory Guide `sec:spray-dryer-fines`,
+record `docs/design/spray-dryer-fines.md`).  By default every particle is
+powder and a cyclone behind the dryer is idle.  `operation { carryOver { fraction
+f; } }` or `carryOver { cutDiameter d; }` (exactly one) moves a share of the dry
+solid to the exhaust stream's own `solids` (and `psd`): the case DECLARES it, the
+engine does not predict it (no source read gives a share, and the unit has no
+chamber exit velocity).  With a cut, the size classes of the powder's own
+distribution below `d` leave with the exhaust.  Mass, elements and energy close
+(the solid only changes outlet, both at `T_out`); the residual water stays on the
+powder (announced); `powder_dry` and `powder_flow` become the powder outlet's and
+`fines_flow`, `carryOver` are added.  The profile column of `model
+langrishKockel` for the particle temperature is `T_particle_drawn`: an
+interpolation between the wet bulb and the gas, labelled as a drawing.  Witness:
+`tutorials/steady/drying/sprayDryer08_fines` (a 20 µm cut on the sugar case:
+11.2 % of the solid on the exhaust).
+
 **Several solids** (2026-10-18, DEV.md 4c C97): every non-volatile the feed
 carries, dissolved or suspended, leaves in the powder (the polymer of an
 amorphous solid dispersion beside its drug); the particle density is their
@@ -3891,12 +3907,30 @@ verdict (the heat is the air's, from outside the campaign).
   }
 }
 ```
+**The solid's temperature** (opt-in, C512, Theory Guide `sec:batch-dryer-solid-T`):
+`solidTemperature held;` (default, byte-identical) keeps the surface at the wet
+bulb for the whole run; `solidTemperature integrated;` keeps it there while
+`X > X_c` and then integrates one lumped temperature for the solid and its water,
+`C(X) dT_s/dt = h A (T_air − T_s) − R A λ(T_s)`, `C = m_s (cp_s + X cp_w)`,
+`h = k_Y (cp_c + Y cp_v)` (Chilton-Colburn at Lewis = 1, the wet bulb's own
+relation, so the temperature leaves the wet bulb continuously at `X_c`).  `R`
+is the drying curve and does not read `T_s`; the solid has no internal
+gradient; `X → X_eq` gives `T_s → T_air`.  Needs the solid's
+`solidHeatCapacity {}` and the moisture's `liquidHeatCapacity {}` (refused by
+name otherwise).  Adds the KPIs `T_solid_final`, `h_conv`,
+`solidEnergy_conv_kJ`, `solidEnergy_out_kJ`, `solidEnergy_stored_kJ`,
+`solidEnergy_closure_rel` (the unit's heat balance closes: heat in − heat out
+with the vapour = sensible storage) and the trajectory column `dryer.T_solid_K`.
+
 KPIs: `X_initial`, `X_critical`, `X_equilibrium`, `X_final`, `T_wb`,
 `R_constant`, `latentDuty_kW`, `latentEnergy_kJ`.  Witnesses:
 `tutorials/batch/drying/dryer01_sucrose_tray` (the linear curve, hand
 estimate in its header) and
 `tutorials/batch/drying/dryer02_characteristic_curves` (one tray, four
-curve shapes; gate `check_drying_curve`).
+curve shapes; gate `check_drying_curve`),
+`tutorials/batch/drying/dryer03_solid_temperature` (dryer01 with the solid's
+temperature integrated: 300.52 K to 331.78 K, the ledger closing to 1e-9, a
+hand and an independent integration in its header).
 
 ### `batchDiafilter`
 A stirred RETENTATE vessel behind a membrane — the batch half of the

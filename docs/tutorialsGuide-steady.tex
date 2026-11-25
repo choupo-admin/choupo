@@ -3609,6 +3609,48 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldmore{56}
 \end{tutgolden}
 
+\clearpage
+\tutentry{sprayDryer08\_fines}{tutorials/steady/drying/sprayDryer08\_fines}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (dryer) at (0.0,-0.0) {\textbf{dryer}\\[-1pt]{\tiny sprayDryer}};
+  \draw[->] ($(dryer.west)+(-1.05,-0.17)$) -- ($(dryer.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
+  \draw[->] ($(dryer.west)+(-1.05,0.17)$) -- ($(dryer.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {dryingAir};
+  \draw[->] ($(dryer.east)+(0,-0.17)$) -- ($(dryer.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {powder};
+  \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {exhaustAir};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Spray dryer with FINES on the exhaust: the sprayDryer01 sugar case with a declared 20 um cut -- the particles below it leave with the exhaust air (opt-in carryOver), the rest is the powder}
+\begin{tutnarrative}
+flowsheet (one unit, two feeds, two products).
+
+feed: 100 kg/h of a 40 wt\% sucrose solution at 25 $^\circ$C. 40 kg/h sucrose / 342.30 = 0.11686 kmol/h 60 kg/h water / 18.015 = 3.33056 kmol/h total 3.4474 kmol/h ; z\_sucrose = 0.03390
+
+dryingAir: 50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 $^\circ$C, 1 bar. Dry air (no inlet humidity) for a clean wet-bulb demo.
+
+The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+
+THIS CASE (C512): sprayDryer01 with `carryOver \{ cutDiameter 20e-6 m; \}`. The fines -- the size classes of the powder below 20 um -- leave on the exhaust stream as a solid (`exhaustAir` now carries `s` and its own size distribution); the powder is the coarse remainder. The mass, element and energy balances close with the fines counted in the exhaust.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{dryingAir}{F}{0.0138888888889}
+\goldrow{stream}{dryingAir}{T}{473.15}
+\goldrow{stream}{exhaustAir}{F}{0.0148078316531}
+\goldrow{stream}{exhaustAir}{T}{366.305438879}
+\goldrow{stream}{feed}{F}{0.000957611111111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{powder}{F}{3.86683468687e-05}
+\goldrow{stream}{powder}{T}{366.305438879}
+\goldrow{kpi}{dryer}{Nu}{2.38589612039}
+\goldrow{kpi}{dryer}{Pr}{0.746976972395}
+\goldrow{kpi}{dryer}{Re}{0.502458481568}
+\goldrow{kpi}{dryer}{Sc}{0.602628817273}
+\goldrow{kpi}{dryer}{Sh}{2.35923996025}
+\goldrow{kpi}{dryer}{T\_out}{366.305438879}
+\goldmore{45}
+\end{tutgolden}
+
 \subsection{economics}
 \grouptheory{economics}
 \clearpage
