@@ -36,14 +36,14 @@
   because its multiplier went negative.  The engine returns the answer and the
   final active set; it does not publish the sequence.  So the sequence is
   recomputed here, from `activeSetQP`'s own loop
-  (src/solver/ActiveSetQP.cpp:191-438, headed by the algorithm's own name at
+  (src/solver/ActiveSetQP.cpp:192-447, headed by the algorithm's own name at
   src/solver/ActiveSetQP.cpp:154), and every entry of the returned trace is
   one working-set change.
 
   WHAT KEEPS IT HONEST.  The engine ships a HAND-WORKED problem with a known
   primal solution, a known active set and known multipliers, and asserts its
   own solver reproduces them to 1e-9 before every SQP run
-  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:463-503).  That problem is
+  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:503-543).  That problem is
   `HAND_WORKED` below, unchanged, and it is the page's anchor: the engine is
   the judge, on exactly this problem, every time somebody runs a constrained
   optimisation.
@@ -121,7 +121,7 @@ export interface QPProblem {
 }
 
 /** THE ENGINE'S OWN SELF-CHECK PROBLEM, copied unchanged from
- *  `verifyActiveSetQP` (src/solver/ActiveSetQP.cpp:465-475).
+ *  `verifyActiveSetQP` (src/solver/ActiveSetQP.cpp:505-515).
  *
  *      min  0.5 (d1^2 + d2^2) - d1 - 2 d2
  *      s.t. d1 + d2 <= 1,   d1 >= 0,   d2 >= 0
@@ -258,7 +258,7 @@ export const rowTol = (
 };
 
 /** ACTIVE-SET QP, transcribed from `activeSetQP`
- *  (src/solver/ActiveSetQP.cpp:122-444), recording the working set at every
+ *  (src/solver/ActiveSetQP.cpp:122-452), recording the working set at every
  *  change.  Same order of operations, same tolerances, same LICQ recovery,
  *  the same running-point formulation starting at x = 0, and since C178
  *  (2026-10-27) the same treatment of an INFEASIBLE start (the most violated
