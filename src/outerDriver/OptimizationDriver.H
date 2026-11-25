@@ -207,6 +207,7 @@ private:
     scalar                  madsPoll0_   = 0.1;
     scalar                  madsTau_     = 0.5;
     bool                    fdCentral_   = false;
+    bool                    fdAuto_      = false;   // fdMode auto (C496)
 
     std::string             reportFile_ = "optimization_history.csv";
 

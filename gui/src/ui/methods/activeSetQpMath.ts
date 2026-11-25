@@ -36,7 +36,7 @@
   because its multiplier went negative.  The engine returns the answer and the
   final active set; it does not publish the sequence.  So the sequence is
   recomputed here, from `activeSetQP`'s own loop
-  (src/solver/ActiveSetQP.cpp:189-436, headed by the algorithm's own name at
+  (src/solver/ActiveSetQP.cpp:191-438, headed by the algorithm's own name at
   src/solver/ActiveSetQP.cpp:152), and every entry of the returned trace is
   one working-set change.
 
@@ -258,7 +258,7 @@ export const rowTol = (
 };
 
 /** ACTIVE-SET QP, transcribed from `activeSetQP`
- *  (src/solver/ActiveSetQP.cpp:120-442), recording the working set at every
+ *  (src/solver/ActiveSetQP.cpp:122-444), recording the working set at every
  *  change.  Same order of operations, same tolerances, same LICQ recovery,
  *  the same running-point formulation starting at x = 0, and since C178
  *  (2026-10-27) the same treatment of an INFEASIBLE start (the most violated

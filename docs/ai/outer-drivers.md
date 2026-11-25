@@ -215,6 +215,21 @@ report  { file optimization_history.csv; }
   unconstrained: give it a penalty term in the objective, or switch to sqp
   or mads).
 
+### `method sqp;` — `options { fdMode forward|central|auto; }` (C496)
+
+`fdMode forward` (default, step `fdStep`, n+1 runs per iteration) and `central` are as before.
+`fdMode auto;` (opt-in; every shipped case runs byte-identically without it) chooses the step
+of each variable from the response's own noise (ECnoise on nine points 1e-3 apart, never the
+same point twice) and curvature, per Shi, Xuan, Oztoprak & Nocedal (arXiv 2102.09762):
+forward `h = 8^(1/4) sqrt(eps/L)`, central `h = (3 eps/M)^(1/3)`, central per variable when
+the forward error bound exceeds a tenth of the stationarity tolerance, never across a bound.
+It also relaxes the Armijo test by the merit's noise, restarts once (B = I, central) after a
+failed line search, reuses the BFGS gradients, and runs the QP in robust mode.  `fdStep` is
+ignored.  The trace prints, per iteration, each variable's step with its reason, and every
+multiplier as `lam (+-sigma)`, or `NOT RESOLVED` when the error bar exceeds the value.  The
+self-check also runs HS35/HS21/HS71 under auto, clean and with 1e-7 noise.  Theory: Theory
+Guide `sec:sqp-adaptive-fd`.  Measured on the bench of `docs/audits/2026-11-24-optimizer-bench-*`.
+
 ### `method mads;` (C494) — nonsmooth, constrained, integer
 
 Mesh Adaptive Direct Search with the progressive barrier (`src/solver/MADS.H` says

@@ -16646,6 +16646,110 @@ Finally, a finite difference is never built from a failed simulator
 evaluation: the other side is taken, announced, and a variable whose two
 sides both fail stops the SQP, unconverged, naming it.
 
+\subsection{Noise-aware differences: \code{fdMode auto}}\label{sec:sqp-adaptive-fd}
+
+The shipped differences use one relative step ($10^{-5}$) for every
+variable and every response.  That step is right for no case in
+particular: a forward difference carries a truncation error $\approx
+\tfrac12 L h$ and a noise error $\approx \sqrt2\,\varepsilon/h$, so the
+step that balances them depends on the response's own noise
+$\varepsilon$ and curvature $L$.  A fixed $10^{-5}$ caps the reachable
+gap near $10^{-10}$ on a clean function and sits below the noise of a
+solved flowsheet with a loose recycle tolerance.  \code{fdMode auto;}
+(\code{solver::SQPOptions::adaptiveFd}) chooses the step per variable
+from measurements, following Shi, Xuan, Oztoprak \& Nocedal
+\cite{ShiXuanOztoprakNocedal2021}.  It is OPTIONAL: the shipped default
+is unchanged and every shipped case runs byte-identically without it.
+
+\paragraph{Noise.}  For each response $r$ (the objective and every
+constraint) $\varepsilon_r$ is estimated from the values at nine points
+spaced $10^{-3}$ apart along a diagonal of the scaled variables
+(a smaller spacing where a bound is near), with the difference-table
+procedure ECnoise of Mor\'e and Wild \cite{MoreWild2011}: the $k$-th
+differences of a smooth function fall like $h^k$, those of noise do not,
+and the level $k$ at which three successive estimates
+$\sigma_k=\bigl(\gamma_k\,\overline{(\Delta^k f)^2}\bigr)^{1/2}$,
+$\gamma_k=(k!)^2/(2k)!$, agree within a factor of four (with enough sign
+changes) is the noise.  Points close together are the point: the same
+point asked twice returns the same number from a deterministic engine,
+so the old ``evaluate twice'' probe measures zero whatever the noise.
+When no level shows noise a floor $10^{-14}\max(1,|r|)$ stands.  (ECnoise
+is implemented from its description in
+\cite{ShiXuanOztoprakNocedal2021}; the original paper was not
+available to the implementation.)
+
+\paragraph{Curvature.}  Along each variable $e_j$ the second difference
+$\Delta_2(t)=f(\xv+te_j)-2f(\xv)+f(\xv-te_j)$ is formed with $t$ grown by
+a factor 8 until $|\Delta_2 f|\ge 100\,\varepsilon_f$ (one-sided at a
+bound), giving $L_{r,j}=\max(0.1,|\Delta_2 r|/t^2)$ (the floor $0.1$ is
+Procedure~I of \cite{ShiXuanOztoprakNocedal2021}).  It is re-estimated
+when a line search needs $\alpha<0.5$ (the model has changed) and after
+a restart.
+
+\paragraph{Step.}  The forward interval and its gradient-error bound are
+\begin{equation}
+  h_j=8^{1/4}\sqrt{\varepsilon/L},\qquad
+  \sigma_g=\sqrt{\tfrac14 L^2h^2+2\varepsilon^2/h^2}\;(\approx
+  1.19\sqrt{L\varepsilon}),
+  \label{eq:sqp-h-forward}
+\end{equation}
+the central ones, with $M$ a bound on the third derivative
+(from $f(\xv\pm t e_j)$, $f(\xv\pm2te_j)$),
+\begin{equation}
+  h_j=\bigl(3\varepsilon/M\bigr)^{1/3},\qquad
+  \sigma_g=\sqrt{M^2h^4/36+\varepsilon^2/(2h^2)},
+  \label{eq:sqp-h-central}
+\end{equation}
+one perturbation serves the objective and every constraint, so $h_j$ is
+the largest of the per-response steps ($4\cdot10^{-9}\le h_j\le0.05$ in
+scaled units).  Variable $j$ is differenced \emph{centrally} when its
+forward bound exceeds a tenth of the stationarity tolerance, or after a
+failed line search; otherwise forward.  A step never leaves the box: at a
+bound it turns inward (a forward difference at an upper bound was
+evaluated outside the box, clipped by the caller, and read as a zero
+slope).  The iteration trace prints, per variable, the direction, $h_j$,
+the curvature and the error bound, and the noise it came from.
+
+\paragraph{Line search, restart, reuse.}  Under noise the merit is known
+only to $\pm\varepsilon_\phi$, $\varepsilon_\phi=\varepsilon_f+\mu\sum\varepsilon_c$,
+so the Armijo test of a shortened step is relaxed by
+$2\varepsilon_\phi$ (eq.~2.19 of \cite{ShiXuanOztoprakNocedal2021}).  A
+failed line search is no longer final: the first one resets
+$\Bv=\mathbf I$, switches every variable to central differences, draws a
+fresh noise and curvature estimate and tries once more; a second
+consecutive failure stops as before.  The gradients computed at the
+accepted point for the BFGS update are kept for the next iteration (same
+point, same steps: the same numbers, one pass fewer).
+
+\paragraph{Error bars on the shadow prices.}  At the active set $A$
+(equalities, active inequalities, active bounds) $\boldsymbol\lambda=
+-(AA^{\!\top})^{-1}A\nabla f$, so an error $e_j$ in the gradient of the
+Lagrangian moves $\lambda_i$ by $P_{ij}e_j$, $P=(AA^{\!\top})^{-1}A$, with
+$e_j^2=\sigma_{f,j}^2+\sum_k\lambda_k^2\sigma_{k,j}^2$ from
+\eqref{eq:sqp-h-forward}/\eqref{eq:sqp-h-central}; the bound rows are
+exact.  Hence $\sigma_{\lambda_i}^2=\sum_jP_{ij}^2e_j^2$.  Choupo prints
+every multiplier as $\lambda\pm\sigma_\lambda$ and marks it
+\code{NOT RESOLVED} when $\sigma_\lambda>|\lambda|$: a shadow price whose
+error bar exceeds its value is not a price.
+
+\paragraph{The QP in robust mode.}  With \code{fdMode auto} the QP of
+\S\ref{ch:active-set-qp} runs in robust mode (\code{QPProblem::robust}):
+a working-set row whose component orthogonal to the earlier rows is below
+$10^{-5}$ of its length is dropped as dependent (the shipped $10^{-10}$
+let two inequalities $4\cdot10^{-6}$ apart in angle with inconsistent
+constants through: multipliers of $10^{9}$ and a cycle to the cap), and a
+sub-step counts as zero below $10^{-9}(1+\|x\|)$ (a QP whose data reach
+$10^{8}$ left a round-off step of $10^{-9}$ that never vanished).  What
+was tried and dropped: a second-order correction against the Maratos
+effect (N\&W \S18.3) was implemented and measured on 24 development
+problems; it moved the fraction solved by $+0.03$, $+0.01$ and $-0.13$
+at noise $10^{-8}$, $10^{-6}$ and $10^{-4}$ (tolerance $10^{-6}$) and
+nothing clean, so it is not in the code; Powell's falling penalty
+(1978) likewise moved nothing clean.  The elastic QP was not built: the
+Powell relaxation of C178 (above) stays the answer to an inconsistent
+linearisation, and the failures that looked like it were the two QP
+defects just named.
+
 \subsection{A worked self-check: Hock--Schittkowski}
 
 Because the SQP is finite-difference and the simulator pass is noisy,
@@ -16695,7 +16799,11 @@ $\theta$, the merit penalty $\mu$, the active set, the Lagrange
 multipliers (shadow prices), the Armijo step $\alpha$, and the four KKT
 residuals --- the whole inner workings, not just a final answer. The
 self-checks \code{verifySQP} / \code{verifyActiveSetQP} run first and
-their pass is announced. On convergence the five-line KKT certificate is
+their pass is announced (with \code{fdMode auto} also the same problems
+under noise-aware differences, \code{verifySQPAdaptive}), and each
+iteration adds a line giving every variable's differencing step with its
+reason and every multiplier with its error bar
+(\S\ref{sec:sqp-adaptive-fd}). On convergence the five-line KKT certificate is
 printed and the simulator is replayed once at the optimum with full
 verbosity, exactly as the Nelder-Mead path does.
 
@@ -37604,6 +37712,18 @@ Springer, 1978. Source of the \emph{damped}-BFGS modification (the
 $\theta$ blend toward $\Bv\mathbf s$) that keeps the SQP Hessian
 approximation positive definite even when the Lagrangian curvature is
 indefinite.
+
+\bibitem{ShiXuanOztoprakNocedal2021} Shi, H.-J. M., Xuan, M. Q.,
+Oztoprak, F., \& Nocedal, J., ``On the numerical performance of
+derivative-free optimization methods based on finite-difference
+approximations'', arXiv:2102.09762 (2021).  Read for \S\ref{sec:sqp-adaptive-fd}:
+the intervals eq.~2.13 (forward) and 2.14 (central), Procedure~I (the
+curvature estimate), the relaxed Armijo condition eq.~2.19.
+
+\bibitem{MoreWild2011} Mor\'e, J. J., \& Wild, S. M., ``Estimating
+computational noise'', SIAM J. Sci. Comput.~33 (2011) 1292--1314.  The
+ECnoise difference-table estimate, implemented from the description in
+\cite{ShiXuanOztoprakNocedal2021}, not from the paper itself.
 
 \bibitem{HockSchittkowski} Hock, W., \& Schittkowski, K., \emph{Test
 Examples for Nonlinear Programming Codes}, Lecture Notes in Economics and

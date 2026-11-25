@@ -969,7 +969,7 @@ options
 {
     maxIter  40;
     fdStep   1e-3;                    // relative FD step (default 1e-5)
-    fdMode   central;                 // forward (n+1 sim/iter, default) | central (2n)
+    fdMode   central;                 // forward (n+1 sim/iter, default) | central (2n) | auto (noise-aware step per variable, error bars on the shadow prices; outer-drivers.md)
 }
 ```
 

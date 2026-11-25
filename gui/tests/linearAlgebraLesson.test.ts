@@ -203,8 +203,8 @@ describe("every file:line the lesson cites lands on what it claims", () => {
     "BlockTridiagonal.H:46": ["src/solver/BlockTridiagonal.H", 46, undefined, "factors it in O(N nv^3) where dense Gauss is O((N nv)^3)"],
     "BlockTridiagonal.H:49-51": ["src/solver/BlockTridiagonal.H", 49, 51, /Partial pivoting is applied INSIDE each pivot block[\s\S]*no pivoting ACROSS blocks/],
     "ActiveSetQP.H:39": ["src/solver/ActiveSetQP.H", 39, undefined, "with B symmetric positive definite"],
-    "SQP.cpp:257": ["src/solver/SQP.cpp", 257, undefined, "B[i][i] = 1.0;   // B0 = I"],
-    "SQP.cpp:627": ["src/solver/SQP.cpp", 627, undefined, "BFGS skipped"],
+    "SQP.cpp:525": ["src/solver/SQP.cpp", 525, undefined, "B[i][i] = 1.0;   // B0 = I"],
+    "SQP.cpp:1019": ["src/solver/SQP.cpp", 1019, undefined, "BFGS skipped"],
     "StabilityTest.H:39-43": ["src/solver/StabilityTest.H", 39, 43, /Is there another composition y at which the chemical potential[\s\S]*lies strictly below the tangent plane[\s\S]*If yes \(TPD < 0\)/],
     "StabilityTest.cpp:65-69": ["src/solver/StabilityTest.cpp", 65, 69, /scalar tm = 1\.0;[\s\S]*tm \+= Yi \* \(std::log\(Yi\) \+ lnGamma\[i\] - h\[i\] - 1\.0\)/],
   };
