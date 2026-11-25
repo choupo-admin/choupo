@@ -203,7 +203,7 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
         return nullptr;
     };
 
-    auto rate = [&](NozzleRow& r, const EquipmentSizing& sz, scalar Pg, scalar T)
+    auto rate = [&](NozzleRow& r, const EquipmentSizing& sz, scalar Pg, scalar T, scalar Town = 0)
     {
         r.designP = Pg; r.designT = T;
         auto it = tables.find(sz.material);
@@ -229,8 +229,32 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
             if (row->psig[k] >= psig) { cls = tb.classes[k]; break; }
         if (!cls)
         {
-            add(r.why, "flange class: " + fmt(psig) + " psig is above the highest class of the "
-                       + tb.material + " table");
+            //  C519: say WHAT is uncovered and what is left to decide, never a bare "above".
+            const std::size_t top = tb.classes.size() - 1;
+            std::string w = "flange class: no class of the " + tb.material + " table holds "
+                + fmt(psig) + " psig at the design temperature " + fmt(TF) + " F ("
+                + fmt(T) + " K): the table's highest class, " + std::to_string(tb.classes[top])
+                + ", holds " + fmt(row->psig[top]) + " psig there.  To DECIDE: a class above the table's,"
+                " a lower design pressure for this nozzle, or another material with its own rating table";
+            if (Town > 0 && Town < T - 1e-9)
+            {
+                const scalar TFo = (Town - 273.15) * 9.0 / 5.0 + 32.0;
+                for (const RatingRow& w2 : tb.rows)
+                    if (w2.upToF >= TFo)
+                    {
+                        for (std::size_t k = 0; k < tb.classes.size(); ++k)
+                            if (w2.psig[k] >= psig)
+                            {
+                                w += ".  At this nozzle's OWN stream temperature plus the margin, "
+                                     + fmt(Town) + " K (" + fmt(TFo) + " F), class "
+                                     + std::to_string(tb.classes[k]) + " would hold it: the item-wide design"
+                                     " temperature (the hottest connected stream) is what leaves it uncovered";
+                                break;
+                            }
+                        break;
+                    }
+            }
+            add(r.why, w);
             return;
         }
         r.flangeClass = std::to_string(cls);
@@ -344,7 +368,12 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
                 {
                     r.basis += "; design P " + fmt(Pg / 1e5) + " bar gauge (" + pFrom + "), design T "
                              + fmt(Tdes) + " K (the hottest connected stream + " + fmt(tMargin) + " K)";
-                    rate(r, sz, Pg, Tdes);
+                    scalar Town = 0;
+                    {
+                        auto st = result.streams.find(r.stream);
+                        if (st != result.streams.end()) Town = st->second.T + tMargin;
+                    }
+                    rate(r, sz, Pg, Tdes, Town);
                 }
                 S.rows.push_back(r);
             }

@@ -1178,3 +1178,44 @@ connection); a header's own diameter and pressure drop; a main that steers
 round an obstacle; a manifold for a unit that is not a bank of identical
 items.  Gate: `check_plant_layout` arm (h) (the branch ends on its main,
 the main counts its branches, the ids).
+
+## The service clearance (2026-11-25, DEV.md 4c C507)
+
+A shell-and-tube exchanger is serviced by pulling its bundle through the
+channel end, which needs the bundle's length plus a handling extra clear in
+line with the shell.  The layout checker knew neither the tube length nor the
+channel end, so the reference plant's water cooler (6.096 m tubes) stood 5.45
+m from the feed-effluent exchanger and 3.9 m from the chiller, with 7.6 m
+needed, and the layout showed zero findings.
+
+**Two things, said apart.**  The TUBE LENGTH is a fact: the design sheet's
+`tubeLength`, published by the sizer.  The CLEARANCE beyond it is a
+convention (the extractor, the head, the site's practice): the case declares
+it, with `source` and `reason`, and no vendor or textbook value is shipped or
+assumed.  The channel end is the case's declaration too (`channelEnd`, an end
+of the item's own axis), per exchanger, with a reason.
+
+**The rule.**  The zone is the item's own cross-section (plan width, height
+above its base) swept from the channel face out to `tubeLength + clearance`.
+The nearest blocker is read from the checker's own geometry: another placed
+item's plan box (a vertical cylinder by its bounding square, which is
+conservative), the fence line, and the pipe rack when its lowest tier is
+below the exchanger's top.  A shortfall is a `serviceClearance` finding
+(`a` the exchanger, `b` the blocker, `value` the clear length, `limit` the
+length needed).  Not checked: bund walls and kerbs, a pipe leaving its own
+nozzle across the zone, a crane's reach, whether the extra is right.
+
+**A case that declares nothing.**  ANNOUNCED as not checked (an info line on
+stderr and in the advisories naming the exchangers), no finding.  A finding
+would need a number the engine does not own; and six shipped layout cases
+carry exchangers, so a default would turn a convention into a verdict on
+cases whose authors never chose it.  The nine layout cases but the
+reference plant pass their goldens unchanged.
+
+**Gate.**  `check_plant_layout` arm (q): the plant as declared raises none
+(the water cooler's clear length is recomputed from the published boxes and
+held against the sheet's `tubeLength` plus the declared extra); the sabotage
+(the feed-effluent exchanger back at x = 40 m) raises
+`serviceClearance:WaterCooler:FEHE` with the distance recomputed; a case with
+no declaration is announced and raises nothing; a channel end off the axis is
+refused by name.

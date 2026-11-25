@@ -202,7 +202,7 @@ items
     //  box is DECLARED -- two stacked pairs side by side, by hand.
     {
         item        "FEHE";
-        x           40 m;
+        x           37.8 m;             // was 40 m (C507): 2.2 m west, so the water cooler's bundle (7.6 m) can be pulled toward it, 7.65 m clear; the converter above stays at 40 m
         y           7 m;
         z           0 m;
         orientation alongX;
@@ -566,6 +566,33 @@ items
         ignition    "a burning flame at the stack tip and the pilot: an ignition source";
     }
 );
+
+//  ---- C507: can each exchanger's tube bundle be pulled? -----------------
+//  The bundle comes out through the CHANNEL end and needs the tube length
+//  plus a handling extra in a straight line, at the exchanger's own height.
+//  Two things are said apart: the tube length is a FACT (each design sheet's
+//  `tubeLength`, 6.096 m on all six); the extra is a CONVENTION, declared
+//  here as an author-set assumption with no book behind it.  The check reads
+//  the plan's own items, the fence and the pipe rack (its lowest tier is at
+//  7 m, above every exchanger here, so it blocks none of them).
+//  The channel ends below are the author's choice: where the loop's open
+//  ground is.  The engine's nozzle ports do NOT follow them (they stay the
+//  C229 convention), and no bund wall, kerb or crane reach is checked.
+serviceClearance
+{
+    clearance   1.5 m;
+    source      "author-set assumption for the students to replace with their own maintenance practice; no vendor or textbook value was read for this case";
+    reason      "a bundle that is pulled needs its own length clear in line with the shell plus room to slide it clear of the tubesheet and to rig the extractor";
+    items
+    (
+        { item "N2Cooler";    channelEnd west; reason "70 m of open ground to the fence on the west, against 9.9 m to the Intercooler on the east"; }
+        { item "Intercooler"; channelEnd east; reason "11.9 m to the Aftercooler on the east, against 9.9 m to the N2 cooler on the west"; }
+        { item "Aftercooler"; channelEnd east; reason "open ground to the east, beyond the compressor row"; }
+        { item "FEHE";        channelEnd west; reason "109 m of open ground to the fence on the west; the water cooler stands 7.65 m off its east end and is pulled the same way, so the two never need the same ground"; }
+        { item "WaterCooler"; channelEnd west; reason "7.65 m to the feed-effluent exchanger on its west, against 3.9 m to the chiller on its east: the bundle is pulled toward the feed-effluent exchanger, whose shells were moved 2.2 m west to give it 7.6 m"; }
+        { item "Chiller";     channelEnd east; reason "open ground to the east of the loop: the separator stands off its axis"; }
+    );
+}
 
 separation
 (
