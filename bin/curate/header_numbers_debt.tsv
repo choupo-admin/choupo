@@ -117,6 +117,7 @@ tutorials/steady/distillation/column14_klemola_c4_splitter	113
 tutorials/steady/distillation/column15_klemola_ideal_trays	16
 tutorials/steady/distillation/column18_partial_condenser	1
 tutorials/steady/distillation/column21_design_curve_ethanol_water	1
+tutorials/steady/distillation/column22_wide_boiling_retry	2
 tutorials/steady/distillation/packing03_schulz_delft_0p10bar	1
 tutorials/steady/distillation/packing04_schulz_delft_0p02bar	1
 tutorials/steady/distillation/stripper01_sour_water	4
