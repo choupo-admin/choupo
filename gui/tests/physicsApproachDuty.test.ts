@@ -91,9 +91,9 @@ describe("the page names what is carried and what is recomputed", () => {
     const gb = readFileSync(new URL(
       "../../src/unitOperations/reactor/GibbsReactor.cpp", import.meta.url),
       "utf-8").split("\n");
-    expect(gb.slice(749 - 1, 755).join(" ")).toContain("s.T, s.P, s.z");
-    expect(gb[755 - 1]).toContain("kpis_[\"Q_kW\"] = H_out_kW - H_in_kW");
+    expect(gb.slice(763 - 1, 769).join(" ")).toContain("s.T, s.P, s.z");
+    expect(gb[769 - 1]).toContain("kpis_[\"Q_kW\"] = H_out_kW - H_in_kW");
     expect(body).toContain("EquilibriumReactor.cpp:877, 940–944, 951");
-    expect(body).toContain("GibbsReactor.cpp:749–755");
+    expect(body).toContain("GibbsReactor.cpp:763–769");
   });
 });

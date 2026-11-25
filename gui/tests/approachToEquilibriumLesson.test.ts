@@ -199,7 +199,7 @@ describe("what the page declines to claim", () => {
     const l = APPROACH_LIMITS.find(
       (x) => x.id === "exact-only-for-an-ideal-gas")!;
     expect(prose(l.body)).toContain("fugacityModel idealGas");
-    expect(prose(l.body)).toContain("GibbsMethod.cpp:64–94");
+    expect(prose(l.body)).toContain("GibbsMethod.cpp:66–96");
   });
 
   it("says no ΔT anywhere on the page is calibrated against anything", () => {
@@ -239,7 +239,7 @@ describe("the tool's one piece of arithmetic", () => {
   });
 
   it("reads the thermicity off the engine's duty sign, not off a name", () => {
-    //  GibbsReactor.cpp:755 -- Q_kW is heat ADDED to hold T.
+    //  GibbsReactor.cpp:769 -- Q_kW is heat ADDED to hold T.
     expect(thermicityOf(-3.44038833106)).toBe("exothermic");   // shift at 800 K
     expect(thermicityOf(57.7812038582)).toBe("endothermic");   // reformer, 1000 K
     expect(thermicityOf(0)).toBe("thermally neutral");

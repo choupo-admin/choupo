@@ -481,6 +481,12 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "column.operation.packing.model:RochaBravoFair":                 { guide: "theory", dest: "sec:packing-rbf" },
   "column.operation.packing.model:Delft":                          { guide: "theory", dest: "sec:packing-delft" },
   "column.operation.packing.model:BilletSchultes":                 { guide: "theory", dest: "sec:billetSchultes" },
+  //  THE GIBBS REACTOR'S INTERIOR-POINT METHOD (DEV.md 4c, interior-point slice B1):
+  //  `model interiorPoint;` and the two words of its `interiorPoint { barrier ...; }`
+  //  block open the section that derives the method (the problem, pi = -lambda, R1).
+  "gibbsReactor.model:interiorPoint":                      { guide: "theory", dest: "sec:gibbs-interior-point" },
+  "gibbsReactor.interiorPoint.barrier:condensedPhases":  { guide: "theory", dest: "sec:gibbs-interior-point" },
+  "gibbsReactor.interiorPoint.barrier:everyAmount":        { guide: "theory", dest: "sec:gibbs-interior-point" },
   //  The continuous convective dryer's FLOW word: each arrangement opens the
   //  section that derives it (its paragraphs name each arrangement).
   "convectiveDryer.operation.flow:cocurrent":       { guide: "theory", dest: "sec:dryer-flow-arrangements" },

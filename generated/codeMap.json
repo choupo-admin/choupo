@@ -1273,6 +1273,9 @@
   "InteriorPoint": [
    "src/solver/ip/InteriorPoint.H"
   ],
+  "InteriorPointGibbs": [
+   "src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.H"
+  ],
   "Ion": [
    "src/unitOperations/electrochem/LimitingCurrent.H"
   ],
@@ -1747,6 +1750,9 @@
   ],
   "OptimizationDriver": [
    "src/outerDriver/OptimizationDriver.H"
+  ],
+  "Options": [
+   "src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.H"
   ],
   "OrganicPhase": [
    "src/thermo/electrolyte/ReactiveVLE.H"
@@ -4109,6 +4115,10 @@
    {
     "key": "nelderMead",
     "type": "DirectMin"
+   },
+   {
+    "key": "interiorPoint",
+    "type": "InteriorPointGibbs"
    }
   ],
   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp": [

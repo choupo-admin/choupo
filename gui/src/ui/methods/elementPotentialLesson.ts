@@ -84,7 +84,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "where that one stops: from the closed form, what does the engine "
       + "actually solve?  Not the amounts.  It solves for one element "
       + "potential per element and the logarithm of the total, and builds "
-      + "every amount from them (the residual, GibbsMethod.cpp:76–94).  On "
+      + "every amount from them (the residual, GibbsMethod.cpp:78–96).  On "
       + "the witness, the water-gas shift reactor carries four species over "
       + "three elements (C, H, O): four unknowns, π_C, π_H, π_O and ln N.  "
       + "The steam reformer beside it carries six species and still has "
@@ -160,9 +160,9 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "Gauss elimination for the step (:771), then a line search that "
       + "halves the step until |F| falls (:798; the default branch, "
       + ":926–937).  It stops when "
-      + "|F| < 10⁻⁸ of the feed's total moles (a relative residual), within 80 iterations (GibbsMethod.cpp:128–129).  "
+      + "|F| < 10⁻⁸ of the feed's total moles (a relative residual), within 80 iterations (GibbsMethod.cpp:131–132).  "
       + "It starts from a least-squares fit of the potentials that pretends "
-      + "the feed is already the answer (GibbsMethod.cpp:100–124).  On the "
+      + "the feed is already the answer (GibbsMethod.cpp:102–126).  On the "
       + `shift reactor at 800 K that seed puts CO at ln n = ${Q.shiftSeedLnnCO}: `
       + "about 1.4 × 10⁻⁴ mol/s against 0.139 fed, so every balance is "
       + `short and |F| = ${Q.shiftSeedNormF} mol/s.  The full Newton step `
@@ -191,8 +191,8 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "thermodynamics disfavours is not zero but tiny (the ammonia left "
       + "in step 5's outlet is e⁻⁵⁶ mol/s), and the residual caps each "
       + "exponent at e^±50 so a wild trial cannot overflow "
-      + "(GibbsMethod.cpp:51–52, :84).  The published amounts are not "
-      + "capped (GibbsMethod.cpp:313), and if the upper cap binds at the "
+      + "(GibbsMethod.cpp:52–53, :86).  The published amounts are not "
+      + "capped (GibbsMethod.cpp:316), and if the upper cap binds at the "
       + "answer the run says so.",
   },
   {
@@ -203,7 +203,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "stationarity condition of step 1 becomes a statement about the "
       + "outlet: every species' chemical potential is the sum of its "
       + "atoms' potentials.  The engine publishes λ_k = π_k R T as the KPI "
-      + "`lambda_<element>` (GibbsReactor.cpp:763).  Check it by hand on "
+      + "`lambda_<element>` (GibbsReactor.cpp:777).  Check it by hand on "
       + `the shift answer: π_C = ${Q.shiftPiC}, π_H = ${Q.shiftPiH}, `
       + `π_O = ${Q.shiftPiO}.  For CO, g°/RT = ${Q.shiftGRT.CO} and `
       + `ln y = ${Q.shiftLnY.CO} (P = 1 bar, so ln P/P° = 0): their sum is `
@@ -260,11 +260,11 @@ export const EP_STEPS: readonly LessonStep[] = [
       + `L = ${Q.liquidL} mol/s.  The solid, on the witness's steam-lean `
       + "reformer at 1000 K: graphite has no mole fraction — it is its own "
       + "phase at activity one — so the test is its activity in the "
-      + "graphite-free gas (GibbsSolidPhase.cpp:105, :231): "
+      + "graphite-free gas (GibbsSolidPhase.cpp:105, :245): "
       + `π_C − g_C/RT = ${Q.cokingPiC} − (${Q.cokingGRT}) = ${Q.cokingLnA}, `
       + `a_C = ${Q.cokingA} > 1, so depositing carbon lowers G.  The engine `
       + "then bisects the deposited amount between zero and the point where "
-      + "the gas runs out of carbon (GibbsSolidPhase.cpp:259–310), each "
+      + "the gas runs out of carbon (GibbsSolidPhase.cpp:273–324), each "
       + `trial a gas Newton on the atoms left: ${Q.cokingSolves} gas solves, `
       + `${Q.cokingNs} mol/s of graphite, and a_C back to 1.`,
     formula: String.raw`y_c\,P = P^\mathrm{sat}_c \quad\text{(liquid present)}, \qquad \ln a_s = \sum_k \pi_k A_{ks} - \frac{g^\circ_s}{RT} = 0 \quad\text{(solid present)}`,
@@ -309,7 +309,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "stay silent: it re-seeds (GibbsMethod.cpp:230–289) from a primal "
       + "Newton on ln n_i started from equal amounts of every species (the "
       + "reduced equations of Gordon & McBride, NASA RP-1311, "
-      + "GibbsMethod.cpp:409–533), whose matrix is weighted by the current "
+      + "GibbsMethod.cpp:413–537), whose matrix is weighted by the current "
       + "amounts and whose steps are limited so no major species changes by "
       + `more than a factor e² at once (:519).  It takes ${Q.ammoniaPrimalIterations} `
       + "primal iterations and hands the element-potential Newton a start "
@@ -377,7 +377,7 @@ export const EP_LIMITS: readonly LessonLimit[] = [
     title: "Ideal gas throughout.",
     body: "Every witness here declares `fugacityModel idealGas`.  Under a "
       + "real equation of state the engine folds ln φ_i into g°/RT and "
-      + "repeats the Newton until φ settles (GibbsMethod.cpp:66–74); those "
+      + "repeats the Newton until φ settles (GibbsMethod.cpp:68–76); those "
       + "passes are logged as `warmStartPass` stages and are not on this "
       + "page.",
   },

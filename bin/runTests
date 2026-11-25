@@ -6632,6 +6632,21 @@ PYEOF
     fi
     rm -f /tmp/ipoint.$$
 
+    # gibbs-interior-point gate (2026-11-25, interior-point slice B1, docs/design/
+    # interior-point.md sec. 4.2).  `model interiorPoint` reads the element potentials
+    # off the multipliers (pi = -lambda); a wrong sign, a barrier error on a trace
+    # species or a liquid left at its barrier ghost still converges at exit 0.  Each
+    # gas + ideal-liquid Gibbs case is run under both methods and both variants of R1.
+    if gate_exec "$ROOT/bin/curate/check_gibbs_interior_point.py" > /tmp/gibbsip.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gibbs-interior-point-gate" "$(head -1 /tmp/gibbsip.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gibbs_interior_point.py)\n" "gibbs-interior-point-gate"
+        cat /tmp/gibbsip.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gibbsip.$$
+
     # iteration-budgets gate (2026-11-21, DEV.md 4c C467 R-001/R-002/R-006).  A Newton
     # budget of zero was published as a converged solve (adiabaticFlash with
     # `maxOuterIter 0;`: a 917 kW imbalance), an exhausted newton1D returned the new x

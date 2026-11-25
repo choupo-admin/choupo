@@ -16711,7 +16711,8 @@ in stages (design record \code{docs/design/interior-point.md}).  The SQP
 serves the \code{outerDict} (a few variables, finite-difference gradients);
 the interior-point code serves \emph{inner} problems that have structure
 and analytic derivatives.  Slice A2, described in this and the following
-sections, is the algorithm itself on dense matrices; no case selects it yet.
+sections, is the algorithm itself on dense matrices; since slice B1 the Gibbs reactor
+selects it with \code{model interiorPoint;} (§\ref{sec:gibbs-interior-point}).
 The sections read in this order: the barrier problem and its step (here),
 the linear algebra with the inertia (§\ref{sec:ldlt-inertia}), the inertia
 correction (§\ref{sec:ip-inertia}), the filter line search
@@ -23833,6 +23834,176 @@ forward reaction is favoured at lower temperature).  At 1000~K the
 simulator returns $K_{\mathrm{eq}} \approx 1.4$, against the
 literature 1.40 --- the same accuracy as the 800~K case.
 \end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\subsection{The interior-point method: \code{model interiorPoint}}\label{sec:gibbs-interior-point}
+
+The element-potential Newton of the sections above solves the $M+1$ equations
+\eqref{eq:gibbs-ni} for $\boldsymbol{\pi}$ and $\ln N$; it is quadratically
+fast once it is close, and it needs a \emph{seed} (the least-squares fit at the
+feed, or the primal iteration of the initial-guess subsection above) because far from the
+answer its Jacobian is singular.  \code{model interiorPoint;} poses the same
+equilibrium as an \emph{optimisation} instead and hands it to Choupo-IP, the
+primal-dual interior-point filter line search of §\ref{sec:ip-barrier}: it
+needs no primal seed, it carries a condensed phase as one more variable with a
+bound, and it returns the element potentials as a by-product (the
+\emph{bridge} below).  Slice B1 of the design record
+\code{docs/design/interior-point.md}; the solver is
+\file{src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.cpp}.
+
+\paragraph{The problem.}  With gas amounts $n_i$ ($i=1..N$) and ideal-liquid amounts
+$l_k$ of the $K$ condensable species, scaled by the total feed moles
+$N_0$ ($u_i=n_i/N_0$, $w_k=l_k/N_0$), the method minimises
+\begin{equation}\label{eq:gibbs-ip-objective}
+\frac{G}{RT N_0}=\sum_{i}u_i\Bigl(\frac{g_i^{\circ}}{RT}+\ln\frac{P}{P^{\circ}}+\ln\frac{u_i}{U}\Bigr)
++\sum_{k}w_k\Bigl(\frac{g_k^{\circ}}{RT}+\ln\frac{f_k^{\mathrm{L}}}{P^{\circ}}+\ln\frac{w_k}{W}\Bigr),
+\end{equation}
+$U=\sum_i u_i$, $W=\sum_k w_k$, subject to the element balances and the bounds
+\begin{equation}\label{eq:gibbs-ip-constraints}
+\sum_i A_{ji}u_i+\sum_k A_{j,c(k)}w_k=b_j/N_0\quad(j=1..M),\qquad u_i\ge0,\ w_k\ge0 .
+\end{equation}
+$f^{\mathrm{L}}_k$ is the pure-liquid reference of the package
+(\code{pureLiquidReference}: $P^{\mathrm{sat}}$ with the saturation fugacity
+coefficient and the Poynting factor), the same reference the element-potential
+method saturates against, so the two methods pose one problem.  The liquid is the
+\emph{ideal} mixture of the condensables (Raoult: an activity model of the package
+is not read, as in the element-potential method).  The gradient is the chemical
+potential of each species over $RT$,
+\begin{equation}\label{eq:gibbs-ip-gradient}
+\frac{\partial}{\partial u_i}=\frac{g_i^{\circ}}{RT}+\ln\frac{P}{P^{\circ}}+\ln\frac{u_i}{U}=\frac{\mu_i}{RT},
+\end{equation}
+and the Hessian of each ideal mixing phase is analytic,
+$\partial^2/\partial u_i\partial u_j=\delta_{ij}/u_i-1/U$ (positive semi-definite;
+the constraints are linear, so it is also the Hessian of the Lagrangian).  No
+finite difference enters.
+
+\paragraph{The KKT conditions and the bridge $\pi=-\lambda$.}  Choupo-IP's Lagrangian is
+$f+\lambda^{T}c$ (§\ref{sec:ip-barrier}), with $c=Au-b/N_0$ the element balances; the
+stationarity condition for the gas amount $i$ is
+\begin{equation}\label{eq:gibbs-ip-kkt}
+\frac{\mu_i}{RT}+\sum_j A_{ji}\lambda_j=z_i,\qquad z_i\ge0,\qquad z_iu_i=0 .
+\end{equation}
+A species that is \emph{present} has $z_i=0$, so $\mu_i/RT=-\sum_jA_{ji}\lambda_j$.
+This is the element-potential condition $\mu_i/RT=\sum_jA_{ji}\pi_j$ of
+\eqref{eq:gibbs-ni}, which was derived above with the opposite sign convention
+for the multiplier ($L=G-\sum\lambda_j(\ldots)$, $\pi_j=\lambda_j/RT$).  Hence
+\begin{equation}\label{eq:gibbs-ip-bridge}
+\boxed{\ \pi_j=-\lambda_j\ }
+\end{equation}
+(dimensionless: the scaling by $N_0$ and $RT$ cancels).  The method publishes
+$\boldsymbol{\pi}$ as \code{lambda\_<element>}${}=\pi RT$, exactly as the
+element-potential method does, and prints $\lambda$, $\pi=-\lambda$ and the
+polished $\pi$ in the run; the gate \code{check\_gibbs\_interior\_point} holds
+the identity to $10^{-8}$ against an independent element-potential solve of the
+same case, and a sign error in the code makes it fail.  An \emph{absent} pure
+condensed phase has $z>0$ and $z=g/RT-\sum_j\pi_jA_j=-\ln a$: the bound multiplier \emph{is} the
+phase test (this is how slice B2 will carry pure solids).  In B1 the liquid is \emph{not} decided
+from the multipliers at the interior-point point: there the liquid carries $z_k=\mu/w_k$, the
+barrier's own bias, and a real liquid of a few per cent of the feed looks like its ghost (the defect of
+the first version, found by independent review: the liquid and its matter were dropped at exit 0
+just above the dew point).  The finish below decides it.
+
+\paragraph{The finish: the interior point gives the multipliers, the Newton finishes
+(design record sec.~2.9).}  From the interior point's $\pi=-\lambda$ the existing
+element-potential Newton (\code{gibbsGasSolve}, seeded with it) is run on the gas alone and the
+\emph{full} element totals.  The liquid is present if, at that state, the element-potential
+method's own test holds, $\sum_k y_kP/f^{\mathrm{L}}_k>1$ (for one condensable exactly
+$y_cP>P^{\mathrm{sat}}_c$).  Absent: that gas-only state is the answer and closes the
+elements exactly.  Present: the element-potential two-phase solve
+(\code{ElementPotential}, the bisection on the liquid amount) finishes it and its state is
+published, announced as ``phase set and multipliers from the interior point, amounts
+finished by the element-potential Newton''; a \emph{mixed} liquid, which that method does not
+carry, keeps the interior point's liquid amounts and the gas is polished on the remaining atoms (the
+liquid's trace species then keep the barrier error $\mu/w$, said in the run).  If the interior
+point's own verdict at its barrier-biased point differs from the finished one the run says so
+(\code{ip\_phaseVerdictsDisagree}).  A state that would drop matter is refused by name, never
+published.  The same finish serves both variants below and the rescue.
+
+\paragraph{Does the gas need a barrier?  Review R1, measured.}  A log barrier
+$-\mu\ln u_i$ on every amount makes the amount of a species \emph{present} at
+the optimum satisfy $z_iu_i=\mu$, an error $\mu/u_i$ in its chemical potential: at the
+final $\mu=10^{-9}$ a species below about $10^{-7}$ of the feed is off by more
+than one per cent (design record sec.~2.9).  But in a phase that is present the
+entropy term $u_i\ln(u_i/U)$ has the derivative $\ln(u_i/U)\to-\infty$ as
+$u_i\to0^{+}$: the minimum has every amount positive and the bound is
+\emph{never active} for a species of a present mixture phase.  The barrier
+buys nothing there and costs exactly that error.  Two variants were implemented
+and measured on the same cases (\code{interiorPoint \{ barrier \ldots; \}}):
+\begin{description}[nosep,leftmargin=*]
+  \item[\code{condensedPhases} (the default)] no barrier term and no
+        multiplier on the gas species ($z_i\equiv0$; the iterate stays positive
+        by the fraction-to-the-boundary rule alone, \code{NLPProblem::isGuardOnly});
+        a barrier on the amounts of the condensed phase --- the ideal-liquid
+        \emph{mixture}, a phase that can vanish (so its trace species carry the
+        $\mu/w$ error at the interior-point point, which the finish removes).  The step
+        is the primal-dual Newton on the true KKT conditions.
+  \item[\code{everyAmount}] a barrier on every amount.
+\end{description}
+The finish is the same in both; what differs is how close the interior point's \emph{own}
+amounts are to it, which is the measurement.  \par\medskip\noindent\textbf{Measured} (\code{check\_gibbs\_interior\_point --table}, 2026-11-25; iterations of the
+interior-point run, and the largest relative change the finish makes to the interior point's own gas amounts above $10^{-25}$ of the feed):
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule
+case & \multicolumn{2}{c}{condensedPhases} & \multicolumn{2}{c}{everyAmount}\\
+ & iter. & finish & iter. & finish\\
+\midrule
+gibbs01 shift 800~K & 5 & $4\times10^{-9}$ & 7 & $2\times10^{-8}$\\
+gibbs02 reforming & 8 & $8\times10^{-15}$ & 15 & $6\times10^{-7}$\\
+gibbs03 combustion 1800~K & 16 & $1\times10^{-14}$ & 23 & $2\times10^{9}$\\
+gibbs05 adiabatic flame & 20 & $2\times10^{-13}$ & 24 & $5\times10^{-3}$\\
+gibbs06 radicals (H, O, OH, HO$_2$, H$_2$O$_2$) & 11 & $1\times10^{-8}$ & 24 & $2.4\times10^{-2}$\\
+gibbs06 thermal NO & 21$^{*}$ & $1\times10^{-3}$ & 23 & $1\times10^{9}$\\
+gibbs07 gas + condensing water & 12 & $8\times10^{-8}$ & 21 & $2\times10^{-4}$\\
+gibbs12 ammonia (NO) & 26 & $1\times10^{-8}$ & 24 & $1\times10^{-2}$\\
+claus01 furnace (14 species, 5 elements) & 17 & $4\times10^{-13}$ & 27 & $3\times10^{3}$\\
+claus01 boiler & 23 & $2\times10^{-9}$ & 29 & $2\times10^{7}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The expectation of review R1 holds: without a barrier on the gas the finish changes nothing
+beyond $10^{-7}$ (the radicals of gibbs06 included), and with one it changes a species that sits
+at the barrier's floor $\mu/z$ by orders of magnitude (the large entries are species present at
+$10^{-25}$ to $10^{-60}$ of the feed, which the barrier holds near $10^{-9}$).  The barrier-free
+variant also needs fewer iterations on every case but one, so it is the default.  Fixing the
+phase test (above) left every iteration count unchanged and moved only this column: two entries of the
+barrier-free column (gibbs05, gibbs07) and the large entries of \code{everyAmount} (the finish is now measured
+against the full-totals gas state, with the floor at $10^{-25}$ of the feed, not $10^{-30}$).
+\emph{Where it fails}, said: gibbs06 thermal NO ($^{*}$, lean combustion at 1800~K) has a species (CH$_4$) at
+about $10^{-40}$ of the feed; its contribution to $G/RT$ is $10^{-43}$, the objective cannot
+see the step that corrects it, and the run stops ``restoration failed'' at a \emph{feasible} point (the line search
+finds no step; the restoration phase is not even entered) with its dual infeasibility at $10^{-3}$.  The method then
+\emph{rescues} the answer: $\pi=-\lambda$ is already close and the Newton in $\ln n$ finishes it; the run says so
+(in its report and in the advisories) and publishes \code{ip\_rescuedByPolish}${}=1$; if the finish does not converge
+either the solve is reported not converged.  The round-off allowance of $10\varepsilon|\varphi|$ in the Armijo
+test of the filter (\code{FilterGlobalization}, Choupo's choice, not in the source paper) does \emph{not} cure this case --- it is
+rescued --- but belongs to the same slice: near the answer the decrease (20) asks for can be below the
+round-off of $\varphi$ itself, and the Hock--Schittkowski outputs are line-for-line unchanged by it.
+Against the element-potential method the default agrees to $2\times10^{-7}$ in every amount
+(the liquid of gibbs07, whose reference is a bisection and a Newton closed to $10^{-8}$~mol/s), to $2\times10^{-9}$ in $\pi$, to
+$1.2\times10^{-6}$~K in the adiabatic outlet temperature (the outer Newton's own tolerance), and
+the interior point's multiplier is $-\pi$ to $10^{-11}$.  Near the dew point
+(gibbs14 at 0.84, 0.8336 and 0.834~bar, held by the gate) the liquid is small and the
+barrier error $\mu/w$ of the interior-point point is not: the finish moves its amounts by up to $2\times10^{-4}$
+and the multiplier by $5\times10^{-6}$, and the answers are the element-potential method's.
+
+\paragraph{Validity.}  Gas $+$ ideal liquid, ideal-gas package.  Refused by name,
+with the slice that will carry each: a pure solid (slice B2; \code{GibbsMethod::solve}),
+a fugacity model, i.e.\ an equation of state other than the ideal gas (slice B3), the
+adaptive barrier update and the merit globalisation (slices A3, A4).  The limit of the
+barrier-free variant is stated: when a whole phase vanishes ($N\to0$) the gradient
+$\ln(u_i/N)$ stays finite and the bounds become active together, so a phase that
+can disappear needs the barrier; the method refuses a vanished \emph{gas}
+phase by name (stage C, a non-converged return so that the adiabatic outer Newton backtracks) and keeps the barrier on the
+liquid.  The liquid is the ideal \emph{mixture} of the condensables, so its trace species carry the barrier error
+$\mu/w$ at the interior-point point, which the finish removes except in the mixed-liquid case.  Sources: the optimizer is Wächter \&
+Biegler (2006) as in §\ref{sec:ip-barrier} (preprint read); the minimisation of $G$
+under element balances, with the multipliers as element potentials, is the RAND
+formulation of White, Johnson and Dantzig (1958), not re-read for this slice, and the
+reduced Gibbs iteration of Gordon \& McBride (NASA RP-1311, 1994) is as cited in the
+initial-guess subsection above.  In-sample statement: nothing is fitted; the comparison with the
+element-potential method (the gate) is a comparison of two solutions of one problem on
+the corpus's own gas-and-ideal-liquid cases.
 
 % ---------------------------------------------------------------------
 \subsection{Equilibrium maps and the temperature approach}\label{sec:gibbs-maps}

@@ -669,7 +669,7 @@ rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 
 ### `gibbsReactor`
 Equilibrium by direct Gibbs minimisation with atom-balance
-constraints.  Three selectable `model`s:
+constraints.  Four selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
   condensable; + a pure solid, see below).  A gas below its dew point with
   NO species supersaturated on its own -- a MIXED liquid -- is refused by
@@ -679,6 +679,31 @@ constraints.  Three selectable `model`s:
 - `directMin`         (multi-start Nelder-Mead on the reaction-extent
   null space; its vapour carries the declared EoS's ln phi, so an SRK
   package is not minimised as an ideal gas -- C173).
+- `interiorPoint`     (the minimisation solved by Choupo-IP, the primal-dual
+  interior-point filter line search of `src/solver/ip/`: min G/RT over the gas
+  amounts and the ideal-liquid amounts of the condensables s.t. the element
+  balances, analytic gradient and Hessian, no primal seed needed; gas + IDEAL
+  liquid (several condensables allowed: Raoult, an activity model of the package
+  is not read), ideal-gas package.  The multipliers of the element balances ARE
+  the element potentials, **pi = -lambda** (printed in the run, published as
+  `lambda_<element>` = pi RT and `ip_lambda_<element>`).  REFUSED BY NAME, with the
+  slice that will carry it: a pure solid (B2), a fugacity model / real-gas EoS (B3),
+  `barrierUpdate adaptive` (A3), `globalization merit` (A4), a gas phase that vanishes
+  entirely.  Optional unit-level block, refused under any other `model`:
+  `interiorPoint { barrier condensedPhases | everyAmount; barrierUpdate monotone;
+  globalization filter; log ipLog.csv; }` -- `barrier condensedPhases` (the default)
+  puts NO barrier on the species of the gas phase (the entropy term already repels
+  zero: review R1) and a barrier on the ideal-liquid mixture's amounts; `everyAmount` puts one on every amount.
+  In both the answer is FINISHED by the element-potential Newton from pi = -lambda: the liquid is decided at the polished
+  gas-only state on the full element totals (never at the barrier-biased point); absent -> that state, present -> the
+  element-potential two-phase solve (a mixed liquid keeps the interior point's amounts); a feasible stop on an invisible
+  trace species is rescued the same way and announced.  `log` writes the
+  per-iteration table (mu, theta, inf_du, compl, steps), the bridge and the amounts as
+  a CSV (refused inside `data/standards/`).  The run prints the bridge, the largest
+  change the finish makes and, at verbosity 3, the iteration table.  KPIs
+  `ip_iterations`, `ip_inertiaCorrections`, `ip_restorations`,
+  `ip_polishLargestRelativeChange`.  Theory: `sec:gibbs-interior-point`; witness
+  `tutorials/steady/gibbs/gibbs14_interior_point`; gate `check_gibbs_interior_point`.)
 
 ```
 operation

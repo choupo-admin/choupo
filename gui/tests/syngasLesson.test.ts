@@ -291,13 +291,13 @@ describe("syngas: the lesson text", () => {
     };
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.cpp):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
-      "GibbsReactor.cpp:181": 'const scalar P         = operDict->lookupScalar("P", Dims::pressure);',
+      "GibbsReactor.cpp:182": 'const scalar P         = operDict->lookupScalar("P", Dims::pressure);',
       "GibbsReactor.cpp:182-185": /lookupWordOrDefault\("mode", "isothermal"\);[\s\S]*mode != "isothermal" && mode != "adiabatic"[\s\S]*unknown mode/,
-      "GibbsReactor.cpp:226-229": /lookupWordList\("elements"\);[\s\S]*lookupDictList\("species"\);/,
-      "GibbsReactor.cpp:514": "return enthalpy(e, Tt) - H_in - Q_J_s;",
-      "GibbsReactor.cpp:755": 'kpis_["Q_kW"] = H_out_kW - H_in_kW;',
+      "GibbsReactor.cpp:238-241": /lookupWordList\("elements"\);[\s\S]*lookupDictList\("species"\);/,
+      "GibbsReactor.cpp:528": "return enthalpy(e, Tt) - H_in - Q_J_s;",
+      "GibbsReactor.cpp:769": 'kpis_["Q_kW"] = H_out_kW - H_in_kW;',
       "GibbsSolidPhase.cpp:102-107": /scalar lnActivity\([\s\S]*scalar a = -g_over_RT;[\s\S]*a \+= e\.pi\[k\] \* p\.A\[k\]\[s\];[\s\S]*return a;/,
-      "GibbsSolidPhase.cpp:231": "if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)",
+      "GibbsSolidPhase.cpp:245": "if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)",
       "EquilibriumReactor.cpp:63": 'const scalar P      = feedDict->lookupScalar("P", Dims::pressure);',
       "EquilibriumReactor.cpp:64": 'const scalar T      = operDict->lookupScalarOrDefault("T", T_feed);   // isothermal',
       "EquilibriumReactor.cpp:86-90": /if \(n0\[i\] > 0\.0\)\s*throw std::runtime_error\("equilibriumReactor: the feed carries pure"[\s\S]*a solid in the feed is not implemented/,

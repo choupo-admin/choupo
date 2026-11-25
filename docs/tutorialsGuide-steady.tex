@@ -8375,6 +8375,51 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \goldmore{10}
 \end{tutgolden}
 
+\clearpage
+\tutentry{gibbs14\_interior\_point}{tutorials/steady/gibbs/gibbs14\_interior\_point}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(wgs.east)+(0,-0.17)$) -- ($(wgs.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(wgs.east)+(0,0.17)$) -- ($(wgs.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The cooled WGS Gibbs reactor of gibbs07 solved by the interior point: the bridge pi = -lambda, the barrier on the liquid, the iteration table}
+\begin{tutnarrative}
+the Gibbs reactor solved by the INTERIOR POINT.
+
+CO + H2O <$\to$ CO2 + H2, excess steam (1 CO + 3 H2O), 350 K, 1 bar.
+
+The same problem as gibbs07\_wgs\_cooled (gas + a condensing water), posed as what it is: minimise G over the amounts of the species subject to the element balances, n >= 0. `model interiorPoint;` hands it to Choupo-IP, the primal-dual interior-point filter line search of src/solver/ip/. What a student sees that the element-potential Newton does not show:
+
+the multipliers of the element balances ARE the element potentials of gibbs07, with the sign of THE BRIDGE, pi = -lambda: the run prints lambda, pi = -lambda and the pi of the element-potential Newton started from it, side by side; the barrier on the liquid water (the one phase that can vanish) is a parameter mu that falls from its start to 1e-9, iteration by iteration, while the gas species carry NO barrier: the entropy term already keeps them positive (design record, review R1); `interiorPoint \{ log ipLog.csv; \}` writes that iteration table as a CSV (mu, the dual and element-balance infeasibilities, the step lengths, the amounts and the bridge) for a plot.
+
+Nothing else changes: the gas, the condensate and every printed amount are gibbs07's (the gate check\_gibbs\_interior\_point holds them to the element-potential method on this very feed). Outlets: `gas` and `condensate` (liquid water).
+
+\end{tutnarrative}
+\tutreadme{THE CASE. gibbs07's cooled water-gas shift (1 CO : 3 H2O at 350 K, 1 bar; the excess steam condenses), with one line changed: model interiorPoint;. The answer is the same equilibrium --- liquid fraction 0.1426, y(H2O) in the gas 0.4168, the same element potentials --- reached by a different road, and that road is what this case shows.}
+\tutreadme{$\ast$ The iteration table (the run prints it at verbosity 3; interiorPoint \{ log ipLog.csv; \} writes it as a CSV for a plot): mu, the dual infeasibility, the element-balance infeasibility theta and the step lengths, one row per iteration. The solve takes 12 iterations and needs no seed. $\ast$ The barrier emptying. The only variable with a bound that can be active is the liquid water (a phase that can vanish), so the barrier parameter mu acts on it alone and falls from 0.1 to about 1e-9 along the table. The gas species carry no barrier: their entropy term n ln(n/N) already repels zero, and a barrier on top would only leave a trace species wrong by mu/n (design record docs/design/interior-point.md, review R1). $\ast$ The bridge. The multipliers lambda of the three element balances ARE the element potentials of gibbs07, with the opposite sign: pi = -lambda (Theory Guide sec:gibbs-interior-point). The run prints lambda, pi = -lambda and the pi the element-potential Newton reaches when started from it. That Newton FINISHES the answer: the liquid is decided at its gas-only state on the full element totals and, being present, the element-potential two-phase solve publishes the amounts (so they are gibbs07's). The KPIs lambda\_C, lambda\_H, lambda\_O are pi RT exactly as in gibbs07; ip\_lambda\_C is the raw multiplier, -17.26.}
+\tutreadme{$\ast$ barrier everyAmount; in the interiorPoint block: a barrier on every amount. Same answer (the finish is the same), more iterations; compare the iteration counts. The case gibbs06\_h2\_flame\_radicals makes the difference visible: with a barrier the interior point's own radicals are off by up to 2 \% until the finish (the run prints the largest change it made). $\ast$ Put model elementPotential; back: the amounts agree with this run to 2e-7 (the element-potential method closes its element balance only to 1e-8 mol/s and finds the liquid by bisection).}
+\tutreadme{check\_gibbs\_interior\_point runs this reactor's family (gibbs01-07, 12 and claus01) under both methods and requires the same amounts, the same element potentials, pi = -lambda, and by-name refusals of a pure solid (slice B2) and a real-gas package (slice B3).}
+\begin{tutgolden}
+\goldrow{stream}{condensate}{F}{3.96249087882e-05}
+\goldrow{stream}{condensate}{T}{350}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{350}
+\goldrow{stream}{gas}{F}{0.000238152869176}
+\goldrow{stream}{gas}{T}{350}
+\goldrow{kpi}{wgs}{F\_condensate\_kmol\_h}{0.142649671637}
+\goldrow{kpi}{wgs}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{wgs}{F\_out\_kmol\_h}{0.857350329034}
+\goldrow{kpi}{wgs}{N\_in\_mol\_s}{0.277777777778}
+\goldrow{kpi}{wgs}{N\_liq\_mol\_s}{0.0396249087882}
+\goldrow{kpi}{wgs}{N\_out\_mol\_s}{0.277777777964}
+\goldrow{kpi}{wgs}{P}{100000}
+\goldrow{kpi}{wgs}{Q\_kW}{2.20671011796}
+\goldmore{32}
+\end{tutgolden}
+
 \subsection{heat}
 \grouptheory{heat}
 \clearpage

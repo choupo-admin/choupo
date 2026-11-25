@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1950,
+  "cases": 1951,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -28444,6 +28444,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gibbs/gibbs14_interior_point": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "unitModels": [
+    "interiorPoint"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/condenser01_film_nusselt": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33072,6 +33086,7 @@
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction",
+    "tutorials/steady/gibbs/gibbs14_interior_point",
     "tutorials/steady/heat/condenser01_film_nusselt",
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
@@ -33698,6 +33713,7 @@
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction",
+    "tutorials/steady/gibbs/gibbs14_interior_point",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
