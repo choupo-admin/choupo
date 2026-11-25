@@ -279,6 +279,20 @@ The risks such a feature carries are specific, and each arm names one:
       recomputes the plot WITH the walls' outlines and the pits, and holds
       the plot sentence to name a containment exactly when one is declared.
 
+  (q) THE SERVICE CLEARANCE (2026-11-25, DEV.md 4c C507), on the reference
+      plant.  The defect it would have caught: the feed-effluent exchanger,
+      the water cooler and the chiller stood in a row 5.45 m and 3.9 m apart,
+      the water cooler's 6.1 m tube bundle could not be pulled either way, and
+      the checker said "0 findings" because it knew no tube length and no
+      channel end.  The plant as declared raises no `serviceClearance`; the
+      water cooler's clear length to the FEHE is recomputed here from the
+      published boxes and held against the design sheet's `tubeLength` (read
+      as text) plus the declared 1.5 m; the sabotage (the FEHE back at x =
+      40 m) raises `serviceClearance:WaterCooler:FEHE` with the distance
+      recomputed and the finding in the caveat block; a case that declares no
+      `serviceClearance` is ANNOUNCED as not checked and raises nothing (the
+      engine owns no extra); a channel end off the item's axis is refused.
+
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
 pressure drop and cost (none is computed), a pipe clashing with another pipe
@@ -3896,6 +3910,97 @@ def arm_bunds(work):
                       " a wall announced; " + str(n_ref) + " refusals named")
 
 
+def arm_service_clearance(work):
+    """(q) THE SERVICE CLEARANCE (DEV.md 4c C507).
+
+    The real defect it would have caught: the reference plant's three
+    exchangers in a row (the feed-effluent exchanger, the water cooler, the
+    chiller) stood 5.45 m and 3.9 m apart, and the water cooler's 6.1 m
+    bundle could not be pulled either way -- a layout of zero findings that a
+    maintenance engineer would send back.  The checker said nothing because it
+    knew no tube length and no channel end.
+    """
+    if not PEQ.exists():
+        fail("(q) the reference plant is missing")
+        return
+    plain = prepare(work, "util_plain", PEQ)          # the same content as arm (u)'s: a cache hit
+    short = prepare(work, "svc_short", PEQ,
+                    lambda t: t.replace("x           37.8 m;", "x           40 m;", 1))
+    absent = prepare(work, "svc_absent", PEQ,
+                     lambda t: re.sub(r"\nserviceClearance\n\{.*?\n\}\n", "\n", t, flags=re.S))
+    bad_end = prepare(work, "svc_badend", PEQ,
+                      lambda t: t.replace('{ item "N2Cooler";    channelEnd west;',
+                                          '{ item "N2Cooler";    channelEnd north;', 1))
+    prefetch(plain, short, absent, bad_end)
+
+    # ---- the plant as declared: every bundle can be pulled
+    out, err, rc = solve(plain)
+    j = result_json(out)
+    if rc != 0 or j is None:
+        fail(f"(q) the reference plant exited {rc}")
+        return
+    lay = j["layout"]
+    items = {i["id"]: i for i in lay["items"]}
+    got = [f for f in lay["findings"] if f["kind"] == "serviceClearance"]
+    if got:
+        fail(f"(q) the reference plant raises {[f['id'] for f in got]}")
+    tube = {u: sheet_value(plain, f"{u}/shellTubeHX", "tubeLength")
+            for u in ("N2Cooler", "Intercooler", "Aftercooler", "FEHE", "WaterCooler", "Chiller")}
+    if any(v is None for v in tube.values()):
+        fail(f"(q) a design sheet has no tubeLength: {tube}")
+        return
+    extra = 1.5
+    need = tube["WaterCooler"] + extra
+    # recomputed here, from the published boxes: the water cooler's west face to the FEHE's east face
+    wc, fe = items["WaterCooler"], items["FEHE"]
+    gap = (wc["x"] - wc["dx"] / 2) - (fe["x"] + fe["dx"] / 2)
+    if not (gap >= need):
+        fail(f"(q) the plant as declared: water cooler to FEHE {gap} m, needs {need} m")
+    if f"the tube length {tube['WaterCooler']:g} m" not in err.replace("  ", " ") or "(channel) end" not in err:
+        fail("(q) the per-exchanger announcement (the fact and the declared extra, apart) did not reach stderr")
+
+    # ---- the sabotage: the FEHE back at x = 40 m, 2.2 m east
+    out, err, rc = solve(short)
+    j = result_json(out)
+    if rc != 0 or j is None:
+        fail(f"(q) the sabotaged plant exited {rc}")
+        return
+    L = j["layout"]
+    it = {i["id"]: i for i in L["items"]}
+    f = [f for f in L["findings"] if f["kind"] == "serviceClearance"]
+    wc, fe = it["WaterCooler"], it["FEHE"]
+    mine = (wc["x"] - wc["dx"] / 2) - (fe["x"] + fe["dx"] / 2)
+    if [x["id"] for x in f] != ["serviceClearance:WaterCooler:FEHE"]:
+        fail(f"(q) sabotage: findings {[x['id'] for x in f]}, expected the water cooler blocked by the FEHE only")
+    elif abs(f[0]["value"] - mine) > 1e-6 or abs(f[0]["limit"] - need) > 1e-6:
+        fail(f"(q) sabotage: engine {f[0]['value']} / {f[0]['limit']}, recomputed {mine} / {need}")
+    caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
+    if f and f[0]["message"] not in caveat:
+        fail("(q) the serviceClearance finding did not reach the caveat block")
+
+    # ---- no declaration: ANNOUNCED, not checked, no finding
+    out, err, rc = solve(absent)
+    j = result_json(out)
+    if rc != 0 or j is None:
+        fail(f"(q) the plant without the block exited {rc}")
+    else:
+        if any(x["kind"] == "serviceClearance" for x in j["layout"]["findings"]):
+            fail("(q) a case that declares nothing raised a serviceClearance finding")
+        if "bundle can be WITHDRAWN is NOT checked" not in err.replace("  ", " "):
+            fail("(q) a case that declares no serviceClearance was not told the check did not run")
+
+    # ---- a refusal, named
+    out, err, rc = solve(bad_end)
+    if rc != 2 or "channelEnd north" not in out + err or "not an end of an item" not in out + err:
+        fail(f"(q) a channel end off the item's axis: exit {rc}, not refused by name")
+
+    claims.append("(q) the service clearance: the reference plant's six bundles can be pulled (water cooler 7.65 m"
+                  f" clear against {need:.3f} m = tube length {tube['WaterCooler']:g} m + the declared {extra} m,"
+                  " recomputed from the published boxes); the FEHE moved back 2.2 m raises"
+                  f" serviceClearance:WaterCooler:FEHE at {mine:.3f} m, recomputed; a case with no declaration is"
+                  " announced as not checked and raises nothing; a channel end off the axis is refused")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -3910,7 +4015,7 @@ def main():
         arms = [arm_witness, arm_refusals, arm_hazards, arm_draft, arm_absent,
                 arm_refused_sizer, arm_pipes, arm_pipe_override, arm_plot,
                 arm_roads, arm_fence, arm_clash, arm_site, arm_indoor,
-                arm_bunds, arm_utility]
+                arm_bunds, arm_utility, arm_service_clearance]
         #  arm_plot reports the plants arm_pipes recorded in PLOT_SEEN.
         chains = [[a] for a in arms if a is not arm_plot]
         for c in chains:
@@ -3930,7 +4035,7 @@ def main():
                 results[a] = (list(_TL.fails), list(_TL.claims), exc)
         #  longest chains first, so the tail of the run is short
         order = sorted(chains, key=lambda c: c[0] not in (
-            arm_bunds, arm_clash, arm_utility, arm_pipes))
+            arm_bunds, arm_clash, arm_utility, arm_pipes, arm_service_clearance))
         if _JOBS < 2:
             for c in order:
                 run_chain(c)
