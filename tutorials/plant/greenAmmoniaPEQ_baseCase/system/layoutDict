@@ -17,11 +17,13 @@
     * the SYNTHESIS LOOP (y = +7 to +15 m): the FEHE under the converter,
       the water cooler and the chiller, the separator, the let-down drum and
       the storage flash;
-    * the TANK FARM well to the south-east, downwind;
-    * the HYDROGEN BUFFER's ten vessels (added with DEV.md 4c C89) to the
-      south-west of the make-up train, two rows of five;
+    * the TANK FARM to the south-east, downwind;
+    * the HYDROGEN BUFFER's ten vessels (added with DEV.md 4c C89) south of
+      the make-up train, two rows of five, inside the truck loop;
     * the CONTROL ROOM to the north-west, upwind, and an ELECTRICAL
-      SUBSTATION west of the compressors -- both NON-PROCESS items;
+      SUBSTATION west of the compressors -- both NON-PROCESS items, with the
+      rest of the SITE (offices, canteen, car park, weighbridge, warehouse,
+      laydown, fire water, muster points: 2026-11-25, below);
     * a BUND round the tank farm and a kerbed slab under the loop's liquid
       vessels draining to a remote pit (DEV.md 4c C134, `bunds` below).
   Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
@@ -52,7 +54,7 @@
        every release source and outside every zone, and the separation table
        says which distance it needs (the substation rows below).
   The checks still fire on any copy that breaks them: move tank2 to x 181 m,
-  or the substation to (16, -31) m, and the run ANNOUNCES the shortfall and
+  or the substation to (26, -14) m, and the run ANNOUNCES the shortfall and
   the ignition source in the zone (console, the caveat block, the result JSON
   and Reports -> "Plant layout (3D)") rather than refusing: a short distance
   is a layout a student must see and defend, while an overlap is not a layout
@@ -61,11 +63,11 @@
 
   THE SITE (2026-11-09, the method of ammonia02_full_plant, DEV.md 4c C90,
   C93).  A ring road round the process block (main, east, north and west
-  roads), the main road carried west past the hydrogen buffer, a tank-farm
-  road along the bund's north side, an ENTRANCE road north to the MAIN GATE
-  by the control room (upwind: the wind blows from the north-west), and an
-  EMERGENCY GATE at the east end of the tank-farm road, so the fire brigade
-  has a second way in that reaches the tanks first.  The FENCE is the plot
+  roads), a tank-farm road along the bund's north side, an ENTRANCE road
+  north to the MAIN GATE by the control room (upwind: the wind blows from
+  the north-west), and an EMERGENCY GATE at the east end of the tank-farm
+  road, so the fire brigade has a second way in that reaches the tanks
+  first.  The FENCE is the plot
   boundary; every pipe that enters or leaves the plant crosses it at a
   labelled point.  Drawn since 2026-11-10 (DEV.md 4c C268): the UTILITIES BLOCK -- cooling
   tower, refrigeration package and flare, in the north-east corner, each
@@ -93,13 +95,65 @@
   unit and the cooling-water make-up and blowdown -- all outside this battery
   limit, and named as such where their streams cross the fence.
 
+  THE WHOLE SITE ON ONE PLOT (2026-11-25, Vitor: "ammonia02_full_plant has
+  a more top-notch look, why have two cases?": this is the one plant that
+  is shown, with the site of ammonia02 on it).  What came across from
+  ammonia02_full_plant, and where it stands for THIS plant's hazards (wind
+  from the north-west, so a release drifts south-east):
+    * NORTH-WEST, upwind of every release source and outside every zone: the
+      control room, the OFFICES, the CANTEEN, the CAR PARK (12 bays, reverse-
+      in, two rows of six) and the north MUSTER POINT, round the main gate
+      and its entrance road; the windsock beside the road, in sight of all
+      of them.  Each is held 30 m from every compressor, vessel and
+      exchanger and 60 m from the tanks by the separation table; the car
+      park is the first turn after the barrier, so no car drives a process
+      road or the truck loop.
+    * WEST and SOUTH-WEST, across the wind: the substation (15 m), and the
+      FIRE-WATER TANK and its PUMPS with the south MUSTER POINT, 30 m from
+      the process and 45 m from the tanks, so a fire in the loop does not
+      reach the water meant to fight it; the two muster points stand on
+      opposite sides of the plant, so whichever way the wind turns one of
+      them is clear of the cloud.
+    * SOUTH, between the main road and the south fence: the TRUCK LOOP, the
+      WEIGHBRIDGE, the WAREHOUSE and the LAYDOWN area, round the hydrogen
+      buffer.  Why trucks come at all (read from ammonia02's header, no
+      traffic invented): no PROCESS stream of this plant moves by road --
+      the product leaves through the fence as a pipe and the feeds arrive by
+      pipe from outside the battery limit -- but a few trucks a week bring
+      the converter's catalyst (drums, at each recharge), chemicals,
+      lubricants and spares, the contractors' equipment of a turnaround, and
+      take waste away.  They enter by the main gate, go south on the
+      entrance and west roads, east on the main road over the weighbridge
+      (weighed IN), south down the yard link, west along the yard road past
+      the laydown and the warehouse door, and north back to the gate: one-way
+      from the main road on, no reversing and no turning round, corners of
+      10 m radius against the 25 m turning circle of the design vehicle
+      (Council Directive 96/53/EC, the one published number here).  The
+      yard stands on the south-east side of the compressors, DOWNWIND of
+      them; it carries no declared ignition source, because the engine
+      declares none for a truck, which IS one: the case does not claim a
+      truck is safe there, it does not model it, and the weighbridge is
+      held to the compressors' own 15 m by the warehouse rows.
+  The plot is the smallest rectangle in which all of that stands with the
+  declared separations, the roads and the truck turns, found by moving the
+  hydrogen buffer from the west end of the plant to the south, inside the
+  truck loop; the substation, offices and fire water to the west column,
+  and the tank farm 5 m north (against the loop's 45 m, by the diagonal).
+  The plot went from 39 220 m2 (footprints 8.8 % of it) to 33 915 m2
+  (15.1 %), with 44 items instead of 33 and every separation, clearance and
+  zone check still at zero findings.  What it still is NOT: a plant that
+  fills its fence -- the 45 m between the tanks and the loop, the 60 m
+  between the tanks and the flare, and the bund (7 480 m2 at a 4.5 m wall)
+  are fixed by the numbers declared below, and the north-east corner stays
+  open for them.
+
   THE STORES ARE ON THEIR STREAMS (2026-11-09, DEV.md 4c C268).  The ten
   hydrogen-buffer vessels and the two ammonia tanks are stores ATTACHED to a
   boundary stream in system/postDict (DEV.md 4c C44, C89), not flowsheet
   units; their sizers wrote the stream into every vessel's sheet, and the
   engine routes that stream THROUGH the store: H2Feed from the west fence
   down to a HEADER between the two rows of buffer vessels (a main in the
-  aisle at y = -50 m, one branch to each vessel's low nozzle), then back
+  aisle at y = -48 m, one branch to each vessel's low nozzle), then back
   up to the rack and on to the make-up mixer; ProductNH3 from the storage
   flash along the rack to a main 1 m north of the two tanks (inside the
   bund), a branch to each tank, and from the main's east end to the east
@@ -317,16 +371,16 @@ items
         }
     }
 
-    //  ---- the hydrogen buffer, south-west of the make-up train -------------
+    //  ---- the hydrogen buffer, south of the make-up train -------------------
     //  Ten STANDING vessels (design/H2Buffer/vessel<n>, DEV.md 4c C89), each
     //  drawn from its OWN published D and H -- standing because the Turton
     //  vessel set that costs them is the vertical one.  Two rows of five at a
     //  10 m pitch: 4.6 m shell to shell against the 4 m this file declares
-    //  between two vessels; south of the main road (rows at y = -45 and -55
-    //  m since the roads were declared, 2026-11-09), 20 m from N2Boost
-    //  against 9 m and 24 m from the substation, which stands north of them
-    //  and so never downwind (bearing about 350 deg against a downwind 135
-    //  deg).  West of the rack's west end, where the hydrogen arrives.  Each
+    //  between two vessels; south of the main road (rows at y = -43 and -53
+    //  m since 2026-11-25, when they moved from the west end of the plant
+    //  into the truck loop), 17.8 m from MakeupComp1 against 9 m; the
+    //  substation stands north-west of them and so is never downwind.  The hydrogen arrives from the west fence along the rack
+    //  and down to the header between the two rows.  Each
     //  declares a hydrogen
     //  release: hydrogen at up to 100 bar at the nozzles, the relief valves
     //  and the instrument connections.  Positions, zones and the pitch are
@@ -723,10 +777,10 @@ serviceClearance
     reason      "a bundle that is pulled needs its own length clear in line with the shell plus room to slide it clear of the tubesheet and to rig the extractor";
     items
     (
-        { item "N2Cooler";    channelEnd west; reason "70 m of open ground to the fence on the west, against 9.9 m to the Intercooler on the east"; }
+        { item "N2Cooler";    channelEnd west; reason "44 m of open ground to the fence on the west, against 9.9 m to the Intercooler on the east"; }
         { item "Intercooler"; channelEnd east; reason "11.9 m to the Aftercooler on the east, against 9.9 m to the N2 cooler on the west"; }
         { item "Aftercooler"; channelEnd east; reason "open ground to the east, beyond the compressor row"; }
-        { item "FEHE";        channelEnd west; reason "109 m of open ground to the fence on the west; the water cooler stands 7.65 m off its east end and is pulled the same way, so the two never need the same ground"; }
+        { item "FEHE";        channelEnd west; reason "66 m of open ground to the offices on the west; the water cooler stands 7.65 m off its east end and is pulled the same way, so the two never need the same ground"; }
         { item "WaterCooler"; channelEnd west; reason "7.65 m to the feed-effluent exchanger on its west, against 3.9 m to the chiller on its east: the bundle is pulled toward the feed-effluent exchanger, whose shells were moved 2.2 m west to give it 7.6 m"; }
         { item "Chiller";     channelEnd east; reason "open ground to the east of the loop: the separator stands off its axis"; }
     );
@@ -805,9 +859,10 @@ separation
 //  The prevailing wind blows FROM the north-west (true bearing 315 deg); the
 //  plot plan's +y axis points to true north.  An ignition source within
 //  +/- 30 deg of the DOWNWIND direction (south-east) and within 60 m of a
-//  release source is announced.  The control room and the substation stand
-//  upwind or across the wind of every release source, so nothing is; the
-//  tank farm stands downwind of the process, away from both.
+//  release source is announced.  The control room, the offices, the canteen,
+//  the car park and the substation stand upwind or across the wind of every
+//  release source, so nothing is; the tank farm stands downwind of the
+//  process, away from all of them.
 wind
 {
     from        315 deg;
@@ -846,8 +901,8 @@ pipeRack
 
 //  THE ROADS (2026-11-09; the method of ammonia02_full_plant, DEV.md 4c C90).
 //  Centre lines at grade, 6 m wide (the entrance 7 m, two-way).  The MAIN
-//  road runs south of the compressor row from the hydrogen buffer to the
-//  EAST road; the east, NORTH and WEST roads close a ring round the process
+//  road runs south of the compressor row from the west road to the EAST
+//  road, carrying the weighbridge; the east, NORTH and WEST roads close a ring round the process
 //  block, so a fire tender reaches every item from two sides; the west road
 //  runs on north as the ENTRANCE road to the main gate; the TANK-FARM road
 //  leaves the east road along the north side of the bund to the emergency
@@ -855,8 +910,12 @@ pipeRack
 //  5 m headroom).  The engine refuses a road through a footprint or under a
 //  rack or pipe lower than the headroom, and announces a road no gate
 //  reaches, a building no road serves and a process item with no road
-//  within the access distance.  AUTHOR-SET ASSUMPTIONS throughout; no truck
-//  route is declared (no process stream moves by road here).
+//  within the access distance.  AUTHOR-SET ASSUMPTIONS throughout.  Since
+//  2026-11-25 the three one-way roads YARDLINK (south from the main road at
+//  the east road), YARD (west, past the laydown and the warehouse) and
+//  YARDWEST (north to the west road) close the TRUCK LOOP round the hydrogen
+//  buffer, and `truckRoutes` walks it from the gate to the gate; no process
+//  stream moves by road here (see THE WHOLE SITE above for what does).
 roads
 {
     source   "author-set assumption for this exercise; not taken from a road or fire standard";
