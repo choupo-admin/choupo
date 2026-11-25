@@ -93,6 +93,8 @@ units
 
         operation
         {
+            //  Keys (C504): the two keys of Luyben's split: acetone to the distillate, water in the bottoms
+            lightKey acetone;  heavyKey water;
             nStages        66;
             feedStage      54;
             refluxRatio    2.78;

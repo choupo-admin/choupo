@@ -12,8 +12,12 @@ kpi     column07               feedStage        10               1e-4
 kpi     column07               nFeeds           1                1e-4
 kpi     column07               nSideDraws       0                1e-4
 kpi     column07               nStages          20               1e-4
-kpi     column07               x_B_HK           0.416665671398   1e-4
-kpi     column07               x_D_LK           0.999871625084   1e-4
+kpi     column07               x_B_isopentane   0.416635568207   1e-4
+kpi     column07               x_B_nButane      0.166698760396   1e-4
+kpi     column07               x_B_nPentane     0.416665671398   1e-4
+kpi     column07               x_D_isopentane   0.000124393839835 1e-4
+kpi     column07               x_D_nButane      0.999871625084   1e-4
+kpi     column07               x_D_nPentane     3.98107613844e-06 1e-4
 utility column07               heating.steamLP.duty_kW 9228.92782268    1e-4
 utility column07               heating.steamLP.T 296.5894423      1e-4
 utility column07               heating.steamLP.kg_s 4.2218334047     1e-4

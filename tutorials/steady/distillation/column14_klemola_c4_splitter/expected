@@ -18,8 +18,8 @@ kpi     splitter               V_strip          0.57508587994    1e-4
 kpi     splitter               feedStage        37               1e-4
 kpi     splitter               murphreeEfficiency 1.191            1e-4
 kpi     splitter               nStages          75               1e-4
-kpi     splitter               x_B_HK           0.00116916875085 1e-4
-kpi     splitter               x_D_LK           0.0627714459672  1e-4
+kpi     splitter               x_B_HK           0.982496509091   1e-4
+kpi     splitter               x_D_LK           0.924399323035   1e-4
 utility splitter               heating.steamLP.duty_kW 9762.14771652    1e-4
 utility splitter               heating.steamLP.T 335.085473659    1e-4
 utility splitter               heating.steamLP.kg_s 4.46575833327    1e-4

@@ -489,6 +489,8 @@ units
 
         operation
         {
+            //  Keys (C504): the paper's two keys, i-butane in the distillate and n-butane in the bottoms (Klemola & Ilme 1996, Table 2)
+            lightKey isoButane;  heavyKey nButane;
             nStages        75;                  // 74 real trays + reboiler (2)
             feedStage      37;                  // Table 2, from the top (A0)
             P              658.6 kPa;           // Table 2 top pressure (A2)
