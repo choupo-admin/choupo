@@ -109,13 +109,25 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         throw std::runtime_error("EvaporativeDryer: no volatile moisture (need water"
             " with a vapour pressure) in the wet solid.");
 
-    const Component& sol  = thermo.comp(iSolid);
     const Component& solv = thermo.comp(iSolv);
-    const scalar MW_sol  = sol.MW();
     const scalar MW_solv = solv.MW();
 
-    const scalar solid_mol  = sW[iSolid];
-    const scalar solid_mass = solid_mol * MW_sol;                        // kg/s
+    //  EVERY SOLID THE FEED CARRIES counts, in the mass, the moisture ratio
+    //  and the sensible heat (external review 4, 2026-11-25).  This took the
+    //  FIRST solid in component order for all three, so NaCl + KCl listed in
+    //  the other order moved T_out 357.37 -> 338.27 K and `drySolid_flow` and
+    //  `X_initial` counted one crystal.  `solid_mol` is the total moles,
+    //  `solid_cp` the sum of n_i cp_i [kmol J/(mol K)] evaluated per solid;
+    //  a single-solid feed takes every sum with one term, byte-identical.
+    scalar solid_mol = 0.0, solid_mass = 0.0;
+    std::vector<std::size_t> solidIdx;
+    for (std::size_t i = 0; i < n; ++i)
+        if (sW[i] > 0.0)
+        {
+            solidIdx.push_back(i);
+            solid_mol  += sW[i];
+            solid_mass += sW[i] * thermo.comp(i).MW();                   // kg/s
+        }
     const scalar water_in   = F_w * zW[iSolv];                           // kmol/s free water
     const scalar X_in = (solid_mass > 0.0) ? water_in * MW_solv / solid_mass : 0.0;
 
@@ -146,18 +158,23 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         if (yAir[i] > 0.0 && thermo.comp(i).hasCpIdealGas())
             cp_air += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
-    const scalar cpSolid = sol.hasCpSolid()   ? sol.cpSolid().Cp(Tmid) : 0.0;
-    const scalar cpLiq   = solv.hasCpLiquid() ? solv.cpLiquid().Cp(Tmid) : 75.4;
-    if (!sol.hasCpSolid() && solid_mol > 0.0)
+    scalar solid_cp = 0.0;                                               // kmol/s * J/(mol K)
+    for (auto i : solidIdx)
     {
-        const std::string msg = "'" + sol.name() + "' carries no"
-            " `solidHeatCapacity {}`, so the sensible heat of warming the"
-            " crystal from its feed temperature to the outlet is taken as ZERO"
-            " in this unit's energy balance (a default, not a datum).  Curate"
-            " the record's solid heat capacity to price it.";
-        if (AdvisoryLog::instance().add("drying", "warning", who, msg))
-            std::cout << "  [EvaporativeDryer] DEFAULT: " << msg << "\n";
+        const Component& sc = thermo.comp(i);
+        if (sc.hasCpSolid()) solid_cp += sW[i] * sc.cpSolid().Cp(Tmid);
+        else
+        {
+            const std::string msg = "'" + sc.name() + "' carries no"
+                " `solidHeatCapacity {}`, so the sensible heat of warming the"
+                " crystal from its feed temperature to the outlet is taken as ZERO"
+                " in this unit's energy balance (a default, not a datum).  Curate"
+                " the record's solid heat capacity to price it.";
+            if (AdvisoryLog::instance().add("drying", "warning", who, msg))
+                std::cout << "  [EvaporativeDryer] DEFAULT: " << msg << "\n";
+        }
     }
+    const scalar cpLiq   = solv.hasCpLiquid() ? solv.cpLiquid().Cp(Tmid) : 75.4;
     if (!solv.hasCpLiquid() && water_in > 0.0)
     {
         const std::string msg = "'" + solv.name() + "' carries no liquid"
@@ -174,7 +191,7 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     auto fEner = [&](scalar Tout, scalar water_rem) -> scalar
     {
         const scalar supply = F_air * 1000.0 * cp_air * (T_air - Tout);
-        const scalar demand = (solid_mol * cpSolid + water_in * cpLiq) * 1000.0 * (Tout - T_w)
+        const scalar demand = (solid_cp + water_in * cpLiq) * 1000.0 * (Tout - T_w)
                             + water_rem * 1000.0 * solv.Hvap_latent(Tout);
         return supply - demand;
     };
@@ -299,6 +316,25 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     }
     else
     {
+        //  THE BRACKET IS CHECKED AT BOTH ENDS (external review 4, 2026-11-25).
+        //  The bisection below assumed a_w(0) <= cap, and with a cap the air
+        //  alone already exceeds (the feed gas's own humidity, or a gas so
+        //  little that it saturates before the water starts) it converged on
+        //  lo = 0 and published an exhaust ABOVE the declared cap while
+        //  announcing the cap.  The infeasible spec is refused with the
+        //  range of caps this feed and gas can meet.
+        const scalar aw_zero = aw_exhaust(0.0, Tout_for(0.0));
+        if (aw_zero > aw_max)
+        {
+            std::ostringstream m;
+            m << std::setprecision(5) << who << ": maxExhaustHumidity " << aw_max
+              << " cannot be met -- the gas alone (nothing evaporated) already"
+                 " leaves at a_w = " << aw_zero << ", and evaporating the"
+                 " free water raises it (to " << aw_exhaust(water_cap, Tout_for(water_cap))
+              << " if all this gas can carry were evaporated).  Feasible caps are a_w >= "
+              << aw_zero << ".  Use more or drier gas, or raise the cap.";
+            throw std::runtime_error(m.str());
+        }
         scalar lo = 0.0, hi = water_cap;                     // aw increases with water_rem
         for (int it = 0; it < 80 && (hi - lo) > 1.0e-12; ++it)
         {
@@ -330,6 +366,12 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     const scalar water_final = std::max(0.0, water_in - water_rem);      // stays on the cake
     const scalar X_final     = (solid_mass > 0.0) ? water_final * MW_solv / solid_mass : 0.0;
     const scalar aw_out      = aw_exhaust(water_rem, T_out);
+    //  The declared cap is verified on the answer, not on the search: the
+    //  published exhaust must meet it (to the bisection's own width).
+    if (aw_out > aw_max * (1.0 + 1.0e-4) + 1.0e-9)
+        throw std::runtime_error(who + ": the exhaust leaves at a_w = "
+            + std::to_string(aw_out) + ", above the declared maxExhaustHumidity "
+            + std::to_string(aw_max) + " -- the cap is not met by this answer.");
 
     // ---- Outlet streams: dry solid + humid exhaust --------------------
     produced_.clear();
