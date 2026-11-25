@@ -9,7 +9,7 @@
 name           GeO;
 formula        GeO;
 CAS            n/a;
-MW             88.6394;       // kg/kmol, appendix D record line
+MW             88.629;       // kg/kmol, = sum of the engine's atomic weights (C517; was 88.6394)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "GeO";

@@ -9,7 +9,7 @@
 name           S8;
 formula        S8;
 CAS            n/a;
-MW             256.52;       // kg/kmol, appendix D record line
+MW             256.48;       // kg/kmol, = sum of the engine's atomic weights (C517; was 256.52)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "S8";

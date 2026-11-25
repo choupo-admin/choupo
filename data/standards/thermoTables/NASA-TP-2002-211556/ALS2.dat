@@ -9,7 +9,7 @@
 name           ALS2;
 formula        AlS2;
 CAS            n/a;
-MW             91.11154;       // kg/kmol, appendix D record line
+MW             91.102;       // kg/kmol, = sum of the engine's atomic weights (C517; was 91.1115)
 role           gasOnly;       // free radical (odd electron count 45)
 tags           ( gasPhase thermoTable );
 nasaEntry      "ALS2";
