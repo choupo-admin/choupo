@@ -108,7 +108,7 @@ F\,z &= D\,x_D + B\,x_B\\
       + "equations in two unknowns with a Newton iteration on the whole "
       + "column, once per N (DesignSpec.cpp:375). The purities it matches are "
       + "the column's own published x_D_LK and x_B_HK "
-      + "(DistillationColumn.cpp:4444-4445). Every point on the curve is "
+      + "(DistillationColumn.cpp:4531-4532). Every point on the curve is "
       + "therefore on specification, which is what makes the curve a design "
       + "tool: moving along it trades stages against reflux and nothing else. "
       + "Its two asymptotes are the two limits of the column. With very many "
@@ -158,7 +158,7 @@ R(N) &\longrightarrow R_\mathrm{min} \quad (N \to \infty), \qquad R(N) \longrigh
       + "every tray at the flooding fraction it is given) and costed item by "
       + "item by the Turton bare-module method for the shell, the trays, the "
       + "condenser, the reboiler and the reflux drum. The reboiler's duty is "
-      + "the column's published Q_reboiler_kW (DistillationColumn.cpp:4572). "
+      + "the column's published Q_reboiler_kW (DistillationColumn.cpp:4659). "
       + "The page adds two numbers it owns, a capital charge and the price of "
       + "the heat, and both are knobs: dearer energy moves the optimum to "
       + "more stages and less reflux, and a dearer capital charge moves it "
@@ -256,7 +256,7 @@ export const COLUMN_DESIGN_LIMITS: readonly { id: string; title: string; body: s
     title: "Constant molar overflow, ideal vapour.",
     body: "The simultaneous column the recorded points come from solves the material "
       + "and equilibrium rows with constant molar overflow and an ideal-gas vapour, "
-      + "and closes the first law on the reboiler (DistillationColumn.cpp:4572). "
+      + "and closes the first law on the reboiler (DistillationColumn.cpp:4659). "
       + "Its duties are those of that approximation.",
   },
   {

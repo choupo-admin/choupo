@@ -257,8 +257,8 @@ describe("the lesson", () => {
     };
     const CLAIMS: Record<string, string | RegExp> = {
       "DesignSpec.cpp:375": "solver::newtonND(residual, x0, opts)",
-      "DistillationColumn.cpp:4444-4445": /kpis_\["x_D_LK"\]\s*= xD\[0\];\s*kpis_\["x_B_HK"\]\s*=/,
-      "DistillationColumn.cpp:4572": "kpis_[\"Q_reboiler_kW\"]  = dH - Q_cond;",
+      "DistillationColumn.cpp:4531-4532": /kpis_\["x_D_LK"\]\s*= xD\[0\];\s*kpis_\["x_B_HK"\]\s*=/,
+      "DistillationColumn.cpp:4659": "kpis_[\"Q_reboiler_kW\"]  = dH - Q_cond;",
       "ShortcutColumn.cpp:136": "alpha[i] = K[i] / Khk;",
       "ShortcutColumn.cpp:306": "Gilliland (Molokanov)",
     };
