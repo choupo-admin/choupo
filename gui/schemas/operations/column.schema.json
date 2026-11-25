@@ -19,6 +19,16 @@
       "description": "1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which is required once there is more than one input stream.",
       "default": 10
     },
+    "lightKey": {
+      "type": "string",
+      "title": "Light key",
+      "description": "Component whose purity in the distillate is published as the KPI x_D_LK. Declare it together with `heavyKey`; without them a binary takes the component with the larger K, and three or more components publish x_D_<component> / x_B_<component> instead."
+    },
+    "heavyKey": {
+      "type": "string",
+      "title": "Heavy key",
+      "description": "Component whose purity in the bottoms is published as the KPI x_B_HK (see `lightKey`)."
+    },
     "refluxRatio": {
       "type": "number",
       "exclusiveMinimum": 0,
