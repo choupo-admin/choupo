@@ -5659,6 +5659,11 @@ accepts today, and that is a policy call.
 > three or more components and no keys, each purity by its component's name.  C492 T1-T6 on 40 cases: 25 first
 > violations, all the tool's own, then 2 left, both this.
 
+> **C505. READ MORAN FOR EDUTOOLS AND CORRELATIONS (Vitor, 2026-11-25: "Poe um Agente a ler o Moran e vê o que
+> pode tirar de lá para o Choupo (Edutools e correlações)").**  A reading general, report private in the literature
+> folder; correlations with page and primary source (the books are secondary), at most eight tools, his criticisms
+> of simulators turned into tests, the layout rules against the PEQ layout.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
