@@ -1990,6 +1990,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- CHECKED: HEAD 142c1f6dc7 is SYNCED with origin/integ/worktree-agent-a5c22562aa834596f (origin is an ancestor of HEAD, after a fresh fetch), and none of the recycler-overlay sentinel files has lost its sentinel.  NOT CHECKED: untracked files, the content of any tracked file beyond those sentinels, whether HEAD is the commit you meant, the recycler itself, and the window between this proof and the action it guards (git's own non-fast-forward refusal is the backstop there).",
       "seconds": 1.0
+    },
+    "check_sqp_adaptive": {
+      "exit": 0,
+      "claim": "check_sqp_adaptive: OK -- 19 arms PASS (the review's failing inputs and the four invariants); default path 235 lines equal the pinned base output",
+      "seconds": 16.8
     }
   }
 }
