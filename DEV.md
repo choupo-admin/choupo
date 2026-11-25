@@ -5740,6 +5740,12 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C531. EXTERNAL REVIEW 5 (Vitor, 2026-11-25).**  PhaseChanger (geometry) lets a phase run out: an outlet colder than its
+> coolant, a vapour hotter than its heating, at exit 0; HeatExchanger's two-phase profile is an interpolation that does not
+> conserve energy locally.  The robustness run of the same day moved feeds only and judged numbers one by one: it could
+> not see this, and said so.  A thermal-feasibility proof (utility limits, phase availability, per-segment energy, second
+> law from independent properties) with a geometry sweep is the remedy.
+
 > **C529, C530 (Vitor, 2026-11-25).**  C529: EXTERNAL REVIEW 4 -- EvaporativeDryer prices the first solid only (order moves
 > T_out 19 K), CoolingTower sees the majority gas only, an infeasible `maxExhaustHumidity` is accepted; the idiom (first or
 > largest component by index, bisection without a bracket) is searched in every unit; synthetic two-solid and two-gas
