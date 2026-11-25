@@ -4,20 +4,19 @@
 # VIOLATES <TAB> proof <TAB> case <TAB> date <TAB> reason (triage: ENGINE / CASE / PROOF, one-line reproduction)
 # NOTJUDGED <TAB> proof <TAB> reason class <TAB> count <TAB> date <TAB> why the proof cannot judge it
 # Triage of 2026-11-25 over 377 steady and plant cases: docs/audits/2026-11-25-proofs-after-c500.md
-VIOLATES	T1	tutorials/steady/absorption/extract02_declared_interior	2026-11-25	ENGINE solver tolerance: the liquid-liquid solver stops at 1e-8 and the raffinate benzene differs 3.1e-7 relative at x2 feeds; not a defect of the physics
-VIOLATES	T1	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	2026-11-25	ENGINE solver tolerance: GibbsMethod.cpp:128 absolute 1e-8 residual; burnt H 1.35e-7 relative at x2 feeds
-VIOLATES	T2	tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628	2026-11-25	ENGINE (C514 left open): alpha_mean takes component 0, so reversing `components` inverts the ratio and the bottom-tray keys; repro: reverse components in totalReflux01 and read kpis/column/alpha_mean
-VIOLATES	T2	tutorials/steady/flash/flash20_ethanol_water_pcsaft	2026-11-25	ENGINE: the multi-start Gibbs phase split depends on component order at 7e-6 (the energy boundary 3e-7); repro: reverse components in flash20
-VIOLATES	T2	tutorials/steady/flash/vlle03_audit_artificial	2026-11-25	ENGINE: the three-phase flash result depends on component order at 9e-7 (F_vapor 0.005158982796 against 0.005158983493); repro: reverse components in vlle03
-VIOLATES	T2	tutorials/steady/flash/vlle05_produced_feed	2026-11-25	ENGINE: same three-phase flash as vlle03 (9e-7); repro: reverse components in vlle05
-VIOLATES	T3	tutorials/steady/flash/flash20_ethanol_water_pcsaft	2026-11-25	ENGINE solver tolerance: a 1e-16 rewrite of bar as Pa moves H_feeds 1e-8 through the multi-start phase split
-VIOLATES	T3	tutorials/steady/flowsheets/process05_isomerization_recycle	2026-11-25	ENGINE solver tolerance: a recycle at its tolerance amplifies the 1e-16 rewrite to 4e-7 in the bottoms neoPentane
-VIOLATES	T4	tutorials/steady/membranes/membrane08_softened_scaling	2026-11-25	ENGINE (known debt, check_element_closure.py pin): the resin takes Na, Ca, Mg, K and no stream carries them, so the streams close 100.0308 % in mass while the engine reports 100.0000; C258 asks for a named stream
-VIOLATES	T6	tutorials/steady/absorption/extract02_declared_interior	2026-11-25	ENGINE solver tolerance: N_shortcut moves 9.6e-7 when the converged state is the seed
-VIOLATES	T6	tutorials/steady/electrodialysis/ed07_feed_and_bleed	2026-11-25	ENGINE solver tolerance: a recycle at tolerance 1e-4; the product composition moves 1.5e-4 on a restart
-NOTJUDGED	T1	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+VIOLATES	T1	tutorials/steady/absorption/extract02_declared_interior	2026-11-25	the solver's own stopping tolerance: the liquid-liquid solver stops at 1e-8 and the raffinate benzene differs 3.1e-7 relative at x2 feeds; not a defect
+VIOLATES	T1	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	2026-11-25	the solver's own stopping tolerance: GibbsMethod.cpp:128 absolute 1e-8 residual; burnt H 1.35e-7 relative at x2 feeds
+VIOLATES	T2	tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628	2026-11-25	ENGINE defect (C514 left it open): alpha_mean takes component 0, so reversing `components` inverts the ratio and the bottom-tray keys; repro: reverse components in totalReflux01 and read kpis/column/alpha_mean
+VIOLATES	T2	tutorials/steady/flash/flash20_ethanol_water_pcsaft	2026-11-25	ENGINE, cause not examined: the multi-start Gibbs phase split lands 7e-6 apart (energy boundary 3e-7) when the order changes, of the size of the solver stopping tolerance; repro: reverse components in flash20
+VIOLATES	T2	tutorials/steady/flash/vlle03_audit_artificial	2026-11-25	ENGINE, cause not examined: the three-phase flash lands 9e-7 apart (F_vapor 0.005158982796 against 0.005158983493) when the order changes, of the size of its stopping tolerance tolF; repro: reverse components in vlle03
+VIOLATES	T2	tutorials/steady/flash/vlle05_produced_feed	2026-11-25	ENGINE, cause not examined: same three-phase flash as vlle03 (9e-7); repro: reverse components in vlle05
+VIOLATES	T3	tutorials/steady/flash/flash20_ethanol_water_pcsaft	2026-11-25	the solver's own stopping tolerance: a 1e-16 rewrite of bar as Pa moves H_feeds 1e-8 through the multi-start phase split
+VIOLATES	T3	tutorials/steady/flowsheets/process05_isomerization_recycle	2026-11-25	the solver's own stopping tolerance: a recycle stopped at its tolerance amplifies the 1e-16 rewrite to 4e-7 in the bottoms neoPentane
+VIOLATES	T6	tutorials/steady/absorption/extract02_declared_interior	2026-11-25	the solver's own stopping tolerance: N_shortcut moves 9.6e-7 when the converged state is the seed
+VIOLATES	T6	tutorials/steady/electrodialysis/ed07_feed_and_bleed	2026-11-25	the solver's own stopping tolerance: a recycle stopped at 1e-4; the product composition moves 1.5e-4 on a restart
+NOTJUDGED	T1	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T1	declared size is not a plain number	1	2026-11-25	a $variable size cannot be scaled by the text transformation
-NOTJUDGED	T1	declared size outside a unit block	23	2026-11-25	a sectored sub-flowsheet or a top-level key carries the size; no unit rule can reach it yet
+NOTJUDGED	T1	declared size outside a unit block	24	2026-11-25	a sectored sub-flowsheet or a top-level key carries the size; no unit rule can reach it yet
 NOTJUDGED	T1	declared size, no unit rule: agitatedVessel	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: bagFilter	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: boiler	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
@@ -46,11 +45,11 @@ NOTJUDGED	T1	declared size, no unit rule: turbine	6	2026-11-25	a declared size o
 NOTJUDGED	T1	feeds not identifiable	14	2026-11-25	observer units or a flowsheet without a parsable `units (` list: the independent topology reader cannot name the feeds
 NOTJUDGED	T1	flat-sheet cell: one coupon, nothing to scale	1	2026-11-25	one coupon of fixed area has no parallel vessels to scale
 NOTJUDGED	T1	outerDict (an outer driver varies the case)	14	2026-11-25	an outer driver varies the case: its own repeated runs are the proof, and the outputs are not one state
-NOTJUDGED	T2	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+NOTJUDGED	T2	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T2	fewer than 2 components	34	2026-11-25	a single-component case has no order to reverse
-NOTJUDGED	T3	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+NOTJUDGED	T3	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T4	a value the independent reader cannot parse (n/a, nested block)	4	2026-11-25	the reader of proofs_closure.py does not handle a text value or a nested block in a state file
-NOTJUDGED	T4	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+NOTJUDGED	T4	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T4	engine report carries a text value (n/a)	3	2026-11-25	the engine report holds n/a where the reader needs a number
 NOTJUDGED	T4	flowsheet the independent reader cannot parse	18	2026-11-25	a flowsheet without a flat `units (` list: the topology reader refuses by name
 NOTJUDGED	T4	no converged/ stream files	10	2026-11-25	a sweep or an outer-driver case keeps no single converged state
@@ -59,7 +58,7 @@ NOTJUDGED	T4	other independent-reader limit	3	2026-11-25	unclassified limit of t
 NOTJUDGED	T4	pseudo-component formula	5	2026-11-25	a pseudo-component (A, B, C) has no formula, so no element balance
 NOTJUDGED	T4	stream blocks the independent reader does not handle	47	2026-11-25	utility category, vaporFraction, speciation and similar blocks the independent reader does not read
 NOTJUDGED	T4	stream state file not unique	5	2026-11-25	a stream with 0 or 2 candidate state files in a sectored plant
-NOTJUDGED	T5	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+NOTJUDGED	T5	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T5	the result publishes no streams	18	2026-11-25	the result JSON carries no streams block (a sweep or a property case run by choupoSolve)
-NOTJUDGED	T6	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
+NOTJUDGED	T6	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
 NOTJUDGED	T6	no converged/ stream files	37	2026-11-25	a sweep or an outer-driver case keeps no single converged state
