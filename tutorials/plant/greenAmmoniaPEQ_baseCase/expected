@@ -1522,7 +1522,7 @@ layout Aftercooler          dz               0.789851740363     1e-4
 layout FEHE                 shape            box                exact
 layout FEHE                 orientation      alongX             exact
 layout FEHE                 footprintFrom    declared           exact
-layout FEHE                 x                40                 1e-4
+layout  FEHE                   x                37.8             1e-4
 layout FEHE                 y                7                  1e-4
 layout FEHE                 z                0                  1e-4
 layout FEHE                 dx               7                  1e-4
@@ -1757,7 +1757,7 @@ layout pipeRack             y                -2                 1e-4
 layout junction:MakeupMix   x                8                  1e-4
 layout junction:MakeupMix   y                -2                 1e-4
 layout junction:MakeupMix   z                7                  1e-4
-layout junction:LoopMix     x                41.3333333333      1e-4
+layout  junction:LoopMix       x                40.6             1e-4
 layout junction:LoopMix     y                -2                 1e-4
 layout junction:LoopMix     z                7                  1e-4
 layout junction:PurgeSplit  x                62                 1e-4
@@ -1819,19 +1819,19 @@ layout pipe:Makeup150       to               Aftercooler        exact
 layout pipe:Makeup150       length           51.1530741298      1e-4
 layout pipe:Makeup          from             Aftercooler        exact
 layout pipe:Makeup          to               LoopMix            exact
-layout pipe:Makeup          length           21.2904074632      1e-4
+layout  pipe:Makeup            length           20.5570741298    1e-4
 layout pipe:Recycle         from             PurgeSplit         exact
 layout pipe:Recycle         to               RecycleComp        exact
 layout pipe:Recycle         length           43.25              1e-4
 layout pipe:CompRecycle     from             RecycleComp        exact
 layout pipe:CompRecycle     to               LoopMix            exact
-layout pipe:CompRecycle     length           36.1666666667      1e-4
+layout  pipe:CompRecycle       length           36.9             1e-4
 layout pipe:Mixed           from             LoopMix            exact
 layout pipe:Mixed           to               FEHE               exact
-layout pipe:Mixed           length           23.9333333333      1e-4
+layout  pipe:Mixed             length           25.4             1e-4
 layout pipe:CooledEffluent  from             FEHE               exact
 layout pipe:CooledEffluent  to               WaterCooler        exact
-layout  pipe:CooledEffluent    length           48.1818117       1e-4
+layout  pipe:CooledEffluent    length           50.3818117       1e-4
 layout pipe:WaterCooledEffluent from             WaterCooler        exact
 layout pipe:WaterCooledEffluent to               Chiller            exact
 layout  pipe:WaterCooledEffluent length           38.6597382422    1e-4
@@ -2069,7 +2069,7 @@ layout line:Makeup          from             Aftercooler        exact
 layout line:Makeup          to               LoopMix            exact
 layout line:Makeup          service          gas                exact
 layout line:Makeup          sizeState        sized              exact
-layout line:Makeup          length           21.2904074632      1e-4
+layout  line:Makeup            length           20.5570741298    1e-4
 layout line:Makeup          lineBends        5                  1e-4
 layout line:Makeup          lineNps          8                  1e-4
 layout line:Makeup          lineSchedule     160                1e-4
@@ -2086,9 +2086,9 @@ layout line:Makeup          lineVelocityMax  18.108908836       1e-4
 layout line:Makeup          lineReynolds     6778953.70888      1e-4
 layout line:Makeup          lineFriction     0.0147254029746    1e-4
 layout line:Makeup          lineEquivalentLength 32.879538          1e-4
-layout line:Makeup          lineDropFriction 17620.7138224      1e-4
+layout  line:Makeup            lineDropFriction 17382.1709054    1e-4
 layout line:Makeup          lineDropStatic   2962.81862422      1e-4
-layout line:Makeup          lineDrop         20583.5324466      1e-4
+layout  line:Makeup            lineDrop         20344.9895296    1e-4
 layout line:Makeup          lineRhoV2        7645.39647979      1e-4
 layout line:Recycle         from             PurgeSplit         exact
 layout line:Recycle         to               RecycleComp        exact
@@ -2119,7 +2119,7 @@ layout line:CompRecycle     from             RecycleComp        exact
 layout line:CompRecycle     to               LoopMix            exact
 layout line:CompRecycle     service          gas                exact
 layout line:CompRecycle     sizeState        sized              exact
-layout line:CompRecycle     length           36.1666666667      1e-4
+layout  line:CompRecycle       length           36.9             1e-4
 layout line:CompRecycle     lineBends        6                  1e-4
 layout line:CompRecycle     lineNps          10                 1e-4
 layout line:CompRecycle     lineSchedule     160                1e-4
@@ -2136,15 +2136,15 @@ layout line:CompRecycle     lineVelocityMax  17.3377338395      1e-4
 layout line:CompRecycle     lineReynolds     14744605.9855      1e-4
 layout line:CompRecycle     lineFriction     0.0140019907613    1e-4
 layout line:CompRecycle     lineEquivalentLength 48.5775            1e-4
-layout line:CompRecycle     lineDropFriction 39558.6492366      1e-4
+layout  line:CompRecycle       lineDropFriction 39900.9698617    1e-4
 layout line:CompRecycle     lineDropStatic   1712.75528312      1e-4
-layout line:CompRecycle     lineDrop         41271.4045197      1e-4
+layout  line:CompRecycle       lineDrop         41613.7251448    1e-4
 layout line:CompRecycle     lineRhoV2        14395.4250153      1e-4
 layout line:Mixed           from             LoopMix            exact
 layout line:Mixed           to               FEHE               exact
 layout line:Mixed           service          gas                exact
 layout line:Mixed           sizeState        sized              exact
-layout line:Mixed           length           23.9333333333      1e-4
+layout  line:Mixed             length           25.4             1e-4
 layout line:Mixed           lineBends        5                  1e-4
 layout line:Mixed           lineNps          14                 1e-4
 layout line:Mixed           lineSchedule     160                1e-4
@@ -2161,15 +2161,15 @@ layout line:Mixed           lineVelocityMax  17.5893323564      1e-4
 layout line:Mixed           lineReynolds     15276085.973       1e-4
 layout line:Mixed           lineFriction     0.0132681308102    1e-4
 layout line:Mixed           lineEquivalentLength 53.993288          1e-4
-layout line:Mixed           lineDropFriction 18835.4019156      1e-4
+layout  line:Mixed             lineDropFriction 19189.905366     1e-4
 layout line:Mixed           lineDropStatic   -2710.11724714     1e-4
-layout line:Mixed           lineDrop         16125.2846685      1e-4
+layout  line:Mixed             lineDrop         16479.7881189    1e-4
 layout line:Mixed           lineRhoV2        10353.6974527      1e-4
 layout line:CooledEffluent  from             FEHE               exact
 layout line:CooledEffluent  to               WaterCooler        exact
 layout line:CooledEffluent  service          gas                exact
 layout line:CooledEffluent  sizeState        sized              exact
-layout  line:CooledEffluent    length           48.1818117       1e-4
+layout  line:CooledEffluent    length           50.3818117       1e-4
 layout line:CooledEffluent  lineBends        6                  1e-4
 layout line:CooledEffluent  lineNps          14                 1e-4
 layout line:CooledEffluent  lineSchedule     160                1e-4
@@ -2186,9 +2186,9 @@ layout line:CooledEffluent  lineVelocityMax  17.7206345164      1e-4
 layout line:CooledEffluent  lineReynolds     14846252.7296      1e-4
 layout line:CooledEffluent  lineFriction     0.0132711128254    1e-4
 layout line:CooledEffluent  lineEquivalentLength 63.93942           1e-4
-layout  line:CooledEffluent    lineDropFriction 27512.2728342    1e-4
+layout  line:CooledEffluent    lineDropFriction 28052.1081475    1e-4
 layout line:CooledEffluent  lineDropStatic   290.520622876      1e-4
-layout  line:CooledEffluent    lineDrop         27802.7934571    1e-4
+layout  line:CooledEffluent    lineDrop         28342.6287703    1e-4
 layout line:CooledEffluent  lineRhoV2        10508.6623532      1e-4
 layout line:WaterCooledEffluent from             WaterCooler        exact
 layout line:WaterCooledEffluent to               Chiller            exact
@@ -2396,13 +2396,13 @@ layout nozzle:Aftercooler:N2 nozzleFacing     RTJ                exact
 layout nozzle:Aftercooler:N2 nozzleDesignP    16600000           1e-4
 layout nozzle:Aftercooler:N2 nozzleDesignT    449.570143382      1e-4
 layout nozzle:CONVERTER/shell:M1 nozzleService    manway             exact
-layout nozzle:CONVERTER/shell:M1 nozzleStream                        exact
+layout  nozzle:CONVERTER/shell:M1 nozzleStream     exact            
 layout nozzle:CONVERTER/shell:M1 nozzleSizeFrom   declared           exact
 layout nozzle:CONVERTER/shell:M1 nozzleSize       24                 exact
 layout  nozzle:CONVERTER/shell:M1 nozzleDesignP    16600000         1e-4
 layout  nozzle:CONVERTER/shell:M1 nozzleDesignT    760.557679703    1e-4
 layout nozzle:CONVERTER/shell:M2 nozzleService    manway             exact
-layout nozzle:CONVERTER/shell:M2 nozzleStream                        exact
+layout  nozzle:CONVERTER/shell:M2 nozzleStream     exact            
 layout nozzle:CONVERTER/shell:M2 nozzleSizeFrom   declared           exact
 layout nozzle:CONVERTER/shell:M2 nozzleSize       24                 exact
 layout  nozzle:CONVERTER/shell:M2 nozzleDesignP    16600000         1e-4
@@ -2445,7 +2445,7 @@ layout nozzle:H2Buffer/vessel1:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel1:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel1:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel1:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel1:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel1:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel1:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel1:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel1:M1 nozzleClass      900                exact
@@ -2460,7 +2460,7 @@ layout nozzle:H2Buffer/vessel10:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel10:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel10:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel10:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel10:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel10:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel10:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel10:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel10:M1 nozzleClass      900                exact
@@ -2475,7 +2475,7 @@ layout nozzle:H2Buffer/vessel2:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel2:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel2:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel2:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel2:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel2:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel2:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel2:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel2:M1 nozzleClass      900                exact
@@ -2490,7 +2490,7 @@ layout nozzle:H2Buffer/vessel3:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel3:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel3:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel3:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel3:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel3:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel3:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel3:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel3:M1 nozzleClass      900                exact
@@ -2505,7 +2505,7 @@ layout nozzle:H2Buffer/vessel4:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel4:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel4:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel4:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel4:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel4:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel4:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel4:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel4:M1 nozzleClass      900                exact
@@ -2520,7 +2520,7 @@ layout nozzle:H2Buffer/vessel5:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel5:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel5:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel5:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel5:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel5:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel5:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel5:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel5:M1 nozzleClass      900                exact
@@ -2535,7 +2535,7 @@ layout nozzle:H2Buffer/vessel6:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel6:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel6:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel6:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel6:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel6:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel6:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel6:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel6:M1 nozzleClass      900                exact
@@ -2550,7 +2550,7 @@ layout nozzle:H2Buffer/vessel7:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel7:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel7:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel7:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel7:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel7:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel7:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel7:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel7:M1 nozzleClass      900                exact
@@ -2565,7 +2565,7 @@ layout nozzle:H2Buffer/vessel8:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel8:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel8:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel8:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel8:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel8:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel8:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel8:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel8:M1 nozzleClass      900                exact
@@ -2580,7 +2580,7 @@ layout nozzle:H2Buffer/vessel9:N1 nozzleFacing     RF                 exact
 layout nozzle:H2Buffer/vessel9:N1 nozzleDesignP    9898675            1e-4
 layout nozzle:H2Buffer/vessel9:N1 nozzleDesignT    338.15             1e-4
 layout nozzle:H2Buffer/vessel9:M1 nozzleService    manway             exact
-layout nozzle:H2Buffer/vessel9:M1 nozzleStream                        exact
+layout  nozzle:H2Buffer/vessel9:M1 nozzleStream     exact            
 layout nozzle:H2Buffer/vessel9:M1 nozzleSizeFrom   declared           exact
 layout nozzle:H2Buffer/vessel9:M1 nozzleSize       24                 exact
 layout nozzle:H2Buffer/vessel9:M1 nozzleClass      900                exact
@@ -2633,7 +2633,7 @@ layout nozzle:LetdownHP:N3  nozzleFacing     RF                 exact
 layout nozzle:LetdownHP:N3  nozzleDesignP    2100000            1e-4
 layout nozzle:LetdownHP:N3  nozzleDesignT    278.15             1e-4
 layout nozzle:LetdownHP:M1  nozzleService    manway             exact
-layout nozzle:LetdownHP:M1  nozzleStream                        exact
+layout  nozzle:LetdownHP:M1    nozzleStream     exact            
 layout nozzle:LetdownHP:M1  nozzleSizeFrom   declared           exact
 layout nozzle:LetdownHP:M1  nozzleSize       24                 exact
 layout nozzle:LetdownHP:M1  nozzleClass      300                exact
@@ -2718,13 +2718,13 @@ layout nozzle:NH3Storage/tank1:N1 nozzleSizeFrom   none               exact
 layout nozzle:NH3Storage/tank1:N1 nozzleDesignP    0                  1e-4
 layout nozzle:NH3Storage/tank1:N1 nozzleDesignT    0                  1e-4
 layout nozzle:NH3Storage/tank1:M1 nozzleService    manway             exact
-layout nozzle:NH3Storage/tank1:M1 nozzleStream                        exact
+layout  nozzle:NH3Storage/tank1:M1 nozzleStream     exact            
 layout nozzle:NH3Storage/tank1:M1 nozzleSizeFrom   declared           exact
 layout nozzle:NH3Storage/tank1:M1 nozzleSize       24                 exact
 layout nozzle:NH3Storage/tank1:M1 nozzleDesignP    0                  1e-4
 layout nozzle:NH3Storage/tank1:M1 nozzleDesignT    0                  1e-4
 layout nozzle:NH3Storage/tank1:M2 nozzleService    manway             exact
-layout nozzle:NH3Storage/tank1:M2 nozzleStream                        exact
+layout  nozzle:NH3Storage/tank1:M2 nozzleStream     exact            
 layout nozzle:NH3Storage/tank1:M2 nozzleSizeFrom   declared           exact
 layout nozzle:NH3Storage/tank1:M2 nozzleSize       24                 exact
 layout nozzle:NH3Storage/tank1:M2 nozzleDesignP    0                  1e-4
@@ -2735,13 +2735,13 @@ layout nozzle:NH3Storage/tank2:N1 nozzleSizeFrom   none               exact
 layout nozzle:NH3Storage/tank2:N1 nozzleDesignP    0                  1e-4
 layout nozzle:NH3Storage/tank2:N1 nozzleDesignT    0                  1e-4
 layout nozzle:NH3Storage/tank2:M1 nozzleService    manway             exact
-layout nozzle:NH3Storage/tank2:M1 nozzleStream                        exact
+layout  nozzle:NH3Storage/tank2:M1 nozzleStream     exact            
 layout nozzle:NH3Storage/tank2:M1 nozzleSizeFrom   declared           exact
 layout nozzle:NH3Storage/tank2:M1 nozzleSize       24                 exact
 layout nozzle:NH3Storage/tank2:M1 nozzleDesignP    0                  1e-4
 layout nozzle:NH3Storage/tank2:M1 nozzleDesignT    0                  1e-4
 layout nozzle:NH3Storage/tank2:M2 nozzleService    manway             exact
-layout nozzle:NH3Storage/tank2:M2 nozzleStream                        exact
+layout  nozzle:NH3Storage/tank2:M2 nozzleStream     exact            
 layout nozzle:NH3Storage/tank2:M2 nozzleSizeFrom   declared           exact
 layout nozzle:NH3Storage/tank2:M2 nozzleSize       24                 exact
 layout nozzle:NH3Storage/tank2:M2 nozzleDesignP    0                  1e-4
@@ -2792,7 +2792,7 @@ layout nozzle:Separator:N3  nozzleFacing     RTJ                exact
 layout nozzle:Separator:N3  nozzleDesignP    16600000           1e-4
 layout nozzle:Separator:N3  nozzleDesignT    278.15             1e-4
 layout nozzle:Separator:M1  nozzleService    manway             exact
-layout nozzle:Separator:M1  nozzleStream                        exact
+layout  nozzle:Separator:M1    nozzleStream     exact            
 layout nozzle:Separator:M1  nozzleSizeFrom   declared           exact
 layout nozzle:Separator:M1  nozzleSize       24                 exact
 layout nozzle:Separator:M1  nozzleClass      1500               exact
@@ -2827,7 +2827,7 @@ layout nozzle:StorageFlash:N3 nozzleFacing     RF                 exact
 layout nozzle:StorageFlash:N3 nozzleDesignP    200000             1e-4
 layout nozzle:StorageFlash:N3 nozzleDesignT    278.15             1e-4
 layout nozzle:StorageFlash:M1 nozzleService    manway             exact
-layout nozzle:StorageFlash:M1 nozzleStream                        exact
+layout  nozzle:StorageFlash:M1 nozzleStream     exact            
 layout nozzle:StorageFlash:M1 nozzleSizeFrom   declared           exact
 layout nozzle:StorageFlash:M1 nozzleSize       24                 exact
 layout nozzle:StorageFlash:M1 nozzleClass      150                exact
@@ -3026,7 +3026,7 @@ layout  summary                internal         8                1e-4
 layout summary              findings         0                  1e-4
 layout  summary                pipes            36               1e-4
 layout  summary                notRouted        0                1e-4
-layout  summary                pipeLength       1486.82370181    1e-4
+layout  summary                pipeLength       1494.59975648    1e-4
 layout summary              utilityLines     13                 1e-4
 layout summary              utilityLength    2062.35198473      1e-4
 boundary global               H_feeds_kW       533.06073992       1e-4
@@ -3119,15 +3119,15 @@ source  line_RawLiquid         liquidViscosity  perConstituent     exact
 source  storage_'NH3Storage'   liquidDensity    referenceEquation.Gao2023 exact
 layout  pipe:PreheatedFeed     from             FEHE             exact
 layout  pipe:PreheatedFeed     to               CONVERTER/shell  exact
-layout  pipe:PreheatedFeed     length           55.2484208737    1e-4
+layout  pipe:PreheatedFeed     length           57.3031148737    1e-4
 layout  pipe:CONVERTER.HotEffluent from             CONVERTER/shell  exact
 layout  pipe:CONVERTER.HotEffluent to               FEHE             exact
-layout  pipe:CONVERTER.HotEffluent length           48.2028757435    1e-4
+layout  pipe:CONVERTER.HotEffluent length           50.2575697435    1e-4
 layout  line:PreheatedFeed     from             FEHE             exact
 layout  line:PreheatedFeed     to               CONVERTER/shell  exact
 layout  line:PreheatedFeed     service          gas              exact
 layout  line:PreheatedFeed     sizeState        sized            exact
-layout  line:PreheatedFeed     length           55.2484208737    1e-4
+layout  line:PreheatedFeed     length           57.3031148737    1e-4
 layout  line:PreheatedFeed     lineBends        6                1e-4
 layout  line:PreheatedFeed     lineNps          16               1e-4
 layout  line:PreheatedFeed     lineSchedule     160              1e-4
@@ -3144,15 +3144,15 @@ layout  line:PreheatedFeed     lineVelocityMax  26.7196727886    1e-4
 layout  line:PreheatedFeed     lineReynolds     7320711.08777    1e-4
 layout  line:PreheatedFeed     lineFriction     0.0130473594038  1e-4
 layout  line:PreheatedFeed     lineEquivalentLength 73.22058         1e-4
-layout  line:PreheatedFeed     lineDropFriction 35780.0935403    1e-4
+layout  line:PreheatedFeed     lineDropFriction 36352.3494388    1e-4
 layout  line:PreheatedFeed     lineDropStatic   4507.26372797    1e-4
-layout  line:PreheatedFeed     lineDrop         40287.3572683    1e-4
+layout  line:PreheatedFeed     lineDrop         40859.6131667    1e-4
 layout  line:PreheatedFeed     lineRhoV2        13893.1633397    1e-4
 layout  line:CONVERTER.HotEffluent from             CONVERTER/shell  exact
 layout  line:CONVERTER.HotEffluent to               FEHE             exact
 layout  line:CONVERTER.HotEffluent service          gas              exact
 layout  line:CONVERTER.HotEffluent sizeState        sized            exact
-layout  line:CONVERTER.HotEffluent length           48.2028757435    1e-4
+layout  line:CONVERTER.HotEffluent length           50.2575697435    1e-4
 layout  line:CONVERTER.HotEffluent lineBends        7                1e-4
 layout  line:CONVERTER.HotEffluent lineNps          16               1e-4
 layout  line:CONVERTER.HotEffluent lineSchedule     160              1e-4
@@ -3169,9 +3169,9 @@ layout  line:CONVERTER.HotEffluent lineVelocityMax  26.3725696842    1e-4
 layout  line:CONVERTER.HotEffluent lineReynolds     7224208.57416    1e-4
 layout  line:CONVERTER.HotEffluent lineFriction     0.013050191197   1e-4
 layout  line:CONVERTER.HotEffluent lineEquivalentLength 84.610448        1e-4
-layout  line:CONVERTER.HotEffluent lineDropFriction 36042.4070253    1e-4
+layout  line:CONVERTER.HotEffluent lineDropFriction 36600.002569     1e-4
 layout  line:CONVERTER.HotEffluent lineDropStatic   291.914869157    1e-4
-layout  line:CONVERTER.HotEffluent lineDrop         36334.3218945    1e-4
+layout  line:CONVERTER.HotEffluent lineDrop         36891.9174381    1e-4
 layout  line:CONVERTER.HotEffluent lineRhoV2        13534.303442     1e-4
 layout  nozzle:CONVERTER/shell:N1 nozzleService    shell            exact
 layout  nozzle:CONVERTER/shell:N1 nozzleStream     PreheatedFeed    exact
