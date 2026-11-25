@@ -25,8 +25,8 @@
   with B symmetric positive definite — Nocedal & Wright, Numerical
   Optimization 2nd ed. (2006), Algorithm 16.3, §16.5, a public-domain method
   and explicitly NOT a port of any code.  It has three real callers: the inner
-  QP of every SQP iteration (src/solver/SQP.cpp:329), the constrained
-  optimisation driver (src/outerDriver/OptimizationDriver.cpp:984), and the
+  QP of every SQP iteration (src/solver/SQP.cpp:835), the constrained
+  optimisation driver (src/outerDriver/OptimizationDriver.cpp:985), and the
   laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 
   WHY THE TRANSCRIPTION EXISTS, and it is the same argument as the Wegstein
@@ -37,7 +37,7 @@
   final active set; it does not publish the sequence.  So the sequence is
   recomputed here, from `activeSetQP`'s own loop
   (src/solver/ActiveSetQP.cpp:191-438, headed by the algorithm's own name at
-  src/solver/ActiveSetQP.cpp:152), and every entry of the returned trace is
+  src/solver/ActiveSetQP.cpp:154), and every entry of the returned trace is
   one working-set change.
 
   WHAT KEEPS IT HONEST.  The engine ships a HAND-WORKED problem with a known
@@ -172,7 +172,7 @@ export const rowValue = (
 // ---- The loop, transcribed -------------------------------------------------
 
 /** The engine's own two tolerances, with its names and values
- *  (src/solver/ActiveSetQP.cpp:144-145). */
+ *  (src/solver/ActiveSetQP.cpp:146-147). */
 export const FEAS_TOL = 1.0e-10;
 export const LAM_TOL = 1.0e-12;
 
