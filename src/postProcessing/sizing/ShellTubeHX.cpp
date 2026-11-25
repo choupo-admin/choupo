@@ -1393,15 +1393,128 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         const Eval e = evaluate(perPass * b.passes);
         return e.r.U * F * LMTD * e.A;                           // W
     };
-    const int perPass = shellTubeDesign::smallestCount(delivered, Qw);
-    if (!(delivered(perPass) >= Qw))
+    //  ---- C503: FROM THE CALCULATED TO THE BOUGHT (opt-in) ---------------
+    //  `design { margin { area <fraction>; reason "..."; } stock { source
+    //  "..."; reason "..."; tubeLengths ( { length <m>; } ... ); shellIDs (
+    //  { insideDiameter <m>; } ... ); } }`.  Neither block declared: nothing
+    //  below changes the design, which is the one it always was.  The margin
+    //  is a DECISION (an uncertainty the case names in `reason`), the stock
+    //  list is the case's own with its source -- the engine ships no vendor
+    //  table.
+    bool   haveMargin = false;
+    scalar marginArea = 0.0;
+    if (dg->found("margin"))
+    {
+        const DictPtr mg = dg->subDict("margin");
+        if (!mg->found("area"))
+            throw std::runtime_error(who + ": `design { margin { area"
+                " <fraction>; } }` is not declared.");
+        if (!mg->found("reason") || mg->lookupWord("reason").empty())
+            throw std::runtime_error(who + ": `design { margin { reason"
+                " \"...\"; } }` is not declared -- a margin is chosen for an"
+                " uncertainty, and the reason names it.");
+        marginArea = mg->lookupScalar("area");
+        if (!(marginArea >= 0.0) || marginArea > 2.0)
+            throw std::runtime_error(who + ": `margin { area }` is a fraction"
+                " of the calculated area, 0 <= area <= 2 (0.10 is ten percent);"
+                " got " + std::to_string(marginArea) + ".");
+        haveMargin = true;
+    }
+    std::vector<scalar> stockLengths, stockShells;
+    if (dg->found("stock"))
+    {
+        const DictPtr sk = dg->subDict("stock");
+        for (const char* k : { "source", "reason" })
+            if (!sk->found(k) || sk->lookupWord(k).empty())
+                throw std::runtime_error(who + ": `design { stock { " + k
+                    + " \"...\"; } }` is not declared -- a stock list the case"
+                      " declares carries where it came from and why.");
+        if (sk->hasDictList("tubeLengths"))
+            for (const DictPtr& t : sk->lookupDictList("tubeLengths"))
+            {
+                if (!t->found("length"))
+                    throw std::runtime_error(who + ": a stock tube length"
+                        " declares `length <m>;`.");
+                const scalar L = t->lookupScalar("length", Dims::length);
+                if (!(L > 0.0))
+                    throw std::runtime_error(who + ": a stock tube length"
+                        " must be positive.");
+                stockLengths.push_back(L);
+            }
+        if (sk->hasDictList("shellIDs"))
+            for (const DictPtr& t : sk->lookupDictList("shellIDs"))
+            {
+                if (!t->found("insideDiameter"))
+                    throw std::runtime_error(who + ": a stock shell declares"
+                        " `insideDiameter <m>;`.");
+                const scalar D = t->lookupScalar("insideDiameter", Dims::length);
+                if (!(D > 0.0))
+                    throw std::runtime_error(who + ": a stock shell inside"
+                        " diameter must be positive.");
+                stockShells.push_back(D);
+            }
+        if (stockLengths.empty() && stockShells.empty())
+            throw std::runtime_error(who + ": `stock {}` lists no tubeLengths"
+                " and no shellIDs.");
+        std::sort(stockLengths.begin(), stockLengths.end());
+        std::sort(stockShells.begin(), stockShells.end());
+    }
+    const bool bought = haveMargin || !stockLengths.empty() || !stockShells.empty();
+
+    //  the CALCULATED design: the smallest bundle that just delivers the duty
+    const int perPass0 = shellTubeDesign::smallestCount(delivered, Qw);
+    if (!(delivered(perPass0) >= Qw))
         throw std::runtime_error(who + ": no bundle of up to "
-            + std::to_string(perPass * b.passes) + " tubes delivers the duty"
+            + std::to_string(perPass0 * b.passes) + " tubes delivers the duty"
               " -- the declared geometry cannot serve it.");
+    const Eval e0 = evaluate(perPass0 * b.passes);
+    const scalar A_calculated = Qw / (e0.r.U * F * LMTD);
+    const scalar L_declared = b.tubeLength;
+
+    //  the REQUIRED design: the duty times (1 + margin), on each stock length
+    //  the case lists (the declared length when it lists none); the BOUGHT one
+    //  is the listing's smallest installed area, the shorter length on a tie
+    const scalar target = Qw * (1.0 + marginArea);
+    int perPass = perPass0;
+    if (bought)
+    {
+        const std::vector<scalar> lengths = stockLengths.empty()
+            ? std::vector<scalar>{ L_declared } : stockLengths;
+        scalar bestA = -1.0, bestL = L_declared;
+        int bestPer = perPass0;
+        for (const scalar L : lengths)
+        {
+            b.tubeLength = L;
+            const int per = shellTubeDesign::smallestCount(delivered, target);
+            if (!(delivered(per) >= target)) continue;
+            const scalar A = evaluate(per * b.passes).A;
+            if (bestA < 0.0 || A < bestA * (1.0 - 1.0e-9))
+            {
+                bestA = A; bestL = L; bestPer = per;
+            }
+        }
+        if (bestA < 0.0)
+            throw std::runtime_error(who + ": no stock tube length delivers the"
+                " duty with the declared margin -- the declared geometry cannot"
+                " serve it.");
+        b.tubeLength = bestL;
+        perPass = bestPer;
+    }
     const Eval e = evaluate(perPass * b.passes);
     const scalar U = e.r.U;
-    const scalar A_required = Qw / (U * F * LMTD);
+    const scalar A_required = bought ? A_calculated : Qw / (U * F * LMTD);
     const scalar overdesign = e.A / A_required - 1.0;
+    scalar shellBought = 0.0;
+    if (!stockShells.empty())
+    {
+        for (const scalar D : stockShells)
+            if (D >= e.Ds * (1.0 - 1.0e-12)) { shellBought = D; break; }
+        if (!(shellBought > 0.0))
+            throw std::runtime_error(who + ": the bundle needs a shell of "
+                + std::to_string(e.Ds) + " m inside diameter and the largest"
+                " stock shell is " + std::to_string(stockShells.back())
+                + " m -- list a larger shell, or shells in series.");
+    }
 
     //  ---- pressure drops (on each side's HYDRAULIC state) ------------------
     //  Per shell from the kernel, times the number of shells in series.
@@ -1548,6 +1661,20 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         basis << "; the " << nShells << " shells are COSTED as ONE item at"
                  " their total area (the cost correlation is per item; " << nShells
               << " separate shells of A/" << nShells << " each would cost more)";
+    if (bought)
+    {
+        basis << "; FROM THE CALCULATED TO THE BOUGHT: calculated area "
+              << A_calculated << " m2 (the smallest bundle that delivers the"
+              " duty), required with the declared margin "
+              << 100.0 * marginArea << " % = "
+              << A_calculated * (1.0 + marginArea) << " m2, bought (installed,"
+              " and the area the cost is priced on) " << e.A << " m2 = "
+              << 100.0 * (e.A / A_calculated - 1.0) << " % above the calculated"
+              << (stockLengths.empty() ? "" : "; tube length chosen from the"
+                  " case's stock list, the smallest installed area")
+              << (stockShells.empty() ? "" : "; shell taken from the case's"
+                  " stock list (the bundle is not enlarged to fill it)");
+    }
     for (const auto& w : warnings) basis << "; WARNING: " << w;
 
     const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
@@ -1602,6 +1729,18 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     d.set("shellsInSeries", nShells,           "-");
     d.set("A_required",     A_required,        "m2");
     d.set("overdesign",     overdesign,        "-");
+    if (bought)
+    {
+        //  C503: three numbers side by side -- calculated, required with the
+        //  margin, bought (the installed area, which the cost follows)
+        d.set("A_calculated",   A_calculated,                      "m2");
+        d.set("A_margined",     A_calculated * (1.0 + marginArea), "m2");
+        d.set("A_bought",       e.A,                               "m2");
+        d.set("designMargin",   marginArea,                        "-");
+        d.set("tubeLength_calculated", L_declared,                 "m");
+        if (!stockShells.empty())
+            d.set("shellID_bought", shellBought,                   "m");
+    }
     if (mdotUtility >= 0.0) d.set("mdot_utility", mdotUtility, "kg/s");
     if (haveTubeDP)  d.set("dP_tube",  tdp.dP / 1000.0, "kPa");
     if (haveShellDP) d.set("dP_shell", sdp.dP / 1000.0, "kPa");
@@ -1660,6 +1799,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
                              "pressureDesign" };
     if (dg->found("shellsInSeries"))
         d.exchanger.declared.push_back("shellsInSeries");
+    if (haveMargin) d.exchanger.declared.push_back("designMargin");
     if (tube.declaredFilm)  d.exchanger.declared.push_back("h_tube");
     if (shell.declaredFilm) d.exchanger.declared.push_back("h_shell");
     if (pcf && pcf->boiling)
