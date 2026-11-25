@@ -23,8 +23,10 @@
       reaction is only ~22 % complete at the end (it used to reach 428 K
       and complete conversion).  There is no runaway and no plateau; the
       rate barely accelerates because T barely moves.
-    * The adiabatic ODE conserves a frozen-dH surrogate (dH_rxn pinned at the
-      charge T), which the run announces.
+    * The adiabatic ODE integrates H = const on the canonical enthalpy surface
+      (dH_rxn re-read at the vessel's T at every step: -2.428 kJ/mol at 320 K,
+      -2.416 at 321.1 K), so a restart from a written instant ends on the
+      uninterrupted answer.
 
   The original teaching point of this case (thermal runaway: induction, then
   a sharp temperature rise, then a plateau) needs a genuinely exothermic
