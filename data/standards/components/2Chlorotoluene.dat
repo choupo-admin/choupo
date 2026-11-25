@@ -61,13 +61,36 @@ liquidHeatCapacity
     Trange        (293.15  308.15);
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 ACCH3 + 1 ACCl + 4 ACH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.5477;
+    q   3.4120;
+}
+
 groups
 {
+    unifac ( { group ACCH3; count 1; } { group ACCl; count 1; } { group ACH; count 4; } );   // derived from structure c1(C)ccccc1([Cl]) by bin/curate/unifac_groups.py
     joback ( { group CH3; count 1; } { group arC; count 2; } { group arCH; count 4; } { group Cl; count 1; } );
 }
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.5477, q = sum nu_k Q_k = 3.4120 over the record's unifac groups (1 ACCH3 + 1 ACCl + 4 ACH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        definition;
+        method        "cut from the molecular structure c1(C)ccccc1([Cl]) (atom count reproduces the record's formula) into 1 ACCH3 + 1 ACCl + 4 ACH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
     MW
     {
         origin        literature;

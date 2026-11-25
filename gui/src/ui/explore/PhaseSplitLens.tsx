@@ -77,6 +77,10 @@ import {
   type PhaseSetWord, type PhaseSplitScanBlock,
 } from "../../case/phaseSplitScan.js";
 import { hasUnifacGroups, type UnifacGroup } from "../../case/unifacGroups.js";
+import {
+  activityVerdict, refusalAdvice, type ApplicabilityCtx,
+} from "../../case/modelApplicability.js";
+import { EngineRefusal } from "./EngineRefusal.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import {
   kToDisplay, paToDisplay, parsePressure, parseTemperature, pressureLabel, temperatureLabel,
@@ -134,6 +138,12 @@ export function PhaseSplitLens({ components, catalogue, caseRaw, localUnifac, co
   const [source, setSource] = useState<"synth" | "case">(caseOffered ? "case" : "synth");
   useEffect(() => { if (!caseOffered && source === "case") setSource("synth"); }, [caseOffered, source]);
   const [activity, setActivity] = useState(() => defaultActivity(components, catalogue, localUnifac));
+  //  What each model can price, said BEFORE the run (case/modelApplicability.ts).
+  const applyCtx = useMemo<ApplicabilityCtx>(() => ({
+    metaOf: (c) => metaByName(c, catalogue),
+    hasUnifac: (c) => (metaByName(c, catalogue)?.hasUnifac ?? false) || hasUnifacGroups(c, localUnifac),
+    hasPair,
+  }), [catalogue, localUnifac]);
   const [solids, setSolids] = useState<string[]>([]);
   const [amounts, setAmounts] = useState<{ [c: string]: number }>({});
   const [variable, setVariable] = useState<"T" | "P">("T");
@@ -318,7 +328,11 @@ export function PhaseSplitLens({ components, catalogue, caseRaw, localUnifac, co
           </Text>
         ) : (
           <Stack gap={6} mt={4}>
-            <Select size="xs" label="γ model (liquid)" data={[...PHASE_SPLIT_ACTIVITY]} value={activity}
+            <Select size="xs" label="γ model (liquid)" value={activity}
+              data={PHASE_SPLIT_ACTIVITY.map((m) => {
+                const v = activityVerdict(m, components, applyCtx);
+                return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+              })} comboboxProps={{ width: 380, position: "bottom-start" }}
               onChange={(v) => setActivity(v ?? "ideal")} allowDeselect={false} />
             {pairNote && <Text size="xs" c="dimmed">{pairNote}</Text>}
             <Text size="xs" fw={500}>May crystallise (pure solid of the component)</Text>
@@ -414,9 +428,8 @@ export function PhaseSplitLens({ components, catalogue, caseRaw, localUnifac, co
         </Alert>)}
       {plan.nothingToAsk && <Text size="sm" c="dimmed">{plan.nothingToAsk}</Text>}
       {error && (
-        <Alert color="red" variant="light" p="xs" title="The engine refused or did not finish">
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>{error}</Text>
-        </Alert>)}
+        <EngineRefusal advice={refusalAdvice(error, { activity, eos: "idealGas", comps: components }, applyCtx)}
+          onTryActivity={(m) => setActivity(m)} />)}
       {block && amountFigure ? (
         <>
           <Box style={{ flexShrink: 0, height: narrow ? 380 : 340, position: "relative" }}>

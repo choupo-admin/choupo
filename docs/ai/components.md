@@ -46,6 +46,21 @@ Tc, Pc, omega and Tb plus a PREDICTIVE (Ambrose-Walton) vapour pressure, and
 leaves Cp, formation thermochemistry, transport and group data absent — good
 enough to screen a flash, not good enough for an energy or reaction balance.
 
+**UNIFAC groups of a record (2026-11-25).**  A component whose record has no
+`groups { unifac ( ... ); }` block is refused by `model UNIFAC;` by name ("no
+group decomposition").  The decomposition follows from the molecule's structure:
+`bin/curate/unifac_groups.py --list` shows which catalogued molecules decompose
+UNIQUELY into the subgroups of `data/standards/parameters/UNIFAC/groups.dat`
+(and which stay ungrouped, with the reason), `--write NAME` puts the block and
+its provenance (`origin definition`, the structure used, the script) into a
+record, `--smiles SMILES` cuts one structure; `uniquac_rq_from_groups.py
+--write` then gives UNIQUAC its r and q from the same groups, and
+`unifac_gamma_infdil.py` checks gamma-infinity in hexane and water is finite.
+A molecule the rules cannot cut uniquely is NOT given a guess: say so, or write
+the block by hand in the case's own record.  In the Explorer a model that cannot
+price the chosen components is listed disabled with the reason, and the model
+that runs is the nearest that can, said on screen.
+
 **A CHEMKIN mechanism into a case (a curation tool, slice 2).**
 `bin/curate/chemkin_to_choupo.py mech.inp [--thermo t.dat] --case DIR --licence "<text>" [--reactions-only]`
 writes `DIR/constant/components/<name>.dat` (NASA-7 records: MW from the

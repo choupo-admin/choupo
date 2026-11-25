@@ -7227,6 +7227,29 @@ component overlay serves for a pedagogical alternative; an inline
 participating component with no group decomposition is an \emph{error}
 with a remedy, never a silent $\gamma_i = 1$ (no silent crutch).
 
+\paragraph{Where a record's groups come from.}\label{sec:unifac-groups-derived}
+A decomposition is a fact of the molecule's structure, not a parameter, so it
+is \emph{computed}, not tabulated: \code{bin/curate/unifac\_groups.py} reads the
+structure of a component (a SMILES, whose atom count must reproduce the
+record's \code{formula}), cuts it into the subgroups of Hansen et~al.\ (1991)
+by fixed rules --- whole-molecule groups first (water, methanol, DMSO, \dots),
+then the carbonyl carbon (acid, ester, amide, ketone, aldehyde; the neighbouring
+\code{CH3} or \code{CH2} is absorbed into \code{CH3CO}, \code{CH2COO}, \dots),
+nitrile, nitro, halogens on carbon, alcohols, ethers and amines (one alkyl
+neighbour absorbed, \code{CH3} before \code{CH2} before \code{CH}), alkenes
+and alkynes, the aromatic ring (\code{ACH}, \code{AC}, \code{ACCH3}, \dots),
+and the remaining saturated carbons.  A molecule the rules cannot cut
+\emph{uniquely} (a saturated carbon between two rings, an epoxide, a lactone)
+stays without groups and is listed with the reason: an absent decomposition is
+refused by name, a wrong one answers without complaint.  The rules reproduce
+the decomposition of all 277 records that carried groups by hand and could be
+derived (no disagreement); each derived record says so in its
+\code{provenance} (\code{origin definition}, the structure used, the script), and
+$r$ and $q$ of UNIQUAC follow from the same groups
+(\code{bin/curate/uniquac\_rq\_from\_groups.py}).  A derived record is checked
+against the model it feeds: $\gamma_i^\infty$ in hexane and in water must be
+finite and inside $(10^{-3}, 10^{9})$ (\code{bin/curate/unifac\_gamma\_infdil.py}).
+
 \begin{example}[Decomposing acetone $+$ $n$-hexane]
 Acetone $=$ 1 \code{CH3CO} $+$ 1 \code{CH3}; $n$-hexane $=$ 2 \code{CH3}
 $+$ 4 \code{CH2}. With the tabulated $R_{\mathrm{CH3}} = 0.9011,\
