@@ -93,7 +93,9 @@ export type SourceId =
   | "perry-t12-11" | "perry-cons" | "perry-proc" | "perry-tray" | "perry-t12-41" | "perry-t12-37"
   | "perry-latent" | "perry-fluid" | "perry-direct"
   | "vtl-batch-tree" | "vtl-cont-tree" | "vtl-text" | "vtl-spray" | "vtl-rotary" | "vtl-fluid"
-  | "vtl-conveyor" | "vtl-drum" | "vtl-freeze" | "vtl-freeze-time" | "vtl-freeze-tunnel";
+  | "vtl-conveyor" | "vtl-drum" | "vtl-freeze" | "vtl-freeze-time" | "vtl-freeze-tunnel"
+  | "vtl-flash" | "vtl-flash-sel" | "vtl-agvac" | "perry-flash" | "perry-agbatch" | "tow-pneu" | "tow-t10.8"
+  | "muj-safety" | "muj-prepost" | "perry-tests" | "perry-tray-cycle" | "perry-t12-12";
 
 export interface Source { id: SourceId; work: "Mujumdar" | "Perry" | "van 't Land" | "Towler"; where: string }
 
@@ -142,14 +144,27 @@ export const SOURCES: Readonly<Record<SourceId, Source>> = {
   "vtl-freeze": { id: "vtl-freeze", work: "van 't Land", where: "section 11.2, p. 232-233" },
   "vtl-freeze-time": { id: "vtl-freeze-time", work: "van 't Land", where: "section 11.2, p. 236" },
   "vtl-freeze-tunnel": { id: "vtl-freeze-tunnel", work: "van 't Land", where: "section 11.2, p. 242" },
+  "vtl-flash": { id: "vtl-flash", work: "van 't Land", where: "Chapter 7, section 7.1, Fig. 7.1, pp. 117-120" },
+  "vtl-flash-sel": { id: "vtl-flash-sel", work: "van 't Land", where: "Chapter 3, Flash Dryers p. 28 and Fig. 3.2 p. 25" },
+  "vtl-agvac": { id: "vtl-agvac", work: "van 't Land", where: "Chapter 3: Vacuum Dryers p. 22, Fig. 3.1 pp. 23-24, section 3.3 and Fig. 3.10 p. 33, Example 3.3 p. 39" },
+  "perry-flash": { id: "perry-flash", work: "Perry", where: "Pneumatic conveying dryers, pp. 12-67 to 12-70 (Table 12-40, p. 12-69)" },
+  "perry-agbatch": { id: "perry-agbatch", work: "Perry", where: "Batch agitated and rotating dryers, pp. 12-46 and 12-47" },
+  "tow-pneu": { id: "tow-pneu", work: "Towler", where: "section 10.4, Pneumatic dryers, pp. 574-575" },
+  "tow-t10.8": { id: "tow-t10.8", work: "Towler", where: "Table 10.8, p. 572" },
+  "muj-safety": { id: "muj-safety", work: "Mujumdar", where: "Ch. 1, section 1.6, pp. 24-25" },
+  "muj-prepost": { id: "muj-prepost", work: "Mujumdar", where: "Ch. 1, section 1.6 (pre- and postprocessing), p. 24; Table 1.6 and the minimum information, pp. 27-28" },
+  "perry-tests": { id: "perry-tests", work: "Perry", where: "Selection of drying equipment, steps 1 to 4 (drying tests, vendors' quotations), p. 12-37" },
+  "perry-tray-cycle": { id: "perry-tray-cycle", work: "Perry", where: "Batch tray dryers, field of application, p. 12-39" },
+  "perry-t12-12": { id: "perry-t12-12", work: "Perry", where: "Batch tray dryers, performance data, p. 12-39 (Table 12-12)" },
 };
 
 export const citeOf = (ids: readonly SourceId[]): string =>
   ids.map((s) => `${SOURCES[s].work}, ${SOURCES[s].where}`).join("; ");
 
-// ---- the seven types ----------------------------------------------------------------
+// ---- the nine types (the first seven C460; flash and agitated vacuum C508) ----------------------------------------------------------------
 
-export const DRYER_IDS = ["spray", "rotary", "fluidBed", "tray", "belt", "drum", "freeze"] as const;
+export const DRYER_IDS = ["spray", "rotary", "fluidBed", "tray", "belt", "drum", "freeze",
+  "flash", "agitatedVacuum"] as const;
 export type DryerId = typeof DRYER_IDS[number];
 
 /** A value read from a source, or `null`: "not cited". */
@@ -183,6 +198,9 @@ export interface DryerInfo {
   products: Cited<string>;
   feed: Readonly<Record<Exclude<FeedForm, "sheet">, FeedFit>>;
   engine: EngineCase | null;
+  /** When `engine` is null: the engine unit that stands nearest, if any, and how
+   *  far it is from the real dryer (null = nothing stands near). */
+  engineGap?: string | null;
 }
 
 export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
@@ -239,7 +257,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
     },
     feed: {
       solution: { fit: "no", why: "a direct-heat rotary dryer normally cannot process solutions, "
-        + "slurries or pastes", src: ["vtl-rotary"] },
+        + "slurries or pastes (van 't Land); Perry's wider class of continuous agitated and "
+        + "rotating dryers admits a liquid or slurry only with dry product recirculated, so a "
+        + "practitioner's 'a rotary dryer dries slurries' holds only with that back-mixing",
+        src: ["vtl-rotary", "perry-t12-11", "muj-t1.1"] },
       paste: { fit: "conditional", why: "only with dry product mixed back into the feed, so it "
         + "does not stick and can be handled", src: ["muj-feed", "perry-t12-11"] },
       granular: { fit: "yes", why: "universally applicable to particulate materials; the usual "
@@ -275,8 +296,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       paste: { fit: "conditional", why: "as for liquids: dispersion of the feed in a deep bed is "
         + "the difficulty", src: ["perry-t12-11", "muj-feed"] },
       granular: { fit: "yes", why: "suited to crystals, granules and short fibres, at high "
-        + "capacities, when the particles fluidise (about 0.1 mm and larger in van 't Land)",
-        src: ["perry-t12-11", "vtl-text"] },
+        + "capacities, when the particles fluidise (about 0.1 mm and larger in van 't Land; "
+        + "Perry admits free-flowing powders of 150 micrometres or less 'if not too dusty'; "
+        + "Towler gives 1 to 3 mm): the lower size limit is not one number across the books",
+        src: ["perry-t12-11", "vtl-text", "tow-text"] },
     },
     engine: {
       name: "steady/drying/solidDryer01_sugar",
@@ -397,6 +420,95 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
     },
     engine: null,
   },
+  flash: {
+    id: "flash", label: "Flash (pneumatic-conveying) dryer",
+    idea: "A feeder disperses wet, finely divided solid into a fast stream of hot gas in a long "
+      + "duct, often vertical, and the gas that dries the solid also carries it up the duct; "
+      + "the drying is over in a few seconds, so only moisture on the surface can come out; a "
+      + "cyclone, with a bag filter or a scrubber if the dust must be recovered fully, takes "
+      + "the dry solid from the exhaust.  The same feed system can mix a sticky feed back "
+      + "with dry product or break it up in a mill.",
+    ideaSrc: ["vtl-flash", "perry-flash", "tow-pneu"],
+    heat: { value: "convective (the hot gas dries and conveys the solid, parallel flow only)",
+      src: ["muj-heat", "muj-t1.5"] },
+    mode: { value: "continuous", src: ["tow-t10.7"] },
+    residence: { value: "0-10 s", src: ["muj-t1.2"] },
+    energy: { value: [4500, 9000], src: ["muj-t1.4"] },
+    capacity: { value: "5-100 kg water/h per m3 of dryer volume (depends on particle size)",
+      src: ["muj-t1.4"] },
+    products: {
+      value: "free-flowing granules (Mujumdar); potato starch, aspirin, melamine, coal fines, "
+        + "polycarbonate resin and expandable polystyrene beads (Perry's table of products "
+        + "dried in pneumatic conveyors)",
+      src: ["muj-t1.3", "perry-flash"],
+    },
+    feed: {
+      solution: { fit: "conditional", why: "Perry admits a slurry only if dry product is "
+        + "recirculated (backmixed) to make the feed suitable, and sends a liquid to that "
+        + "comment; Mujumdar's Table 1.1 marks no liquid column for it, so the books differ: test it",
+        src: ["perry-t12-11", "muj-t1.1"] },
+      paste: { fit: "conditional", why: "only with dry product mixed back into the feed (or a "
+        + "mill in the feed line) to make it a friable, dispersible feed; Perry adds that "
+        + "disintegration is usually required",
+        src: ["perry-t12-11", "muj-feed", "vtl-flash"] },
+      granular: { fit: "yes", why: "for solids that are easily suspended in a gas stream and lose "
+        + "moisture readily, up to about 1 to 2 mm (larger particles are not entrained); only "
+        + "surface moisture is removed, and fragile crystals can be broken by the gas velocity",
+        src: ["perry-t12-11", "vtl-flash", "perry-flash"] },
+    },
+    engine: {
+      name: "steady/drying/evapDryer01_nacl",
+      note: "the engine's evaporativeDryer: free surface water on a non-sorbing solid evaporated "
+        + "into a hot gas until all the water is gone, the exhaust saturates or the gas runs out "
+        + "of heat, which is how a flash dryer is limited (internal diffusion plays no part, "
+        + "Perry p. 12-67); it carries no residence time or duct, so it cannot say whether a few "
+        + "seconds are enough, and the duct itself is the pneumaticConveyor unit, which dries "
+        + "nothing",
+    },
+  },
+  agitatedVacuum: {
+    id: "agitatedVacuum", label: "Agitated vacuum dryer (conical, double-cone, pan)",
+    idea: "A closed, jacketed vessel holds one batch of wet solid, liquid or paste under vacuum; hot "
+      + "water, steam or thermal oil in the jacket heats it by conduction while the contents "
+      + "are moved, either by a stirrer inside a fixed vessel (the pan, conical-screw, paddle "
+      + "and plough types) or by turning the whole vessel (the tumbler or double-cone type); "
+      + "the vapour leaves through a dust filter to a condenser, which recovers the solvent, "
+      + "and the dry batch is discharged through a port.",
+    ideaSrc: ["perry-agbatch", "vtl-agvac", "tow-t10.7"],
+    heat: { value: "conductive (jacket, and sometimes the stirrer, heated by hot water, steam or "
+      + "thermal oil), under vacuum", src: ["perry-agbatch"] },
+    mode: { value: "batch", src: ["perry-agbatch", "vtl-agvac"] },
+    residence: { value: "3-12 h (Towler prints '3.12 h', a range whose dash is printed as a point); "
+      + "10-30 h in van 't Land's one example of a conical mixer drying a toxic organotin batch",
+      src: ["tow-t10.7", "vtl-agvac"] },
+    energy: null,
+    capacity: { value: "0.5-12 kg water/h per m2 of heat-transfer area (double-cone, rotary-shell "
+      + "and rotary-internal types)", src: ["tow-t10.7"] },
+    products: {
+      value: "free-flowing powders wet with solvent or water in small batches, in pharmaceuticals, "
+        + "specialty and fine chemicals, also polymers, additives and inorganic salts (Perry); "
+        + "toxic organotin compounds (van 't Land); crystals, granules and powders (Towler)",
+      src: ["perry-agbatch", "vtl-agvac", "tow-t10.8"],
+    },
+    feed: {
+      solution: { fit: "yes", why: "the batch answer for a liquid, with solvent recovery and an inert "
+        + "atmosphere possible; the stirrer power peaks while the liquid turns into a viscous "
+        + "paste and then falls as it becomes a powder",
+        src: ["muj-feed", "vtl-agvac", "perry-t12-11"] },
+      paste: { fit: "yes", why: "slurries and pastes are dried batchwise in it, again with solvent "
+        + "recovery", src: ["vtl-agvac", "perry-t12-11"] },
+      granular: { fit: "yes", why: "free-flowing powders in small batches (1000 L or less), when the "
+        + "product is heat-sensitive, oxidises in air, is toxic or is wet with a flammable "
+        + "solvent; the agitation causes some degradation or balling up, so a fragile "
+        + "product belongs in a non-agitated vacuum tray",
+        src: ["perry-agbatch", "vtl-batch-tree", "perry-t12-11"] },
+    },
+    engine: null,
+    engineGap: "nothing stands near it: the engine's batchDryer is a tray in air of declared, constant "
+      + "condition (convective, at atmospheric pressure, no jacket, no stirrer, no vacuum or "
+      + "condenser), so it is not this dryer; no unit of the engine models conduction through a "
+      + "jacket into a stirred batch under vacuum",
+  },
 };
 
 /** Mujumdar's remark on what freeze drying costs against the spray dryer,
@@ -445,6 +557,15 @@ export interface Inputs {
   size: Size;
   /** Granular feeds only: the particles break if stirred. */
   fragile: boolean;
+  /** C508.  Can the dust or the solvent vapour burn or explode?  (A warning on every
+   *  answer; a rule for a fine granular batch, van 't Land Fig. 3.1.) */
+  flammable: boolean;
+  /** C508.  The feed is sticky or lumpy: it cakes and must be mixed back with dry product,
+   *  pre-formed or disintegrated.  (A warning; the books' remedies, with their pages.) */
+  sticky: boolean;
+  /** C508.  Granular continuous feed only: a test on the sample shows the drying is over in
+   *  about 10 s, because only surface moisture is to come out (van 't Land Fig. 3.2). */
+  quick: boolean;
 }
 
 export interface Reason { text: string; src: readonly SourceId[] }
@@ -486,6 +607,14 @@ const flowNotes = (i: Inputs, picks: readonly DryerId[]): Reason[] => {
         + "product temperature is the exhaust temperature you choose.",
       src: ["muj-fluid"] });
   }
+  if (picks.includes("flash")) {
+    out.push({
+      text: "A flash dryer has parallel flow only (Mujumdar's Table 1.5), and it takes a high inlet gas "
+        + "temperature because most of the water leaves while the particles sit at the wet-bulb "
+        + "temperature; the air leaves 10 to 30 K above the product, and the short time is what "
+        + "protects a heat-sensitive solid.",
+      src: ["muj-t1.5", "vtl-flash", "perry-flash"] });
+  }
   if (picks.includes("belt")) {
     out.push({
       text: "A belt dryer blows the gas through the bed, up in one zone and down in the next, "
@@ -512,12 +641,12 @@ export const RULES: readonly Rule[] = [
   {
     id: "liq-low-batch", label: "Solution, product limit 30 degC, batch",
     when: (i) => i.feed === "solution" && i.heat === "low" && i.mode === "batch",
-    picks: ["freeze"], outside: "an agitated batch vacuum dryer",
+    picks: ["agitatedVacuum", "freeze"], outside: null,
     reasons: () => [
       { text: "For a liquid feed batchwise the agitated vacuum dryer (long residence time, low "
           + "temperature, solvent recovery and an inert atmosphere possible) is the plainer "
           + "choice, and the freeze dryer the one for a product whose value carries it.",
-        src: ["muj-feed", "perry-t12-11"] },
+        src: ["muj-feed", "perry-t12-11", "perry-agbatch", "vtl-agvac"] },
       { text: "Pharmaceutical freeze drying is usually batchwise, because of good "
           + "manufacturing practice, and a heat-sensitive, easily oxidised product is exactly "
           + "what the table of feed forms assigns to it.",
@@ -547,14 +676,16 @@ export const RULES: readonly Rule[] = [
   {
     id: "liq-batch", label: "Solution, batch",
     when: (i) => i.feed === "solution" && i.mode === "batch",
-    picks: [], outside: "an agitated batch vacuum dryer",
+    picks: ["agitatedVacuum"], outside: null,
     reasons: () => [
       { text: "For liquid feeds the choice is normally limited to a spray dryer, a drum dryer "
           + "(atmospheric or vacuum) or an agitated batch vacuum dryer; the last is the batch "
-          + "answer and is not one of the seven types of this page.",
-        src: ["muj-feed"] },
-      { text: "Among the seven only the freeze dryer takes a solution batchwise, and it is "
-          + "expensive, usually used only for high-value products.",
+          + "answer, and van 't Land says to consider it for batchwise drying of liquids, "
+          + "slurries or pastes, with solvent recovery possible.",
+        src: ["muj-feed", "vtl-agvac", "perry-agbatch"] },
+      { text: "Among the nine only the agitated vacuum dryer and the freeze dryer take a solution "
+          + "batchwise, and the freeze dryer is expensive, usually used only for high-value "
+          + "products.",
         src: ["perry-t12-11"] },
     ],
   },
@@ -578,12 +709,12 @@ export const RULES: readonly Rule[] = [
   {
     id: "paste-low-batch", label: "Paste, product limit 30 degC, batch",
     when: (i) => i.feed === "paste" && i.heat === "low" && i.mode === "batch",
-    picks: ["tray", "freeze"], outside: "an agitated vacuum dryer",
+    picks: ["tray", "agitatedVacuum", "freeze"], outside: null,
     reasons: () => [
       { text: "At a product limit of 30 degC or below look at vacuum drying; the vacuum tray "
           + "dryer is the simplest, its product usually needs sieving, and its capacity is low "
-          + "(an agitated vacuum dryer moves the contents mechanically).",
-        src: ["vtl-batch-tree", "vtl-text"] },
+          + "(an agitated vacuum dryer moves the contents mechanically, and is widely used).",
+        src: ["vtl-batch-tree", "vtl-text", "vtl-agvac"] },
       { text: "A tray takes a paste only if it can be pre-formed.", src: ["perry-t12-11"] },
       { text: "Freeze drying handles a paste that cannot be dried any other way, where the "
           + "product's value carries the cost.", src: ["perry-t12-11"] },
@@ -605,12 +736,15 @@ export const RULES: readonly Rule[] = [
   {
     id: "paste-batch", label: "Paste, batch",
     when: (i) => i.feed === "paste" && i.mode === "batch",
-    picks: ["tray"], outside: "an agitated or a rotary batch dryer",
+    picks: ["tray", "agitatedVacuum"], outside: "a batch rotary dryer at atmospheric pressure",
     reasons: () => [
       { text: "For pastes and sludges the batch dryers normally used are tray (atmospheric or "
           + "vacuum), agitated batch and rotary; the tray is suitable only if the material can "
-          + "be pre-formed.",
-        src: ["muj-feed", "perry-t12-11"] },
+          + "be pre-formed, while the agitated vacuum dryer takes the paste as it is.  Vacuum "
+          + "operation is preferable for solvent recovery, a fire or toxic hazard, or a "
+          + "temperature limit; a rotating-shell vacuum dryer is the double-cone type of the "
+          + "agitated vacuum card.",
+        src: ["muj-feed", "perry-t12-11", "vtl-agvac", "perry-agbatch"] },
       { text: "A batch tray dryer is rarely economical except for long cycles, several "
           + "products needing strict batch identity, or quantities too small for continuous "
           + "equipment.",
@@ -620,7 +754,7 @@ export const RULES: readonly Rule[] = [
   {
     id: "paste-cont", label: "Paste, continuous",
     when: (i) => i.feed === "paste" && i.mode === "continuous",
-    picks: ["drum", "spray"], outside: "an agitated contact (paddle) dryer, or a flash dryer with dry product mixed back",
+    picks: ["drum", "spray", "flash"], outside: "an agitated contact (paddle) dryer",
     reasons: (i) => [
       { text: "A drum dryer takes a paste or sludge only when it can be made to flow.",
         src: ["perry-t12-11", "muj-t1.1"] },
@@ -628,21 +762,27 @@ export const RULES: readonly Rule[] = [
           + "needs special pumping equipment; a hard paste can be diluted to a pumpable slurry "
           + "first, at an extra cost.",
         src: ["perry-t12-11", "muj-feed"] },
+      { text: "A flash dryer takes a paste only with dry product mixed back into the feed "
+          + "(Perry: usually requires recirculation of dry product, and disintegration; "
+          + "Mujumdar: the pneumatic dryer requires mixing of feed with dry product to disperse "
+          + "the wet solid in the gas), and it is well suited to high capacities.",
+        src: ["perry-t12-11", "muj-feed", "perry-flash"] },
       { text: "Continuous dryers for pastes and sludges also include fluidised-bed, band and "
           + "rotary types, which need the feed blended with dry product or pre-formed.",
         src: ["muj-feed"] },
-      ...flowNotes(i, ["drum", "spray"]),
+      ...flowNotes(i, ["drum", "spray", "flash"]),
     ],
   },
   {
     id: "gran-low-batch", label: "Granular, product limit 30 degC, batch",
     when: (i) => i.feed === "granular" && i.heat === "low" && i.mode === "batch",
-    picks: ["tray", "freeze"], outside: "an agitated vacuum dryer",
+    picks: ["tray", "agitatedVacuum", "freeze"], outside: null,
     reasons: () => [
       { text: "At a maximum product temperature of 30 degC or below, or when the product "
           + "oxidises in air or is toxic, the batch tree goes to vacuum drying: a vacuum tray "
-          + "dryer if no agitation is needed, an agitated vacuum dryer if it is.",
-        src: ["vtl-batch-tree", "vtl-text"] },
+          + "dryer if no agitation is needed, an agitated vacuum dryer if it is (a tumbler or "
+          + "double-cone if the agitation must be gentle).",
+        src: ["vtl-batch-tree", "vtl-text", "vtl-agvac"] },
       { text: "Freeze drying is the expensive alternative, used on pharmaceuticals and fine "
           + "chemicals that cannot be dried successfully by other means.",
         src: ["perry-t12-11"] },
@@ -660,6 +800,21 @@ export const RULES: readonly Rule[] = [
       { text: "Cocurrent, vacuum and freeze dryers are the types named as particularly suitable "
           + "for heat-sensitive materials.",
         src: ["perry-cons"] },
+    ],
+  },
+  {
+    id: "gran-batch-flammable", label: "Granular, batch, fine, flammable vapour or dust",
+    when: (i) => i.feed === "granular" && i.mode === "batch" && notLow(i) && i.flammable
+      && i.size === "fine" && !i.fragile,
+    picks: ["agitatedVacuum", "tray"], outside: null,
+    reasons: () => [
+      { text: "In van 't Land's batch tree a flammable vapour sends the product to vacuum drying "
+          + "once a fluidised bed is ruled out, and below 0.1 mm it is: a vacuum tray dryer if no "
+          + "agitation is needed, an agitated vacuum dryer if it is.  Perry says the batch forms "
+          + "are almost invariably run under vacuum, with a nitrogen bleed late in the cycle to "
+          + "keep the solids temperature low, especially for removing flammable organic "
+          + "solvents.",
+        src: ["vtl-batch-tree", "vtl-agvac", "perry-agbatch"] },
     ],
   },
   {
@@ -719,9 +874,38 @@ export const RULES: readonly Rule[] = [
     ],
   },
   {
+    id: "gran-cont-quick", label: "Granular, continuous, drying over in about 10 s",
+    when: (i) => i.feed === "granular" && i.mode === "continuous" && i.quick,
+    picks: ["flash"], outside: null,
+    reasons: (i) => [
+      { text: "In van 't Land's continuous tree a drying time of 10 s or less, after the particle "
+          + "size, the product-temperature and the solvent questions, ends at the flash dryer, "
+          + "possibly with product recirculation; drying must take place within a couple of "
+          + "seconds, so only surface moisture can come out and bound moisture is hard to remove.",
+        src: ["vtl-cont-tree", "vtl-flash-sel", "vtl-flash"] },
+      { text: "Perry gives the same condition: the moisture must go instantaneously, internal "
+          + "diffusion must not limit and the particles must be small enough for heat and mass "
+          + "transfer from their interior to be essentially instantaneous; a pneumatic dryer "
+          + "suits heat-sensitive, easily oxidised or flammable material that cannot stay long "
+          + "at the conditions, but rarely an abrasive solid, and it can reduce the particle "
+          + "size of a friable one.",
+        src: ["perry-flash"] },
+      { text: i.size === "medium"
+          ? "THE BOOK DISAGREES WITH ITSELF on size: the tree puts no size limit on the flash "
+            + "dryer, but van 't Land's own Chapter 7 gives 1 to 2 mm as the largest particle "
+            + "that can be entrained, so check that your 0.1 to 5 mm material is at the small "
+            + "end of that range."
+          : "The largest particle van 't Land gives for a flash dryer is 1 to 2 mm, larger ones "
+            + "are not entrained; fine powder is no problem for the dryer, but the gas velocity "
+            + "(10 to 30 m/s at the exit) can abrade a crystal and make dust.",
+        src: ["vtl-flash-sel", "vtl-flash"] },
+      ...flowNotes(i, ["flash"]),
+    ],
+  },
+  {
     id: "gran-cont-medium", label: "Granular, continuous, 0.1 mm to 5 mm",
     when: (i) => i.feed === "granular" && i.mode === "continuous" && i.size === "medium",
-    picks: ["fluidBed", "rotary"], outside: "a flash dryer, if the drying is done in about 10 s",
+    picks: ["fluidBed", "rotary"], outside: null,
     reasons: (i) => [
       { text: "In the continuous tree, particles larger than 0.1 mm that fluidise go to a "
           + "fluidised-bed dryer; what cannot be handled by a flash or fluid-bed dryer can "
@@ -730,18 +914,22 @@ export const RULES: readonly Rule[] = [
       { text: "A fluidised bed suits crystals and granules at high capacities, has no moving "
           + "parts and a fan duty that is high because the fan fluidises the bed.",
         src: ["perry-fluid", "vtl-fluid"] },
+      { text: "If a test on the sample shows the drying is over in about 10 s (surface moisture "
+          + "only), say so in the question above: van 't Land's tree then ends at the flash "
+          + "dryer, ahead of the fluidised bed.",
+        src: ["vtl-cont-tree", "vtl-flash-sel"] },
       ...flowNotes(i, ["fluidBed", "rotary"]),
     ],
   },
   {
     id: "gran-cont-fine", label: "Granular, continuous, fine (below 0.1 mm)",
     when: (i) => i.feed === "granular" && i.mode === "continuous" && i.size === "fine",
-    picks: [], outside: "an indirect-heat rotary dryer (steam-tube) or a disk dryer, or a flash "
-      + "dryer if the drying is done in about 10 s",
+    picks: [], outside: "an indirect-heat rotary dryer (steam-tube) or a disk dryer",
     reasons: () => [
       { text: "Below 0.1 mm van 't Land's continuous tree leaves the fluidised bed and ends at a "
           + "convection or conduction dryer with a rotating shell or agitation (a rotary or "
-          + "disk dryer), or at a flash dryer if the drying takes about 10 s or less.",
+          + "disk dryer); if the drying takes about 10 s or less it ends at a flash dryer "
+          + "instead, which the question above selects.",
         src: ["vtl-cont-tree"] },
       { text: "The direct-heat rotary dryer of the seven is the wrong kind of rotary dryer for "
           + "fines: if the solids contain extremely fine particles the large gas volumes and "
@@ -798,6 +986,106 @@ export function scaleWarnings(i: Inputs): Reason[] {
   return out;
 }
 
+/** The plain warning printed on every answer (C508).  Perry: the preliminary selection is
+ *  followed by a rough size and cost comparison, then DRYING TESTS on the dryers still standing,
+ *  which "will determine the optimum operating conditions and the product characteristics and
+ *  will form the basis for firm quotations from equipment vendors", and the final selection is
+ *  made from the tests and the quotations (p. 12-37).  Mujumdar: preliminary tests, and for some
+ *  dryers full-scale tests only (p. 24). */
+export const FIRST_SCREEN: { text: string; src: readonly SourceId[] } = {
+  text: "This is a first screen, not a selection: it narrows the field the way the books do, by "
+    + "feed form, heat sensitivity, scale and mode.  Drying tests on your own sample, in the "
+    + "dryers still standing, and the vendors' quotations decide (Perry's steps 3 and 4 of the "
+    + "selection procedure).",
+  src: ["perry-tests", "muj-feed"],
+};
+
+/** The three questions of C508, asked as warnings that follow the answers and never change
+ *  a pick silently (the one rule they do change, a flammable fine powder in a batch, is the
+ *  rule "gran-batch-flammable").  Qualitative: each sentence carries the page it was read at. */
+export function questionWarnings(i: Inputs): Reason[] {
+  const out: Reason[] = [];
+  if (i.flammable) {
+    out.push({
+      text: i.mode === "batch"
+        ? "Dust or solvent vapour that can burn changes the dryer, not only its settings.  In the "
+          + "books the way out is to dry under vacuum (a closed vessel, the solvent recovered in a "
+          + "condenser, no air to burn it), or in an inert gas such as nitrogen: a batch "
+          + "fluidised bed can run on inert gas.  Where a hot-air dryer stays, Mujumdar's remedies are to cut the oxygen by "
+          + "recycling the gas, to fit explosion vents and to avoid any build-up of product; "
+          + "removing every source of ignition is not accepted as enough."
+        : "Dust or solvent vapour that can burn changes the dryer, not only its settings.  In "
+          + "van 't Land's continuous tree a solvent to be evaporated and recovered comes first "
+          + "of all and ends at a conduction dryer with an inert stripping gas (a plate dryer), "
+          + "because a convective dryer would have to condense the solvent from a large "
+          + "carrier-gas flow; a fluidised bed on warm nitrogen is his example for hexane on "
+          + "polyethylene.  Mujumdar's remedies for a convective dryer are a closed cycle or "
+          + "self-inertising system with the oxygen cut by recycling, explosion vents and no "
+          + "build-up of product (it is often cheaper to inert the system than to build a "
+          + "chamber that withstands the explosion); Perry notes that indirect dryers suit "
+          + "reduced pressure and inert atmospheres, and that a flash dryer, which holds little "
+          + "material for a few seconds, is suited to flammable or explosive material.",
+      src: i.mode === "batch"
+        ? ["vtl-agvac", "vtl-batch-tree", "perry-agbatch", "muj-safety"]
+        : ["vtl-cont-tree", "vtl-text", "muj-safety", "perry-direct", "perry-flash"],
+    });
+  }
+  if (i.sticky && i.feed !== "solution") {
+    out.push({
+      text: "A sticky or lumpy feed does not feed, disperse or flow as it arrives.  The books' "
+        + "remedies are three: mix it back with dry product until it is friable (Mujumdar and "
+        + "Perry name the continuous rotary and the pneumatic dryer for pastes and sludges; "
+        + "the difficulty of a fluidised bed is dispersing the feed in the bed), pre-form it by extruding or granulating so a permeable bed can be laid, or "
+        + "break it up in the dryer with a mill or an air-swept disintegrator.  Each has a "
+        + "price: the recycled product is dried again, which costs heat and capacity; a "
+        + "rotating vessel can ball sticky solids up (a special agitator design prevents it); "
+        + "a rotary dryer wants a product that does "
+        + "not stick to its walls; and with several drying stages the first can leave a "
+        + "product too sticky to handle.",
+      src: ["muj-feed", "perry-t12-11", "vtl-flash", "perry-flash", "perry-agbatch", "muj-safety"],
+    });
+  }
+  return out;
+}
+
+/** What stands before and after the dryer (C508, the third question): not an input, a
+ *  list of the things a first screen does not size and the books say must be sized. */
+export interface AroundItem { heading: string; text: string; src: readonly SourceId[] }
+export const AROUND_THE_DRYER: readonly AroundItem[] = [
+  {
+    heading: "Before: how the feed gets in",
+    text: "A dryer is fed by what comes before it, usually a paste or a cake that is wet and "
+      + "sticky.  Mujumdar counts the preprocessing (mechanical dewatering, centrifugation, "
+      + "evaporation, pressing) as part of the dryer system, and his vendor checklist asks "
+      + "about the operations before and after the dryer.  The feed system itself is part of "
+      + "the choice: a spray dryer needs the feed pumped to an atomiser, a flash dryer a "
+      + "flooded screw and a disperser (or a mill, or back-mixing with dry product), and a tray "
+      + "dryer wants a paste pre-formed so that a bed of uniform depth can be laid.",
+    src: ["muj-prepost", "perry-t12-11", "vtl-flash", "perry-tray-cycle"],
+  },
+  {
+    heading: "After the gas: cleaning the exhaust",
+    text: "The exhaust carries dust and vapour out of every dryer that uses a large gas flow, "
+      + "and the equipment to clean it may be very large and dear, especially for very small "
+      + "particles.  A cyclone is the cheap first step (the books' spray and flash dryers have "
+      + "one), and bag filters, scrubbers or electrostatic precipitators follow where the "
+      + "emission limit or the value of the dust asks for it; noxious gases go to absorption, "
+      + "adsorption or incineration.  High collection efficiency costs pressure drop, which "
+      + "costs fan power and noise.",
+    src: ["perry-direct", "muj-safety", "vtl-flash", "tow-pneu"],
+  },
+  {
+    heading: "After the solid: cooling and collecting the product",
+    text: "A dried product is hot, and the books do not combine the two jobs: drying and cooling "
+      + "can rarely be done in one dryer, so the dry product is cooled in a separate pneumatic "
+      + "line after a flash dryer, in an air-swept rotary cooler after a rotary dryer, or in a "
+      + "cooling zone at the end of a fluidised bed or a belt.  Mujumdar lists product "
+      + "collection, cooling, agglomeration, granulation and scrubbing as the postprocessing of "
+      + "the dryer system.",
+    src: ["vtl-flash", "vtl-rotary", "vtl-conveyor", "tow-text", "muj-prepost"],
+  },
+];
+
 /** THE TREE: the first rule whose condition holds fires.  The order is the
  *  page's (feed, heat, mode); the content of every rule is a book's. */
 export function recommend(i: Inputs): Result {
@@ -805,13 +1093,13 @@ export function recommend(i: Inputs): Result {
   if (!rule) throw new Error(`dryerSelection: no rule covers ${JSON.stringify(i)}`);
   return {
     rule, picks: rule.picks, outside: rule.outside,
-    reasons: rule.reasons(i), warnings: scaleWarnings(i),
+    reasons: rule.reasons(i), warnings: [...scaleWarnings(i), ...questionWarnings(i)],
   };
 }
 
 export const DEFAULT_INPUTS: Inputs = {
   feed: "solution", heat: "medium", scale: "large", mode: "continuous",
-  size: "medium", fragile: false,
+  size: "medium", fragile: false, flammable: false, sticky: false, quick: false,
 };
 
 // ---- the comparison table ---------------------------------------------------------------

@@ -35313,6 +35313,25 @@ droplet size is read from two runs, not asserted.  The engine's drop size is sin
 is an interpolation for display (\file{SprayDryer.cpp}), so it is not shown.  \emph{In-sample statement:} the tray and spray cases are
 hypothetical teaching cases with declared $R_c$, $X_c$ and curve.
 
+\subsection{The day of a batch tray dryer}\label{sec:drying-tray-day}
+A batch dryer dries only during one step of a cycle.  With the handling times $t_\mathrm{load}$, $t_\mathrm{unload}$
+and $t_\mathrm{clean}$ and the drying time $t_\mathrm{dry}$ of the batch,
+\begin{equation}
+  t_\mathrm{cycle}=t_\mathrm{load}+t_\mathrm{dry}+t_\mathrm{unload}+t_\mathrm{clean},\qquad
+  \dot m_\mathrm{day}=\frac{24\,\mathrm{h}}{t_\mathrm{cycle}}\,m_s,\qquad
+  f_\mathrm{idle}=\frac{t_\mathrm{cycle}-t_\mathrm{dry}}{t_\mathrm{cycle}},
+\end{equation}
+with $m_s$ the dry solid of one batch.  Halving the drying time multiplies the day's output by
+$(t_\mathrm{cycle})/(t_\mathrm{cycle}-t_\mathrm{dry}/2)$, which is below 2 whenever the handling time is not zero, and cutting the drying to nothing
+gives the ceiling $24\,m_s/(t_\mathrm{load}+t_\mathrm{unload}+t_\mathrm{clean})$ that the handling alone sets.  The page's card reads $t_\mathrm{dry}$
+off the emitted $X(t)$ column of \code{dryer01\_sucrose\_tray} at a specification chosen by the reader (interpolating between the
+two samples that bracket it), takes $m_s=m_\mathrm{charge}/(1+X_0)$ from two of that run's kpis, and leaves the three handling
+times to the reader: they are assumptions, not data of the tray, and the dryer is taken to run round the clock with no waiting between
+batches, the output being a campaign average, not a whole number of batches.  Perry gives the reason a tray dryer is rarely economical except for a long cycle, several
+products needing strict batch identity or a small quantity: the labour of loading and unloading (\emph{Perry's Chemical Engineers' Handbook},
+9th ed., p.~12-39).  \emph{In-sample statement:} the drying time is the engine's for one tray of sucrose in declared air; the cycle
+arithmetic is a definition, not a model.
+
 \subsection{Continuous convective dryers: co-current, counter-current and cross-flow}\label{sec:dryer-flow-arrangements}
 
 \code{convectiveDryer} (\file{ConvectiveDryer.cpp}) dries a sorbing solid on its characteristic

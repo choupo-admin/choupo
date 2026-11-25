@@ -1173,7 +1173,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the registry's own sense: it constructs nothing and the engine computes
   //  nothing here; every rule and every table cell is read from Mujumdar,
   //  Perry or van 't Land at its page, a cell they do not give says "not
-  //  cited", and the seven schematics were drawn for the page.  The types the
+  //  cited", and the nine schematics were drawn for the page.  The types the
   //  engine models open their tutorial case.  `theory` is the Theory Guide's
   //  drying chapter.
   {
@@ -1181,8 +1181,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Which dryer for which product",
     discipline: "Separations & phase equilibria", kind: "selection", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
-    teaches: "The seven dryer types that do most of the drying (spray, rotary, fluidised "
-      + "bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree "
+    teaches: "The nine dryer types that do most of the drying (spray, rotary, fluidised "
+      + "bed, tray, belt, drum, freeze, flash, agitated vacuum), each drawn as a schematic; a selection tree "
       + "from the feed form, the heat sensitivity, the scale and the batch or continuous "
       + "mode to one or two types with the reason and the page of Mujumdar, Perry or van "
       + "'t Land or Towler it was read from; a comparison table of residence time, energy "

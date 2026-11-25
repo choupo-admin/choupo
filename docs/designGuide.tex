@@ -711,25 +711,35 @@ throughput dominate.
 \subsection{Dryer selection --- by feed state and particle
 size}\label{dryer-selection--by-feed-state-and-particle-size}}
 
-\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-10\tabcolsep)/5\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-10\tabcolsep)/5\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-10\tabcolsep)/5\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-10\tabcolsep)/5\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-10\tabcolsep)/5\relax}@{}}
+The numbers in this table are \emph{not} this guide's own: each is read from
+a book at a page and carried, cell by cell, by the EduTool \textbf{Which dryer
+for which product}
+(\texttt{gui/src/ui/methods/dryerSelection.ts}), which is the one home of
+them. Where two books disagree the page shows both; a cell no book gives
+reads \emph{not cited}. A first screen only: a drying test on your own
+sample, and the vendors' quotations, decide (Perry, p.~12-37).
+
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}@{}}
 \toprule\noalign{}
-Dryer & Feed & Product d50 & Residence & Notes \\
+Dryer & Feed it takes & Residence & Energy, kJ/kg of water & What the books say limits it & Choupo case \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Spray & pumpable slurry/solution (\textless40\% solids) & 10--200 \textmu{}m &
-5--30 s & hollow spheres; high T\_gas but short \(\rightarrow\) heat-sensitive OK.
-\texttt{sprayDryer01\_sugar} \\
-Fluid-bed & free-flowing granules & 50 \textmu{}m--5 mm & 10--60 min & narrow
-size range; needs U above U\_mf \\
-Drum & viscous paste/slurry & flakes & 5--30 s & conductive, no carrier
-gas \\
-Tray/batch & small lots, fragile & any & 2--24 h & cheap,
-labour-heavy \\
+Spray & pumpable solution or slurry; a paste only if it can be pumped & 10--30 s & 4,500--11,500 & needs a pumpable feed; the short contact suits heat-sensitive products & \texttt{sprayDryer01\_sugar} \\
+Flash (pneumatic conveying) & filter or centrifuge cake, powder, granule, fibre; a paste only with dry product mixed back & 0--10 s & 4,500--9,000 & surface moisture only; particles up to 1--2 mm (van 't Land, p.~118); abrades fragile crystals & \texttt{evapDryer01\_nacl} (free surface water into hot gas; no residence time or duct) \\
+Fluid bed & free-flowing granules and crystals that fluidise, from about 0.1 mm (van 't Land, p.~29) & 10--60 min & 4,000--6,000 & ``if not too dusty'' for powders below 150 \textmu{}m (Perry, Table 12-11) & \texttt{solidDryer01\_sugar} (a well-mixed powder dryer: no fluidisation, bubbles or bed height) \\
+Rotary, direct heat & granular solids, crystals above about 300 \textmu{}m (Mujumdar, p.~24); not solutions, slurries or pastes (van 't Land, p.~100) & 10--60 min & 4,600--9,200 & fines are entrained by the large gas flow: an indirect-heat rotary or a disk dryer instead & \texttt{convDryer01\_sugar\_curve} (a continuous convective dryer, not a rotary geometry) \\
+Belt (band) & coarse, permeable or pre-formed solids, over about 5--10 mm (van 't Land, p.~27) & 10--60 min & 4,000--6,000 & the layer must be permeable; the belt does not stir, so fragile pieces survive & none \\
+Drum & liquid or a paste that can be made to flow & 10--30 s & 3,200--6,500 & flaky, usually dusty product; the books disagree on kg/(m\(^2\) h) (Perry vs Mujumdar) & none \\
+Tray (batch) & pre-formed pastes, granules, cakes; small lots & 1--6 h (Mujumdar); 6--48 h (Towler, printed ``6.48 h'') & not cited & labour of loading; rarely economical except for a long cycle, strict batch identity or a small quantity (Perry, p.~12-39) & \texttt{dryer01\_sucrose\_tray} \\
+Agitated vacuum (batch; conical, double-cone, pan) & liquid, paste or free-flowing powder in small batches & 3--12 h (Towler, printed ``3.12 h'') & not cited & batches of 1000 L or less; agitation can degrade or ball up the product (Perry, p.~12-46) & none (the engine's batch dryer is a tray in air, not a jacketed vessel under vacuum) \\
+Freeze & high-value, heat-sensitive or oxidisable product & 10--20 h for 1 cm (van 't Land, p.~236) & not cited & costs two to three times a spray dryer (Mujumdar, p.~22) & none \\
 \end{longtable}
 
-\texttt{solidDryer01\_sugar} shows a through-circulation solid dryer;
+Residence times are Mujumdar's Table 1.2 (p.~21) and energies his Table 1.4
+(p.~26) unless a cell names another book. \texttt{solidDryer01\_sugar} is
+\emph{not} a through-circulation dryer (the unit has no bed geometry);
 \texttt{sprayDryer02\_residence\_sweep} sweeps \(\tau\) vs moisture.
 
 \hypertarget{gassolid-separation--fluidisation-velocities}{%
