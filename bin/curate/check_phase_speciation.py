@@ -593,6 +593,72 @@ else:
         ok("(i) phases.csv agrees with converged/liquid on %d entries "
            "(worst %s, %.1e rel)" % (checked, worst_k, worst))
 
+# ---------------------------------------------------------------------------
+#  (j) converged/ IS A FAITHFUL RESTART (C516, 2026-11-25).  Two defects of the
+#  proofs of C492 (T6), both invisible to every golden because a golden reads
+#  the FIRST run:
+#    stripper01_sour_water -- converged/feed lost the declared `phase liquid;`,
+#      so a restart re-flashed the feed (vf 0 -> 0.0173, bottoms 369.97 ->
+#      369.26 K);
+#    marcilla01_lls_tie_triangle -- the engine REFUSED its own written
+#      `speciation` block ("Master 'Na': the components carry 1.495e-04, the
+#      block declares 1.130e-04"): the free Na and Cl of a network whose only
+#      chemistry is a precipitating salt collapsed to nothing in the reader.
+#  Each case is run, its converged/ streams become the 0/ of a second run, and
+#  every KPI of every unit must equal the first run's.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gatekit  # noqa: E402
+import json  # noqa: E402
+
+def _kpis(out):
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
+    try:
+        return json.loads(m.group(1)).get("kpis", {}) if m else {}
+    except ValueError:
+        return {}
+
+for rel in ("tutorials/steady/distillation/stripper01_sour_water",
+            "tutorials/steady/flash/marcilla01_lls_tie_triangle"):
+    with gatekit.probe_copy(rel, strip=("converged", "reports")) as case:
+        rc1, o1 = gatekit.run(gatekit.binary("choupoSolve"), case)
+        conv = case / "converged"
+        if rc1 != 0 or not conv.is_dir():
+            fail("(j) %s: the first run did not leave a converged/ (exit %d)"
+                 % (case.name, rc1))
+            continue
+        shutil.rmtree(case / "0")
+        (case / "0").mkdir()
+        n = 0
+        for f in conv.iterdir():
+            if f.is_file() and "componentMolarFlows" in f.read_text():
+                shutil.copy(f, case / "0" / f.name)
+                n += 1
+        rc2, o2 = gatekit.run(gatekit.binary("choupoSolve"), case)
+        if rc2 != 0:
+            fail("(j) %s: the engine does not accept its own converged/ as 0/ "
+                 "(exit %d): %s" % (case.name, rc2,
+                  next((l for l in o2.splitlines() if "ERROR" in l), "")[:200]))
+            continue
+        k1, k2 = _kpis(o1), _kpis(o2)
+        worst, where, cnt = 0.0, "", 0
+        for u, kv in k1.items():
+            for key, v in kv.items():
+                w = k2.get(u, {}).get(key)
+                if not isinstance(v, (int, float)) or not isinstance(w, (int, float)):
+                    continue
+                cnt += 1
+                d = abs(v - w) / max(abs(v), abs(w), 1e-30) if abs(v - w) > 1e-12 else 0.0
+                if d > worst:
+                    worst, where = d, "%s.%s %.9g vs %.9g" % (u, key, v, w)
+        if cnt == 0:
+            fail("(j) %s: no KPI to compare" % case.name)
+        elif worst > 1e-6:
+            fail("(j) %s: a restart from converged/ moves %s by %.2e"
+                 % (case.name, where, worst))
+        else:
+            ok("(j) %s restarts from its own converged/ (%d stream files, %d KPIs, "
+               "worst %.1e)" % (case.name, n, cnt, worst))
+
 print()
 if fails:
     print("%d failure(s)." % len(fails))

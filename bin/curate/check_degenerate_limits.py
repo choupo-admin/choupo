@@ -221,6 +221,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "choupoSolve"
 sys.path.insert(0, str(ROOT / "bin/curate"))
+import gatekit  # noqa: E402  (probe copies that keep the case's property manifest)
 import suite_cache  # noqa: E402  (the suite's single-pass output cache)
 
 ABSORBER = ROOT / "tutorials/steady/absorption/absorber01_NH3_water"
@@ -990,6 +991,80 @@ def scale_invariance_arm(runs):
     return seen
 
 
+#  A9 (C514, 2026-11-25): THE ORDER OF `components` IS NOT PHYSICS.  Four published
+#  numbers moved when the list was reversed and nothing else changed (the proofs
+#  of C492, T2): a membrane's `c_ret_elem<n>` was the FIRST solute's, an
+#  electrodialysis stack's `demin_ratio` was the first cation's, a phaseChanger's
+#  latent/sensible split took the first of two equally abundant components'
+#  saturation temperature, and a three-phase flash's published split depended on
+#  which way its simplexes were packed (4e-3).  Each probe is the shipped case
+#  with the list reversed; every KPI of every unit must equal the original's.
+#  The three-phase flash stops at a Gibbs energy within 1e-14, so 1e-6 holds it.
+ORDER_CASES = (
+    ("tutorials/steady/membranes/membrane07_scaling_si", 1.0e-6),
+    ("tutorials/steady/electrodialysis/ed09_wine_multiionic", 1.0e-6),
+    ("tutorials/steady/heat/phasechange01_partial_condenser", 1.0e-6),
+    ("tutorials/steady/flash/vlle03_audit_artificial", 1.0e-6),
+)
+
+
+def _reverse_components(path: Path) -> bool:
+    txt = path.read_text()
+    m = re.search(r"^components\s*\(([^)]*)\)\s*;", txt, re.M)
+    if not m:
+        return False
+    names = m.group(1).split()
+    path.write_text(txt[:m.start()] + "components ( "
+                    + " ".join(reversed(names)) + " );" + txt[m.end():])
+    return True
+
+
+def order_arm():
+    seen = []
+    for rel, tol in ORDER_CASES:
+        src = ROOT / rel
+        with gatekit.probe_copy(src) as a, gatekit.probe_copy(src) as b:
+            if not _reverse_components(b / "constant/thermoPhysPropDict"):
+                failures.append(f"A9: {src.name} has no `components ( ... );`"
+                                " line to reverse -- the arm tests nothing")
+                continue
+            ra, oa = gatekit.run(SOLVE, a)
+            rb, ob = gatekit.run(SOLVE, b)
+            if ra != 0 or rb != 0:
+                failures.append(f"A9: {src.name} exits {ra} and {rb} (original,"
+                                " reversed list): a component order that"
+                                " changes whether the case runs")
+                continue
+            ka = result_json(oa).get("kpis", {})
+            kb = result_json(ob).get("kpis", {})
+            worst, where, n = 0.0, "", 0
+            for unit, kv in ka.items():
+                for key, va in kv.items():
+                    if not isinstance(va, (int, float)):
+                        continue
+                    vb = kb.get(unit, {}).get(key)
+                    if not isinstance(vb, (int, float)):
+                        failures.append(f"A9: {src.name} {unit}.{key} is"
+                                        " published with the original order"
+                                        " and not with the reversed one")
+                        continue
+                    n += 1
+                    d = abs(va - vb) / max(abs(va), abs(vb), 1e-30)
+                    if abs(va - vb) < 1e-12:
+                        d = 0.0
+                    if d > worst:
+                        worst, where = d, f"{unit}.{key} {va:.9g} vs {vb:.9g}"
+            if n == 0:
+                failures.append(f"A9: {src.name} published no KPI to compare")
+            elif worst > tol:
+                failures.append(f"A9: {src.name}: reversing `components` moves"
+                                f" {where} by {worst:.2e} (tolerance {tol:g})")
+            else:
+                seen.append(f"{src.name} ({n} KPIs, worst {worst:.1e})")
+    return seen
+
+
+
 def main() -> int:
     if not SOLVE.exists():
         print("check_degenerate_limits: choupoSolve missing -- build first")
@@ -1003,6 +1078,7 @@ def main() -> int:
     conv = kinetic_closure_arm(rx[1]) if rx else None
     a7 = mesh_closure_arm()
     a8 = scale_invariance_arm(a7[0]) if a7 else []
+    a9 = order_arm()
 
     if failures:
         print("check_degenerate_limits: FAIL")
@@ -1033,14 +1109,14 @@ def main() -> int:
           " that a kinetic profile is RIGHT (nothing measured is reproduced),"
           " that a Wang-Henke stop is REACHED within maxOuterIter on a case"
           " the corpus does not ship, or a Newton trial crossing a zero"
-          " activity."
+          " activity; and %s give the same KPIs with `components` reversed (A9)."
           % (a1[0] * 3600, a1[1], a2[0] * 3600, a2[1], REL_TOL, CAT_MASS,
              rx[0], CAT_MASS, CAT_MASS_HIGH, conv[CAT_MASS],
              conv[CAT_MASS_HIGH], CLOSURE_TOL, a7[1], a7[2], CLOSURE_TOL,
              a7[3][0], a7[3][1], a7[3][2], a7[4]["cols"], a7[4]["cases"],
              CLOSURE_TOL, a7[4]["worst"][0], a7[4]["worst"][1],
              a7[4]["stage"][0], a7[4]["stage"][1], ", ".join(a8), TINY,
-             HUGE, SCALE_TOL))
+             HUGE, SCALE_TOL, ", ".join(a9)))
     return 0
 
 
