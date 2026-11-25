@@ -51,8 +51,14 @@ kpi     recovery               T_bottom         358.221414225    1e-4
 kpi     recovery               T_top            351.412676466    1e-4
 kpi     recovery               feedStage        10               1e-4
 kpi     recovery               nStages          20               1e-4
-kpi     recovery               x_B_HK           0.000279332083049 1e-4
-kpi     recovery               x_D_LK           0.183396786182   1e-4
+kpi     recovery               x_B_KCl          0.00985385513151 1e-4
+kpi     recovery               x_B_ethanol      0.132748917673   1e-4
+kpi     recovery               x_B_potassiumBitartrate 0.000279332083049 1e-4
+kpi     recovery               x_B_water        0.857117895113   1e-4
+kpi     recovery               x_D_KCl          0                1e-4
+kpi     recovery               x_D_ethanol      0.816603213818   1e-4
+kpi     recovery               x_D_potassiumBitartrate 0                1e-4
+kpi     recovery               x_D_water        0.183396786182   1e-4
 utility recovery               heating.steamLP.duty_kW 3152.93960803    1e-4
 utility recovery               heating.steamLP.T 358.221414225    1e-4
 utility recovery               heating.steamLP.kg_s 1.44233284905    1e-4

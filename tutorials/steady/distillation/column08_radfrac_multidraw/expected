@@ -17,8 +17,14 @@ kpi     radfrac                feedStage        10               1e-4
 kpi     radfrac                nFeeds           2                1e-4
 kpi     radfrac                nSideDraws       2                1e-4
 kpi     radfrac                nStages          30               1e-4
-kpi     radfrac                x_B_HK           0.693563932213   1e-4
-kpi     radfrac                x_D_LK           0.920842424571   1e-4
+kpi     radfrac                x_B_nButane      0.00325226769264 1e-4
+kpi     radfrac                x_B_nHexane      0.693563932213   1e-4
+kpi     radfrac                x_B_nPentane     0.303182549451   1e-4
+kpi     radfrac                x_B_propane      1.25064381943e-06 1e-4
+kpi     radfrac                x_D_nButane      0.0791504158697  1e-4
+kpi     radfrac                x_D_nHexane      1.13443022678e-09 1e-4
+kpi     radfrac                x_D_nPentane     7.15842495226e-06 1e-4
+kpi     radfrac                x_D_propane      0.920842424571   1e-4
 utility radfrac                heating.steamHP.duty_kW 1831.8346548    1e-4
 utility radfrac                heating.steamHP.T 450.046937595    1e-4
 utility radfrac                heating.steamHP.kg_s 1.06874834002   1e-4

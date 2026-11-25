@@ -15,8 +15,8 @@ kpi     C1                     feedStage        54               1e-4
 kpi     C1                     nFeeds           1                1e-4
 kpi     C1                     nSideDraws       0                1e-4
 kpi     C1                     nStages          66               1e-4
-kpi     C1                     x_B_HK           0.884017538595   1e-4
-kpi     C1                     x_D_LK           5.23541828358e-10 1e-4
+kpi     C1                     x_B_HK           0.884017538625   1e-4
+kpi     C1                     x_D_LK           0.973584845523   1e-4
 utility C1                     heating.steamLP.duty_kW 1041.15999682      1e-4
 utility C1                     heating.steamLP.T 353.827071154    1e-4
 utility C1                     heating.steamLP.kg_s 0.476285451425   1e-4

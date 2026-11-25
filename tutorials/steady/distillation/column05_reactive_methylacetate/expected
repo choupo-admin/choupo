@@ -16,8 +16,14 @@ kpi     rdColumn               nFeeds           2                1e-4
 kpi     rdColumn               nSideDraws       0                1e-4
 kpi     rdColumn               nStages          25               1e-4
 kpi     rdColumn               reactionExtent   8.17702302696e-06 1e-4
-kpi     rdColumn               x_B_HK           0.881593281858   1e-4
-kpi     rdColumn               x_D_LK           0.00763740726938 1e-4
+kpi     rdColumn               x_B_aceticAcid   0.041419972729   1e-4
+kpi     rdColumn               x_B_methanol     0.0769857490618  1e-4
+kpi     rdColumn               x_B_methylAcetate 9.96351347496e-07 1e-4
+kpi     rdColumn               x_B_water        0.881593281858   1e-4
+kpi     rdColumn               x_D_aceticAcid   5.31440583498e-12 1e-4
+kpi     rdColumn               x_D_methanol     0.00763740726938 1e-4
+kpi     rdColumn               x_D_methylAcetate 0.977981731465   1e-4
+kpi     rdColumn               x_D_water        0.0143808612602  1e-4
 utility rdColumn               heating.steamLP.duty_kW 0.860319453811   1e-4
 utility rdColumn               heating.steamLP.T 364.067808167    1e-4
 utility rdColumn               heating.steamLP.kg_s 0.000393558762036 1e-4

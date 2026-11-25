@@ -28,8 +28,12 @@ kpi     tower                  feedStage        3                1e-4
 kpi     tower                  nFeeds           1                1e-4
 kpi     tower                  nSideDraws       2                1e-4
 kpi     tower                  nStages          4                1e-4
-kpi     tower                  x_B_HK           0.993994635483   1e-4
-kpi     tower                  x_D_LK           0.300011554806   1e-4
+kpi     tower                  x_B_CO2          0.000489390182557 1e-4
+kpi     tower                  x_B_NH3          0.00551597433454 1e-4
+kpi     tower                  x_B_water        0.993994635483   1e-4
+kpi     tower                  x_D_CO2          0.23614312661    1e-4
+kpi     tower                  x_D_NH3          0.300011554806   1e-4
+kpi     tower                  x_D_water        0.463845318585   1e-4
 utility tower                  heating.steamLP.duty_kW 112.111306099    1e-4
 utility tower                  heating.steamLP.T 370.94166387     1e-4
 utility tower                  heating.steamLP.kg_s 0.0512860503654  1e-4

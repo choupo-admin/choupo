@@ -71,6 +71,8 @@ units
 
         operation
         {
+            //  Keys (C504): the reactant that must not leave overhead (isobutene) and the product drawn from the bottoms (MTBE)
+            lightKey isoButene;  heavyKey methylTertButylEther;
             nStages        15;
             bottomsRate    240 kmol/h;
             boilupRatio    5;

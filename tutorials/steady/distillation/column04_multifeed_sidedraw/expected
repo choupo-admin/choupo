@@ -15,8 +15,12 @@ kpi     radfracLite            feedStage        5                1e-4
 kpi     radfracLite            nFeeds           2                1e-4
 kpi     radfracLite            nSideDraws       1                1e-4
 kpi     radfracLite            nStages          15               1e-4
-kpi     radfracLite            x_B_HK           0.467391105751   1e-4
-kpi     radfracLite            x_D_LK           0.966288076316   1e-4
+kpi     radfracLite            x_B_benzene      0.00220754570351 1e-4
+kpi     radfracLite            x_B_oXylene      0.467391105751   1e-4
+kpi     radfracLite            x_B_toluene      0.530401348545   1e-4
+kpi     radfracLite            x_D_benzene      0.966288076316   1e-4
+kpi     radfracLite            x_D_oXylene      4.13585157594e-05 1e-4
+kpi     radfracLite            x_D_toluene      0.0336705651679  1e-4
 utility radfracLite            heating.steamMP.duty_kW 1547.08972241    1e-4
 utility radfracLite            heating.steamMP.T 395.938237088    1e-4
 utility radfracLite            heating.steamMP.kg_s 0.777041548173   1e-4
