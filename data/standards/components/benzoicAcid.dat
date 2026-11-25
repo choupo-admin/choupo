@@ -92,8 +92,35 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 AC + 5 ACH + 1 COOH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.3230;
+    q   3.3440;
+}
+
+groups
+{
+    unifac ( { group AC; count 1; } { group ACH; count 5; } { group COOH; count 1; } );   // derived from structure c1ccccc1(C(=O)O) by bin/curate/unifac_groups.py
+}
+
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.3230, q = sum nu_k Q_k = 3.3440 over the record's unifac groups (1 AC + 5 ACH + 1 COOH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        derived;
+        method        "cut from the molecular structure c1ccccc1(C(=O)O) (atom count reproduces the record's formula) into 1 AC + 5 ACH + 1 COOH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
     MW
     {
         origin        literature;

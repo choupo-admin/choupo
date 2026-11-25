@@ -102,8 +102,35 @@ surfaceTension
     Tmax  373.17;
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH + 1 CH-O + 4 CH3), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.7421;
+    q   4.0880;
+}
+
+groups
+{
+    unifac ( { group CH; count 1; } { group CH-O; count 1; } { group CH3; count 4; } );   // derived from structure CC(C)OC(C)C by bin/curate/unifac_groups.py
+}
+
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.7421, q = sum nu_k Q_k = 4.0880 over the record's unifac groups (1 CH + 1 CH-O + 4 CH3)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        derived;
+        method        "cut from the molecular structure CC(C)OC(C)C (atom count reproduces the record's formula) into 1 CH + 1 CH-O + 4 CH3 by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
     MW
     {
         origin        literature;

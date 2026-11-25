@@ -45,8 +45,35 @@ idealGasHeatCapacity
     high     ( 3.691643259e+06 -1.517513358e+04 3.033036059e+01 -2.602070272e-03 4.702602617e-07 -4.572220173e-11 1.848373812e-15 );
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH2=CH + 1 CH_C), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.6374;
+    q   2.2640;
+}
+
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH_C; count 1; } );   // derived from structure C=CC#C by bin/curate/unifac_groups.py
+}
+
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.6374, q = sum nu_k Q_k = 2.2640 over the record's unifac groups (1 CH2=CH + 1 CH_C)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        derived;
+        method        "cut from the molecular structure C=CC#C (atom count reproduces the record's formula) into 1 CH2=CH + 1 CH_C by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
     dHf_298
     {
         origin        derived;
