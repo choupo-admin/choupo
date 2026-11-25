@@ -16685,7 +16685,7 @@ so the old ``evaluate twice'' probe measures zero whatever the noise.
 Two things are ours and are what keeps a measured number honest:
 \begin{itemize}
 \item the estimate is taken on a SECOND stencil a quarter as wide, and
-  the two levels must agree within a factor four: noise does not change
+  the two levels must agree within a factor ten: noise does not change
   with the spacing, a jump or an oscillation the first stencil cannot
   resolve does.  A jump of $1.0$ and the smooth $0.05\sin(1500x)$ were
   reported as noise levels of $0.22$ and $0.035$ by the single stencil;
@@ -16777,31 +16777,68 @@ the step is small, on a gradient that is only as good as its estimate.
   $x=0$ and a bound of $0.19$ against $10^{-5}$ had certified
   $x=0.575$ on $f=10^8\max(0,0.3-x)^2+10(x-0.6)^2$, whose gradient there is
   $-0.5$).
-\item The error bar of $\|\nabla L\|_\infty$ at that point is
-  $3\max_{j\ \mathrm{free}}\bigl(\sigma_{f,j}^2+\sum_k\lambda_k^2\sigma_{k,j}^2
-  \bigr)^{1/2}$ (components at an active bound are absorbed by the bound
-  multiplier and excluded).  The verdict is \code{CONVERGED} only if the
-  residuals are met \emph{and} this bar is finite and not above the
-  tolerance used.
+\item The error bar of component $j$ of $\nabla L$ at that point is
+  $3\bigl(\sigma_{f,j}^2+\sum_k\lambda_k^2\sigma_{k,j}^2\bigr)^{1/2}$.  It is
+  judged \emph{component by component} against that component's own
+  tolerance (below); a component is excluded only when a bound is active AT
+  $x$ (the point is on the bound, to the feasibility tolerance), because
+  then its bound multiplier absorbs the error.  A bound that only the QP step
+  reaches is not a bound at $x$: its multiplier is not part of $\nabla L$, and
+  the component stays in the test and in the bar.  The verdict is
+  \code{CONVERGED} only if the residuals are met, every bar is finite and not
+  above its tolerance, \emph{and} the two checks below pass.
+\item No multiplier may be NOT RESOLVED (bar not below its value, or none)
+  while it is large enough to move a tolerance ($|\lambda|\max(1,
+  \|\nabla c\|_\infty)>1$): a tolerance scaled by a number the same output
+  calls unresolved is not a tolerance (HS13, which has no KKT point, was
+  certified with $\lambda=1.7\times10^{7}\pm3\times10^{7}$).
+\item The gradient is CONFIRMED by a second, different step before it is
+  believed: each variable is differenced again at $3.7$ times its step
+  (central if the first was central and the box has room; $1/3.7$ if
+  $3.7h$ would exceed the largest step), with the error bar of that step, and
+  the two components of $\nabla L$ must agree within $3(\sigma_1+\sigma_2)$ and
+  the second must also be inside the tolerance.  A smooth function whose
+  ripple $A\sin(2\pi x/5\cdot10^{-7})$ has a period dividing every probe reads
+  as the rounding floor and its slope $A\,2\pi/h$ as a gradient (certified at a
+  true $f'=-7.9\times10^{-4}$ for $A=10^{-10}$); at $3.7h$ the ripple's phase
+  differs and the two gradients disagree.  $3.7$ is not a divisor of the
+  first step or of the stencils ($10^{-3}$, $2.5\cdot10^{-4}$).  It costs $n$ or
+  $2n$ simulations once, at the certificate.
 \item Otherwise the word is different: \code{STATIONARY, NOT CERTIFIED} when
-  the residuals are met but the bar is above the tolerance or unavailable
-  (noise unknown), \code{stopped} otherwise; the exit code is non-zero and the
-  bar is printed beside the tolerance.
-\item The tolerance is scaled (opt-in path only):
+  the residuals are met but a bar is above its tolerance or unavailable, a
+  multiplier is unresolved, or the confirmation failed; \code{stopped}
+  otherwise.  The exit code is non-zero and the reason is printed.
+\item The tolerance is scaled PER COMPONENT (opt-in path only):
   \begin{equation}
-    \mathrm{tol}_{\mathrm{stat}}=\mathrm{tolStat}\cdot S,\qquad
-    S=\max\bigl(1,\ \|\nabla f\|_\infty,\ \max_i|\lambda_i|\,\|\nabla c_i\|_\infty,\
-        \max_b|\lambda_b|\bigr),
+    \mathrm{tol}_{j}=\mathrm{tolStat}\cdot S_j,\qquad
+    S_j=\max\Bigl(1,\ \bigl|\tfrac{\partial f}{\partial x_j}\bigr|,\
+        \sum_i\bigl|\lambda_i\tfrac{\partial c_i}{\partial x_j}\bigr|,\
+        |\lambda_{b,j}|\Bigr),
     \label{eq:sqp-scaled-stat}
   \end{equation}
-  the size of the terms whose cancellation $\nabla L$ measures; an absolute
-  $10^{-5}$ on an objective of $6.6\times10^{8}$ with shadow price
-  $2.4\times10^{6}$ (\code{optim05}) asks for a relative residual of
-  $10^{-11}$.  Because a tolerance scaled by $10^{10}$ would also pass a step
-  of length one, the scaled test also requires $\|d\|_\infty\le10^{-4}
-  \max(1,\|x\|_\infty)$ (ours).  A noise-excuse (``within the gradient noise'')
-  is not a verdict: the earlier attempt that certified $K=2\times10^{10}$,
-  $x=1$, $f=1.6$ (optimum $0.6$, $f=0$) is a regression arm of the gate.
+  the size of the terms whose cancellation component $j$ of $\nabla L$
+  measures ($\lambda_{b,j}$ only for a bound active at $x$).  One global
+  scale, the largest of them, let a variable on a bound with slope $10^{5}$
+  give every other variable a tolerance of $1.0$: $f=10^4(x_1-x_2^2)^2+
+  (x_2-0.5)^2+10^5x_3$ was certified at a true gradient $1.46\times10^{-2}$,
+  1458 times tolStat.  An absolute $10^{-5}$ on an objective of $6.6\times
+  10^{8}$ with shadow price $2.4\times10^{6}$ (\code{optim05}) asks for a
+  relative residual of $10^{-11}$, which is why the scale exists.  Because a
+  scaled tolerance also passes a long step, the scaled test requires
+  $|d_j|\le10^{-4}\min\bigl(\max(1,|x_j|),\ \mathrm{hi}_j-\mathrm{lo}_j\bigr)$
+  \emph{per variable}, on that variable's own scale (a global
+  $\max(1,\|x\|_\infty)$ gave a variable in $[0,1]$ an allowance of $100$
+  because another sat at $10^{6}$).  Complementarity is scaled by the largest
+  \emph{resolved} multiplier, $\mathrm{tolCompl}\cdot\max(1,\max|\lambda|)$.
+  Every tolerance the run prints is the one it used: the worst component's
+  residual with its tolerance, and the complementarity tolerance.  A
+  noise-excuse (``within the gradient noise'') is not a verdict: the earlier
+  attempt that certified $K=2\times10^{10}$, $x=1$, $f=1.6$ (optimum $0.6$,
+  $f=0$) is a regression arm of the gate.  The price of the per-component
+  scale: a variable the model does not read has a zero gradient and the noise of
+  the objective in its bar, and can never be certified (the shipped
+  \code{optim05} varies such a variable, \code{T\_feed}, and so ends
+  \code{STATIONARY, NOT CERTIFIED} under \code{fdMode auto}).
 \end{enumerate}
 
 \paragraph{Error bars on the shadow prices.}  The multiplier printed is the
@@ -16824,7 +16861,7 @@ responses of one run, the uncertainty of the active set, and treats
 truncation (a bias) as if it were random.  A rule of our own: on the 40
 noisy seeds of the arm \code{bar\_estimator\_match} the mean bar is within a
 factor 2 of two robust standard deviations of the runs that reached
-stationarity, and a run stopped in a flat valley can be far outside it.
+stationarity, and a run stopped in a flat valley can be far outside it.  For that reason the driver prints the bar ONLY on a certified run; on any other it prints \code{bar unavailable: run not certified} (14 of 40 seeds of the same problem with noise also on the constraint were off by up to $3\cdot10^{-3}$ against a mean bar $10^{-4}$, the displacement of $x^\ast$ in the soft direction), and the output says that the bar omits the displacement of $x^\ast$.
 
 \paragraph{The QP in robust mode.}  With \code{fdMode auto} the QP of
 \S\ref{ch:active-set-qp} runs in robust mode (\code{QPProblem::robust}):
@@ -16836,7 +16873,7 @@ has $d=-10^{-10}$: the first version discarded it and called the row
 violated); and a robust QP that ends INFEASIBLE or does not settle is solved
 again by the default solver before any conclusion, so a ``local
 infeasibility'' that the default solver does not share is the robust mode's
-and never reaches the SQP (min $-10x_1+x_2^2$ s.t.\ $x_1+5\cdot10^{-6}x_2=1.00002$
+and never reaches the SQP.  The price of the $10^{-5}$ dependence test: on a constraint written twice with independent noise of $10^{-9}$ ($x^2+y^2\le1$ twice, maximise $x+2y$) two of 20 seeds stop with a QP that does not settle, where the default converges (the reverse on HS13, where the default cycles and \code{auto} stops honestly): a stop is acceptable, a false certificate is not.  (min $-10x_1+x_2^2$ s.t.\ $x_1+5\cdot10^{-6}x_2=1.00002$
 was stopped as locally infeasible; HS13 and HS68 stopped with the false
 sentence that $\theta=0$ has no solution, though $d=0$ satisfies it).  What
 was tried and dropped: a second-order correction against the Maratos
@@ -16850,16 +16887,19 @@ nothing clean, so it is not in the code; Powell's falling penalty
 problems of the judge set (clean and three noise levels,
 \code{docs/audits/2026-11-24-optimizer-bench-results.md} \S10), with the
 fraction of cells solved at $\tau=10^{-2}/10^{-4}/10^{-6}$:
-clean, \code{auto} solves $0.83/0.78/0.72$ against $0.89/0.83/0.72$ for SLSQP
-and $0.94/0.89/0.78$ for IPOPT: \emph{it trails them} where there is no noise
-to correct; at $\sigma=10^{-6}$ it solves $0.82/0.65/0.56$ against the
+clean, \code{auto} solves $0.83/0.83/0.72$ against $0.89/0.83/0.72$ for SLSQP
+and $0.94/0.89/0.78$ for IPOPT: \emph{it trails IPOPT at all three tolerances and
+SLSQP at the coarsest} where there is no noise to correct; at $\sigma=10^{-6}$ it solves $0.82/0.65/0.56$ against the
 default $\mathrm{sqp}$'s $0.44/0.20/0.09$ and SLSQP's $0.07/0/0$ (the other
 codes run with their default steps, which are not tuned for noise); at
 $\sigma=10^{-4}$, $0.72/0.52/0.43$, ahead of the derivative-free codes of the
 bench ($0.61/0.43/0.22$ at best).  On the four shipped flowsheets, whose noise
 is about $10^{-13}$ and where the problem it solves is absent, it finds the
-same optima with $1$ to $3.3$ times the simulator runs of the default and ends
-\code{CONVERGED} in 11 of 12 starts.  A converged verdict is a first-order
+same optima with $1.3$ to $3.3$ times the simulator runs of the default and ends
+\code{CONVERGED} in 5 of 12 starts (the rest \code{STATIONARY, NOT CERTIFIED}:
+three of \code{optim02} whose bar is $8\cdot10^{-5}$ against $10^{-5}$, three of
+\code{optim05} with its inert variable, one of \code{optim04} with an unresolved
+multiplier).  A converged verdict is a first-order
 statement to the tolerance, not a statement that $f$ is near its minimum
 (HS25's gradient is below $10^{-5}$ over a wide region around its start).
 

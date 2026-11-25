@@ -25,7 +25,7 @@
   with B symmetric positive definite — Nocedal & Wright, Numerical
   Optimization 2nd ed. (2006), Algorithm 16.3, §16.5, a public-domain method
   and explicitly NOT a port of any code.  It has three real callers: the inner
-  QP of every SQP iteration (src/solver/SQP.cpp:835), the constrained
+  QP of every SQP iteration (src/solver/SQP.cpp:896), the constrained
   optimisation driver (src/outerDriver/OptimizationDriver.cpp:985), and the
   laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 

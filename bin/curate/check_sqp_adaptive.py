@@ -23,6 +23,12 @@ RED on the code that was about to land):
   * the robust QP called feasible problems INFEASIBLE (a step discarded below
     1e-9 and judged on its row; rows 1e-6 apart in angle dropped as dependent)
     and the SQP stopped "LOCAL INFEASIBILITY" on them.
+And three more from the second review (docs/audits/2026-11-25-c496-opus-review-2.md),
+each CONVERGED with a small bar at a true gradient 79 to 1458 times tolStat: one global
+tolerance scale that a variable on a bound with slope 1e5 gave to every other variable;
+a step allowance against ||x||inf with a QP step-bound row counted as a bound active at
+x; a gradient taken at a step that aliased a smooth ripple (never confirmed at a second
+step); and an unresolved multiplier that scaled the tolerances (HS13).
 A golden pins what a run prints, and each of these printed smoothly.
 
 WHAT IT CHECKS.  test/sqp_adaptive_check.cpp is built here against
@@ -51,7 +57,7 @@ SCAN_ROOTS = ("src/solver/SQP.cpp", "src/solver/SQP.H", "src/solver/ActiveSetQP.
               "src/solver/ActiveSetQP.H", "test/sqp_adaptive_check.cpp",
               "test/sqp_default_path.cpp", "bin/curate/sqp_default_path.expected")
 
-MIN_ARMS = 20
+MIN_ARMS = 25
 SOURCES = ["SQP.cpp", "ActiveSetQP.cpp", "NewtonND.cpp", "LU.cpp", "BlockTridiagonal.cpp"]
 NUM = re.compile(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?|nan|inf")
 

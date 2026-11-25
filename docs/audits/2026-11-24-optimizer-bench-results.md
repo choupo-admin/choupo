@@ -589,3 +589,54 @@ because its error bar exceeds the scaled tolerance.  `optim05`, which the first 
 `auto` stopped on (exit 1, stationarity 1.63e-5 against the absolute 1e-5, on an objective
 of 6.6e8 with a shadow price of 2.4e6), converges with the bar printed: 1.8 against the
 scaled tolerance 172.
+
+### 10.1 Third read of the judge set, after the second review (2026-11-25)
+
+The second Opus review (`docs/audits/2026-11-25-c496-opus-review-2.md`) found three false
+certificates and the fixes changed what `auto` may call CONVERGED: the stationarity tolerance
+per component, the step test per variable, a bound row counted only if it is active at x, the
+gradient confirmed by a second step, no certificate over an unresolved multiplier.  The judge
+set was therefore read a THIRD time, on the final code, and this subsection supersedes the
+`auto` rows and the flowsheet table above (the two earlier reads stay as written; the default,
+SLSQP, IPOPT and derivative-free rows are unchanged).  No change to the code was made for the
+judge set between the second and the third read; the changes were made against the reviewer's
+inputs.
+
+| tau | code | clean | sigma 1e-8 | sigma 1e-6 | sigma 1e-4 |
+|---|---|---|---|---|---|
+| 1e-2 | Choupo sqp, `fdMode auto` (third read) | 0.833 | 0.889 | 0.815 | 0.722 |
+| 1e-4 | Choupo sqp, `fdMode auto` (third read) | 0.833 | 0.759 | 0.648 | 0.519 |
+| 1e-6 | Choupo sqp, `fdMode auto` (third read) | 0.722 | 0.685 | 0.556 | 0.426 |
+
+Against the second read the only moved cells are clean tau 1e-4 (0.778 to 0.833) and sigma 1e-8 at
+tau 1e-4 (0.778 to 0.759).  Losing rows: clean, `auto` trails IPOPT at all three tolerances
+(0.833 / 0.833 / 0.722 against 0.944 / 0.889 / 0.778 at tau 1e-2 / 1e-4 / 1e-6) and SLSQP at tau 1e-2 (0.833 against 0.889); it ties SLSQP at 1e-4 and 1e-6.
+What the certificate now costs: `auto` ended CONVERGED in 14 cells (31 in the second read; none of
+them HS13); one of the 14 is not solved to 1e-4 (HS25 clean, whose gradient is below tolStat over a
+wide region around its start: a first-order certificate, not a near-optimal one).
+
+**The four flowsheets** (through their own `outerDict`, three starts, driver's own count):
+
+| flowsheet | start | default: runs, objective, exit | fdMode auto: runs, objective, exit, verdict |
+|---|---|---|---|
+| optim01\_column\_reflux | A | 15 runs, 0.0361877, exit 0 | 39 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim01\_column\_reflux | B | 15 runs, 0.0361877, exit 0 | 39 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim01\_column\_reflux | C | 15 runs, 0.0361877, exit 0 | 39 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim02\_process\_cost | A | 37 runs, 878085, exit 0 | 79 runs, 878085, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim02\_process\_cost | B | 37 runs, 878085, exit 0 | 79 runs, 878085, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim02\_process\_cost | C | 50 runs, 878085, exit 0 | 95 runs, 878085, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim04\_membrane\_recovery\_scaling | A | 25 runs, -0.397451, exit 0 | 57 runs, -0.397451, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim04\_membrane\_recovery\_scaling | B | 34 runs, -0.397452, exit 0 | 67 runs, -0.397452, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim04\_membrane\_recovery\_scaling | C | 112 runs, -0.397452, exit 0 | 109 runs, -0.397452, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim05\_reactor\_npv | A | 16 runs, 6.56434e+08, exit 0 | 52 runs, 6.56434e+08, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim05\_reactor\_npv | B | 16 runs, 6.56434e+08, exit 0 | 52 runs, 6.56434e+08, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim05\_reactor\_npv | C | 28 runs, 6.56434e+08, exit 0 | 82 runs, 6.56434e+08, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+
+The same optimum every time.  `auto` costs 1.3 to 3.3 times the default's runs.  Five of 12 starts
+end CONVERGED (11 of 12 in the second read, before the per-component tolerance): `optim02` (3)
+ends `STATIONARY, NOT CERTIFIED` with a bar of 8e-5 against 1e-5 on V_R, `optim05` (3) because it
+varies `T_feed`, which nothing in the flowsheet reads (a component with a zero gradient and the
+noise of a 6.6e8 objective in its bar cannot be certified; `optim09` is optim05 without that
+variable and converges), `optim04` start B because the multiplier of inequality 1 is not resolved.
+Not certified is a stop, with exit 1, at the correct optimum: acceptable; a false certificate is
+not.

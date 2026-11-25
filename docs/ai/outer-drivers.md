@@ -225,18 +225,24 @@ curvature, per Shi, Xuan, Oztoprak & Nocedal (arXiv 2102.09762): forward `h = 8^
 central `h = (3 eps/M)^(1/3)`, central per variable when the forward error bound exceeds a tenth
 of the stationarity tolerance.  The step is FITTED TO THE BOX at every gradient evaluation (no
 evaluation leaves it; a variable whose box is narrower than 8e-9 is pinned and announced).
-Measured: it is NOT better than the shipped default or SLSQP on a clean problem; it helps where
-noise is real (table in the Theory Guide `sec:sqp-adaptive-fd` and
-`docs/audits/2026-11-24-optimizer-bench-results.md`), costs more runs on the four shipped
-flowsheets than the default, and on `optim05` it does not certify (the flowsheet cases are in
-that table).  `fdStep` is ignored.
+Measured (judge set of the bench, three reads, section 10 of the results): on a clean problem it
+is ahead of the shipped default (0.83/0.83/0.72 against 0.67/0.61/0.39 of the cells at tau
+1e-2/1e-4/1e-6) and behind IPOPT (0.94/0.89/0.78) and, at the coarsest tolerance, SLSQP
+(0.89/0.83/0.72); with noise it is ahead of every gradient code with its default step and of the
+derivative-free codes at sigma 1e-4.  It costs 1.3 to 3.3 times the default's simulator runs on
+the four shipped flowsheets, whose noise is about 1e-13.  On `optim05` as shipped it ends
+`STATIONARY, NOT CERTIFIED`: that case varies `T_feed`, which nothing reads, and a component with
+a zero gradient and the noise of a 6.6e8 objective in its bar cannot be certified (`optim09` is
+the same problem without it and converges).  `fdStep` is ignored.
   - Noise is UNKNOWN when a stencil point fails, no level shows, or the two stencils disagree:
     announced, fixed steps, NO error bars.  Never a floor.
   - THE VERDICT: `CONVERGED` needs the gradient re-estimated at the point and its error bar (3 sd
     of ||grad L||inf) below the tolerance; the tolerance is scaled by the size of the gradient
-    terms (and the step must be small).  The residuals met with a bar above the tolerance, or
+    terms, PER COMPONENT (and the step must be small per variable).  It also needs the gradient
+    CONFIRMED by a second step (3.7 times the first) and no unresolved multiplier large enough to
+    move a tolerance.  The residuals met with a bar above its tolerance, or
     unavailable, print `STATIONARY, NOT CERTIFIED`, exit 1, with the bar beside the tolerance.
-  - Multipliers print `lam (+-bar)`: 2 sd, first order, through the QP's B-weighted map; `NOT
+  - Multipliers print `lam (+-bar)` on a CERTIFIED run only (otherwise `bar unavailable: run not certified`; the bar omits the displacement of x*): 2 sd, first order, through the QP's B-weighted map; `NOT
     RESOLVED` when the bar exceeds the value, `error bar unavailable` when it cannot be
     defended, `inactive: exactly 0` for an inactive row.  It omits the displacement of the
     optimum, correlations between responses and the active-set uncertainty.

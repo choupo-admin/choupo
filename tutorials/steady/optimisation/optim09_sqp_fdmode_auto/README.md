@@ -20,7 +20,7 @@ SQP differences its responses and what it is allowed to call a result.
   CERTIFIED`, exit code 1.
 * Theory Guide, section "Noise-aware differences: fdMode auto".  It costs more
   simulator runs than the default on a response that is smooth to rounding
-  (52 against 16 from the tutorial start): measured in
+  (40 against 16 from the tutorial start): measured in
   `docs/audits/2026-11-24-optimizer-bench-results.md`, section 8.
 
 **Finding (2026-11-25, C496 review 2): `T_feed` is INERT in optim05, so optim09 does not carry it.**

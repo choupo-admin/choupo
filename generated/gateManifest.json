@@ -1993,8 +1993,8 @@
     },
     "check_sqp_adaptive": {
       "exit": 0,
-      "claim": "check_sqp_adaptive: OK -- 19 arms PASS (the review's failing inputs and the four invariants); default path 235 lines equal the pinned base output",
-      "seconds": 16.8
+      "claim": "check_sqp_adaptive: OK -- 25 arms PASS (the review's failing inputs and the four invariants); default path 235 lines equal the pinned base output",
+      "seconds": 18.1
     }
   }
 }
