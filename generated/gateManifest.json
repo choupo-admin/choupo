@@ -1960,6 +1960,11 @@
       "exit": 0,
       "claim": "check_ldlt_inertia: OK -- 13 matrices of known inertia exact, worst eta 1.0e-16; refinement of an inexact factorisation 2.63e-08 -> 4.99e-17 accepted, eps 0.3 rejected",
       "seconds": 1.4
+    },
+    "check_interior_point": {
+      "exit": 0,
+      "claim": "check_interior_point: OK -- 16 of 16 HS problems to 1e-6 (iterations 3-311), 2 infeasible problems ended locally infeasible, 6 inertia-correction checks, 18 derivative checks",
+      "seconds": 8.1
     }
   }
 }
