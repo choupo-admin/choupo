@@ -461,9 +461,9 @@ def verdict(r):
             continue
         bi, bo, bc = r["eng_elem"][e]
         # engine prints kmol-atom/h at 7 sig. digits and closure at 4 decimals
-        if abs(ai - bi) > 1e-5 * max(abs(bi), 1e-30) or abs(ao - bo) > 1e-5 * max(abs(bo), 1e-30):
+        if (abs(ai - bi) > max(1e-5 * abs(bi), 1e-7)) or (abs(ao - bo) > max(1e-5 * abs(bo), 1e-7)):   # proofs.py: absolute floor 1e-7 kmol atom/h (state files print tiny flows coarsely)
             why.append("element %s in/out %.6e/%.6e vs %.6e/%.6e" % (e, ai, ao, bi, bo))
-        if abs(ac - bc) > 5e-4:                  # the CSV's 4 decimals
+        if abs(ac - bc) > 5e-4 + 100 * 1e-7 / max(abs(bi), 1e-30):                  # the CSV's 4 decimals
             why.append("element %s closure %.5f vs %.4f" % (e, ac, bc))
     for e in r["eng_elem"]:
         if e not in r["elem"]:

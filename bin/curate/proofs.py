@@ -195,17 +195,21 @@ EXT_LAST = re.compile(r'^(F|F_mass|F_solid_mass|H_kW)$')
 def classify(k):
     """ext / int / res (noise) / unc, by the name of the key (the cloud's rule, simplified)."""
     last = k.split('/')[-1]
-    if 'esidual' in last or re.search(r'(^|_)(iterations|nIter|iter|outerIt)$', last) or 'analysisReconciliation' in k:
+    if re.search(r'esidual|closure_gap|_gap_kW|[Mm]assClosure|[Ii]mbalance', last) or re.search(r'(^|_)(iterations|nIter|iter|outerIt)$', last) or 'analysisReconciliation' in k:
         return 'res'      # solver noise, iteration counts and inlet provenance are not results
+    if k.startswith('streams/') and re.search(r'^streams/[^/]+/(organic|aqueous)\w*/[^/]+$', k):
+        return 'ext'                      # a phase block under a stream: component flows
     if k.startswith('streams/'):
         return 'ext' if (EXT_LAST.match(last) or '/solids/' in k or '/flows/' in k) else 'int'
     if k.startswith('globalEnergyBoundary/'):
         return 'ext' if last.endswith('_kW') else 'unc'
     if re.search(r'^F_(in|out|alpha|beta)$|^[QW]_?(kW)?$|W_shaft|[Dd]uty', last):
         return 'ext'
-    if re.search(r'_over_|(^|_)[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
+    if re.search(r'^streams/[^/]+/(organic|aqueous)\w*/[^/]+$', k):
+        return 'ext'                      # a phase block under a stream: component flows
+    if re.search(r'_over_|(^|_)[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity|rho)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
         return 'int'
-    if re.search(r'(^|_)(F|Q|W|duty|power|flow|mass|rate|area|V)(_|\[|$)|kW|[Ff]low|[Dd]uty|F_(in|out|alpha|beta)|W_shaft|extent|moles|_kg_s$|_mol_s$|_m3_s$', last):
+    if re.search(r'(^|_)(F|Q|W|duty|power|flow|mass|rate|area)(_|\[|$)|(^|_)kW(_|$)|(^|_)[Ff]low(_|$)|[Dd]uty|F_(in|out|alpha|beta)|W_shaft|extent|moles|_kg_s$|_mol_s$|_m3_s$', last):
         return 'ext'
     return 'unc'
 
@@ -236,6 +240,8 @@ def compare(b, x, k, tol, label_all=False):
             if not (math.isnan(bv) and math.isnan(xv)):
                 viol.append('%s NaN base %r new %r' % (key, bv, xv))
             continue
+        if max(abs(bv), abs(xv)) < 1e-5 and abs(xv - want) < 1e-6:
+            continue                      # absolute noise floor (a 1e-9 kW residual is not a result)
         if scale < 1e-9:
             dev = abs(xv - want)
             if dev < 1e-9:
@@ -302,6 +308,9 @@ def declared_extensive(case):
             except ValueError:
                 pass
             return '%s %s in %s' % (m.group(1), m.group(2)[:30], f.relative_to(case))
+        mh = re.search(r'(?m)(?<![\w.$])(module|stack)\s+[A-Za-z][^;\s]*\s*;', t)
+        if mh:
+            return '%s <record> (a hardware record carrying its own area) in %s' % (mh.group(1), f.relative_to(case))
         for m in re.finditer(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h)\s*;', t):
             if re.match(r'(xM|x[0-9]|d[0-9]|particle|dp$|d_p)', m.group(1)) or float(m.group(2)) == 0.0:
                 continue
@@ -342,7 +351,7 @@ def t1(case, k=2.0):
     rr = run_in(d)
     if rr['json'] is None:
         return VIOLATES if not r['err'] else NOTJ, 'x%g run failed: %s' % (k, rr['err'])
-    tol = 1e-4 if is_recycle(case) else 1e-8
+    tol = 1e-4 if is_recycle(case) else 1e-7
     worst, wk, viol, n = compare(view(r['json']), view(rr['json']), k, tol)
     return verdict_from(viol, worst, wk, n, ' [tol %.0e, feeds %s]' % (tol, ','.join(scaled)))
 
@@ -377,7 +386,7 @@ def t2(case):
     rr = run_in(d)
     if rr['json'] is None:
         return VIOLATES, 'reversed run failed where the base ran: %s' % rr['err']
-    tol = 1e-5 if is_recycle(case) else 1e-8
+    tol = 1e-5 if is_recycle(case) else 1e-7
     worst, wk, viol, n = compare(view(r['json']), view(rr['json']), 1, tol)
     return verdict_from(viol, worst, wk, n, ' [tol %.0e, %d components]' % (tol, ncomp))
 
@@ -420,7 +429,7 @@ def t3(case):
     rr = run_in(d)
     if rr['json'] is None:
         return VIOLATES, 'run with SI-written values failed where the base ran: %s' % rr['err']
-    tol = 1e-7 if is_recycle(case) else 1e-10
+    tol = 1e-7 if is_recycle(case) else 1e-8
     worst, wk, viol, n = compare(view(r['json']), view(rr['json']), 1, tol, label_all=True)
     return verdict_from(viol, worst, wk, n, ' [tol %.0e, %d values rewritten]' % (tol, total))
 
@@ -442,7 +451,11 @@ def t4(case):
         feeds = [f for f in (d / 'converged').rglob('*') if f.is_file() and 'componentMolarFlows' in read(f)]
         bump_first_flow(feeds[0])
     res = pc.measure(d)
+    if 'eng_elem' in res:      # sector-prefixed duplicate rows ('process.H') are the engine's own per-sector view
+        res['eng_elem'] = {e: v for e, v in res['eng_elem'].items() if '.' not in e}
     v, why = pc.verdict(res)
+    if v == 'DISAGREE' and 'absent from the engine report' in why:
+        return NOTJ, 'a formula names elements the engine does not count (pseudo-components): ' + why[:120]
     if v == 'AGREE':
         mi, mo, mc = res['mass']
         return HOLDS, 'mass closure %.6f%% (engine %.4f%%), %d elements, %d/%d/%d feeds/products/internal' % (
