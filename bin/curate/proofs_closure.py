@@ -347,6 +347,11 @@ def topology(case):
             raise ValueError("no units parsed from flowsheetDict")
         cons = {s for _, i, _ in units for s in i}
         prod = {s for _, _, o in units for s in o}
+        # a unit key `supplies ( s );` (C500, reporting/Topology.H) makes the outlet s a plant FEED: it is computed
+        # by the unit and enters the plant (membrane08's resinReleased).  Counting it as a product was the proof's fault.
+        sup = set()
+        for sm in re.finditer(r"(?<![A-Za-z0-9_])supplies\s*\(([^)]*)\)", fd):
+            sup |= set(sm.group(1).split())
         observers = {n for n, i, o in units if i and not o}
         if observers:
             raise ValueError("observer units %s (no outputs): feed classification is a "
@@ -355,7 +360,9 @@ def topology(case):
             p = conv / s
             if not p.is_file():
                 raise ValueError("stream '%s' has no file under converged/" % s)
-            if s in cons and s not in prod:
+            if s in sup and s not in cons:
+                feeds[s] = p
+            elif s in cons and s not in prod:
                 feeds[s] = p
             elif s in prod and s not in cons:
                 products[s] = p
