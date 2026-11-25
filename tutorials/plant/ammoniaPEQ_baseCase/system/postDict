@@ -229,14 +229,15 @@
   the StorageFlash cools to -35 C and the coldest utility boils at -33.3 C,
   so C_UT is a LOWER BOUND and says so.
 
-  ECONOMICS (slice 4).  Prices are in constant/economics, each with its
-  source, date and arithmetic (its header says which kind each is): the
-  ammonia and nitrogen prices are cited public figures, the hydrogen price
-  (1.5 EUR/kg, C526) is the AUTHOR'S CHOICE inside the range 0.74-4.07 EUR/kg
-  the project brief quotes from ACER.  The plant sells conventional-market
-  ammonia (0.530 EUR/kg) and PAYS at that hydrogen price; at the 8 EUR/kg
-  cost of electrolytic hydrogen it loses (README, 'Hydrogen price
-  scenarios').  The appraisal knobs below
+  ECONOMICS (slice 4).  Prices are in constant/economics, every one a CITED
+  public figure with its source, date and arithmetic (its header says which
+  kind each is).  The plant sells ammonia at the market price of CONVENTIONAL
+  ammonia (0.530 EUR/kg) and buys hydrogen at ACER's cost of CONVENTIONAL
+  (natural-gas) hydrogen, 2.0 EUR/kg: at those prices it does NOT pay (README,
+  'Hydrogen price scenarios'); it pays below the break-even hydrogen price
+  the run prints (1.685 EUR/kg), and at the 8 EUR/kg cost of electrolytic
+  hydrogen it loses heavily.
+  The appraisal knobs below
   are ammonia02's, also assumptions.  N_np, the number of processing steps
   Turton's labour correlation counts (compressors, exchangers, reactors;
   not drums, tanks or pumps), is COUNTED from this flowsheet: 4 + 6 + 1 =
@@ -589,10 +590,10 @@ economics
     //  reach zero (the minimum selling price of ammonia), and what is the
     //  highest price of hydrogen the plant can bear, every other price held.
     //  The ammonia price is the market price of CONVENTIONAL ammonia
-    //  (constant/economics), so the first number is the price this plant
-    //  needs for its product (below the market at the 1.5 EUR/kg base
-    //  hydrogen) and the second is how far the hydrogen price can rise
-    //  (1.685 EUR/kg) before the NPV reaches zero.
+    //  (constant/economics); the first number is the price this plant needs
+    //  for its product (a little above the market at the 2.0 EUR/kg
+    //  hydrogen) and the second is how cheap the hydrogen must be (about
+    //  1.69 EUR/kg) for the NPV to reach zero.
     breakEven
     {
         price ( ProductNH3 H2Feed );
@@ -603,24 +604,22 @@ economics
     //  converged run -- the tornado, printed sorted by NPV swing, published as
     //  `economics.sens_<input>_...` and written to
     //  reports/economics/sensitivity.csv.  A sensitivity, NOT an uncertainty
-    //  analysis.  THE HYDROGEN ENDS 0.74 and 4.07 EUR/kg are the range the
-    //  project brief quotes from ACER's 2025 hydrogen-markets report (data
-    //  item 972; NOT found in the report's text, see constant/economics), so
-    //  the two scenarios of the README table beside the 1.5 base come from
-    //  here; the 8.0 scenario (the cost of electrolytic hydrogen, ACER p. 40,
-    //  the case's former base) is a scratch re-pricing the README reports
-    //  without a golden row, because a sensitivity input has two ends only.
-    //  Ammonia 0.380-0.692: the lowest and highest monthly
-    //  EU import unit value of 2025 (constant/economics); nitrogen
-    //  0.01594-0.01754 (OIES Table 2); the FCI's ends are this block's own
-    //  `accuracyBand`; the electricity bill +/- 20 %, a customary round
-    //  figure of a feasibility study (NOT cited); discount rate 8 / 12 %
+    //  analysis.  THE HYDROGEN ENDS: the HIGH end 8.0 EUR/kg is CITED, ACER's
+    //  cost of renewable (RFNBO) hydrogen, p. 40 para 78 (constant/economics);
+    //  the LOW end 1.5 EUR/kg is an ASSUMPTION of this case, not read from
+    //  any source: a site with cheap hydrogen, below the 2025 EU conventional
+    //  cost (the base, 2.0).  Together with the base they are the three
+    //  rows of the README's scenario table.  Ammonia 0.380-0.692: the lowest
+    //  and highest monthly EU import unit value of 2025 (constant/economics);
+    //  nitrogen 0.01594-0.01754 (OIES Table 2); the FCI's ends are this
+    //  block's own `accuracyBand`; the electricity bill +/- 20 %, a customary
+    //  round figure of a feasibility study (NOT cited); discount rate 8 / 12 %
     //  around the 10 % above; stream factor 0.85 / 0.95 around 0.90.
     sensitivity
     {
         FCI                       { relative accuracyBand; }
         price.ProductNH3          { absolute ( 0.380 0.692 ); }
-        price.H2Feed              { absolute ( 0.74 4.07 ); }
+        price.H2Feed              { absolute ( 1.5 8.0 ); }
         price.N2Feed              { absolute ( 0.01594 0.01754 ); }
         utility.electricity       { relative ( -0.20 0.20 ); }
         discountRate              { absolute ( 0.08 0.12 ); }
