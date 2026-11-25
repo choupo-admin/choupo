@@ -46,6 +46,7 @@ Description
 #include "core/Dictionary.H"
 #include "result/SimulationResult.H"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -107,6 +108,14 @@ inline Topology readTopology(const DictPtr& flowsheetDict,
         for (const auto& fu : result.topology)
         {
             UnitIO io{ fu.name, fu.type, fu.ins, fu.outs, fu.sector };
+            //  A stream the unit SUPPLIES enters the plant: for the reports it
+            //  is an input of this unit, not an output (C500).
+            for (const auto& s : fu.supplies)
+            {
+                io.outs.erase(std::remove(io.outs.begin(), io.outs.end(), s),
+                              io.outs.end());
+                io.ins.push_back(s);
+            }
             for (const auto& s : io.ins)  topo.consumed.insert(s);
             for (const auto& s : io.outs) topo.produced.insert(s);
             topo.units.push_back(std::move(io));
@@ -158,6 +167,8 @@ inline Topology readTopology(const DictPtr& flowsheetDict,
     std::map<std::string,std::string> aliasFor;   // identity -> boundary name
     for (const auto& [alias, src] : result.boundaryAliasOf)
         aliasFor[src] = alias;
+    //  (a supplied stream was moved from `outs` to `ins` above, so it is
+    //  consumed and not produced: a feed, by the same rule as any other)
     for (const auto& s : topo.consumed)
         if (!topo.produced.count(s)) topo.feeds.insert(s);
     for (const auto& s : topo.produced)

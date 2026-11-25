@@ -31,6 +31,11 @@
   it simply receives a BETTER feed.  Removing the hardness, not chasing the
   supersaturation in the vessel, is the cure -- the engineering lesson.
 
+  THE RESIN IS TWO NAMED STREAMS (C500): `resinTaken` carries the Ca, Mg, K the
+  resin takes up and `resinReleased` the Na it gives back (declared `supplies`:
+  computed by the softener, entering the plant), equal in equivalents, so the
+  plant closes mass and every element at 100.000 %.
+
   HONESTY (printed, non-suppressible): the softener returns the LIMITING
   (fully-equilibrated) effluent -- the best a fresh / fully-loaded contactor
   does per pass, NOT a bed in service (breakthrough / regeneration are TRANSIENT
@@ -59,7 +64,8 @@ units
         name        softener;
         type        ionExchanger;
         in          feed;
-        outputs     ( softened );
+        outputs     ( softened  resinTaken  resinReleased );
+        supplies    ( resinReleased );   // computed here, enters the plant: the Na the resin gives back
 
         operation
         {

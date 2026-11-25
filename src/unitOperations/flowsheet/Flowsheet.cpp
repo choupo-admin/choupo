@@ -2569,6 +2569,7 @@ int Flowsheet::solve(const DictPtr& dict,
         if (u->found("inputs"))   fu.ins = u->lookupWordList("inputs");
         else if (u->found("in"))  fu.ins = { u->lookupWord("in") };
         if (u->found("outputs"))  fu.outs = u->lookupWordList("outputs");
+        if (u->found("supplies")) fu.supplies = u->lookupWordList("supplies");   // C500
         topology_.push_back(std::move(fu));  unitDicts_.push_back(u);   // C52: the dicts beside the topology
     }
 
