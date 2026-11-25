@@ -42,7 +42,8 @@ import { KnobSlider, PanelNote, type PanelKnob } from "../knobPanel.js";
 import { lessonStepper, LessonLimits } from "../lessonStep.js";
 import { LessonQuiz } from "../lessonQuiz.js";
 import {
-  BAYES_LIMITS, BAYES_QUIZ, BAYES_REFERENCES, BAYES_STEPS, ENGINE_STATUS,
+  BAYES_LIMITS, BAYES_QUIZ, BAYES_REFERENCES, BAYES_STEPS, BAYES_STEPS_IN_TOOL,
+  BAYES_STEP_OFFSET, ENGINE_STATUS,
 } from "./bayesOptLesson.js";
 import {
   GRID, SETTINGS, bestAfter, boFit, expectedImprovement, gradientRun,
@@ -87,7 +88,9 @@ function clock(sec: number): string {
   return `${(sec / 3600).toFixed(1)} h`;
 }
 
-export function BayesOptCard(): JSX.Element {
+/** `inTool`: drawn as a section of the `optimizers` tool, which draws the
+ *  limits, quiz and references of the whole lesson once at its end. */
+export function BayesOptCard({ inTool = false }: { inTool?: boolean }): JSX.Element {
   const [settingId, setSettingId] = useState<SettingId>("smooth");
   const setting = SETTINGS.find((s) => s.id === settingId) ?? SETTINGS[0]!;
   const f = setting.f;
@@ -169,7 +172,9 @@ export function BayesOptCard(): JSX.Element {
   const line = (xs: number[], ys: number[], Y: (v: number) => number): string =>
     xs.map((x, i) => `${i === 0 ? "M" : "L"}${X(x).toFixed(1)},${Y(ys[i]!).toFixed(1)}`).join(" ");
 
-  const stepOf = lessonStepper(BAYES_STEPS, { foldSymbols: true });
+  const stepOfRaw = lessonStepper(inTool ? BAYES_STEPS_IN_TOOL : BAYES_STEPS, { foldSymbols: true });
+  const off = inTool ? BAYES_STEP_OFFSET : 0;
+  const stepOf = (n: number): JSX.Element | null => stepOfRaw(n + off);
   const dipMissed = settingId === "narrowDip"
     && !data.X.some((x) => Math.abs(x - DIP.at) < 0.04);
 
@@ -218,7 +223,7 @@ export function BayesOptCard(): JSX.Element {
 
         <Box style={{ width: "100%", overflowX: "auto" }}>
           <svg viewBox={`0 0 ${VW} ${H1 + H2}`} width="100%"
-            style={{ display: "block", minWidth: 480 }} role="img"
+            style={{ display: "block", minWidth: 300 }} role="img"
             aria-label={"Top: the true function (grey, hidden from the "
               + "optimiser), the Gaussian-process mean and its 95 percent "
               + "band, the evaluated points and the next point.  Bottom: "
@@ -315,11 +320,11 @@ export function BayesOptCard(): JSX.Element {
       {stepOf(5)}
       {stepOf(6)}
 
-      <LessonLimits limits={BAYES_LIMITS} />
+      {!inTool && <LessonLimits limits={BAYES_LIMITS} />}
 
-      <LessonQuiz title="Check yourself" questions={BAYES_QUIZ} lesson={BAYES_STEPS} />
+      {!inTool && <LessonQuiz title="Check yourself" questions={BAYES_QUIZ} lesson={BAYES_STEPS} />}
 
-      <Box data-lesson-references="">
+      {!inTool && <Box data-lesson-references="">
         <Title order={5}>References</Title>
         <Box component="ol" mt={6} mb={0} pl={22}>
           {BAYES_REFERENCES.map((r) => (
@@ -333,7 +338,7 @@ export function BayesOptCard(): JSX.Element {
             </Box>
           ))}
         </Box>
-      </Box>
+      </Box>}
     </Stack>
   );
 }

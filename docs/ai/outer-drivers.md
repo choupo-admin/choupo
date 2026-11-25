@@ -94,7 +94,7 @@ point failed).  Sweep responses accept stream fields `F, T, P, vf` only
 ## 2. `type designSpec;` — meet N specs with N knobs
 
 Canonical cases: `tutorials/steady/rotating/compressor02_designspec_pout`
-(1×1), `tutorials/steady/optimisation/designSpec01_triple_equal_areas` (2×2).
+(1×1), `tutorials/steady/optimisation/designSpec01_triple_equal_areas` (2×2). A rigorous column held on two key purities (the reflux ratio and the distillate rate as the two unknowns, `column.x_D_LK` and `column.x_B_HK` as the targets) is `tutorials/steady/distillation/column21_design_curve_ethanol_water` (2×2).
 
 **The `$variable` pattern (required).**  The driver does NOT manipulate raw
 dict paths.  Each knob is a case-level `$variable`, declared in the

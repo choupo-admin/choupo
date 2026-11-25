@@ -137,7 +137,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     file: "sweep_pumpSystem.csv",
-    readBy: ["pumpSystemLesson.test.ts"],
+    readBy: ["pumpSystemLesson.test.ts", "controlValve.test.ts"],
   },
   //  The salt-mixtures EduTool (C316): the page's own Pitzer gamma_+- held to
   //  the engine's single-salt kernel, NaCl and KCl at 25 C and NaCl at 100 C.

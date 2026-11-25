@@ -1421,7 +1421,7 @@ LESSON_KNOBS_UNDECLARED = {
     "gui/src/ui/methods/ColumnControlTool.tsx": 4,
     "gui/src/ui/methods/CompressionTool.tsx": 2,
     "gui/src/ui/methods/DeclaredPathwaysTool.tsx": 3,
-    "gui/src/ui/methods/DryingCurveTool.tsx": 5,
+    "gui/src/ui/methods/DryingCurveTool.tsx": 4,
     "gui/src/ui/methods/EpsilonNtuTool.tsx": 7,
     "gui/src/ui/methods/EquilibriumLandscapesTool.tsx": 2,
     "gui/src/ui/methods/FastSlowTool.tsx": 1,

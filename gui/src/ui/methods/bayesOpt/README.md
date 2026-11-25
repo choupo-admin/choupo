@@ -100,3 +100,7 @@ case.
   its text was not read for this slice.
 * No screen has been seen by an architect; the card was rendered only as static
   markup in a test.  The gradient method and the 801-point grid are sketches.
+
+## Plugged in (C499, 2026-11-25)
+
+The card is now step 7 to 12 of the `optimizers` tool (`<BayesOptCard inTool />` in `OptimizersTool.tsx`; its limits and quiz are folded into `OPT_LIMITS_ALL` / `OPT_QUIZ_ALL`, its steps shifted by `BAYES_STEP_OFFSET`).  Three of the four references are in `lessonReferences.json` under `optimizers`; Nocedal and Wright was already there under the same DOI.  The engine status sentence now states the measured result.  Standalone (`<BayesOptCard />`) still draws its own limits, quiz and references.

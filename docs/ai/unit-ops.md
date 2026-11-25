@@ -1735,6 +1735,8 @@ reaction  { stoichiometry ( ... ); reactiveStages ( 6 7 8 9 10 );
                           parameters { dH -39100 J/mol; dSK -85.3 J/mol; RK 8.314462 J/mol; Kelvin 1 K; } } }
 ```
 
+A design curve by `designSpec` (no new unit): `column21_design_curve_ethanol_water` declares `variables { R; D; }`, writes `refluxRatio $R;` and `distillateRate $D;` on a `model simultaneous` column and gives `system/outerDict` `type designSpec;` with the targets `column.x_D_LK` and `column.x_B_HK`; it returns the reflux that meets both purities at the written `nStages`, so a sweep over `nStages` is the curve R(N).  The `hydraulics {}` block (diameter designed) and the postDict `sizing`/`costing` give the engine's own tower diameter and Turton cost at each point; the EduTool `column-design` reads the recorded sweep (`bin/curate/c501_column_design_table.py`).
+
 **Every MESH row is dimensionless.**  Each component balance is divided by the
 column's total feed (and, under `fullMESH`, each energy row by the feed times the
 stage liquids' mean latent heat), so the 1e-9 tolerance is a fraction of what the

@@ -9,8 +9,10 @@
 /*---------------------------------------------------------------------------*\
   CY / system/flowsheetDict   (LEAF -- cyclone dust separator)
 
-  Despoeira the spray-dryer exhaust: clean air to stack, fines recovered.
-  A size classifier (it needs the gas viscosity from the transport block).
+  Despoeira the spray-dryer exhaust.  IDLE in this plant's run: the spray
+  dryer sends no particle to its exhaust (solidsIn_mass 0 in the golden), so
+  no fines are recovered and Dust is zero; the cyclone is kept for a dryer
+  that does carry fines out.  A size classifier (it needs the gas viscosity from the transport block).
 \*---------------------------------------------------------------------------*/
 
 type        cyclone;

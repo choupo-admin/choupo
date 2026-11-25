@@ -24,8 +24,9 @@
     the gas: 40 kmol/h instead of 600.  The announcement changes to
     [energy-limited]: the solid leaves at the gas's WET-BULB temperature,
     311.68 K, this model's floor, having given up 36.75 kg/h of water with
-    the exhaust at a_w 0.886, below its cap, and 16.6 wt% of the water stays
-    on the crystal -- a dryer that does not dry, reported as such instead of
+    the exhaust at a_w 0.886, below its cap, and 86 % of the water stays
+    on the crystal (X falls from 0.2312 to 0.1998 kg/kg; the product is
+    16.6 wt% water on the wet basis, which is a different number) -- a dryer that does not dry, reported as such instead of
     returning a dry solid it cannot produce.
 
     THE WALL THIS GAS MEETS IS HEAT, AT THE WET BULB -- AND THE CASE'S NAME

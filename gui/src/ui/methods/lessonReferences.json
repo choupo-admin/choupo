@@ -3887,6 +3887,151 @@
             "evidence": "api.crossref.org/works/10.1109/4235.585893: authors, title, container, volume, issue, pages and year matched; the paper was read",
             "date": "2026-11-24"
           }
+        },
+        {
+          "text": "Rasmussen, C. E.; Williams, C. K. I. (2006). Gaussian Processes for Machine Learning. MIT Press. ISBN 026218253X.",
+          "url": "https://gaussianprocess.org/gpml/",
+          "note": "Algorithm 2.1 (p. 19), eqs. (2.25), (2.26) (p. 17), eq. (2.31): the Gaussian-process predictor and the squared-exponential kernel.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "gaussianprocess.org/gpml/chapters/RW2.pdf read: Algorithm 2.1 on book p. 19 (lines 2-6: Cholesky, alpha, mean eq. 2.25, v, variance eq. 2.26); eqs. (2.25) and (2.26) on p. 17; kernel with noise as eq. (2.31); running footer 'ISBN 026218253X. (c) 2006 Massachusetts Institute of Technology'",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Jones, D. R.; Schonlau, M.; Welch, W. J. (1998). Efficient Global Optimization of Expensive Black-Box Functions. Journal of Global Optimization 13(4), 455–492.",
+          "doi": "10.1023/A:1008306431147",
+          "note": "Eqs. (14) and (15): the definition and the closed form of the expected improvement.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1023/A:1008306431147: authors, title, container, volume 13, issue 4, pages 455-492, year 1998 matched; full text (stat.ubc.ca/~will/docs/JonSchWel1998_global_optimization.pdf) read: eq. (14) E[I(x)] = E max(fmin - Y, 0), eq. (15) the closed form, section 4.1, journal pp. 471-472",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Shahriari, B.; Swersky, K.; Wang, Z.; Adams, R. P.; de Freitas, N. (2016). Taking the Human Out of the Loop: A Review of Bayesian Optimization. Proceedings of the IEEE 104(1), 148–175.",
+          "doi": "10.1109/JPROC.2015.2494218",
+          "note": "Further reading: the method, its acquisition functions and its difficulties in many variables.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1109/JPROC.2015.2494218: authors, title, container, volume 104, issue 1, pages 148-175, year 2016 matched",
+            "date": "2026-11-24"
+          }
+        }
+      ]
+    },
+    "column-design": {
+      "references": [
+        {
+          "text": "Levy, S. G.; Van Dongen, D. B.; Doherty, M. F. (1985). Design and synthesis of homogeneous azeotropic distillations. 2. Minimum reflux calculations for nonideal and azeotropic columns. Industrial & Engineering Chemistry Fundamentals 24(4), 463–474.",
+          "doi": "10.1021/i100020a011",
+          "note": "The pinch-point minimum reflux of a non-ideal column, including past an azeotrope: the calculation the page names as the engine's next step.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/i100020a011: authors (Levy, Van Dongen, Doherty), title, container, volume 24, pages 463-474 and year 1985 matched (column-design EduTool)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Julka, V.; Doherty, M. F. (1990). Geometric behavior and minimum flows for nonideal multicomponent distillation. Chemical Engineering Science 45(7), 1801–1822.",
+          "doi": "10.1016/0009-2509(90)87057-y",
+          "note": "The geometric theory of minimum flows for non-ideal mixtures: why the minimum reflux of an azeotropic column is set by a pinch and not by the feed's volatility.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(90)87057-y: authors (Julka, Doherty), title, container, volume 45, pages 1801-1822 and year 1990 matched (column-design EduTool)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Doherty, M. F.; Perkins, J. D. (1978). On the dynamics of distillation processes—I. Chemical Engineering Science 33(3), 281–301.",
+          "doi": "10.1016/0009-2509(78)80086-4",
+          "note": "The residue curve equation dx/dξ = x − y*, and the classification of its singular points.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(78)80086-4: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Fenske, M. R. (1932). Fractionation of Straight-Run Pennsylvania Gasoline. Ind. Eng. Chem. 24(5), 482–485.",
+          "doi": "10.1021/ie50269a003",
+          "note": "Minimum stages at total reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50269a003: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Underwood, A. J. V. (1949). Fractional Distillation of Multicomponent Mixtures. Ind. Eng. Chem. 41(12), 2844–2847.",
+          "doi": "10.1021/ie50480a044",
+          "note": "The theta equations for minimum reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50480a044: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gilliland, E. R. (1940). Multicomponent Rectification: Estimation of the Number of Theoretical Plates as a Function of the Reflux Ratio. Ind. Eng. Chem. 32(9), 1220–1223.",
+          "doi": "10.1021/ie50369a035",
+          "note": "The stages-against-reflux correlation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50369a035: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the liquid model every map on this page is computed with.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf, p. 139 read (recommended alpha_12 and tabulated alphas); Crossref 10.1002/aic.690140124 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "Bare-module costing and the total-module and grass-roots factors.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "why-did-it-not-dry": {
+      "references": [
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Chapter 12 'Drying': the moisture bases, equilibrium moisture against the humidity of the air, and the rate curve (printed pp. 655–670).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/treybal-mass-transfer-operations-3ed.pdf, PDF pp. 670-697 read (printed page = PDF page - 15) (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 12, solids drying, pp. 12-23 and 12-24.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Anderson, R. B. (1946). Modifications of the Brunauer, Emmett and Teller equation. J. Am. Chem. Soc. 68(4), 686–691.",
+          "doi": "10.1021/ja01208a049",
+          "note": "One of the three originals of the GAB isotherm.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01208a049: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
         }
       ]
     }

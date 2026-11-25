@@ -3362,6 +3362,33 @@ Nelder--Mead does well on both toys (two variables, an adequate penalty
 weight), which the page says is a property of the toys; and the quiz asks what
 an engineer should conclude from the theorem.
 
+\subsubsection*{The Bayesian section (steps 7 to 12)}
+
+After the decision card the page carries a section on Bayesian optimisation,
+the method one reaches for when a single simulation is the expensive thing.
+It is a one-variable teaching sketch run in the browser, not the engine: a
+Gaussian-process model with the squared-exponential kernel, conditioned on the
+calls made so far (Rasmussen and Williams, Algorithm~2.1 and
+eqs.~(2.25)--(2.26)), and the expected improvement of Jones, Schonlau and Welch
+(eqs.~(14)--(15)), which says where the next call is most likely to pay.  A
+workbench takes one call at a time on a smooth setting and on a narrow-dip
+setting, with sliders for the length scale and the noise, and counts the calls
+of the method against a finite-difference gradient sketch at an equal budget,
+turned into wall time at 1~ms, 1~min or 1~h per call.  The narrow dip is the
+honest failure: a length scale longer than the dip makes the model confident
+between its points and the dip is never sampled.  The engine side is one
+sentence, the measured result: an opt-in Bayesian method was built and compared
+with \code{sqp} under a rule written before the runs
+(the C499 protocol); on the cheap problem it
+reached 1\,\% of the best value in a median of 15 simulations against 25, on
+the expensive one (the reactive MTBE column) in 23 against 22, so by the rule
+it is not offered.  The section's limits and four quiz questions join the
+page's own, and its four sources (Rasmussen and Williams 2006; Jones et~al.
+1998; Shahriari et~al. 2016; Nocedal and Wright 2006) are in the page's list.
+The page's tests are \code{gui/tests/bayesOpt.test.ts}: hand-computed
+Gaussian-process and expected-improvement values, the shrinking band, the loop
+and the dip failure.
+
 \subsubsection*{What the page is held to}
 
 A test (\code{gui/tests/optimizers.test.ts}) recomputes the exact optimum
@@ -3602,6 +3629,94 @@ pressures are the catalogue's correlations, extrapolated at the higher
 pressures, as the engine announces.  Measured azeotropes are compared for four
 binaries only, read from measured points the corpus carries.
 
+\subsection{Designing a column for a real mixture}\label{sec:edu-column-design}
+
+\noindent\textit{\small Tool:} \code{tool=column-design}.  \textit{\small
+Case it starts from:} \file{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water}
+(one point of the design curve; the page reads a recorded table of the whole
+curve and of the ideal control).
+
+\subsubsection*{The question}
+
+\emph{I hold a feed and two product purities.  Can a column do it, how tall,
+with how much reflux, at what cost --- and how far can I trust the shortcut
+that gave me the first guess when the mixture is strongly non-ideal?}
+
+The page answers in four cards, in the order a design meets them, on two binary
+mixtures at 1\,atm: ethanol/water (NRTL, with its azeotrope) and the ideal
+benzene/toluene as the \emph{control}.  \textbf{Card~1, feasibility:} the
+engine's boiling and condensing temperatures of the mixture, the feed and the
+distillate asked for, and the lever rule $D/F=(z-x_B)/(x_D-x_B)$; past the
+azeotrope the card says that no column can make the product.  The link at the
+foot of the step opens the residue curve page for the ternary case.
+\textbf{Card~2, the design curve:} with both key purities fixed, for each
+integer stage count $N$ the reflux ratio $R$ at which the rigorous column meets
+the specification; the curve $R(N)$ has two asymptotes, the minimum reflux (many
+stages) and the minimum stages (large reflux), and every point is on
+specification.  \textbf{Card~3, the cost optimum:} capital (the engine's Turton
+total-module cost of shell, trays, condenser, reboiler and reflux drum) rises
+with $N$, the heat bill falls with $R$, and their sum has a minimum; two
+sliders, the price of heat and the capital charge, move it.  \textbf{Card~4, the
+shortcut as a control:} Fenske--Underwood--Gilliland on the same mixture and the
+same products, beside the rigorous result, with the ratios rigorous over
+shortcut for both mixtures and a table for ethanol/water as the distillate is
+asked closer to the azeotrope.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The rigorous curve is a \emph{recorded run}.  Each point is a \code{designSpec}
+(two unknowns, the reflux ratio and the distillate rate; two targets, the
+column's own \code{x\_D\_LK} and \code{x\_B\_HK}) around a
+\code{model simultaneous} column, about twenty MESH solves, so the page does not
+repeat it in the browser: \file{bin/curate/c501\_column\_design\_table.py} runs
+\code{choupoSolve} once per stage count and writes the table the page reads
+(\file{gui/src/case/columnDesignRecorded.json}); the case above reproduces any
+row by changing \code{nStages} and \code{feedStage}.  The recording also holds
+the engine's tray-hydraulic diameter, its Turton costs, the reboiler and
+condenser duties and utility prices, the shortcut column's Fenske, Underwood and
+Gilliland answers on the same products, and the engine's own boiling and
+condensing temperatures.
+
+The page computes the lever rule, the annualised cost $C_A=f_c C_\mathrm{inst}
++ h\,p_E Q_\mathrm{reb} + C_\mathrm{cool}$, the position of its minimum over the
+recorded stage counts, and the ratios; it says so beside each figure.
+Where the azeotrope is drawn it is read as the crossing of the engine's bubble
+and dew curves on a scan of thirty compositions, interpolated linearly.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+On ethanol/water drag the distillate purity past the azeotrope: the card turns
+from reachable to unreachable, and no number of stages repairs it.  Switch to the
+ideal control and every purity is reachable.  In card~2 read the two asymptotes
+and notice that the stage count at which the curve leaves the axis is far from
+the shortcut's Fenske value on the real mixture and close to it on the control.
+In card~3 raise the price of heat and watch the star move to more stages and a
+smaller reflux; then raise the capital charge and watch it move back.  In card~4
+compare the two ratios of the control and of ethanol/water, and read the last
+table downwards: the nearer the distillate is asked to the azeotrope, the larger
+the shortcut's error.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading the cost optimum as a price.}  The shape and position of the
+minimum are the lesson; its depth depends on a capital charge, a heat price and
+operating hours that the page states and cannot know.  And the rigorous minimum
+reflux on the page is the recorded curve's own floor, an upper bound of the true
+$R_\mathrm{min}$, not a pinch calculation.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Two binary mixtures stand for the general case: no ternary, no entrainer, no
+side draws.  The recorded column is the simultaneous one with constant molar
+overflow and an ideal-gas vapour.  The feed enters at a fixed fraction of the
+column, a little above the best feed stage at every $N$.  The exchanger areas
+come from declared $U$ and LMTD.  The pinch-point minimum reflux of a non-ideal
+column (the pinch in the rectifying section and, past an azeotrope, the boundary
+value method) is the next step for the engine.
+\declaredanchor{ch:column-design}
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a
@@ -3653,6 +3768,19 @@ adiabatic-saturation and true wet-bulb lines, over any carrier gas and
 condensable pair the catalogue can serve.  Every line is engine-computed.
 \declaredanchor{ch:drying}
 
+\subsection*{Why did it not dry? \quad(\code{tool=why-did-it-not-dry})}\label{sec:edu-why-did-it-not-dry}
+Page A of the dryer pages, ``the water, the air, the clock''.  Three cards, each a live figure on engine runs of
+bundled cases (the typescript orders, takes ratios and converts bases; it predicts nothing).  \emph{Ten percent of
+what?}\ converts between the wet and the dry basis and shows each case's own feed and product on both, with the
+engine's wet-basis kpi beside the converted value.  \emph{Three ceilings} runs four cases side by side
+(\code{solidDryer01\_sugar}, \code{solidDryer02\_starved\_air}, \code{evapDryer02\_energy\_limited},
+\code{sprayDryer06\_rea}) and gives each a verdict --- air-limited (exhaust saturated, or gas at its wet bulb),
+time-limited, isotherm-bound, or ``not classified'' --- that orders the engine's own numbers against tolerances
+printed beside it and lists the numbers it used; an air-flow slider and a sweep show where the cliff is.  The solid
+and evaporative dryers have no clock, and the card says so.  \emph{The humid day} runs the tray case in five airs of
+rising humidity: the floor $X_e$ rises, and a specification below it is unreachable at any time.  Theory: Section~\ref{sec:drying-three-ceilings}.
+\declaredanchor{sec:drying-three-ceilings}
+
 \subsection*{Drying curve, batch tray \quad(\code{tool=drying})}
 The two classical drying plots side by side on one run --- moisture
 against time, and rate against moisture --- with the critical moisture
@@ -3660,9 +3788,18 @@ visible as the corner where a flat rate begins to fall.  The tool is
 careful about one thing that deserves writing up properly: the engine
 omits the break time entirely when the crossing was never observed, and
 the tool reports \emph{which} absence it is rather than drawing a zero.
+Three further cards read the engine's runs: the tray \emph{loading} $L=m_s/A$ (three runs, moisture against $t/L$ on one curve),
+\emph{the last percent} (the time to a specification read off the emitted curve, with the floor as an asymptote) and
+\emph{the spray chamber} (the residence, the constant-rate time and the falling-rate constant of \code{sprayDryer01\_sugar}
+at four heights and two wheel speeds; no particle temperature is shown, the engine does not solve it).  Theory:
+Section~\ref{sec:drying-loading-tail-chamber}.
 \declaredanchor{ch:drying}
 
 \subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
+The page now opens on \emph{what you cannot calculate}: the bill of tests, the numbers the engine takes from a
+test of the sample (critical moisture, the falling-rate curve, the gas-film coefficient, the sorption constants)
+against those the plant decides, each with the number the bundled case declares; then the three flow
+arrangements, and last, in a collapsed drawer, the selection tree and the tables of the books, none of them removed.
 A \emph{selection} aid: the seven dryer types that do most of the drying ---
 spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
 each drawn as a schematic made for the page (wet feed and wet material in
@@ -3993,6 +4130,37 @@ published, and greys it out with the caveat spelled in full when the model
 was specified by a fixed pressure rise and the curve is therefore the
 specification echoed back.
 \declaredanchor{ch:rotating}
+
+\subsection*{Why does a correctly sized valve still control badly? \quad(\code{tool=control-valve})}\label{sec:edu-control-valve}
+A control valve is sized once, at one flow, and then asked to work over all of
+them.  The page runs the engine's pump and pipe
+(\code{pumpSystem01\_operating\_point}, swept over the flow, in the browser) and
+reads the pump's rise and the line's drop at a rated flow you choose; the
+valve's \emph{authority} $a$, the share of the available pressure it holds wide
+open, comes from those two numbers and is never typed.  Seven cards.
+(1)~\emph{A valve is a resistance in series}: the pump's rise stacked as static
+elevation, line and valve, re-split as you move the opening; the engine's pump
+rise and line loss at the rated and the minimum flow are in a table, with the
+constant-power pump's rise at the minimum flow printed against the constant
+source head the toy assumes.  (2)~\emph{The inherent characteristic}: linear,
+equal percentage ($R$ declared) and quick opening, drawn as conventions of valve
+makers, with no source cited.  (3)~\emph{Installed}: the installed flow
+$q=f/\sqrt{a+(1-a)f^2}$, derived in four lines on the page, over the inherent
+promise, with the opening below which it is more than a tenth above it.
+(4)~\emph{The loop gain}: $\mathrm{d}q/\mathrm{d}x$ for the three shapes, the
+largest and smallest gain and their ratio printed (the page ranks nothing), and
+the gain margin that ratio leaves.  (5)~\emph{Rangeability}: one big valve
+against a running plus a starting valve, with the opening each sits at at the
+minimum load and the installed turndown; the two opposed pieces of advice are
+put as a question.  (6)~\emph{Choking and cavitation at small flow}: the valve
+drop against the flow, largest where the flow is smallest, with the letdown
+page's own choked drop and cavitation index and the water's vapour pressure
+from a \code{choupoProps} run at your temperature.  (7)~\emph{Which way it
+fails}: six services, authored consequences for fail open, closed and in place,
+marked \emph{authored, not computed}.  The characteristics, $R$, the lowest
+controlling opening, $F_L$ and the starting valve's size are the student's or
+the page's declared values, marked as such.
+\declaredanchor{sec:control-valve}
 
 \subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
 Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
