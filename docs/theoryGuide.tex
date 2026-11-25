@@ -16669,6 +16669,265 @@ Finally, a finite difference is never built from a failed simulator
 evaluation: the other side is taken, announced, and a variable whose two
 sides both fail stops the SQP, unconverged, naming it.
 
+\subsection{Noise-aware differences: \code{fdMode auto}}\label{sec:sqp-adaptive-fd}
+
+The shipped differences use one relative step ($10^{-5}$) for every
+variable and every response.  That step is right for no case in
+particular: a forward difference carries a truncation error $\approx
+\tfrac12 L h$ and a noise error $\approx \sqrt2\,\varepsilon/h$, so the
+step that balances them depends on the response's own noise
+$\varepsilon$ and curvature $L$.  A fixed $10^{-5}$ caps the reachable
+gap near $10^{-10}$ on a clean function and is below the noise of a
+response that carries a loose convergence tolerance (the four shipped
+flowsheets measured about $10^{-13}$ and do not have that problem;
+\code{docs/audits/2026-11-24-optimizer-bench-results.md} \S1).
+\code{fdMode auto;} (\code{solver::SQPOptions::adaptiveFd}) chooses the step per
+variable from measurements, following Shi, Xuan, Oztoprak \& Nocedal
+\cite{ShiXuanOztoprakNocedal2021}.  It is OPTIONAL: the shipped default
+is unchanged and every shipped case runs byte-identically without it
+(gate \code{check\_sqp\_adaptive} holds the default path at 17 digits).
+\emph{What is the paper's and what is ours is said at each step;
+the paper's text of Mor\'e and Wild was not available to the
+implementation, and the rules marked ``ours'' are Choupo's own, not
+published ones.}
+
+\paragraph{Noise.}  For each response $r$ (the objective and every
+constraint) $\varepsilon_r$ is estimated from the values at nine points
+spaced $10^{-3}$ apart along a diagonal of the scaled variables
+(a smaller spacing where a bound is near), with the difference-table
+procedure ECnoise of Mor\'e and Wild \cite{MoreWild2011}: the $k$-th
+differences of a smooth function fall like $h^k$, those of noise do not,
+and the level $k$ at which three successive estimates
+$\sigma_k=\bigl(\gamma_k\,\overline{(\Delta^k f)^2}\bigr)^{1/2}$,
+$\gamma_k=(k!)^2/(2k)!$, agree is the noise
+(\cite{ShiXuanOztoprakNocedal2021}).  The agreement factor (four) and the
+sign-change rule (at least a third of the adjacent differences change
+sign) are ours.  Points close together are the point: the same
+point asked twice returns the same number from a deterministic engine,
+so the old ``evaluate twice'' probe measures zero whatever the noise.
+Two things are ours and are what keeps a measured number honest:
+\begin{itemize}
+\item the estimate is taken on a SECOND stencil a quarter as wide, and
+  the two levels must agree within a factor ten: noise does not change
+  with the spacing, a jump or an oscillation the first stencil cannot
+  resolve does.  A jump of $1.0$ and the smooth $0.05\sin(1500x)$ were
+  reported as noise levels of $0.22$ and $0.035$ by the single stencil;
+\item the outcome has three values, never two: a LEVEL; EXACT (every
+  difference of order $\ge2$ is zero or below $10^{-13}$ of the
+  response's size: a linear or low-degree response, the floor
+  $10^{-14}\max(1,|r|)$ applies); and UNKNOWN (a stencil point failed, no
+  level shows, or the two stencils disagree).  UNKNOWN is announced
+  (``noise unknown (reason); fixed steps, no error bars''), the variables
+  take the fixed relative step, and no error bar is printed: a failed
+  evaluation used to become the floor, and every later step and bar was
+  built on a number nobody had measured.
+\end{itemize}
+
+\paragraph{Curvature.}  Along each variable $e_j$ the second difference
+$\Delta_2(t)=r(\xv+te_j)-2r(\xv)+r(\xv-te_j)$ is formed with $t$ grown by
+a factor 8 (up to five probes; one-sided at a bound) until
+$|\Delta_2 r|\ge 100\,\varepsilon_r$ \emph{for that response}, giving
+$L_{r,j}=\max(0.1,|\Delta_2 r|/t^2)$ (the floor $0.1$ is Procedure~I of
+\cite{ShiXuanOztoprakNocedal2021}).  A response whose second difference never
+clears $100\varepsilon_r$ up to the largest probe carries the bound
+$\max(0.1,\,100\varepsilon_r/t^2)$ at that probe (ours: its curvature at
+that scale is below what its noise could show), and the same rule gives
+the third-derivative bound $M$ from $r(\xv\pm te_j)$, $r(\xv\pm2te_j)$.
+The paper's $L=0.1$ fall-back when the test is not met is NOT used,
+because it stands for a curvature nobody measured; a response whose
+probes could not be taken at all has no bound, the variable takes the
+fixed step, and its bars are unavailable.  (The first version took the
+growth of $t$ from the objective alone, so a constraint with noise
+$10^{-6}$ kept $L=0.1$ and printed a multiplier bar 7000 times too small.)
+Curvature and noise are re-estimated when a line search needs
+$\alpha<0.5$, after a restart, and at a point before it is certified.
+
+\paragraph{Step.}  The forward interval and its gradient-error bound are
+\begin{equation}
+  h_j=8^{1/4}\sqrt{\varepsilon/L},\qquad
+  \sigma_g=\sqrt{\tfrac14 L^2h^2+2\varepsilon^2/h^2}\;(\approx
+  1.19\sqrt{L\varepsilon}),
+  \label{eq:sqp-h-forward}
+\end{equation}
+the central ones, with $M$ a bound on the third derivative,
+\begin{equation}
+  h_j=\bigl(3\varepsilon/M\bigr)^{1/3},\qquad
+  \sigma_g=\sqrt{M^2h^4/36+\varepsilon^2/(2h^2)},
+  \label{eq:sqp-h-central}
+\end{equation}
+one perturbation serves the objective and every constraint, so $h_j$ is
+the largest of the per-response steps ($4\cdot10^{-9}\le h_j\le0.05$ in
+scaled units).  Variable $j$ is differenced \emph{centrally} when its
+forward bound exceeds a tenth of the stationarity tolerance, or after a
+failed line search; otherwise forward.  The step is FITTED TO THE BOX at
+every gradient evaluation, at the iterate it is used at, not at the one
+it was estimated at: it shrinks to the room inside the box; a central
+difference that does not fit becomes a one-sided one INSIDE the box; a
+failed side falls back only to a side inside the box; a variable whose box
+is narrower than $8\cdot10^{-9}$ is pinned and its column is zero, announced;
+and every trial point is clipped into the box.  The bars are recomputed with
+the step actually used.  So no evaluation ever leaves $[lo,hi]$ (invariant
+held by the gate: a counter in every test problem).  Before this, a step
+reused at a later iterate evaluated $x=1.0000002$ on $[0,1]$, and the
+shipped \code{optim05} simulated $T_{feed}=367.5$\,K against a declared
+maximum of $352.5$\,K, past a cliff the case itself warns of.  The
+iteration trace prints, per variable, the direction, $h_j$, the curvature
+and the error bound, and the noise it came from.
+
+\paragraph{Line search, restart, reuse.}  Under noise the merit is known
+only to $\pm\varepsilon_\phi$, $\varepsilon_\phi=\varepsilon_f+\mu\sum\varepsilon_c$,
+so the Armijo test of a shortened step is relaxed by $2\varepsilon_\phi$.
+This is OUR SIMPLIFIED form of the relaxed line search of
+\cite{ShiXuanOztoprakNocedal2021}: their eq.~2.19 has three cases (a
+condition on $g^{\!\top}p$ against $\sigma_g\|p\|$ and a simple-decrease
+branch) that are not implemented, and the slack is not the paper's.  A
+failed line search is no longer final: the first one resets
+$\Bv=\mathbf I$, switches every variable to central differences, draws a
+fresh noise and curvature estimate and tries once more; a second
+consecutive failure stops as before.  The gradients computed at the
+accepted point for the BFGS update are kept for the next iteration (same
+point, same steps: the same numbers, one pass fewer).
+
+\paragraph{The verdict.}  The rule is ours, and it is the point of the
+section.  The stationarity residual of the QP's own multipliers is
+$\|\nabla L\|_\infty=\|\Bv d\|_\infty$, so a stationarity test is a test that
+the step is small, on a gradient that is only as good as its estimate.
+\begin{enumerate}
+\item A candidate (residuals met, or the QP step vanished) is judged only on
+  a gradient whose noise, curvature and steps were estimated \emph{at that
+  point}.  If the last estimate was taken elsewhere, it is taken again, the
+  gradient is differenced again, and that is judged (a step chosen at
+  $x=0$ and a bound of $0.19$ against $10^{-5}$ had certified
+  $x=0.575$ on $f=10^8\max(0,0.3-x)^2+10(x-0.6)^2$, whose gradient there is
+  $-0.5$).
+\item The error bar of component $j$ of $\nabla L$ at that point is
+  $3\bigl(\sigma_{f,j}^2+\sum_k\lambda_k^2\sigma_{k,j}^2\bigr)^{1/2}$.  It is
+  judged \emph{component by component} against that component's own
+  tolerance (below); a component is excluded only when a bound is active AT
+  $x$ (the point is on the bound, to the feasibility tolerance), because
+  then its bound multiplier absorbs the error.  A bound that only the QP step
+  reaches is not a bound at $x$: its multiplier is not part of $\nabla L$, and
+  the component stays in the test and in the bar.  The verdict is
+  \code{CONVERGED} only if the residuals are met, every bar is finite and not
+  above its tolerance, \emph{and} the two checks below pass.
+\item No multiplier may be NOT RESOLVED (bar not below its value, or none)
+  while it is large enough to move a tolerance ($|\lambda|\max(1,
+  \|\nabla c\|_\infty)>1$): a tolerance scaled by a number the same output
+  calls unresolved is not a tolerance (HS13, which has no KKT point, was
+  certified with $\lambda=1.7\times10^{7}\pm3\times10^{7}$).
+\item The gradient is CONFIRMED by a second, different step before it is
+  believed: each variable is differenced again at $3.7$ times its step
+  (central if the first was central and the box has room; $1/3.7$ if
+  $3.7h$ would exceed the largest step), with the error bar of that step, and
+  the two components of $\nabla L$ must agree within $3(\sigma_1+\sigma_2)$ and
+  the second must also be inside the tolerance.  A smooth function whose
+  ripple $A\sin(2\pi x/5\cdot10^{-7})$ has a period dividing every probe reads
+  as the rounding floor and its slope $A\,2\pi/h$ as a gradient (certified at a
+  true $f'=-7.9\times10^{-4}$ for $A=10^{-10}$); at $3.7h$ the ripple's phase
+  differs and the two gradients disagree.  $3.7$ is not a divisor of the
+  first step or of the stencils ($10^{-3}$, $2.5\cdot10^{-4}$).  It costs $n$ or
+  $2n$ simulations once, at the certificate.
+\item Otherwise the word is different: \code{STATIONARY, NOT CERTIFIED} when
+  the residuals are met but a bar is above its tolerance or unavailable, a
+  multiplier is unresolved, or the confirmation failed; \code{stopped}
+  otherwise.  The exit code is non-zero and the reason is printed.
+\item The tolerance is scaled PER COMPONENT (opt-in path only):
+  \begin{equation}
+    \mathrm{tol}_{j}=\mathrm{tolStat}\cdot S_j,\qquad
+    S_j=\max\Bigl(1,\ \bigl|\tfrac{\partial f}{\partial x_j}\bigr|,\
+        \sum_i\bigl|\lambda_i\tfrac{\partial c_i}{\partial x_j}\bigr|,\
+        |\lambda_{b,j}|\Bigr),
+    \label{eq:sqp-scaled-stat}
+  \end{equation}
+  the size of the terms whose cancellation component $j$ of $\nabla L$
+  measures ($\lambda_{b,j}$ only for a bound active at $x$).  One global
+  scale, the largest of them, let a variable on a bound with slope $10^{5}$
+  give every other variable a tolerance of $1.0$: $f=10^4(x_1-x_2^2)^2+
+  (x_2-0.5)^2+10^5x_3$ was certified at a true gradient $1.46\times10^{-2}$,
+  1458 times tolStat.  An absolute $10^{-5}$ on an objective of $6.6\times
+  10^{8}$ with shadow price $2.4\times10^{6}$ (\code{optim05}) asks for a
+  relative residual of $10^{-11}$, which is why the scale exists.  Because a
+  scaled tolerance also passes a long step, the scaled test requires
+  $|d_j|\le10^{-4}\min\bigl(\max(1,|x_j|),\ \mathrm{hi}_j-\mathrm{lo}_j\bigr)$
+  \emph{per variable}, on that variable's own scale (a global
+  $\max(1,\|x\|_\infty)$ gave a variable in $[0,1]$ an allowance of $100$
+  because another sat at $10^{6}$).  Complementarity is scaled by the largest
+  \emph{resolved} multiplier, $\mathrm{tolCompl}\cdot\max(1,\max|\lambda|)$.
+  Every tolerance the run prints is the one it used: the worst component's
+  residual with its tolerance, and the complementarity tolerance.  A
+  noise-excuse (``within the gradient noise'') is not a verdict: the earlier
+  attempt that certified $K=2\times10^{10}$, $x=1$, $f=1.6$ (optimum $0.6$,
+  $f=0$) is a regression arm of the gate.  The price of the per-component
+  scale: a variable the model does not read has a zero gradient and the noise of
+  the objective in its bar, and can never be certified (the shipped
+  \code{optim05} varies such a variable, \code{T\_feed}, and so ends
+  \code{STATIONARY, NOT CERTIFIED} under \code{fdMode auto}).
+\end{enumerate}
+
+\paragraph{Error bars on the shadow prices.}  The multiplier printed is the
+QP's, $\boldsymbol\lambda=(A\Bv^{-1}A^{\!\top})^{-1}(\mathbf b-A\Bv^{-1}\mathbf g)$
+over the active rows $A$ (equalities, active inequalities, active bounds), so
+an error $e$ in the gradient of the Lagrangian moves it by
+$-P\,e$, $P=(A\Bv^{-1}A^{\!\top})^{-1}A\Bv^{-1}$, the $\Bv$-weighted map; with
+$e_j^2=\sigma_{f,j}^2+\sum_k\lambda_k^2\sigma_{k,j}^2$ from
+\eqref{eq:sqp-h-forward}/\eqref{eq:sqp-h-central} (the bound rows are
+exact), $\sigma_{\lambda_i}^2=\sum_jP_{ij}^2e_j^2$.  (The first version used
+the least-squares map $(AA^{\!\top})^{-1}A$ of another estimator; with
+$H=\bigl[\begin{smallmatrix}101&10\\10&1\end{smallmatrix}\bigr]$ it was five
+times too small.)  $A$ is normalised by its diagonal and a pivot below
+$10^{-10}$ there refuses the bar: it is printed \code{error bar
+unavailable}, there is no absolute ridge.  An inactive inequality has
+$\lambda=0$ exactly and prints \code{inactive: exactly 0, no error bar}.
+The printed bar is two standard deviations, first order, with independent
+errors; it OMITS the displacement of the optimum, correlations between the
+responses of one run, the uncertainty of the active set, and treats
+truncation (a bias) as if it were random.  A rule of our own: on the 40
+noisy seeds of the arm \code{bar\_estimator\_match} the mean bar is within a
+factor 2 of two robust standard deviations of the runs that reached
+stationarity, and a run stopped in a flat valley can be far outside it.  For that reason the driver prints the bar ONLY on a certified run; on any other it prints \code{bar unavailable: run not certified} (14 of 40 seeds of the same problem with noise also on the constraint were off by up to $3\cdot10^{-3}$ against a mean bar $10^{-4}$, the displacement of $x^\ast$ in the soft direction), and the output says that the bar omits the displacement of $x^\ast$.
+
+\paragraph{The QP in robust mode.}  With \code{fdMode auto} the QP of
+\S\ref{ch:active-set-qp} runs in robust mode (\code{QPProblem::robust}):
+a working-set row whose component orthogonal to the earlier rows is below
+$10^{-5}$ of its length is dropped as dependent, and a sub-step counts as
+zero below $10^{-9}(1+\|x\|)$.  Both are aids, and neither is the last
+word.  The last step is APPLIED before feasibility is judged ($1000\,d+10^{-7}=0$
+has $d=-10^{-10}$: the first version discarded it and called the row
+violated); and a robust QP that ends INFEASIBLE or does not settle is solved
+again by the default solver before any conclusion, so a ``local
+infeasibility'' that the default solver does not share is the robust mode's
+and never reaches the SQP.  The price of the $10^{-5}$ dependence test: on a constraint written twice with independent noise of $10^{-9}$ ($x^2+y^2\le1$ twice, maximise $x+2y$) two of 20 seeds stop with a QP that does not settle, where the default converges (the reverse on HS13, where the default cycles and \code{auto} stops honestly): a stop is acceptable, a false certificate is not.  (min $-10x_1+x_2^2$ s.t.\ $x_1+5\cdot10^{-6}x_2=1.00002$
+was stopped as locally infeasible; HS13 and HS68 stopped with the false
+sentence that $\theta=0$ has no solution, though $d=0$ satisfies it).  What
+was tried and dropped: a second-order correction against the Maratos
+effect (N\&W \S18.3) was implemented and measured on 24 development
+problems; it moved the fraction solved by $+0.03$, $+0.01$ and $-0.13$
+at noise $10^{-8}$, $10^{-6}$ and $10^{-4}$ (tolerance $10^{-6}$) and
+nothing clean, so it is not in the code; Powell's falling penalty
+(1978) likewise moved nothing clean.  The elastic QP was not built.
+
+\paragraph{What it was measured to do.}  On the 18 Hock--Schittkowski
+problems of the judge set (clean and three noise levels,
+\code{docs/audits/2026-11-24-optimizer-bench-results.md} \S10), with the
+fraction of cells solved at $\tau=10^{-2}/10^{-4}/10^{-6}$:
+clean, \code{auto} solves $0.83/0.83/0.72$ against $0.89/0.83/0.72$ for SLSQP
+and $0.94/0.89/0.78$ for IPOPT: \emph{it trails IPOPT at all three tolerances and
+SLSQP at the coarsest} where there is no noise to correct; at $\sigma=10^{-6}$ it solves $0.82/0.65/0.56$ against the
+default $\mathrm{sqp}$'s $0.44/0.20/0.09$ and SLSQP's $0.07/0/0$ (the other
+codes run with their default steps, which are not tuned for noise); at
+$\sigma=10^{-4}$, $0.72/0.52/0.43$, ahead of the derivative-free codes of the
+bench ($0.61/0.43/0.22$ at best).  On the four shipped flowsheets, whose noise
+is about $10^{-13}$ and where the problem it solves is absent, it finds the
+same optima with $1.3$ to $3.3$ times the simulator runs of the default and ends
+\code{CONVERGED} in 5 of 12 starts (the rest \code{STATIONARY, NOT CERTIFIED}:
+three of \code{optim02} whose bar is $8\cdot10^{-5}$ against $10^{-5}$, three of
+\code{optim05} with its inert variable, one of \code{optim04} with an unresolved
+multiplier).  A converged verdict is a first-order
+statement to the tolerance, not a statement that $f$ is near its minimum
+(HS25's gradient is below $10^{-5}$ over a wide region around its start).
+
+
+
 \subsection{A worked self-check: Hock--Schittkowski}
 
 Because the SQP is finite-difference and the simulator pass is noisy,
@@ -16718,7 +16977,11 @@ $\theta$, the merit penalty $\mu$, the active set, the Lagrange
 multipliers (shadow prices), the Armijo step $\alpha$, and the four KKT
 residuals --- the whole inner workings, not just a final answer. The
 self-checks \code{verifySQP} / \code{verifyActiveSetQP} run first and
-their pass is announced. On convergence the five-line KKT certificate is
+their pass is announced (with \code{fdMode auto} also the same problems
+under noise-aware differences, \code{verifySQPAdaptive}), and each
+iteration adds a line giving every variable's differencing step with its
+reason and every multiplier with its error bar
+(\S\ref{sec:sqp-adaptive-fd}). On convergence the five-line KKT certificate is
 printed and the simulator is replayed once at the optimum with full
 verbosity, exactly as the Nelder-Mead path does.
 
@@ -37933,6 +38196,18 @@ Springer, 1978. Source of the \emph{damped}-BFGS modification (the
 $\theta$ blend toward $\Bv\mathbf s$) that keeps the SQP Hessian
 approximation positive definite even when the Lagrangian curvature is
 indefinite.
+
+\bibitem{ShiXuanOztoprakNocedal2021} Shi, H.-J. M., Xuan, M. Q.,
+Oztoprak, F., \& Nocedal, J., ``On the numerical performance of
+derivative-free optimization methods based on finite-difference
+approximations'', arXiv:2102.09762 (2021).  Read for \S\ref{sec:sqp-adaptive-fd}:
+the intervals eq.~2.13 (forward) and 2.14 (central), Procedure~I (the
+curvature estimate), the relaxed Armijo condition eq.~2.19.
+
+\bibitem{MoreWild2011} Mor\'e, J. J., \& Wild, S. M., ``Estimating
+computational noise'', SIAM J. Sci. Comput.~33 (2011) 1292--1314.  The
+ECnoise difference-table estimate, implemented from the description in
+\cite{ShiXuanOztoprakNocedal2021}, not from the paper itself.
 
 \bibitem{HockSchittkowski} Hock, W., \& Schittkowski, K., \emph{Test
 Examples for Nonlinear Programming Codes}, Lecture Notes in Economics and

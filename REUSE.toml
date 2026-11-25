@@ -34,6 +34,7 @@ path = [
   "bin/curate/migrate_thermoPhysProp.skipped.txt",
   "bin/curate/recording_platform.txt",
   "bin/curate/suite_lanes.txt",
+  "bin/curate/sqp_default_path.expected",
   "bin/curate/backlog_progress.tsv",
   "bin/curate/backlog_themes.tsv",
   "bin/curate/feature_documented_debt.tsv",

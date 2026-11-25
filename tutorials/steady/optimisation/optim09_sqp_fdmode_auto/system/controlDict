@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "optim05 with fdMode auto: noise-aware differences, error bars on the shadow prices, a certificate that needs a fresh gradient. Esterification CSTR sized & operated for MAX NPV by hand-rolled SQP, subject to a reactor-size cap and a capital-budget cap (active-constraint shadow prices)";
+
+verbosity     3;

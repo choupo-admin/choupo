@@ -76,6 +76,7 @@ Description
 #include "core/Types.H"
 
 #include <functional>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -116,6 +117,12 @@ struct SQPTrace
     scalar  alpha       = 1.0; // Armijo step length accepted
     bool    watchdog    = false; // full step forced this iteration
     std::string note;
+    //  C496: filled only by the optional paths (adaptiveFd).  fdReport says
+    //  which differencing step each variable took and why; sigmaLam* are the
+    //  error bars the gradient noise puts on the multipliers (NaN = unknown).
+    std::string fdReport;
+    sVector sigmaLamEq;
+    sVector sigmaLamIneq;
 };
 
 struct SQPResult
@@ -144,6 +151,32 @@ struct SQPResult
     scalar  kktFeasIneq = 0.0;
     scalar  kktCompl    = 0.0;
     scalar  kktDualFeas = 0.0;   // max(0, -min lambda) over active ineqs
+
+    //  C496 (adaptiveFd only): error bars of the final multipliers, empty
+    //  otherwise; a bar larger than the multiplier means "not resolved".
+    sVector sigmaLamEq;
+    sVector sigmaLamIneq;
+    int     restarts     = 0;    // BFGS restarts after a failed line search
+    //  C496 (adaptiveFd only).  ineqActive: which user inequalities were
+    //  active in the final QP (an inactive row has multiplier exactly 0 and
+    //  NO error bar: NaN).  statBar: the error bar the gradient noise puts on
+    //  ||grad L||inf at the returned point (NaN = unavailable: the noise was
+    //  not measured).  certified: the KKT test was met AND the gradient was
+    //  re-estimated AT the returned point AND statBar <= the tolerance used
+    //  (scaled tolerance, see SQPOptions::scaledStationarity).  converged is
+    //  true only when certified is.  stationaryUncertified: the residuals
+    //  met their tolerances but the bar did not allow the claim.
+    std::vector<bool> ineqActive;
+    scalar  statBar      = std::numeric_limits<scalar>::quiet_NaN();
+    scalar  statTolUsed  = 0.0;
+    //  The tolerances USED by the verdict (scaled): the worst component's residual
+    //  and its tolerance, the bar and tolerance of the component whose bar binds,
+    //  and the complementarity tolerance.  Per component: tol_j = tolStat S_j.
+    scalar  statRes      = std::numeric_limits<scalar>::quiet_NaN();
+    scalar  statResTol   = 0.0;
+    scalar  complTolUsed = 0.0;
+    bool    certified    = false;
+    bool    stationaryUncertified = false;
 };
 
 struct SQPOptions
@@ -170,6 +203,31 @@ struct SQPOptions
     // The ONLY Maratos mitigation in v1: accept the full step every K iters.
     int     watchdogEvery = 5;
 
+    //  C496, OPTIONAL, both off by default (every shipped case byte-identical).
+    //  adaptiveFd (outerDict `fdMode auto;`): the step of each variable comes
+    //    from the response's own noise (estimated from points close together)
+    //    and curvature, forward or central per variable, never across a bound;
+    //    the Armijo test is relaxed by the merit's noise, gradients computed
+    //    for the BFGS update are reused by the next iteration, and a failed
+    //    line search restarts once from B = I with central differences before
+    //    stopping.  Sources: Shi, Xuan, Oztoprak & Nocedal (2021) eq. 2.13,
+    //    2.14 and Procedure I; More & Wild (2011) for the noise estimate.
+    //    The relaxed Armijo test is our simplified form, NOT their eq. 2.19.
+    //    The agreement factor 4 and the sign-change rule of the noise estimate,
+    //    the second (quarter-width) stencil, the bounds for responses whose
+    //    curvature the noise hides, the multiplier bars and the certificate
+    //    rule are OUR OWN rules.  A verdict `converged` needs the gradient
+    //    re-estimated at the point and its error bar below the tolerance.
+    bool    adaptiveFd   = false;
+
+    //  C496 F11 (adaptiveFd only): the stationarity tolerance is tolStat times
+    //  S = max(1, ||grad f||inf, max_i |lambda_i| ||grad c_i||inf), the size
+    //  of the terms whose cancellation grad L measures (a scaling of our own,
+    //  in the spirit of the usual relative dual-infeasibility test); the step
+    //  must also be small (||d||inf <= 1e-4 max(1,|x|)) and the complementarity
+    //  tolerance is tolCompl max(1, ||lambda||inf).  Off: the absolute tolerances.
+    bool    scaledStationarity = true;
+
     // Per-iteration callback (logging / CSV).
     std::function<void(const SQPTrace&)> onIter;
 };
@@ -192,5 +250,9 @@ SQPResult sqp(const SQPEvaluator& eval,
 // (merge-blocking gate).  These isolate the SQP algorithm from simulator
 // noise.
 scalar verifySQP(int verbosity = 0);
+
+// C496: the same problems under the noise-aware differences (adaptiveFd), clean
+// and with 1e-7 noise; throws on a miss.  Run by cases that select fdMode auto.
+scalar verifySQPAdaptive(int verbosity = 0);
 
 } // namespace Choupo::solver

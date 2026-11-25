@@ -3495,6 +3495,16 @@ point.  It was measured to need fewer simulations than the SQP on a cheap smooth
 on a reactive column that fails in part of its box (theory: Theory Guide, Bayesian optimisation).
 Worked example: \file{optim08\_bayesian\_membrane}.
 
+\code{fdMode auto;} on \code{method sqp} is the opt-in noise-aware difference: the step of each
+variable comes from the noise the engine measures in the responses and from their curvature,
+the step never leaves the box, the shadow prices print with an error bar (and \code{inactive}
+for a slack constraint), and the word \code{CONVERGED} is given only when the gradient was
+estimated again at the optimum and its error bar is below the (scaled) tolerance; otherwise the
+run says \code{STATIONARY, NOT CERTIFIED}, prints the bar and exits non-zero.  It costs more
+simulator runs than the default on a smooth response.  Worked example:
+\file{optim09\_sqp\_fdmode\_auto} (the problem of \file{optim05\_reactor\_npv}); theory: Theory
+Guide, \emph{Noise-aware differences}.
+
 \paragraph{Parameter estimation.}  Regression of model parameters
 against experimental data lives in \code{choupoProps} as the
 \code{fitParameters} operation (\S\ref{sec:props}); the old

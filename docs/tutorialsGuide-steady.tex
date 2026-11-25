@@ -11579,6 +11579,85 @@ Two design variables, written through \$references so the SQP can drive them and
 \end{tutgolden}
 
 \clearpage
+\tutentry{optim09\_sqp\_fdmode\_auto}{tutorials/steady/optimisation/optim09\_sqp\_fdmode\_auto}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny cstr}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (heater) at (2.9,-0.0) {\textbf{heater}\\[-1pt]{\tiny heater}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (5.8,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (reactor) -- (heater) node[midway, above, font=\tiny] {reactorOut};
+  \draw[->] (heater) -- (separator) node[midway, above, font=\tiny] {hotStream};
+  \draw[->] ($(separator.east)+(0,-0.17)$) -- ($(separator.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liqProd};
+  \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapProd};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{optim05 with fdMode auto: noise-aware differences, error bars on the shadow prices, a certificate that needs a fresh gradient. Esterification CSTR sized \& operated for MAX NPV by hand-rolled SQP, subject to a reactor-size cap and a capital-budget cap (active-constraint shadow prices)}
+\begin{tutnarrative}
+(the problem of optim05\_reactor\_npv) -- CONSTRAINED ECONOMIC optimisation: size \& operate an esterification CSTR plant for MAXIMUM NPV.
+
+Same esterification plant as the economics01 flagship --
+
+feed -$\to$ reactor (CSTR) -$\to$ heater -$\to$ separator (flash) |$\to$ vapProd (ethyl-acetate-rich | overhead, the prime | product @ 1.55 EUR/kg) |$\to$ liqProd (water/acid-rich bottoms, low-value byproduct @ 0.30 EUR/kg)
+
+-- but instead of a FIXED design we ask the engine the design question:
+
+maximise economics.NPV varying V\_R (reactor volume, m\textasciicircum{}3) T\_feed (feed/reactor T, K) subject to reactor.V\_R <= V\_max (a physical SIZE cap) economics.FCI <= FCI\_max (a CAPITAL-BUDGET cap)
+
+THE ECONOMIC TRADE-OFF (why this is a genuine optimum, not a corner)
+
+The heater runs at a FIXED partial duty, so the downstream flash SPLITS the reactor effluent into a light, ethyl-acetate-rich VAPOUR overhead (sold high) and a heavy, water/acid-rich LIQUID bottoms (sold cheap). Esterification conserves total mass; what conversion buys you is the RESHUFFLING of that mass toward the valuable overhead. Both knobs raise conversion -- and the CSTR is ISOTHERMAL at the feed temperature (CSTR.cpp: T = feed.T), so:
+
+V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
+
+T\_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
+
+We deliberately set the size cap TIGHTER than where the NPV-greedy design would otherwise stop, so at the optimum the reactor-size constraint BINDS.
+
+HOW TO READ THE SHADOW PRICES (the whole point of the tutorial)
+
+The SQP prints, at the certified optimum, a Lagrange multiplier (lambda) for each inequality. A constraint with lambda > 0 is ACTIVE (binding) and its multiplier is the SHADOW PRICE -- the marginal NPV you would gain by relaxing that cap by one unit:
+
+reactor.V\_R cap ACTIVE $\to$ lambda = d(NPV)/d(V\_max) [EUR of NPV per extra m\textasciicircum{}3 of reactor head-room]. economics.FCI cap $\to$ lambda = d(NPV)/d(FCI\_max) [EUR of NPV per extra EUR of capital you may spend].
+
+A constraint with lambda \textasciitilde{} 0 is SLACK (not binding) -- relaxing it buys nothing. Here the FCI cap is deliberately generous: it stays SLACK so the student sees BOTH an active and an inactive constraint side by side. The trace marks the active set and the KKT certificate proves the point is a true constrained optimum (||grad L|| \textasciitilde{} 0, complementarity \textasciitilde{} 0).
+
+The two design variables are case-level \$references so the SQP can drive them through `variables.<name>` and the trace shows their canonical-SI values.
+
+THE ECONOMICS INVERTED ON 2026-08-09, AND THE OPTIMISER DID NOT
+
+Everything above about the SQP is unchanged and still true: the run converges, the reactor-size cap is ACTIVE with a positive multiplier, the FCI cap stays SLACK, and the KKT certificate closes. What changed is the SIGN of the money.
+
+The `heater` used to invert its fixed 200 kW on a SENSIBLE enthalpy relation, which walked the stream 11.8 K to 364.27 K without paying any latent heat. The flash then found 98.8 \% vapour, and the ethyl-acetate-rich overhead -- the whole revenue of this case -- existed because the heater had crossed the bubble point for free. The heater now solves for the outlet STATE whose enthalpy is H\_in + Q: 200 kW reaches 356.55 K and 7.7 \% vapour, the flash splits V/F 0.077, revenue falls 321.7 $\to$ 88.2 M EUR against an essentially unchanged 221 M EUR cost of manufacture, and the optimum NPV is -646 M EUR (IRR and payback are UNDEFINED and published as null -- the project never breaks even).
+
+So this case still demonstrates constrained SQP, shadow prices and a KKT certificate, and it now demonstrates them on a project that loses money. Restoring the intended economics is a DESIGN decision, not a code fix: the duty (or the pressure, or the product spec) has to be chosen so the overhead is actually made. It is deliberately NOT chosen here -- picking a number to make the old answer come back would be fitting the case to a result nobody re-derived. Record: docs/design/tp-stream-energy-coherence.md.
+
+\end{tutnarrative}
+\tutreadme{This case is optim05\_reactor\_npv with fdMode auto; instead of fdStep 2e-2; fdMode central; and without the inert variable T\_feed (below). Same flowsheet, same economics, one variable and two constraints; what changes is how the SQP differences its responses and what it is allowed to call a result.}
+\tutreadme{$\ast$ The step of each variable comes from the NOISE the engine measures in the NPV (about 2e-4 EUR on 6.6e8, nine points 1e-3 apart, never the same point twice) and from its curvature. The first line of each iteration's fd: row says which variable was differenced forward or central, with which step and why. $\ast$ The shadow prices print with an error bar (lam (+-bar), 2 sd, first order, through the QP's own multiplier map), inactive: exactly 0 for the slack capital cap, and error bar unavailable whenever the bar cannot be defended. $\ast$ CONVERGED needs the gradient re-estimated AT the optimum and its error bar (3 sd of ) below the tolerance; the tolerance is scaled by the size of the gradient terms (an absolute 1e-5 on a 6.6e8 objective with a shadow price of 2.4e6 is a relative 1e-11). The optimum block prints the bar beside the tolerance. When the bar is too large the word is STATIONARY, NOT CERTIFIED, exit code 1. $\ast$ Theory Guide, section "Noise-aware differences: fdMode auto". It costs more simulator runs than the default on a response that is smooth to rounding (40 against 16 from the tutorial start): measured in docs/audits/2026-11-24-optimizer-bench-results.md, section 8.}
+\tutreadme{Finding (2026-11-25, C496 review 2): T\_feed is INERT in optim05, so optim09 does not carry it. In optim05 variables.T\_feed is declared and the optimiser varies it, but nothing reads it: the feed stream's temperature is the 352.5 K of 0/feed (the reactor and the replayed JSON show 352.5 K while the history prints T\_feed = 350). Its gradient is zero, and under fdMode auto the noise bar of that component (the NPV, 6.6e8, carries 2e-4 of noise) is far above any tolerance a zero-gradient component can have, so the run could never be certified for a variable that does nothing. optim09 therefore has ONE variable, V\_R, against the size cap and the (slack) capital cap; everything else is optim05's. The prose below, which credits T\_feed with raising the conversion, describes optim05's intention, not its wiring.}
+\tutreadme{Take the economics01 ethyl-acetate plant and stop $\ast$fixing$\ast$ the design --- let the engine choose it. The hand-rolled SQP sizes and operates the reactor to maximise the net present value, subject to inequality caps, and prints the shadow prices (Lagrange multipliers) of the binding caps.}
+\tutreadme{The objective economics.NPV is a KPI published by the EconomicsPass in the system/postDict chain (sizing $\to$ costing $\to$ economics). The optimiser runs that whole post chain on every evaluation, so the economics scalars (economics.NPV, economics.FCI, ?) are reachable as ordinary objective/constraint paths --- exactly like a sweep reads them.}
+\tutreadme{The heater runs at a fixed partial duty, so the flash $\ast$splits$\ast$ the reactor effluent into a light ethyl-acetate-rich vapour overhead (the prime product at 1.55 ?/kg) and a heavy water/acid-rich liquid bottoms (a low-value byproduct at 0.30 ?/kg). Esterification conserves total mass; what conversion buys you is the reshuffling of that mass toward the valuable overhead.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.138888888889}
+\goldrow{stream}{hotStream}{F}{0.138888888889}
+\goldrow{stream}{liqProd}{F}{0.128482375685}
+\goldrow{stream}{reactorOut}{F}{0.138888888889}
+\goldrow{stream}{vapProd}{F}{0.010406513204}
+\goldrow{kpi}{economics}{COM\_d}{221221146.357}
+\goldrow{kpi}{economics}{FCI}{509710.813033}
+\goldrow{kpi}{economics}{NPV}{-656434027.842}
+\goldrow{kpi}{economics}{TCI}{586167.434987}
+\goldrow{kpi}{economics}{WC}{76456.6219549}
+\goldrow{kpi}{economics}{revenue}{86091825.6846}
+\goldrow{kpi}{heater}{F}{0.138888888889}
+\goldrow{kpi}{heater}{P}{101325}
+\goldrow{kpi}{heater}{Q}{200000}
+\goldmore{121}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pareto01\_purity\_energy}{tutorials/steady/optimisation/pareto01\_purity\_energy}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -53,7 +53,7 @@ export const QP_STEPS: readonly LessonStep[] = [
       + "safeguards against degeneracy, dependent constraints and poor "
       + "conditioning — Choupo's solver carries a feasibility slack, a "
       + "multiplier-sign band and a zero-step test "
-      + "(src/solver/ActiveSetQP.cpp:144-145 and :327), a row tolerance "
+      + "(src/solver/ActiveSetQP.cpp:146-147 and :327), a row tolerance "
       + "scaled to each row's own terms, and an LICQ recovery — and an "
       + "answer is checked by its residuals: \"KKT satisfied\" is declared "
       + "only once every row, active or not, is feasible, and a QP whose "

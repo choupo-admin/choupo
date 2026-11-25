@@ -79,6 +79,99 @@ sVector matVec(const std::vector<sVector>& B, const sVector& x)
     return y;
 }
 
+//  The noise level of a response from its values at m+1 equally spaced
+//  points, after More & Wild (2011) ECnoise as used by Shi et al. (2021): the
+//  k-th differences of a smooth function fall like h^k, those of noise do
+//  not, so the level k where three successive estimates agree and the
+//  differences change sign often enough IS the noise.  Of that, the
+//  estimates sigma_k (eq. 2.9), the factor gamma_k and the agreement of three
+//  successive levels are the paper's; the factor 4 of the agreement and the
+//  rule "at least a third of the adjacent differences change sign"
+//  (`3 flips >= count - 1`) are OURS (the paper's text was not available to
+//  this implementation).  Three outcomes, never two:
+//    Level        a noise level was found;
+//    Exact        every difference of order >= 1 is exactly zero (a constant
+//                 or an exactly linear response): no noise, the machine floor
+//                 applies;
+//    Undetermined no level shows (the response is not smooth enough at this
+//                 spacing, or it jumps): the noise is UNKNOWN, which is not
+//                 zero and is never turned into a number.
+enum class NoiseKind { Level, Exact, Undetermined };
+struct NoiseEst { NoiseKind kind = NoiseKind::Undetermined; scalar level = 0.0; };
+
+NoiseEst ecNoise(const sVector& f)
+{
+    const int m = static_cast<int>(f.size()) - 1;
+    std::vector<sVector> D(m + 1);
+    D[0] = f;
+    sVector sig(m + 1, 0.0);
+    std::vector<int> flips(m + 1, 0);
+    scalar gamma = 1.0;                                  // (k!)^2/(2k)!
+    bool allZero = true;
+    for (int k = 1; k <= m; ++k)
+    {
+        D[k].resize(m + 1 - k);
+        scalar sum2 = 0.0;
+        for (int i = 0; i + k <= m; ++i)
+        {
+            D[k][i] = D[k - 1][i + 1] - D[k - 1][i];
+            sum2 += D[k][i] * D[k][i];
+        }
+        if (sum2 > 0.0) allZero = false;
+        gamma *= static_cast<scalar>(k) / (2.0 * (2.0 * k - 1.0));   // g_k = g_{k-1} k^2/((2k)(2k-1))
+        sig[k] = std::sqrt(gamma * sum2 / static_cast<scalar>(m + 1 - k));
+        for (int i = 0; i + 1 < m + 1 - k; ++i)
+            if (D[k][i] * D[k][i + 1] < 0.0) ++flips[k];
+    }
+    NoiseEst e;
+    //  an exactly linear (or constant) response: every difference of order >= 2
+    //  is exactly zero.  Nothing noisy was seen, and nothing is claimed.
+    //  or lie below the machine-rounding floor (1e-13 of the response's size,
+    //  ours): a polynomial of low degree whose differences are round-off.
+    scalar fmax = 1.0;
+    for (scalar v : f) fmax = std::max(fmax, std::abs(v));
+    bool linearExact = true;
+    for (int k = 2; k <= m; ++k) if (sig[k] > 1.0e-13 * fmax) linearExact = false;
+    if (allZero || linearExact) { e.kind = NoiseKind::Exact; return e; }
+    for (int k = 1; k + 2 <= m; ++k)
+    {
+        const scalar a = std::min({sig[k], sig[k + 1], sig[k + 2]});
+        const scalar b = std::max({sig[k], sig[k + 1], sig[k + 2]});
+        if (a > 0.0 && b <= 4.0 * a && 3 * flips[k] >= (m + 1 - k) - 1)
+        { e.kind = NoiseKind::Level; e.level = sig[k]; return e; }
+    }
+    return e;
+}
+
+//  Solve the small SPD-ish system M x = r (Gaussian elimination, partial
+//  pivoting).  Returns false when singular.
+bool smallSolve(std::vector<sVector> M, sVector r, sVector& x)
+{
+    const std::size_t m = r.size();
+    for (std::size_t c = 0; c < m; ++c)
+    {
+        std::size_t p = c;
+        for (std::size_t i = c + 1; i < m; ++i)
+            if (std::abs(M[i][c]) > std::abs(M[p][c])) p = i;
+        if (std::abs(M[p][c]) < 1.0e-13) return false;
+        std::swap(M[p], M[c]); std::swap(r[p], r[c]);
+        for (std::size_t i = c + 1; i < m; ++i)
+        {
+            const scalar f = M[i][c] / M[c][c];
+            for (std::size_t j = c; j < m; ++j) M[i][j] -= f * M[c][j];
+            r[i] -= f * r[c];
+        }
+    }
+    x.assign(m, 0.0);
+    for (std::size_t ii = m; ii-- > 0;)
+    {
+        scalar t = r[ii];
+        for (std::size_t j = ii + 1; j < m; ++j) t -= M[ii][j] * x[j];
+        x[ii] = t / M[ii][ii];
+    }
+    return true;
+}
+
 } // anonymous namespace
 
 SQPResult sqp(const SQPEvaluator& eval,
@@ -116,6 +209,301 @@ SQPResult sqp(const SQPEvaluator& eval,
         for (scalar v : r.h) if (!std::isfinite(v)) return false;
         for (scalar v : r.g) if (!std::isfinite(v)) return false;
         return true;
+    };
+
+    // ----------------------------------------------------------------------
+    //  C496 -- ADAPTIVE DIFFERENCES (opts.adaptiveFd; off by default).
+    //
+    //  The step of variable j comes from the response's own noise and
+    //  curvature, not from one fixed fraction.  Per response r (the
+    //  objective and every constraint):
+    //    eps_r  noise level, ECnoise (More & Wild 2011) on 9 points a few
+    //           1e-3 apart along a diagonal -- NOT the same point twice,
+    //           which a deterministic engine answers with zero -- and again
+    //           on a stencil a quarter as wide: noise does not change with
+    //           the spacing, a jump or an oscillation the first stencil
+    //           cannot resolve does (our own test).  If either stencil
+    //           failed, no level shows, or the two disagree by more than 10,
+    //           the noise is UNKNOWN: announced, fixed steps, no error bars.
+    //           A floor of 1e-14 max(1,|r|) stands under a level or an exact
+    //           response, never under an unknown one.
+    //    L_r    curvature bound along e_j, |Delta2(t)|/t^2 with t grown by 8
+    //           until |Delta2| >= 100 eps_r FOR THAT RESPONSE (Shi et al.
+    //           2021, Procedure I); a response that never clears it up to the
+    //           largest probe t carries the bound 100 eps_r/t^2 (its
+    //           curvature at that scale is below what the noise could show;
+    //           floor 0.1 as in the paper); M_r the third-derivative bound
+    //           from f(x +- t), f(x +- 2t) by the same rule.  A response whose
+    //           probes could not be taken has NO bound (NaN): the variable
+    //           takes the fixed step and its bars are unavailable.
+    //    forward  h = 8^(1/4) sqrt(eps/L)   (Shi et al. eq. 2.13), gradient
+    //             error bound sqrt(L^2 h^2/4 + 2 eps^2/h^2);
+    //    central  h = (3 eps/M)^(1/3)        (eq. 2.14), error bound
+    //             sqrt(M^2 h^4/36 + eps^2/(2 h^2)).
+    //  One perturbation serves f and every constraint, so h_j is the
+    //  largest of the per-response steps.  Central is chosen for variable j
+    //  when the forward error bound exceeds a tenth of tolStat (or after a
+    //  failed line search).  The step is FITTED TO THE BOX at every gradient
+    //  evaluation (gradients(): it shrinks to the room, turns inward, or the
+    //  variable is called pinned), so no evaluation leaves the box.  The
+    //  reason of every step is printed with the iteration (fdReport).
+    //  The bars are first-order and treat truncation (a bias) as if it were
+    //  one more random error: a bar, not a confidence interval.
+    // ----------------------------------------------------------------------
+    const std::size_t nR = 1 + nEq + nIneq;
+    const scalar kNaN = std::numeric_limits<scalar>::quiet_NaN();
+    auto flat = [&](const SQPResponse& r)
+    {
+        sVector v; v.reserve(nR);
+        v.push_back(r.f);
+        for (scalar t : r.h) v.push_back(t);
+        for (scalar t : r.g) v.push_back(t);
+        return v;
+    };
+    auto respName = [&](std::size_t r) -> std::string
+    {
+        if (r == 0) return "f";
+        if (r <= nEq) return "h" + std::to_string(r - 1);
+        return "g" + std::to_string(r - 1 - nEq);
+    };
+    sVector epsR(nR, 0.0);
+    bool noiseKnown = false;                              // all responses' noise measured
+    std::vector<sVector> Lj(n, sVector(nR, kNaN)), Mj(n, sVector(nR, kNaN));
+    sVector hFwd(n, 1.0e-6), hCen(n, 0.0);
+    std::vector<char> cenWanted(n, 0), fixedJ(n, 1);
+    std::vector<sVector> sigG(n, sVector(nR, kNaN));      // [j][r] error bound of the LAST gradients()
+    sVector usedW(n, 0.0);                                // width of the difference of the LAST gradients()
+    std::vector<char> usedCentral(n, 0), usedPinned(n, 0);
+    std::string fdReportStr;
+    bool forceCentral = false;
+    const scalar hMinStep = 4.0e-9, hMaxStep = 0.05;
+    auto clampH = [&](scalar h) { return std::min(hMaxStep, std::max(hMinStep, h)); };
+    auto sigFwd = [](scalar L, scalar eps, scalar h)
+    { return std::sqrt(0.25 * L * L * h * h + 2.0 * eps * eps / (h * h)); };
+    auto sigCen = [](scalar M, scalar eps, scalar h)
+    { return std::sqrt(M * M * std::pow(h, 4) / 36.0 + eps * eps / (2.0 * h * h)); };
+
+    auto estimate = [&](const sVector& x, const SQPResponse& base)
+    {
+        const sVector f0 = flat(base);
+        std::ostringstream rep;
+        rep << std::scientific << std::setprecision(1);
+
+        // ---- noise from points close together (ECnoise, 9 points, two spacings)
+        sVector p(n);
+        scalar hEn = 1.0e-3;
+        for (std::size_t j = 0; j < n; ++j)
+        {
+            const scalar up = hi[j] - x[j], dn = x[j] - lo[j];
+            p[j] = (up >= dn ? 1.0 : -1.0) / std::sqrt(static_cast<scalar>(n));
+            const scalar room = std::max(up, dn);
+            if (std::isfinite(room)) hEn = std::min(hEn, 0.9 * room / (8.0 * std::abs(p[j])));
+        }
+        auto stencil = [&](scalar hs, std::vector<sVector>& vals) -> bool
+        {
+            vals.assign(1, f0);
+            for (int i = 1; i <= 8; ++i)
+            {
+                sVector xi = x;
+                for (std::size_t j = 0; j < n; ++j) xi[j] += i * hs * p[j];
+                const SQPResponse r = E(xi);
+                if (!usable(r)) return false;
+                vals.push_back(flat(r));
+            }
+            return true;
+        };
+        std::vector<sVector> valsA, valsB;
+        std::string unknownWhy;
+        if (!(hEn > 1.0e-7))
+            unknownWhy = "no room for the noise stencil inside the box";
+        else if (!stencil(hEn, valsA))
+            unknownWhy = "a model evaluation of the noise stencil FAILED";
+        //  the second (quarter-width) stencil exists to tell noise from a signal the
+        //  first stencil cannot resolve; it is taken only when the first one saw a
+        //  level above the rounding floor of some response (8 runs saved on a
+        //  response that is smooth to rounding, which is most of them)
+        bool needB = false;
+        if (unknownWhy.empty())
+            for (std::size_t r = 0; r < nR && !needB; ++r)
+            {
+                sVector ca;
+                for (const auto& v : valsA) ca.push_back(v[r]);
+                const NoiseEst ea = ecNoise(ca);
+                const scalar floorR = 1.0e-14 * std::max(1.0, std::abs(f0[r]));
+                needB = ea.kind == NoiseKind::Undetermined
+                     || (ea.kind == NoiseKind::Level && ea.level > 100.0 * floorR);
+            }
+        if (unknownWhy.empty() && needB && !stencil(0.25 * hEn, valsB))
+            unknownWhy = "a model evaluation of the noise stencil FAILED";
+        if (unknownWhy.empty() && !needB) valsB = valsA;
+        sVector eps(nR, 0.0);
+        if (unknownWhy.empty())
+            for (std::size_t r = 0; r < nR && unknownWhy.empty(); ++r)
+            {
+                sVector ca, cb;
+                for (const auto& v : valsA) ca.push_back(v[r]);
+                for (const auto& v : valsB) cb.push_back(v[r]);
+                const NoiseEst ea = ecNoise(ca), eb = ecNoise(cb);
+                const scalar floorR = 1.0e-14 * std::max(1.0, std::abs(f0[r]));
+                if (ea.kind == NoiseKind::Undetermined || eb.kind == NoiseKind::Undetermined)
+                    unknownWhy = "no noise level shows in response " + respName(r)
+                               + " (not smooth at this spacing, or it jumps)";
+                else
+                {
+                    const scalar la = ea.kind == NoiseKind::Level ? ea.level : 0.0;
+                    const scalar lb = eb.kind == NoiseKind::Level ? eb.level : 0.0;
+                    const scalar big = std::max(la, lb), small = std::min(la, lb);
+                    if (big > 10.0 * small && big > 10.0 * floorR)
+                        unknownWhy = "the noise level of response " + respName(r)
+                                   + " changes with the spacing (" + std::to_string(la) + " against "
+                                   + std::to_string(lb) + "): a signal, not noise";
+                    else eps[r] = std::max(big, floorR);
+                }
+            }
+        noiseKnown = unknownWhy.empty();
+        if (!noiseKnown)
+        {
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                fixedJ[j] = 1;
+                std::fill(sigG[j].begin(), sigG[j].end(), kNaN);
+            }
+            rep << "noise unknown (" << unknownWhy << "); fixed steps, no error bars";
+            fdReportStr = rep.str();
+            return;
+        }
+        epsR = eps;
+        scalar epsC = 0.0;
+        for (std::size_t r = 1; r < nR; ++r) epsC = std::max(epsC, epsR[r]);
+        rep << "noise f " << epsR[0] << " c " << epsC << " (ECnoise); steps";
+
+        // ---- per variable: curvature, step, forward or central
+        for (std::size_t j = 0; j < n; ++j)
+        {
+            sVector Lr(nR, kNaN), Mr(nR, kNaN);
+            std::vector<char> resolved(nR, 0);
+            scalar tLast = 0.0;
+            bool cenLast = false;
+            sVector fpL, fmL;
+            scalar t = std::max(1.0e-6, 10.0 * std::sqrt(epsR[0]));
+            //  the first probe must FIT: a noisy objective asks for a probe as
+            //  wide as the box (10 sqrt(9.4e-2) = 3 on a variable 1 wide), and a
+            //  probe that does not fit means no curvature, so no step
+            t = std::min(t, 0.4 * std::max(hi[j] - x[j], x[j] - lo[j]));
+            for (int trial = 0; trial < 5; ++trial)
+            {
+                const bool cen = (x[j] - t >= lo[j]) && (x[j] + t <= hi[j]);
+                sVector D, a, b; scalar span = 0.0;
+                if (cen)
+                {
+                    sVector xp = x, xm = x; xp[j] += t; xm[j] -= t;
+                    const SQPResponse rp = E(xp), rm = E(xm);
+                    if (!usable(rp) || !usable(rm)) break;
+                    a = flat(rp); b = flat(rm);
+                    D.resize(nR);
+                    for (std::size_t r = 0; r < nR; ++r) D[r] = a[r] - 2.0 * f0[r] + b[r];
+                    span = std::max(std::abs(a[0] - f0[0]), std::abs(b[0] - f0[0]));
+                }
+                else
+                {
+                    const scalar sg = (x[j] + 2.0 * t <= hi[j]) ? 1.0 : -1.0;
+                    if (sg < 0.0 && x[j] - 2.0 * t < lo[j]) break;
+                    sVector x1 = x, x2 = x; x1[j] += sg * t; x2[j] += sg * 2.0 * t;
+                    const SQPResponse r1 = E(x1), r2 = E(x2);
+                    if (!usable(r1) || !usable(r2)) break;
+                    a = flat(r1); b = flat(r2);
+                    D.resize(nR);
+                    for (std::size_t r = 0; r < nR; ++r) D[r] = b[r] - 2.0 * a[r] + f0[r];
+                    span = std::max(std::abs(a[0] - f0[0]), std::abs(b[0] - f0[0]));
+                }
+                if (span > 0.5 * std::max(1.0, std::abs(f0[0])) && tLast > 0.0) break;
+                tLast = t; cenLast = cen; fpL = a; fmL = b;
+                bool all = true;
+                for (std::size_t r = 0; r < nR; ++r)
+                {
+                    if (!resolved[r] && std::abs(D[r]) >= 100.0 * epsR[r])
+                    { Lr[r] = std::max(0.1, std::abs(D[r]) / (t * t)); resolved[r] = 1; }
+                    //  a response whose noise is at the rounding floor needs no wider probe:
+                    //  its bound 100 eps/t^2 is already far below that of the others
+                    all = all && (resolved[r] || epsR[r] <= 1.0e-11 * std::max(1.0, std::abs(f0[r])));
+                }
+                if (all) break;
+                t *= 8.0;
+            }
+            if (tLast > 0.0)
+                for (std::size_t r = 0; r < nR; ++r)
+                    if (!resolved[r]) Lr[r] = std::max(0.1, 100.0 * epsR[r] / (tLast * tLast));
+            Lj[j] = Lr;
+            if (!(tLast > 0.0))
+            {
+                fixedJ[j] = 1;
+                std::fill(sigG[j].begin(), sigG[j].end(), kNaN);
+                rep << " x[" << j << "] fixed step (the curvature probes could not be taken)";
+                continue;
+            }
+            fixedJ[j] = 0;
+
+            scalar hF = 0.0;
+            for (std::size_t r = 0; r < nR; ++r)
+                hF = std::max(hF, 1.6817928 * std::sqrt(epsR[r] / Lr[r]));
+            hF = clampH(hF);
+            hFwd[j] = hF;
+            scalar sgF = 0.0;
+            for (std::size_t r = 0; r < nR; ++r) sgF = std::max(sgF, sigFwd(Lr[r], epsR[r], hF));
+
+            const bool wantCentral = forceCentral || sgF > 0.1 * opts.tolStat;
+            scalar hC = 0.0;
+            bool haveM = false;
+            //  third derivative from f(x +- t3), f(x +- 2 t3); t3 is the last
+            //  curvature probe when the box has room for +-2t3 (its two points are
+            //  reused), otherwise the widest that does (four new evaluations)
+            const scalar room3 = std::min(hi[j] - x[j], x[j] - lo[j]);
+            const scalar t3 = std::min(tLast, 0.45 * room3);
+            if (wantCentral && t3 >= 1.0e-7)
+            {
+                const bool reuse = cenLast && t3 == tLast;
+                sVector xp = x, xm = x; xp[j] += 2.0 * t3; xm[j] -= 2.0 * t3;
+                const SQPResponse rp = E(xp), rm = E(xm);
+                SQPResponse r1, r2;
+                bool ok3 = usable(rp) && usable(rm);
+                sVector fp3 = fpL, fm3 = fmL;
+                if (ok3 && !reuse)
+                {
+                    sVector x1 = x, x2 = x; x1[j] += t3; x2[j] -= t3;
+                    r1 = E(x1); r2 = E(x2);
+                    ok3 = usable(r1) && usable(r2);
+                    if (ok3) { fp3 = flat(r1); fm3 = flat(r2); }
+                }
+                if (ok3)
+                {
+                    const sVector a2 = flat(rp), b2 = flat(rm);
+                    haveM = true;
+                    for (std::size_t r = 0; r < nR; ++r)
+                    {
+                        const scalar D3 = a2[r] - 2.0 * fp3[r] + 2.0 * fm3[r] - b2[r];
+                        Mr[r] = (std::abs(D3) >= 100.0 * epsR[r])
+                              ? std::max(0.1, std::abs(D3) / (2.0 * t3 * t3 * t3))
+                              : std::max(0.1, 100.0 * epsR[r] / (2.0 * t3 * t3 * t3));
+                    }
+                }
+            }
+            Mj[j] = Mr;
+            if (haveM)
+            {
+                for (std::size_t r = 0; r < nR; ++r)
+                    hC = std::max(hC, std::cbrt(3.0 * epsR[r] / Mr[r]));
+                hC = clampH(hC);
+            }
+            hCen[j] = hC;
+            cenWanted[j] = (wantCentral && haveM) ? 1 : 0;
+            const scalar bar0 = cenWanted[j] ? sigCen(Mr[0], epsR[0], hC) : sgF;
+            rep << " x[" << j << "] " << (cenWanted[j] ? "central" : "forward")
+                << " h=" << (cenWanted[j] ? hC : hF) << " (L " << Lr[0] << ", bound " << bar0 << ")"
+                << (wantCentral && !haveM ? " [central wanted, third derivative not measurable]" : "")
+                << (cenWanted[j] ? (forceCentral ? " [after a failed line search]"
+                                                 : " [forward too rough]") : "");
+        }
+        fdReportStr = rep.str();
     };
 
     // ----------------------------------------------------------------------
@@ -175,14 +563,110 @@ SQPResult sqp(const SQPEvaluator& eval,
             return false;
         };
 
+        //  C496 (adaptiveFd): the column of variable j, step FITTED TO THE BOX
+        //  at THIS x.  The step estimated at an earlier point is never used
+        //  as it stands: it shrinks to the room, a central difference that
+        //  does not fit becomes a one-sided one INSIDE the box, a failed side
+        //  falls back only to a side that is inside the box, and a variable
+        //  whose box is narrower than the smallest step is PINNED (its column
+        //  is zero, announced).  No evaluation leaves [lo, hi].
+        auto adaptiveColumn = [&](std::size_t j) -> bool
+        {
+            const scalar up = hi[j] - x[j], dn = x[j] - lo[j];
+            std::fill(sigG[j].begin(), sigG[j].end(), kNaN);
+            if (up + dn < 2.0 * hMinStep)
+            {
+                if (!fdNote.empty()) fdNote += "; ";
+                fdNote += "FD x[" + std::to_string(j) + "]: PINNED (the box is narrower than the"
+                          " smallest step); its derivative is not taken";
+                usedPinned[j] = 1;
+                return true;
+            }
+            const bool known = noiseKnown && !fixedJ[j];
+            usedW[j] = 0.0; usedCentral[j] = 0; usedPinned[j] = 0;
+            const scalar fixedH = opts.fdStep * std::max(std::abs(x[j]), typX[j]);
+            auto at = [&](scalar v) { sVector xx = x; xx[j] = std::min(hi[j], std::max(lo[j], v)); return xx; };
+            auto bars = [&](bool central, scalar width)
+            {
+                usedW[j] = width; usedCentral[j] = central ? 1 : 0;
+                if (!known) return;
+                for (std::size_t r = 0; r < nR; ++r)
+                    sigG[j][r] = central ? sigCen(Mj[j][r], epsR[r], 0.5 * width)
+                                         : sigFwd(Lj[j][r], epsR[r], width);
+            };
+            auto shrunkNote = [&](scalar want, scalar got)
+            {
+                if (got < 0.999 * want)
+                {
+                    if (!fdNote.empty()) fdNote += "; ";
+                    fdNote += "FD x[" + std::to_string(j) + "]: step shrunk to the room inside the box";
+                }
+            };
+            bool central = known && cenWanted[j];
+            if (central)
+            {
+                const scalar hw = hCen[j];
+                const scalar hc = std::min({hw, up, dn});
+                if (hc >= std::max(hMinStep, 0.25 * hw))
+                {
+                    shrunkNote(hw, hc);
+                    const sVector xp = at(x[j] + hc), xm = at(x[j] - hc);
+                    const scalar width = xp[j] - xm[j];
+                    const SQPResponse rp = E(xp), rm = E(xm);
+                    const bool okp = usable(rp), okm = usable(rm);
+                    if (okp && okm) { diff(j, rp, rm, width); bars(true, width); return true; }
+                    if (okp) { diff(j, rp, base, xp[j] - x[j]); announce(j, "forward");  bars(false, xp[j] - x[j]); return true; }
+                    if (okm) { diff(j, base, rm, x[j] - xm[j]); announce(j, "backward"); bars(false, x[j] - xm[j]); return true; }
+                    return refuse(j, hc);
+                }
+                central = false;                       // no room for both sides: one inside the box
+            }
+            const scalar hf = known ? hFwd[j] : fixedH;
+            const bool fwdFirst = up >= hf || (dn < hf && up >= dn);
+            const scalar room1 = fwdFirst ? up : dn, room2 = fwdFirst ? dn : up;
+            const scalar h1 = std::min(hf, room1);
+            shrunkNote(hf, h1);
+            const sVector x1 = at(x[j] + (fwdFirst ? h1 : -h1));
+            const scalar w1 = std::abs(x1[j] - x[j]);
+            const SQPResponse r1 = E(x1);
+            if (usable(r1))
+            {
+                if (fwdFirst) diff(j, r1, base, w1); else diff(j, base, r1, w1);
+                bars(false, w1);
+                return true;
+            }
+            //  the other side, only if it is inside the box
+            const scalar h2 = std::min(hf, room2);
+            if (h2 >= hMinStep)
+            {
+                const sVector x2 = at(x[j] + (fwdFirst ? -h2 : h2));
+                const scalar w2 = std::abs(x2[j] - x[j]);
+                const SQPResponse r2 = E(x2);
+                if (usable(r2))
+                {
+                    if (fwdFirst) diff(j, base, r2, w2); else diff(j, r2, base, w2);
+                    announce(j, fwdFirst ? "backward" : "forward");
+                    bars(false, w2);
+                    return true;
+                }
+            }
+            return refuse(j, h1);
+        };
+
         for (std::size_t j = 0; j < n; ++j)
         {
+            if (opts.adaptiveFd)
+            {
+                if (!adaptiveColumn(j)) return false;
+                continue;
+            }
             const scalar h = opts.fdStep * std::max(std::abs(x[j]), typX[j]);
+            const bool cen = opts.central;
             sVector xp = x; xp[j] = x[j] + h;
             const SQPResponse rp = E(xp);
             const bool okp = usable(rp);
 
-            if (opts.central)
+            if (cen)
             {
                 sVector xm = x; xm[j] = x[j] - h;
                 const SQPResponse rm = E(xm);
@@ -200,6 +684,62 @@ SQPResult sqp(const SQPEvaluator& eval,
                 const SQPResponse rm = E(xm);
                 if (usable(rm)) { diff(j, base, rm, h); announce(j, "backward"); }
                 else            return refuse(j, h);
+            }
+        }
+        return true;
+    };
+
+    //  C496 review 2, B3: the gradient is CONFIRMED before a certificate with a
+    //  second, different step.  The first gradient was taken at the step the
+    //  noise/curvature probes chose; a response that wiggles at a period
+    //  dividing every probe (a smooth sin(2 pi x / 5e-7) of amplitude 1e-10)
+    //  reads as the rounding floor and the step read the wiggle as slope.  So
+    //  each variable is differenced again at 3.7 times its step (central if the
+    //  first was central and the box has room, else one-sided; 3.7 is not a
+    //  divisor of the first step, or of the stencils, which are 1e-3 and 2.5e-4;
+    //  1/3.7 when 3.7 h would exceed the largest step), with the error bar of
+    //  THAT step.  false = the step could not be taken (not certified).
+    auto confirmGradients = [&](const sVector& x, const SQPResponse& base,
+                                sVector& gF2, std::vector<sVector>& Jh2,
+                                std::vector<sVector>& Jg2,
+                                std::vector<sVector>& sig2) -> bool
+    {
+        gF2.assign(n, 0.0); Jh2.assign(nEq, sVector(n, 0.0)); Jg2.assign(nIneq, sVector(n, 0.0));
+        sig2.assign(n, sVector(nR, 0.0));
+        auto put = [&](std::size_t j, const SQPResponse& a, const SQPResponse& b, scalar width)
+        {
+            gF2[j] = (a.f - b.f) / width;
+            for (std::size_t i = 0; i < nEq; ++i) Jh2[i][j] = (a.h[i] - b.h[i]) / width;
+            for (std::size_t i = 0; i < nIneq; ++i) Jg2[i][j] = (a.g[i] - b.g[i]) / width;
+        };
+        for (std::size_t j = 0; j < n; ++j)
+        {
+            if (usedPinned[j]) continue;
+            if (!noiseKnown || fixedJ[j] || !(usedW[j] > 0.0)) return false;
+            const scalar up = hi[j] - x[j], dn = x[j] - lo[j];
+            const scalar h = usedCentral[j] ? 0.5 * usedW[j] : usedW[j];
+            scalar h2 = 3.7 * h;
+            if (h2 > hMaxStep) h2 = h / 3.7;
+            if (h2 < hMinStep) return false;
+            auto at = [&](scalar v) { sVector xx = x; xx[j] = std::min(hi[j], std::max(lo[j], v)); return xx; };
+            if (usedCentral[j] && std::min(up, dn) >= h2 && std::isfinite(Mj[j][0]))
+            {
+                const sVector xp = at(x[j] + h2), xm = at(x[j] - h2);
+                const SQPResponse rp = E(xp), rm = E(xm);
+                if (!usable(rp) || !usable(rm)) return false;
+                put(j, rp, rm, xp[j] - xm[j]);
+                for (std::size_t r = 0; r < nR; ++r) sig2[j][r] = sigCen(Mj[j][r], epsR[r], h2);
+            }
+            else
+            {
+                const bool fwd = up >= h2;
+                if (!fwd && dn < h2) return false;
+                const sVector x1 = at(x[j] + (fwd ? h2 : -h2));
+                const SQPResponse r1 = E(x1);
+                if (!usable(r1)) return false;
+                const scalar w = std::abs(x1[j] - x[j]);
+                if (fwd) put(j, r1, base, w); else put(j, base, r1, w);
+                for (std::size_t r = 0; r < nR; ++r) sig2[j][r] = sigFwd(Lj[j][r], epsR[r], w);
             }
         }
         return true;
@@ -257,6 +797,8 @@ SQPResult sqp(const SQPEvaluator& eval,
     for (std::size_t i = 0; i < n; ++i) B[i][i] = 1.0;   // B0 = I
 
     // Initial point + checks.
+    if (opts.adaptiveFd)                      // C496: nothing is ever evaluated outside the box
+        for (std::size_t j = 0; j < n; ++j) R.x[j] = std::min(hi[j], std::max(lo[j], R.x[j]));
     SQPResponse base = E(R.x);
     if (!usable(base))
     {
@@ -271,13 +813,37 @@ SQPResult sqp(const SQPEvaluator& eval,
     sVector lamEq(nEq, 0.0), lamIneq(nIneq, 0.0);
     scalar  mu = 0.0;
 
+    //  C496 (adaptiveFd): gradients taken at the accepted point for the BFGS
+    //  update are kept for the next iteration (the point is the same, the
+    //  steps are the same: the numbers are identical, one pass is saved).
+    bool haveGrad = false;
+    sVector gradSaved;
+    std::vector<sVector> JhSaved, JgSaved;
+    std::string fdNoteSaved;
+    bool needEstimate = opts.adaptiveFd;
+    int  failStreak = 0;
+    int  qpFailStreak = 0;
+    sVector sigEqLast, sigIneqLast;
+    //  gradFresh: the gradients in hand were taken with noise, curvature and
+    //  steps estimated AT THIS POINT.  A certificate needs it (F2).
+    bool gradFresh = false;
+    bool gradSavedFresh = false;
+    std::vector<bool> lastIneqActive;
+    scalar lastStatBar = kNaN, lastStatTol = 0.0, lastStatRes = kNaN, lastStatResTol = 0.0, lastComplTol = 0.0;
+
     int it = 0;
     for (; it < opts.maxIter; ++it)
     {
         // --- linearise ---
         sVector gradF;
         std::vector<sVector> Jh, Jg;
-        if (!gradients(R.x, base, gradF, Jh, Jg))
+        if (needEstimate) { estimate(R.x, base); needEstimate = false; haveGrad = false; gradFresh = true; }
+        if (haveGrad)
+        {
+            gradF = gradSaved; Jh = JhSaved; Jg = JgSaved; fdNote = fdNoteSaved;
+            gradFresh = gradSavedFresh;
+        }
+        else if (!gradients(R.x, base, gradF, Jh, Jg))
         {
             stopUnmeasured(base, "finite-difference gradient FAILED -- "
                 + fdFailure + " (the SQP stops: a derivative is never built"
@@ -297,6 +863,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         qp.beq = base.h;                 // Jh d + h = 0
         qp.Aineq = Jg;
         qp.bineq = base.g;               // Jg d + g <= 0
+        if (opts.adaptiveFd) qp.robust = true;   // C496: near-parallel rows are dependent
 
         // Box bounds on the step folded in as inequality rows.  Remember,
         // per bound row, the variable index and the sign of e_j it carries
@@ -330,6 +897,28 @@ SQPResult sqp(const SQPEvaluator& eval,
         }
         catch (const std::exception& ex)
         {
+            //  C496: a QP the active-set method cannot settle (a quasi-Newton B
+            //  of condition 1e6 beside rows of 1e7) is, like a failed line
+            //  search, a bad MODEL: forget B once and take the step from B = I.
+            //  A second failure in a row stops, as before.
+            if (opts.adaptiveFd && qpFailStreak == 0)
+            {
+                ++qpFailStreak; ++R.restarts;
+                for (std::size_t i = 0; i < n; ++i)
+                    for (std::size_t j = 0; j < n; ++j) B[i][j] = (i == j) ? 1.0 : 0.0;
+                if (opts.onIter)
+                {
+                    SQPTrace t;
+                    t.iteration = it; t.x = R.x; t.f = base.f; t.h = base.h; t.g = base.g;
+                    t.lambdaEq = lamEq; t.lambdaIneq = lamIneq;
+                    t.gActive.assign(nIneq, false);
+                    t.mu = mu; t.alpha = 0.0;
+                    t.note = std::string("QP subproblem failed (") + ex.what()
+                           + ") -- RESTART: B reset to I";
+                    opts.onIter(t);
+                }
+                continue;
+            }
             R.reason   = std::string("QP subproblem failed: ") + ex.what();
             R.converged = false;
             // Populate the KKT/feasibility fields at the CURRENT (failed)
@@ -386,10 +975,17 @@ SQPResult sqp(const SQPEvaluator& eval,
                 stopUnmeasured(base, std::string("QP subproblem ")
                     + (firstVerdict.infeasible ? "INFEASIBLE" : "not solved")
                     + " at this iterate (" + firstVerdict.reason + "), and"
-                      " even the fully relaxed linearisation (theta = 0) has"
-                      " no solution -- the SQP stops here (start from a"
-                      " point nearer the feasible region, or relax a"
-                      " constraint)");
+                      + (opts.adaptiveFd
+                         //  the default path keeps its text byte for byte (invariant
+                         //  (d)); under fdMode auto the sentence is the true one
+                         ? std::string(" the QP solver could not solve even the fully"
+                           " relaxed linearisation (theta = 0), which d = 0 satisfies by"
+                           " construction: a failure of the QP solver, not a proof of"
+                           " infeasibility -- the SQP stops here")
+                         : std::string(" even the fully relaxed linearisation (theta = 0) has"
+                           " no solution -- the SQP stops here (start from a"
+                           " point nearer the feasible region, or relax a"
+                           " constraint)")));
                 break;
             }
             scalar lo = 0.0, hi = 1.0;
@@ -415,6 +1011,139 @@ SQPResult sqp(const SQPEvaluator& eval,
         sVector lamIneqNew(nIneq, 0.0);
         for (std::size_t k = 0; k < mUser; ++k) lamIneqNew[k] = QP.lambdaIneq[k];
 
+        //  C496: the error bars the gradient noise puts on the multipliers and
+        //  on the stationarity residual (adaptiveFd only), first order,
+        //  independent errors; the multiplier bars printed are 2 standard deviations:
+        //    e_j^2 = sigma_f,j^2 + sum_k lambda_k^2 sigma_k,j^2
+        //  is the error of component j of grad L (bounds are exact).  The
+        //  multiplier PRINTED is the QP's, lambda = (A B^-1 A^T)^-1 (b - A B^-1
+        //  g) over the active rows A (equalities, active inequalities, active
+        //  bounds), so an error of the gradient moves it by P e with
+        //  P = (A B^-1 A^T)^-1 A B^-1 -- the B-weighted map, NOT the
+        //  least-squares (A A^T)^-1 A the first version used (it was 5 times
+        //  too small on a B far from I).  A is normalised by its diagonal and
+        //  a pivot below 1e-10 there REFUSES the bar (NaN, "unavailable"):
+        //  there is no absolute ridge.  An inactive inequality has
+        //  lambda = 0 exactly and no bar (NaN, ineqActive false).  The bar
+        //  OMITS: the displacement of x* through H, correlations between the
+        //  responses of one run, truncation being a bias, the uncertainty of
+        //  the active set, and the age of the noise estimate (gradFresh).
+        //  C496 review 2, B2: a QP step-bound row is a bound ACTIVE AT x only if x
+        //  is on that bound (to the feasibility tolerance).  The QP's multiplier
+        //  of a row that only the STEP reaches belongs to the step, not to grad
+        //  L, and the component is not "absorbed": it stays in the stationarity
+        //  test and in the bar.  (Default path: every row counts, as shipped.)
+        std::vector<char> boundAtX(boundRow.size(), 1);
+        if (opts.adaptiveFd)
+            for (std::size_t r = 0; r < boundRow.size(); ++r)
+            {
+                const std::size_t jb = boundRow[r].first;
+                const scalar bnd = boundRow[r].second > 0.0 ? hi[jb] : lo[jb];
+                boundAtX[r] = std::abs(R.x[jb] - bnd) <= opts.tolFeasIneq * std::max(1.0, std::abs(bnd));
+            }
+        sVector sigEq(nEq, kNaN), sigIneq(nIneq, kNaN);
+        sVector eLsig(n, kNaN);                  // 1 sd of each component of grad L (NaN: unavailable)
+        if (opts.adaptiveFd)
+        {
+            std::vector<sVector> Arows;
+            std::vector<int> rowKind, rowIdx;   // 0 eq, 1 user ineq, 2 bound
+            for (std::size_t i = 0; i < nEq; ++i) { Arows.push_back(Jh[i]); rowKind.push_back(0); rowIdx.push_back(int(i)); }
+            for (std::size_t k = 0; k < mUser; ++k)
+                if (k < QP.active.size() && QP.active[k]) { Arows.push_back(Jg[k]); rowKind.push_back(1); rowIdx.push_back(int(k)); }
+            std::vector<char> boundActive(n, 0);
+            for (std::size_t r = 0; r < boundRow.size(); ++r)
+                if (mUser + r < QP.active.size() && QP.active[mUser + r])
+                {
+                    sVector e(n, 0.0); e[boundRow[r].first] = boundRow[r].second;
+                    Arows.push_back(e); rowKind.push_back(2); rowIdx.push_back(int(r));
+                    if (boundAtX[r]) boundActive[boundRow[r].first] = 1;
+                }
+            const std::size_t ma = Arows.size();
+            //  error of each component of grad L (NaN when a contributing bar is unavailable)
+            sVector eL2(n, 0.0);
+            bool barsOK = true;
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                scalar v = sigG[j][0] * sigG[j][0];
+                for (std::size_t i = 0; i < nEq; ++i)
+                    if (lamEqNew[i] != 0.0) v += lamEqNew[i] * lamEqNew[i] * sigG[j][1 + i] * sigG[j][1 + i];
+                for (std::size_t k = 0; k < nIneq; ++k)
+                    if (lamIneqNew[k] != 0.0) v += lamIneqNew[k] * lamIneqNew[k] * sigG[j][1 + nEq + k] * sigG[j][1 + nEq + k];
+                if (!std::isfinite(v)) barsOK = false;
+                eL2[j] = v;
+            }
+            if (barsOK)
+                for (std::size_t j = 0; j < n; ++j) eLsig[j] = std::sqrt(eL2[j]);
+            //  B-weighted multiplier map
+            bool okSig = barsOK && ma > 0;
+            std::vector<sVector> Y(ma);
+            for (std::size_t a = 0; a < ma && okSig; ++a)
+                if (!smallSolve(B, Arows[a], Y[a])) okSig = false;
+            std::vector<sVector> Mn(ma, sVector(ma, 0.0));
+            sVector dsc(ma, 1.0);
+            if (okSig)
+            {
+                for (std::size_t a = 0; a < ma; ++a)
+                {
+                    const scalar maa = dotv(Arows[a], Y[a]);
+                    if (!(maa > 0.0)) { okSig = false; break; }
+                    dsc[a] = std::sqrt(maa);
+                }
+                for (std::size_t a = 0; a < ma && okSig; ++a)
+                    for (std::size_t b2 = 0; b2 < ma; ++b2)
+                        Mn[a][b2] = dotv(Arows[a], Y[b2]) / (dsc[a] * dsc[b2]);
+            }
+            for (std::size_t a = 0; a < ma && okSig; ++a)
+            {
+                //  row a of (A B^-1 A^T)^-1, by a relative-pivot elimination
+                std::vector<sVector> M = Mn;
+                sVector rhs(ma, 0.0), z(ma, 0.0);
+                rhs[a] = 1.0;
+                bool good = true;
+                for (std::size_t c = 0; c < ma && good; ++c)
+                {
+                    std::size_t pv = c;
+                    for (std::size_t i = c + 1; i < ma; ++i)
+                        if (std::abs(M[i][c]) > std::abs(M[pv][c])) pv = i;
+                    if (std::abs(M[pv][c]) < 1.0e-10) { good = false; break; }
+                    std::swap(M[pv], M[c]); std::swap(rhs[pv], rhs[c]);
+                    for (std::size_t i = c + 1; i < ma; ++i)
+                    {
+                        const scalar f = M[i][c] / M[c][c];
+                        for (std::size_t jj = c; jj < ma; ++jj) M[i][jj] -= f * M[c][jj];
+                        rhs[i] -= f * rhs[c];
+                    }
+                }
+                if (!good) { okSig = false; break; }
+                for (std::size_t ii = ma; ii-- > 0;)
+                {
+                    scalar t2 = rhs[ii];
+                    for (std::size_t jj = ii + 1; jj < ma; ++jj) t2 -= M[ii][jj] * z[jj];
+                    z[ii] = t2 / M[ii][ii];
+                }
+                //  P_a. = sum_b (z_b / (dsc_a dsc_b)) Y_b
+                scalar var = 0.0;
+                for (std::size_t j = 0; j < n; ++j)
+                {
+                    scalar P = 0.0;
+                    for (std::size_t b2 = 0; b2 < ma; ++b2) P += z[b2] / (dsc[a] * dsc[b2]) * Y[b2][j];
+                    var += P * P * eL2[j];
+                }
+                //  the printed bar is TWO standard deviations (about 95 % if the errors were Gaussian)
+                if (rowKind[a] == 0) sigEq[rowIdx[a]] = 2.0 * std::sqrt(var);
+                else if (rowKind[a] == 1) sigIneq[rowIdx[a]] = 2.0 * std::sqrt(var);
+            }
+            if (!okSig)
+            {
+                std::fill(sigEq.begin(), sigEq.end(), kNaN);
+                std::fill(sigIneq.begin(), sigIneq.end(), kNaN);
+            }
+            sigEqLast = sigEq; sigIneqLast = sigIneq;
+            lastIneqActive.assign(nIneq, false);
+            for (std::size_t k = 0; k < mUser; ++k)
+                lastIneqActive[k] = (k < QP.active.size()) ? QP.active[k] : false;
+        }
+
         // --- KKT test at the current point (using the NEW multipliers) ---
         sVector gL = gradLagr(gradF, Jh, Jg, lamEqNew, lamIneqNew);
         // Add the active box-bound multipliers: row r (r>=mUser) carries
@@ -422,7 +1151,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         for (std::size_t r = 0; r < boundRow.size(); ++r)
         {
             const std::size_t row = mUser + r;
-            if (row < QP.lambdaIneq.size())
+            if (row < QP.lambdaIneq.size() && boundAtX[r])
                 gL[boundRow[r].first] += QP.lambdaIneq[row] * boundRow[r].second;
         }
         const scalar kktStat   = normInf(gL);
@@ -439,12 +1168,103 @@ SQPResult sqp(const SQPEvaluator& eval,
 
         const scalar dnorm = std::sqrt(dotv(d, d));
 
+        //  C496 F11 + review 2 B1/B2/M2 (adaptiveFd, scaledStationarity): the
+        //  stationarity tolerance is PER COMPONENT, tol_j = tolStat S_j with
+        //  S_j = max(1, |df/dx_j|, sum_i |lambda_i dc_i/dx_j|, |lambda_b,j|) -- the
+        //  size of the terms whose cancellation component j of grad L measures.
+        //  One global S let a variable sitting on a bound with slope 1e5 loosen
+        //  the test of every other variable to 1.0.  The bound multiplier counts
+        //  only for a bound active AT x.  The step must be small PER COMPONENT, on
+        //  that variable's own scale max(1,|x_j|) limited by its box width.
+        //  Complementarity is scaled by the largest RESOLVED multiplier.
+        const bool scaledTol = opts.adaptiveFd && opts.scaledStationarity;
+        sVector tolJ(n, opts.tolStat);
+        if (scaledTol)
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                scalar S = std::max(1.0, std::abs(gradF[j]));
+                scalar sE = 0.0, sG = 0.0;
+                for (std::size_t i = 0; i < nEq; ++i) sE += std::abs(lamEqNew[i] * Jh[i][j]);
+                for (std::size_t k = 0; k < nIneq; ++k) sG += std::abs(lamIneqNew[k] * Jg[k][j]);
+                S = std::max({S, sE, sG});
+                for (std::size_t r = 0; r < boundRow.size(); ++r)
+                    if (boundRow[r].first == j && boundAtX[r] && mUser + r < QP.lambdaIneq.size())
+                        S = std::max(S, std::abs(QP.lambdaIneq[mUser + r]));
+                tolJ[j] = opts.tolStat * S;
+            }
+        //  the component that binds the verdict: the largest |gL_j| / tol_j
+        std::size_t jWorst = 0;
+        for (std::size_t j = 1; j < n; ++j)
+            if (std::abs(gL[j]) / tolJ[j] > std::abs(gL[jWorst]) / tolJ[jWorst]) jWorst = j;
+        const scalar tolStatEff = tolJ[jWorst];
+        const scalar statResWorst = std::abs(gL[jWorst]);
+        //  a multiplier that is NOT RESOLVED (bar >= its value, or none) and large enough
+        //  to move a tolerance (|lambda| max(1,||grad c||) > 1) forbids a certificate (M2)
+        std::string unresolvedWho;
+        scalar lamScale = 0.0;
+        if (scaledTol)
+        {
+            for (std::size_t k = 0; k < nIneq; ++k)
+            {
+                if (lamIneqNew[k] == 0.0) continue;
+                const bool res = k < sigIneq.size() && std::isfinite(sigIneq[k]) && sigIneq[k] <= std::abs(lamIneqNew[k]);
+                if (res) lamScale = std::max(lamScale, std::abs(lamIneqNew[k]));
+                else if (std::abs(lamIneqNew[k]) * std::max(1.0, normInf(Jg[k])) > 1.0 && unresolvedWho.empty())
+                    unresolvedWho = "inequality " + std::to_string(k);
+            }
+            for (std::size_t i = 0; i < nEq; ++i)
+            {
+                if (lamEqNew[i] == 0.0) continue;
+                const bool res = i < sigEq.size() && std::isfinite(sigEq[i]) && sigEq[i] <= std::abs(lamEqNew[i]);
+                if (!res && std::abs(lamEqNew[i]) * std::max(1.0, normInf(Jh[i])) > 1.0 && unresolvedWho.empty())
+                    unresolvedWho = "equality " + std::to_string(i);
+            }
+        }
+        const scalar tolComplEff = scaledTol ? opts.tolCompl * std::max(1.0, lamScale) : opts.tolCompl;
+        bool stepSmall = true;
+        if (scaledTol)
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                scalar sc = std::max(1.0, std::abs(R.x[j]));
+                if (std::isfinite(hi[j] - lo[j])) sc = std::min(sc, hi[j] - lo[j]);
+                if (std::abs(d[j]) > 1.0e-4 * sc) stepSmall = false;
+            }
+        bool statOK = kktStat <= opts.tolStat;
+        if (scaledTol)
+        {
+            statOK = true;
+            for (std::size_t j = 0; j < n; ++j) if (std::abs(gL[j]) > tolJ[j]) statOK = false;
+        }
         const bool kktOK =
-               kktStat     <= opts.tolStat
+               statOK
             && kktFeasEq   <= opts.tolFeasEq
             && kktFeasIneq <= opts.tolFeasIneq
-            && kktCompl    <= opts.tolCompl;
+            && kktCompl    <= tolComplEff
+            && stepSmall;
 
+        //  C496 F2: a verdict is taken only on a gradient whose noise, curvature
+        //  and steps were estimated AT THIS POINT.  A step chosen at x = 0 and
+        //  a bound of 0.19 against a tolerance of 1e-5 certified x = 0.575 on
+        //  a function whose gradient there is -0.5.  So: estimate again here,
+        //  difference again, and judge that.
+        if (opts.adaptiveFd && (kktOK || dnorm < 1.0e-12) && !gradFresh)
+        {
+            needEstimate = true; haveGrad = false;
+            if (opts.onIter)
+            {
+                SQPTrace t;
+                t.iteration = it; t.x = R.x; t.f = base.f; t.h = base.h; t.g = base.g;
+                t.lambdaEq = lamEqNew; t.lambdaIneq = lamIneqNew;
+                t.gActive.assign(nIneq, false);
+                t.kktStat = kktStat; t.kktFeasEq = kktFeasEq;
+                t.kktFeasIneq = kktFeasIneq; t.kktCompl = kktCompl;
+                t.mu = mu; t.alpha = 0.0;
+                t.note = "stationary on an OLD estimate -- noise, curvature and steps estimated again"
+                         " at this point before any verdict";
+                opts.onIter(t);
+            }
+            continue;
+        }
         if (kktOK || dnorm < 1.0e-12)
         {
             lamEq = lamEqNew; lamIneq = lamIneqNew;
@@ -463,13 +1283,103 @@ SQPResult sqp(const SQPEvaluator& eval,
                 t.kktStat = kktStat; t.kktFeasEq = kktFeasEq;
                 t.kktFeasIneq = kktFeasIneq; t.kktCompl = kktCompl;
                 t.mu = mu; t.alpha = 0.0; t.theta = 1.0;
+                if (opts.adaptiveFd) { t.fdReport = fdReportStr; t.sigmaLamEq = sigEq; t.sigmaLamIneq = sigIneq; }
                 t.note = kktOK ? "KKT satisfied" : "QP step ~ 0";
                 if (!fdNoteHere.empty()) t.note += " [" + fdNoteHere + "]";
                 if (!relaxNote.empty())  t.note += " [" + relaxNote + "]";
                 opts.onIter(t);
             }
-            R.converged = kktOK;
-            R.reason = kktOK ? "KKT conditions satisfied"
+            //  C496 F2 + review 2 (B1, B3, M2): with the adaptive differences the verdict
+            //  also needs, COMPONENT BY COMPONENT, the error bar (3 sd) of grad L at this
+            //  point below that component's tolerance; no multiplier that moves a
+            //  tolerance may be NOT RESOLVED; and the gradient must be CONFIRMED by a
+            //  second, different step (confirmGradients).
+            bool certified = kktOK;
+            std::string whyNot;
+            if (opts.adaptiveFd)
+            {
+                std::vector<char> absorbed(n, 0);
+                for (std::size_t r = 0; r < boundRow.size(); ++r)
+                    if (boundAtX[r] && mUser + r < QP.active.size() && QP.active[mUser + r])
+                        absorbed[boundRow[r].first] = 1;
+                bool barsFinite = true;
+                std::size_t jb = 0; scalar worstRatio = -1.0;
+                for (std::size_t j = 0; j < n; ++j)
+                {
+                    if (absorbed[j]) continue;
+                    if (!std::isfinite(eLsig[j])) { barsFinite = false; continue; }
+                    const scalar ratio = 3.0 * eLsig[j] / tolJ[j];
+                    if (ratio > worstRatio) { worstRatio = ratio; jb = j; }
+                }
+                lastStatBar = barsFinite && worstRatio >= 0.0 ? 3.0 * eLsig[jb] : kNaN;
+                lastStatTol = barsFinite && worstRatio >= 0.0 ? tolJ[jb] : tolStatEff;
+                lastStatRes = statResWorst; lastStatResTol = tolStatEff; lastComplTol = tolComplEff;
+                const std::string head = "KKT residuals met (||grad L|| " + std::to_string(kktStat)
+                                       + ") but NOT CERTIFIED: ";
+                if (kktOK && !unresolvedWho.empty())
+                {
+                    certified = false;
+                    whyNot = head + "the multiplier of " + unresolvedWho + " is NOT RESOLVED (its bar"
+                             " is not below its value) and is large enough to move a tolerance";
+                }
+                else if (kktOK && (!barsFinite || !(worstRatio >= 0.0 || n == 0)))
+                {
+                    certified = false;
+                    whyNot = head + "the gradient's error bar is UNAVAILABLE (the noise of a response"
+                             " was not measured: " + fdReportStr + ")";
+                }
+                else if (kktOK && lastStatBar > lastStatTol)
+                {
+                    certified = false;
+                    whyNot = head + "the gradient's error bar (3 sd) " + std::to_string(lastStatBar)
+                             + " exceeds the stationarity tolerance " + std::to_string(lastStatTol)
+                             + " of component x[" + std::to_string(jb) + "]";
+                }
+                else if (kktOK)
+                {
+                    sVector gF2; std::vector<sVector> Jh2, Jg2, sig2;
+                    if (!confirmGradients(R.x, base, gF2, Jh2, Jg2, sig2))
+                    {
+                        certified = false;
+                        whyNot = head + "the gradient could not be CONFIRMED with a second step"
+                                 " (a difference at 3.7 times the first step failed or did not fit the box)";
+                    }
+                    else
+                    {
+                        sVector gL2 = gradLagr(gF2, Jh2, Jg2, lamEqNew, lamIneqNew);
+                        for (std::size_t r = 0; r < boundRow.size(); ++r)
+                        {
+                            const std::size_t row = mUser + r;
+                            if (row < QP.lambdaIneq.size() && boundAtX[r])
+                                gL2[boundRow[r].first] += QP.lambdaIneq[row] * boundRow[r].second;
+                        }
+                        for (std::size_t j = 0; j < n && certified; ++j)
+                        {
+                            if (absorbed[j]) continue;
+                            scalar v = sig2[j][0] * sig2[j][0];
+                            for (std::size_t i = 0; i < nEq; ++i)
+                                if (lamEqNew[i] != 0.0) v += lamEqNew[i] * lamEqNew[i] * sig2[j][1 + i] * sig2[j][1 + i];
+                            for (std::size_t k = 0; k < nIneq; ++k)
+                                if (lamIneqNew[k] != 0.0) v += lamIneqNew[k] * lamIneqNew[k] * sig2[j][1 + nEq + k] * sig2[j][1 + nEq + k];
+                            const scalar allowed = 3.0 * (eLsig[j] + std::sqrt(v));
+                            const scalar diffJ = std::abs(gL2[j] - gL[j]);
+                            if (!(diffJ <= allowed) || !(std::abs(gL2[j]) <= tolJ[j]))
+                            {
+                                certified = false;
+                                whyNot = head + "the gradient is NOT CONFIRMED by a second step (component x["
+                                         + std::to_string(j) + "]: " + std::to_string(gL[j]) + " at the first step,"
+                                         + " " + std::to_string(gL2[j]) + " at 3.7 times it; they may differ by "
+                                         + std::to_string(allowed) + ")";
+                            }
+                        }
+                    }
+                }
+                if (kktOK && !certified) R.stationaryUncertified = true;
+            }
+            R.converged = certified;
+            R.certified = certified;
+            R.reason = certified ? "KKT conditions satisfied"
+                     : !whyNot.empty() ? whyNot
                      : !relaxNote.empty()
                          ? "QP step vanished under a Powell relaxation"
                            " (theta = " + std::to_string(relaxTheta) + ") -- a"
@@ -506,10 +1416,27 @@ SQPResult sqp(const SQPEvaluator& eval,
         SQPResponse rTrial;
         bool accepted = false;
         bool fullRejectedThoughFeasImproved = false;
+        //  C496: under noise the merit is only known to +- epsMerit; the
+        //  Armijo test of a shortened step is relaxed by 2 epsMerit, so a step
+        //  is not refused for a decrease the noise could have hidden.  This is
+        //  OUR SIMPLIFIED form of the relaxed line search of Shi et al. (2021):
+        //  their eq. 2.19 has three cases (a condition on g'p against
+        //  sigma_g ||p|| and a simple-decrease branch) that are NOT implemented
+        //  here, and the slack is not the paper's.
+        scalar epsMerit = 0.0;
+        if (opts.adaptiveFd)
+        {
+            epsMerit = epsR[0];
+            for (std::size_t r = 1; r < nR; ++r) epsMerit += mu * epsR[r];
+        }
 
         while (alpha >= opts.alphaMin)
         {
-            for (std::size_t j = 0; j < n; ++j) xTrial[j] = R.x[j] + alpha * d[j];
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                xTrial[j] = R.x[j] + alpha * d[j];
+                if (opts.adaptiveFd) xTrial[j] = std::min(hi[j], std::max(lo[j], xTrial[j]));   // never outside the box
+            }
             rTrial = E(xTrial);
             if (!usable(rTrial)) { alpha *= 0.5; continue; }
 
@@ -519,7 +1446,8 @@ SQPResult sqp(const SQPEvaluator& eval,
             {
                 accepted = true; break;       // forced full step
             }
-            if (phiT <= phi0 + opts.armijoC1 * alpha * Dphi)
+            if (phiT <= phi0 + opts.armijoC1 * alpha * Dphi
+                         + (alpha < 1.0 ? 2.0 * epsMerit : 0.0))
             {
                 accepted = true; break;
             }
@@ -537,6 +1465,34 @@ SQPResult sqp(const SQPEvaluator& eval,
             alpha *= 0.5;
         }
 
+        if (!accepted && opts.adaptiveFd && failStreak == 0)
+        {
+            //  C496: the first failed line search is treated as a bad model,
+            //  not as the end: forget the BFGS matrix, difference centrally
+            //  with fresh noise/curvature estimates, and try once more.  A
+            //  second failure in a row stops, as before.
+            ++failStreak; ++R.restarts;
+            for (std::size_t i = 0; i < n; ++i)
+                for (std::size_t j = 0; j < n; ++j) B[i][j] = (i == j) ? 1.0 : 0.0;
+            forceCentral = true; needEstimate = true; haveGrad = false;
+            if (opts.onIter)
+            {
+                SQPTrace t;
+                t.iteration = it; t.x = R.x; t.f = base.f; t.h = base.h; t.g = base.g;
+                t.lambdaEq = lamEqNew; t.lambdaIneq = lamIneqNew;
+                t.gActive.assign(nIneq, false);
+                for (std::size_t k = 0; k < nIneq; ++k)
+                    t.gActive[k] = (k < QP.active.size()) ? QP.active[k] : false;
+                t.kktStat = kktStat; t.kktFeasEq = kktFeasEq;
+                t.kktFeasIneq = kktFeasIneq; t.kktCompl = kktCompl;
+                t.mu = mu; t.alpha = 0.0;
+                t.fdReport = fdReportStr; t.sigmaLamEq = sigEq; t.sigmaLamIneq = sigIneq;
+                t.note = "line search failed -- RESTART: B reset to I, central differences,"
+                         " fresh noise estimate";
+                opts.onIter(t);
+            }
+            continue;
+        }
         if (!accepted)
         {
             // No decrease found.  Honest stop.
@@ -557,6 +1513,10 @@ SQPResult sqp(const SQPEvaluator& eval,
         for (std::size_t j = 0; j < n; ++j) s[j] = xTrial[j] - R.x[j];
 
         // gradL at the new point uses the new gradients there.
+        failStreak = 0; qpFailStreak = 0;
+        const bool estimatedHere = opts.adaptiveFd && alpha < 0.5;
+        if (estimatedHere)
+            estimate(xTrial, rTrial);       // the model changed: re-estimate (Procedure I, step 2)
         sVector gradFnew;
         std::vector<sVector> JhNew, JgNew;
         if (!gradients(xTrial, rTrial, gradFnew, JhNew, JgNew))
@@ -571,6 +1531,12 @@ SQPResult sqp(const SQPEvaluator& eval,
                 " derivative is never built from a failed evaluation)");
             ++it;
             break;
+        }
+        if (opts.adaptiveFd)
+        {
+            haveGrad = true; gradSaved = gradFnew; JhSaved = JhNew; JgSaved = JgNew;
+            gradSavedFresh = estimatedHere;
+            fdNoteSaved = fdNote;
         }
         sVector gLnew = gradLagr(gradFnew, JhNew, JgNew, lamEqNew, lamIneqNew);
         sVector gLold = gradLagr(gradF,    Jh,    Jg,    lamEqNew, lamIneqNew);
@@ -623,6 +1589,7 @@ SQPResult sqp(const SQPEvaluator& eval,
             t.kktFeasIneq = kktFeasIneq; t.kktCompl = kktCompl;
             t.theta = theta; t.bfgsSkipped = skipped;
             t.mu = mu; t.alpha = alpha; t.watchdog = watchdog;
+            if (opts.adaptiveFd) { t.fdReport = fdReportStr; t.sigmaLamEq = sigEq; t.sigmaLamIneq = sigIneq; }
             if (skipped)
                 t.note = "BFGS skipped -- curvature condition violated,"
                          " likely gradient noise";
@@ -642,6 +1609,10 @@ SQPResult sqp(const SQPEvaluator& eval,
         lamEq = lamEqNew; lamIneq = lamIneqNew;
     }
 
+    R.sigmaLamEq = sigEqLast; R.sigmaLamIneq = sigIneqLast;
+    R.ineqActive = lastIneqActive;
+    R.statBar = lastStatBar; R.statTolUsed = lastStatTol;
+    R.statRes = lastStatRes; R.statResTol = lastStatResTol; R.complTolUsed = lastComplTol;
     R.f = base.f;
     R.lambdaEq = lamEq;
     R.lambdaIneq = lamIneq;
@@ -676,15 +1647,24 @@ struct HSProblem
     sVector xStar;        // published optimum point (for reporting)
 };
 
-scalar solveHS(const HSProblem& p, int verbosity)
+//  noise > 0 adds a deterministic pseudo-random perturbation of that size to
+//  every returned value (a fixed LCG, so the check is reproducible).
+scalar solveHS(const HSProblem& p, int verbosity, bool adaptive = false,
+               scalar noise = 0.0, scalar fTol = 1.0e-4)
 {
+    unsigned long long lcg = 88172645463325252ULL;
+    auto xi = [&]() -> scalar {
+        lcg = lcg * 6364136223846793005ULL + 1442695040888963407ULL;
+        return noise * (static_cast<scalar>((lcg >> 11) & 0xFFFFFFFFFFFFULL)
+                        / 140737488355328.0 - 1.0);       // uniform in [-noise, noise]
+    };
     auto eval = [&](const sVector& x) -> SQPResponse {
         SQPResponse r;
-        r.f = p.f(x);
+        r.f = p.f(x) + (noise > 0.0 ? xi() : 0.0);
         r.h.reserve(p.h.size());
-        for (const auto& hj : p.h) r.h.push_back(hj(x));
+        for (const auto& hj : p.h) r.h.push_back(hj(x) + (noise > 0.0 ? xi() : 0.0));
         r.g.reserve(p.g.size());
-        for (const auto& gk : p.g) r.g.push_back(gk(x));
+        for (const auto& gk : p.g) r.g.push_back(gk(x) + (noise > 0.0 ? xi() : 0.0));
         r.ok = std::isfinite(r.f);
         return r;
     };
@@ -693,6 +1673,8 @@ scalar solveHS(const HSProblem& p, int verbosity)
     o.maxIter = 100;
     o.central = true;          // tight analytic FD for the self-check
     o.fdStep  = 1.0e-6;
+    o.adaptiveFd = adaptive;   // C496: the noise-aware differences (fdMode auto)
+    if (adaptive) o.maxIter = 300;
 
     SQPResult R = sqp(eval, p.x0, p.lo, p.hi, p.h.size(), p.g.size(), o);
 
@@ -711,11 +1693,12 @@ scalar solveHS(const HSProblem& p, int verbosity)
                   << "\n";
     }
 
-    if (!(fErr < 1.0e-4))
+    if (!(fErr < fTol))
         throw std::runtime_error(
-            "verifySQP FAILED on " + p.name + ": optimum f=" + std::to_string(R.f)
+            "verifySQP FAILED on " + p.name + (adaptive ? " (fdMode auto)" : "")
+            + ": optimum f=" + std::to_string(R.f)
             + " vs published " + std::to_string(p.fStar) + " (|df|="
-            + std::to_string(fErr) + " > 1e-4).  The SQP (BFGS/merit/"
+            + std::to_string(fErr) + " > " + std::to_string(fTol) + ").  The SQP (BFGS/merit/"
             "active-set) has a bug -- FIX it, do NOT loosen the tolerance.");
 
     return fErr;
@@ -723,7 +1706,8 @@ scalar solveHS(const HSProblem& p, int verbosity)
 
 } // anonymous namespace
 
-scalar verifySQP(int verbosity)
+namespace {
+scalar runHS3(int verbosity, bool adaptive, scalar noise, scalar fTol)
 {
     scalar worst = 0.0;
 
@@ -748,7 +1732,7 @@ scalar verifySQP(int verbosity)
         p.x0 = {0.5, 0.5, 0.5};
         p.fStar = 1.0/9.0;
         p.xStar = {4.0/3.0, 7.0/9.0, 4.0/9.0};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     // ---- HS21: min  0.01 x1^2 + x2^2 - 100
@@ -769,7 +1753,7 @@ scalar verifySQP(int verbosity)
         p.x0 = {2.0, 0.5};          // a benign in-bounds start
         p.fStar = -99.96;
         p.xStar = {2.0, 0.0};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     // ---- HS71: min  x1 x4 (x1 + x2 + x3) + x3
@@ -796,10 +1780,27 @@ scalar verifySQP(int verbosity)
         p.x0 = {1.0, 5.0, 5.0, 1.0};   // the classic HS71 start
         p.fStar = 17.0140173;
         p.xStar = {1.0, 4.743, 3.821, 1.379};
-        worst = std::max(worst, solveHS(p, verbosity));
+        worst = std::max(worst, solveHS(p, verbosity, adaptive, noise, fTol));
     }
 
     return worst;
+}
+} // anonymous namespace
+
+scalar verifySQP(int verbosity)
+{
+    return runHS3(verbosity, false, 0.0, 1.0e-4);
+}
+
+//  C496: the same three problems under fdMode auto, clean to 1e-4 as the
+//  shipped check, then with 1e-7 uniform noise on every response (the
+//  noise-aware differences must still land within 1e-3 of the published
+//  optimum).  Called only when a case asks for fdMode auto.
+scalar verifySQPAdaptive(int verbosity)
+{
+    const scalar clean = runHS3(verbosity, true, 0.0, 1.0e-4);
+    const scalar noisy = runHS3(verbosity, true, 1.0e-7, 1.0e-3);
+    return std::max(clean, noisy);
 }
 
 } // namespace Choupo::solver

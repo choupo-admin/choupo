@@ -978,7 +978,10 @@ def run_flow(codes=None):
 def run_flow_choupo_own():
     """Choupo's own sqp / nelderMead through their own outerDict (the shipped one, only `initial` and
     the method changed), run by choupoSolve itself.  The count is the driver's own."""
-    out = WORK / "flow_own.jsonl"
+    #  OPTBENCH_FDMODE=auto runs the SQP with `fdMode auto;` (C496 review, 2026-11-25) into
+    #  flow_own_auto.jsonl; unset, the shipped differences into flow_own.jsonl as before.
+    fdmode = os.environ.get("OPTBENCH_FDMODE", "")
+    out = WORK / ("flow_own_%s.jsonl" % fdmode if fdmode else "flow_own.jsonl")
     done = set()
     if out.exists():
         for ln in open(out):
@@ -1019,6 +1022,11 @@ def run_flow_choupo_own():
                 txt = re.sub(r"method\s+\w+;", "method %s;" % method, txt)
                 if method == "sqp" and "options" in txt and "fdStep" not in txt:
                     txt = re.sub(r"options\s*\{", "options\n{\n    fdStep 1e-5;\n    fdMode forward;", txt, count=1)
+                if method == "sqp" and fdmode:
+                    if re.search(r"fdMode\s+\w+;", txt):
+                        txt = re.sub(r"fdMode\s+\w+;", "fdMode %s;" % fdmode, txt)
+                    else:
+                        txt = re.sub(r"options\s*\{", "options\n{\n    fdMode %s;" % fdmode, txt, count=1)
                 if method == "nelderMead":
                     txt = re.sub(r"constraints\s*\(.*?\n\);", "", txt, flags=re.S)
                     txt = re.sub(r"\n\s*fdStep[^\n]*", "", txt)

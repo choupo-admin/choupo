@@ -127,6 +127,16 @@ struct QPProblem
 
     std::vector<sVector> Aineq;    // (#ineq) x n (may be empty)
     sVector              bineq;    // #ineq
+
+    //  C496 robust mode (default off: the shipped behaviour is unchanged).
+    //  (a) a working-set row whose component orthogonal to the rows before it
+    //  is below 1e-5 of its own length is treated as dependent and dropped
+    //  (default 1e-10: two inequalities 4e-6 apart in angle with inconsistent
+    //  constants gave multipliers of 1e9 and a cycle to the cap); (b) a
+    //  sub-step is "zero" below 1e-9 (1 + |x|) instead of an absolute 1e-12
+    //  (a QP whose data reach 1e8 leaves a round-off step of 1e-9 that never
+    //  vanishes and the loop ran to its cap with the answer already in hand).
+    bool                 robust = false;
 };
 
 // Solve the convex QP with an active-set method.
