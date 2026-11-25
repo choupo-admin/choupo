@@ -13,7 +13,8 @@
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  DryingCards -- the three cards the drying-curve page grew (C508, page B):
+  DryingCards -- the cards the drying-curve page grew (C508, page B; the day of a
+  tray dryer was added when C508 was reopened):
 
     C4  "Loading": the tray loading L = m_s/A against the time of the curve;
         three engine runs at three loadings, X drawn against t/L;
@@ -24,6 +25,11 @@
   C7  "The spray chamber": sprayDryer01 under a grid of chamber heights and
         wheel speeds, the residence, the constant-rate time and the
         falling-rate constant side by side.
+  C8  "The day of a tray dryer": the engine's drying time to a specification
+        (dryer01_sucrose_tray) inside a cycle of load, dry, unload and clean;
+        the three handling times are the STUDENT'S (assumptions), the arithmetic
+        is the page's, and the point is that halving the drying time does not
+        double the output.
 
   ZERO PHYSICS IN TYPESCRIPT.  Each number is a KPI or a column of an engine
   run; the TypeScript divides by the loading (a ratio of the case's own
@@ -255,6 +261,153 @@ export function LastPercentCard({ run }: { run: TrayRun }): JSX.Element {
         knob moves it): with an exponent below one the curve reaches the floor in finite time, which
         is an artefact of the choice, not a property of the material.
       </Text>
+    </Box>
+  );
+}
+
+// ---- C8: the day of a tray dryer ---------------------------------------------
+
+/** The page's arithmetic on one engine number (the drying time) and three declared ones. */
+export interface TrayDay {
+  /** Hours of a whole batch: load + dry + unload + clean. */
+  cycleH: number;
+  /** Batches in 24 h, as a campaign average (not rounded to whole batches). */
+  batchesPerDay: number;
+  /** kg of dry solid dried in 24 h; null when the batch mass is unknown. */
+  kgPerDay: number | null;
+  /** The share of the cycle in which nothing is being dried. */
+  notDryingShare: number;
+}
+
+/** Cycle arithmetic of a batch dryer working round the clock.  A definition, not a model:
+ *  cycle = load + dry + unload + clean, output = batches per day times the batch. */
+export function trayDay(
+  dryH: number, loadH: number, unloadH: number, cleanH: number, batchKg: number | null,
+): TrayDay {
+  const handling = loadH + unloadH + cleanH;
+  const cycleH = dryH + handling;
+  const batchesPerDay = cycleH > 0 ? 24 / cycleH : NaN;
+  return {
+    cycleH, batchesPerDay,
+    kgPerDay: batchKg === null ? null : batchesPerDay * batchKg,
+    notDryingShare: cycleH > 0 ? handling / cycleH : NaN,
+  };
+}
+
+/** The three handling times the student declares (hours) and the specification. */
+export const DAY_KNOBS = {
+  load: { id: "loadH", label: "loading the tray, h", min: 0.1, max: 4, step: 0.1, def: 0.5,
+    why: "your assumption: filling and levelling the trays, trolleys in" },
+  unload: { id: "unloadH", label: "unloading, h", min: 0.1, max: 4, step: 0.1, def: 0.5,
+    why: "your assumption: trolleys out, product off the trays" },
+  clean: { id: "cleanH", label: "cleaning, h", min: 0, max: 8, step: 0.25, def: 1,
+    why: "your assumption: trays washed and dried, the cabinet checked; strict batch identity makes this long" },
+  target: { id: "dayTargetX", label: "specification X_target (kg/kg dry solid)", min: 0.02, max: 0.25,
+    step: 0.005, def: 0.05,
+    why: "the moisture the batch must reach: the engine's curve gives the drying time" },
+} as const;
+
+export function TrayDayCard(): JSX.Element {
+  const sets = useMemo(() => [[] as DictOverride[]], []);
+  const sweep = useMethodRunSweep("batch/drying/dryer01_sucrose_tray", sets, "tray-day", "choupoBatch");
+  const [loadH, setLoadH] = useState<number>(DAY_KNOBS.load.def);
+  const [unloadH, setUnloadH] = useState<number>(DAY_KNOBS.unload.def);
+  const [cleanH, setCleanH] = useState<number>(DAY_KNOBS.clean.def);
+  const [target, setTarget] = useState<number>(DAY_KNOBS.target.def);
+  const r = sweep.results[0];
+  const t = r?.trajectory?.t, X = colX(r?.trajectory);
+  const m0 = r?.kpis?.["campaign"]?.["mass_kg_initial"];
+  const X0 = r?.kpis?.["dryer"]?.["X_initial"];
+  const dryS = t && X ? timeToReach(t, X, target) : null;
+  const dryH = dryS === null ? null : dryS / 3600;
+  // the dry solid of one batch: the charge's mass over (1 + its moisture), both engine numbers
+  const batchKg = m0 !== undefined && X0 !== undefined ? m0 / (1 + X0) : null;
+  const asRun = dryH === null ? null : trayDay(dryH, loadH, unloadH, cleanH, batchKg);
+  const half = dryH === null ? null : trayDay(dryH / 2, loadH, unloadH, cleanH, batchKg);
+  const none = dryH === null ? null : trayDay(0, loadH, unloadH, cleanH, batchKg);
+  const gain = asRun && half && asRun.batchesPerDay > 0 ? half.batchesPerDay / asRun.batchesPerDay : null;
+  const series: ChartSeries[] = (() => {
+    if (dryH === null) return [];
+    const pts: (readonly [number, number])[] = [];
+    for (let k = 0; k <= 40; ++k) {
+      const h = (3 * Math.max(dryH, 0.1) * k) / 40;
+      const d = trayDay(h, loadH, unloadH, cleanH, batchKg);
+      pts.push([h, d.kgPerDay ?? d.batchesPerDay]);
+    }
+    return [{ id: "out", label: "output against drying time", color: "#1c7ed6", pts }];
+  })();
+  const guides: ChartGuide[] = dryH === null ? [] : [
+    { dir: "v", at: dryH, label: "the engine's drying time", color: "#ef5350" },
+    { dir: "v", at: dryH / 2, label: "half of it", color: "#495057", dash: "4 3" },
+  ];
+  const unit = batchKg === null ? "batches per day" : "kg of dry solid per day";
+  const g = (v: number | null | undefined): string => g4(v ?? null);
+  const problems = sweep.errs.filter((e): e is string => !!e);
+  return (
+    <Box px="sm" py={8} style={BOX} data-card="tray-day">
+      <Title order={5}>The day of a tray dryer</Title>
+      <OriginMark of={["engine", "assumption"]}
+        note="the drying time is read off the X(t) column of one run of dryer01_sucrose_tray; the loading, unloading and cleaning times are YOURS; the cycle and the output are the page's arithmetic on those numbers" />
+      <Text size="sm" mt={4}>
+        A batch dryer does not dry all day: the tray is loaded, dried, unloaded and cleaned, and only
+        the second step is the curve.  Perry says a compartment dryer is rarely economical except for a
+        long cycle, several products that need strict batch identity, or a quantity too small for a
+        continuous dryer, because of the labour of loading and unloading (p. 12-39).  Declare your three
+        handling times; the engine gives the drying time.
+      </Text>
+      <Group gap="md" mt={6} align="flex-end">
+        <Box w={230} maw="100%"><KnobSlider knob={DAY_KNOBS.load} value={loadH} onChange={setLoadH} /></Box>
+        <Box w={230} maw="100%"><KnobSlider knob={DAY_KNOBS.unload} value={unloadH} onChange={setUnloadH} /></Box>
+        <Box w={230} maw="100%"><KnobSlider knob={DAY_KNOBS.clean} value={cleanH} onChange={setCleanH} /></Box>
+        <Box w={260} maw="100%"><KnobSlider knob={DAY_KNOBS.target} value={target} onChange={setTarget} /></Box>
+      </Group>
+      <Text size="sm" mt={6} data-day-read="">
+        {!t ? "Waiting for the run."
+          : dryH === null ? `The engine's curve does not reach X_target = ${g4(target)} in this run.`
+            : `The engine's curve reaches X_target = ${g4(target)} after ${g4(dryS)} s, ${g4(dryH)} h; one batch holds ${batchKg === null ? "an unknown mass of" : `${g4(batchKg)} kg of`} dry solid.`}
+      </Text>
+      <Box style={SCROLL} mt={4}>
+        <Table withTableBorder withColumnBorders fz="xs" data-day-table="">
+          <Table.Thead><Table.Tr>
+            <Table.Th>case</Table.Th><Table.Th>drying, h</Table.Th><Table.Th>whole cycle, h</Table.Th>
+            <Table.Th>batches per day</Table.Th><Table.Th>{unit}</Table.Th>
+            <Table.Th>share of the cycle not drying</Table.Th>
+          </Table.Tr></Table.Thead>
+          <Table.Tbody>
+            {([["as the engine runs it", dryH, asRun], ["drying time halved", dryH === null ? null : dryH / 2, half],
+              ["drying time cut to nothing", dryH === null ? null : 0, none]] as const).map(([label, dh, d]) => (
+              <Table.Tr key={label} data-day-row={label}>
+                <Table.Td>{label}</Table.Td><Table.Td>{g(dh)}</Table.Td>
+                <Table.Td>{g(d?.cycleH)}</Table.Td><Table.Td>{g(d?.batchesPerDay)}</Table.Td>
+                <Table.Td>{g(d?.kgPerDay ?? d?.batchesPerDay)}</Table.Td>
+                <Table.Td>{d ? `${g4(100 * d.notDryingShare)} %` : "—"}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      {gain !== null && asRun && (
+        <Text size="sm" mt={6} data-day-gain="">
+          Halving the drying time multiplies the day&apos;s output by {g4(gain)}, not 2: {g4(100 * asRun.notDryingShare)} % of
+          your cycle is not drying at all, and no hotter air touches that share.  Cutting the drying to nothing
+          would give {g4(none ? none.batchesPerDay / asRun.batchesPerDay : null)} times the output, the ceiling the
+          handling sets.
+        </Text>
+      )}
+      <Box mt={4} data-sweep="tray-day">
+        <DryChart series={series} guides={guides} xLabel="drying time, h" yLabel={unit}
+          aria="Output of a tray dryer against drying time, flattening as the handling times take over" xZero yZero />
+        {sweep.busy && <Group gap={6}><Loader size="xs" /><Text size="xs" c="dimmed">integrating the tray</Text></Group>}
+      </Box>
+      <Alert color="gray" variant="light" mt={8} p="xs" data-day-limits="">
+        <Text size="xs">
+          The three handling times are assumptions of yours, not data of this tray, and the dryer is taken to
+          run round the clock with no waiting between batches.  The drying time is the engine&apos;s for one
+          tray of sucrose in declared air; a bigger load, a thicker bed or a cabinet with several trays
+          changes it, and the loading card above shows how.  The arithmetic is the page&apos;s.
+        </Text>
+      </Alert>
+      {problems.map((e) => <Text key={e} size="xs" c="red" ff="monospace">{e}</Text>)}
     </Box>
   );
 }
