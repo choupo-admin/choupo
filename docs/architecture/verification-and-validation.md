@@ -70,7 +70,7 @@ Every proof has three states and a fourth is forbidden:
 | T1 homogeneity | every feed x k: extensive results x k, intensive equal; declared sizes scaled by the per-unit rule below | tray-column pressure drop is not degree-one homogeneous (weir loading is per length, not per area): a limit of the proof, now a named NOT JUDGED |
 | T2 component order | `components` and every flow table reversed: results equal by name | the key purities followed the list (x_B_HK 0.884 against 0.095, C504); membranes, electrodialysis, PhaseChanger, alpha_mean (C514) |
 | T3 unit writing | bar, kmol/h, kg/h, kW rewritten in SI: every result equal to 1e-8 | solver tolerance amplified in two cases (no defect) |
-| T4 closure outside | mass and element closure recomputed from `converged/` | claus01, ammonia01: the record MW against its formula (C517); membrane08: the resin takes cations that no stream carries |
+| T4 closure outside | mass and element closure recomputed from `converged/` | claus01, ammonia01: the record MW against its formula (C517); membrane08 first showed 100.03 % and was the PROOF's fault (a unit's `supplies` key makes an outlet a plant feed, C500); the reader now knows it |
 | T5 admissibility | flows >= 0, fractions in [0,1] summing to 1, T and P positive | nothing left to find after C498 |
 | T6 restart | `converged/` read back as `0/`: same answer | converged/ dropped a declared phase pin (stripper01: 0.7 K, C516); the engine refused its own speciation block (marcilla01) |
 
