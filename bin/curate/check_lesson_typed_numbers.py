@@ -101,6 +101,8 @@ TYPED = [
     (M + "compressorChoicePlant.ts", "2.2237342", "greenAmmoniaPEQ_baseCase", "kpi MakeupComp1 ratio"),
     (M + "compressorChoicePlant.ts", "2.2674662", "greenAmmoniaPEQ_baseCase", "kpi MakeupComp2 ratio"),
     (M + "compressorChoicePlant.ts", "1.0770158", "greenAmmoniaPEQ_baseCase", "kpi RecycleComp ratio"),
+    (M + "calculatedToBoughtMath.ts", "4.877", "hxBought01_margin_and_stock", "equipment column17/condenser values.tubeLength_calculated"),
+    (M + "calculatedToBoughtMath.ts", "6.096", "hxBought01_margin_and_stock", "equipment column17/condenser values.tubeLength"),
     (M + "compressionLesson.ts", "0.1379", "compressor03_staged_design", "equipment compressor1 values.intercooler1_dP"),
     (M + "compressionLesson.ts", "1.0231", "ammonia02_full_plant", "equipment makeupComp values.stage1_Zavg"),
     (M + "compressionLesson.ts", "1.6090244", "compressor03_staged_design", "equipment compressor1 values.stage1_n"),

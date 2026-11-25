@@ -230,6 +230,18 @@ DOMAINS = [
      "the surge flow as a share of the design flow lies in (0, 1); declared by the student, the engine has no map", False),
     (M + "CompressorChoiceTool.tsx", "margin", 0.0, None,
      "a margin kept above the surge flow is non-negative and has no upper bound by physics; the page offers 0 to 0.3", False),
+    (M + "CalculatedToBoughtTool.tsx", "margin", 0.0, None,
+     "a design margin is a fraction of the calculated area, at or above zero with no upper bound by physics; "
+     "the page offers 0 to 0.30 and the engine refuses above 2", False),
+    (M + "CalculatedToBoughtTool.tsx", "uCoef", 0.0, 1.0,
+     "the fall of the overall coefficient to cover is a fraction in [0, 1)", False),
+    (M + "CalculatedToBoughtTool.tsx", "vmax", 0.0, None,
+     "a velocity ceiling is positive and has no upper bound by physics; the page offers 1.5 to 4 m/s and the "
+     "line list judges whatever arrives", False),
+    (M + "CalculatedToBoughtTool.tsx", "md", 1.0, None,
+     "a driver margin is a factor of at least 1 on the shaft power, with no upper bound by physics; the page offers 1 to 1.5", False),
+    (M + "CalculatedToBoughtTool.tsx", "frame", 0.0, None,
+     "a step between rungs of a ladder is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
