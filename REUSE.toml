@@ -37,6 +37,7 @@ path = [
   "bin/curate/backlog_themes.tsv",
   "bin/curate/feature_documented_debt.tsv",
   "bin/curate/floor_scale_ratchet_debt.tsv",
+  "bin/curate/header_numbers_debt.tsv",
   "bin/curate/future_dates_allowed.tsv",
   "bin/curate/golden_bands.tsv",
   "bin/curate/liquid_property_ratchet_debt.tsv",
