@@ -215,7 +215,9 @@ def classify(k):
         return 'ext'
     if re.search(r'^streams/[^/]+/(organic|aqueous)\w*/[^/]+$', k):
         return 'ext'                      # a phase block under a stream: component flows
-    if re.search(r'_over_|(^|_)[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity|rho)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
+    if re.search(r'(^|_)[kM]?W$', last) and not re.search(r'_per_|_over_|[Rr]atio', last):
+        return 'ext'                      # a power or duty in W/kW/MW is extensive whatever else its name says (Q_recovery_max_kW)
+    if re.search(r'_over_|_per_(k?mol|kg|m3|L)(_|$)|(^|_)[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity|rho)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
         return 'int'
     if re.search(r'(^|_)(F|Q|W|duty|power|flow|mass|rate|area)(_|\[|$)|(^|_)kW(_|$)|(^|_)[Ff]low(_|$)|[Dd]uty|F_(in|out|alpha|beta)|W_shaft|extent|moles|_kg_s$|_mol_s$|_m3_s$', last):
         return 'ext'
@@ -296,11 +298,11 @@ DECLARED_EXT = ['area', 'V_R', 'V', 'volume', 'Q', 'Qdot', 'duty', 'W_shaft', 'W
                 'refluxRate', 'diameter', 'bodyDiameter', 'D', 'length', 'L', 'dz', 'height', 'H_bed', 'filterArea', 'membraneArea',
                 'current', 'N_cellpairs', 'mAdsPerColumn', 'tCycle', 'geometry', 'holdup', 'mass', 'massFlowRate',
                 'molarFlowRate', 'flowRate', 'F_set', 'productRate', 'rate', 'capacity', 'residenceTime', 'A_m', 'A_w_area',
-                'cutSize', 'nTubes', 'tubeLength', 'shellDiameter', 'packedHeight', 'areaTotal', 'W_kW', 'Q_kW']
+                'cutSize', 'nTubes', 'tubeLength', 'shellDiameter', 'packedHeight', 'areaTotal', 'W_kW', 'Q_kW', 'vessels', 'UA']
 
 
 _DECL = re.compile(r'(?m)(?<![\w.$])(%s)\s+([^;{\n]*?)\s*;' % '|'.join(re.escape(k) for k in DECLARED_EXT))
-_UNITBEARING = re.compile(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h)\s*;')
+_UNITBEARING = re.compile(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h|kmol/h|mol/h|kg/h|kg/s|mol/s|m3/h|m3/s|W/K|kW/K|kmol/s)\s*;')
 _RECORD = re.compile(r'(?m)(?<![\w.$])(module|stack)\s+[A-Za-z][^;\s]*\s*;')
 
 # THE PER-UNIT RULE (C492 slice, item 3).  A declared size is inert for the homogeneity proof only where the
@@ -360,6 +362,12 @@ def _num(v, f):
     return str(int(round(x))) if re.fullmatch(r'[-+]?\d+', v.strip()) and abs(x - round(x)) < 1e-9 else repr(x)
 
 
+def _flat_cell(case, name):
+    """True when the module record `name` (the case's own or the catalogue's) is a flat-sheet cell."""
+    cands = list(Path(case).rglob(name + '.dat')) + list((WT / 'data/standards/assets').glob(name + '.dat'))
+    return any(re.search(r'(?m)^\s*format\s+flatSheetCell\s*;', strip_comments(read(c))) for c in cands)
+
+
 def plan_t1(case, k):
     """-> (edits {relative path: new text}, notes, blocker).  blocker is a string when the case stays NOT JUDGED."""
     case = Path(case)
@@ -402,9 +410,17 @@ def plan_t1(case, k):
                 if _is_zero(blk, a, b):
                     continue
                 if key == 'module <record>' and ty == 'spiralWoundModule':
+                    mn = re.search(r'(?<![\w.$])module\s+([A-Za-z][^;\s]*)', blk).group(1)
+                    if _flat_cell(case, mn):
+                        return {}, [], 'declared size: spiralWoundModule unit %s is a flat-sheet cell (ONE coupon of fixed area: it has no parallel vessels to scale)' % nm
                     need_vessels = not re.search(r'(?<![\w.])(vessels|area)\s', blk)
                     continue
                 act = rules.get(key)
+                if ty == 'distillationColumn' and re.search(r'weirLengthFraction|trayType', blk):
+                    # a tray's liquid load is per length of WEIR (~ D), not per area (~ D^2): at k times the flow no
+                    # single D keeps both the vapour velocity and the weir loading, so dP_column is not degree-one
+                    # homogeneous (column09/10/11/17: dP +4 % at D x sqrt 2 in rating AND design mode, found by the first run of this rule).
+                    return {}, [], 'declared size/duty/volume: hydraulics in %s unit %s (%s has no rule for it: tray hydraulics are not homogeneous in D)' % (ty, nm, rel)
                 if act is None:
                     return {}, [], 'declared size/duty/volume: %s in %s unit %s (%s has no rule for it)' % (key, ty, nm, rel)
                 if act == 'inert':
@@ -671,7 +687,7 @@ def t6(case):
     if p:
         return NOTJ, p
     conv = Path(r['dir']) / 'converged'
-    if not any(f.is_file() and f.name != 'problemDivergence' for f in conv.iterdir()):
+    if not conv.is_dir() or not any(f.is_file() and f.name != 'problemDivergence' for f in conv.iterdir()):
         return NOTJ, 'converged/ holds no state files'
     d = fresh_copy(case, SCR / 'T6' / case.name)
     shutil.rmtree(d / '0')

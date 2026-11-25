@@ -72,6 +72,8 @@ def reason_class(t, why):
             return 'declared size is not a plain number'
         if 'feeds not identified' in w or 'no feed stream identified' in w:
             return 'feeds not identifiable'
+        if 'flat-sheet cell' in w:
+            return 'flat-sheet cell: one coupon, nothing to scale'
         if 'module record and no operation' in w:
             return 'module record without an operation block'
     if t == 'T2' and 'components' in w:
@@ -89,6 +91,10 @@ def reason_class(t, why):
             return 'stream state file not unique'
         if 'pseudo-components' in w:
             return 'pseudo-component formula'
+        if 'engine report unreadable' in w:
+            return 'no engine report (sweep or outer-driver case)' if 'No such file' in w else 'engine report carries a text value (n/a)'
+        if "'n/a'" in w or "'{'" in w:
+            return 'a value the independent reader cannot parse (n/a, nested block)'
         return 'other independent-reader limit'
     if t == 'T5' and 'publishes no streams' in w:
         return 'the result publishes no streams'
