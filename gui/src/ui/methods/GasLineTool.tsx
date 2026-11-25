@@ -103,7 +103,7 @@ export function GasLineTool(): JSX.Element {
   const view = useMemo(() => {
     if (st.inletChoked) return null;
     const xLine = Math.min(len, st.Lmax * 0.999999);
-    const xDom = st.Lmax > 1.25 * len ? len : Math.max(len, st.Lmax);
+    const xDom = st.Lmax > 3 * len ? len : Math.max(len, st.Lmax);
     const pr = profile(PIPE09, flow, xLine, 120);
     const toPts = (v: number[]): (readonly [number, number])[] =>
       v.map((P, i) => [pr.x[i]!, P * BAR] as const);
