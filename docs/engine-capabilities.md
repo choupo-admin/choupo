@@ -41,7 +41,8 @@ records for itself.  What belongs here is the SHAPE, never the size:
   diffusion and Colburn/Fair entrainment); the Bolles-Fair tray pressure
   drop (`hydraulics { pressureDropModel BollesFair; }`) and Perry's
   open-area flood correction; a structured-PACKED bed at total reflux
-  (`packing { model RochaBravoFair | Delft; }`, HETP and pressure drop).
+  (`packing { model RochaBravoFair | Delft; }`, HETP and pressure drop) and, rate-based, a RANDOM packing
+  by Billet & Schultes (`packing { model BilletSchultes; }`, five catalogue records).
   Held against FRI data (Yanagi & Sakata 1982 trays; Schulz et al. 2018
   Montz-Pak A3-500M) with the in-sample status of each model stated --
   Theory Guide `ch:ratebased`, record `docs/design/c329-ratebased-first-delivery.md`;

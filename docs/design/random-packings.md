@@ -72,8 +72,9 @@ are STRUCTURED packings.  What can be claimed:
 1. the code reproduces the paper's equations: a hand point computed in a
    separate Python program (not the engine) from the same equations, held to
    1e-9 (unit test);
-2. internal consistency the paper implies: Eq 16 meets Eq 7 at the loading
-   point, Eq 12 and Eq 14 meet their limits at u_V,S and u_V,Fl (tested);
+2. every branch of the law is exercised by that hand point: Re_L below and above 5 (Eq 42/43), flow
+   parameter below and above 0.4 (Eqs 34-35, 39-40), below loading, between loading and flooding, and
+   flooded (11 states, 142 values); sabotaged by hand, three typos in the law are caught;
 3. the cross-law check, information only: B-S k_L, k_G, a_e against Onda +
    Bravo-Fair once that law lands (slice 2);
 4. NOT claimed: agreement with any measurement.  The witness case
@@ -88,4 +89,8 @@ temperature: taken as 20 C (1.002 mPa s, 998.2 kg/m3, 72.8 mN/m), declared.
 Whether Eqs 6-8 take the real holdup (41) or the channel holdup (11): the text
 (p. 504) says the real one replaces it; implemented so.  The exponent 13 of
 Eqs 12 and 14 is read as printed (13, not 1/3).  The two-column scan of Table
-2a is clear at 200 dpi; no digit of it is doubtful.
+2a is clear at 200 dpi; no digit of it is doubtful.  **The 0.03 N/m floor on sigma (p. 500) binds on
+EVERY organic liquid** (hydrocarbons 0.015-0.025 N/m): Eq 9 then sees 0.03 whatever the liquid's
+value.  It is implemented as printed and announced in every run; if the authors meant it only for the
+high-pressure data that motivated it, the interfacial area of an organic liquid is underpredicted.
+That reading is not settled by the paper.
