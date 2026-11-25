@@ -356,7 +356,7 @@ a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
-2.7 times what the ammonia sells for (0.530). NPV is -3 288<!--golden: kpi economics NPV *1e-6--> M EUR and there
+2.7 times what the ammonia sells for (0.530). NPV is -3 287<!--golden: kpi economics NPV *1e-6--> M EUR and there
 is no IRR. (The hydrogen price was an assumed 4.50 EUR/kg, the ammonia 1.00
 and the nitrogen 0.05 EUR/kg before 2026-11-13, giving NPV −405 M EUR; those
 figures had no source.)
@@ -369,9 +369,9 @@ of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
--4 140.1 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
+-4 139.9 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
 this case with `taxOnLoss none;` added to the `economics` block printed
-an NPV of -4140.1 MEUR, `taxCreditOnLoss` 0 and the break-evens unchanged,
+an NPV of -4140.1 MEUR, on the plot of before 2026-11-25, `taxCreditOnLoss` 0 and the break-evens unchanged,
 run again on 2026-11-24). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`
@@ -499,9 +499,19 @@ numbers from the standard its client specifies and from the site's wind
 rose. The nine cylinders (the coolers, the converter and the drums) and the
 ten hydrogen-buffer vessels take their size from their own design sheets;
 the compressors, the FEHE (four
-shells), the two ammonia tanks, the control room and the electrical
-substation have DECLARED boxes, because their sizers publish no diameter
+shells), the two ammonia tanks and every non-process item of the site (the
+control room, the electrical substation, the offices and the rest) have
+DECLARED boxes, because their sizers publish no diameter
 and length — the engine will not invent one.
+
+**Can each exchanger's tube bundle be pulled? (C507.)**  The `serviceClearance`
+block declares the extra beyond each sheet's `tubeLength` (6.096 m on all six
+exchangers; the 1.5 m extra is an author-set assumption, not a standard's) and
+the channel end of each.  The water cooler's bundle needs 7.6 m in line: it had
+5.45 m toward the feed-effluent exchanger and 3.9 m toward the chiller, so the
+FEHE stands 2.2 m further west (x = 37.8 m) and the water cooler is pulled that
+way, 7.65 m clear.  Before and after plans and 3D schematics:
+[`docs/audits/2026-11-25-c507/`](../../../docs/audits/2026-11-25-c507/).
 
 **Redraw it** with `bin/choupo-layout --draft --force .` from the case
 directory: it lines the sized items up in flow order again and keeps the
@@ -510,17 +520,50 @@ the GUI under Reports → "Plant layout (3D)", and learn to read it in the
 EduTool **"Plant layout: where each item stands, and why"** (Process design
 & economics shelf).
 
-**The site.** The plot plan is a site, laid out by the method of
-[`ammonia02_full_plant`](../ammonia02_full_plant): a ring road round the
-process block (so a fire tender reaches every item from two sides), the
-main road carried west past the hydrogen buffer, a road along the tank
-bund, a **main gate** on the north fence beside the control room (upwind:
-the wind blows from the north-west) and an **emergency gate** on the east
-fence at the end of the tank-farm road. The **fence** is the plot's
-boundary, and every pipe that enters or leaves the plant crosses it at a
-labelled point that names where it comes from or goes to — the
-electrolysers and the air separation unit for the feeds, the gas
-treatments this case does not model for the three gas outlets.
+**The site.** The plot plan is a whole site, laid out by the method of
+[`ammonia02_full_plant`](../ammonia02_full_plant) and, since 2026-11-25, with
+that case's administration, logistics and fire items on it, re-sited for this
+plant's wind (from the north-west, so a release drifts south-east): a ring
+road round the process block (so a fire tender reaches every item from two
+sides), a **main gate** on the north fence with the control room, the
+**offices**, the **canteen**, the **car park** (12 bays) and the north
+**muster point** round it, upwind and 30 m from every compressor, vessel and
+exchanger and 60 m from the tanks; the **substation**, the **fire-water tank**
+and its **pumps** and the south muster point across the wind to the west; and
+a **truck loop** on the south side (in by the main gate, east on the main road
+over the **weighbridge**, south and west past the **laydown** and the
+**warehouse**, back by the west road, one-way and with corners that hold the
+25 m turning circle of the design vehicle), round the hydrogen buffer. No
+process stream moves by road -- the product and the feeds are pipes, as in
+`ammonia02_full_plant` -- so the trucks are the catalyst drums of a recharge,
+chemicals, spares, a turnaround's equipment and waste. The **emergency gate**
+stands at the east end of the tank-farm road, so the fire brigade has a second
+way in that reaches the tanks first. The **fence** is the plot's boundary, and
+every pipe that enters or leaves the plant crosses it at a labelled point that
+names where it comes from or goes to -- the electrolysers and the air
+separation unit for the feeds, the gas treatments this case does not model for
+the three gas outlets. Every position, box, separation and road width is an
+author-set assumption, said so in its own `source`; the one published number
+is the truck's turning circle (Council Directive 96/53/EC). The yard stands
+south-east of the compressors, downwind of them, and the case declares no
+ignition source for a truck, which is one: that is not modelled, and the
+layoutDict header says so.
+
+**One plant to show (2026-11-25).** The plot is 33915 m2<!--golden: layout plot plotArea-->
+(it was 39220 m2), the footprints 5104 m2<!--golden: layout plot footprintArea--> and 15 % of it (they were
+3465 m2 and 8.8 %), with 44 items placed instead of 33 and the checks still at zero findings.
+It is the smallest rectangle found that holds every declared separation (the
+45 m between the tanks and the loop, the 60 m between the tanks and the flare)
+and the 7 480 m2 bund; the north-east corner stays open for those. The hydrogen
+buffer moved from the west end of the plant to the south, inside the truck loop,
+and the tank farm 5 m north (the loop is still 45 m away, by the diagonal). Moved
+by it, and only by it: the `layout.*` rows, the land (1 961 000 to 1 695 750 EUR
+at 50 EUR/m2), and the three economics rows that read the land through the plot
+area -- the net present value (by +0.23 MEUR) and the two break-even prices
+(ammonia 1.9520 to 1.9519 EUR/kg, hydrogen 1.6845 to 1.6850 EUR/kg); the capital
+investment and the working capital do not carry the land and do not move.
+Before and after plans and 3D views:
+[`docs/audits/2026-11-25-peq-site/`](../../../docs/audits/2026-11-25-peq-site/).
 
 **The plan raises no finding.** Until 2026-11-09 it left two on purpose
 (the two ammonia tanks 12 m apart against the 17 m the file declares
@@ -528,7 +571,7 @@ between two tanks, and the electrical substation inside `MakeupComp1`'s
 zone 2); as the course's reference plant it resolves both — the tanks
 stand 18 m apart, the substation west of the compressors, upwind and
 outside every zone, with its own rows in the separation table. Move
-`tank2` back to x 181 m, or the substation back to (16, −31) m, and the run
+`tank2` back to x 181 m, or the substation to (26, −14) m, and the run
 announces each again: say why your own arrangement is safe.
 
 **The stores are piped.** The ten buffer vessels and the two ammonia tanks
@@ -586,10 +629,10 @@ that no book in the folder gives.  `line01_pumped_drum` works one line by hand.
 
 | line | from -> to | service | NPS (in) | sch | v (m/s) | governed by | drop (kPa) |
 |---|---|---|---|---|---|---|---|
-| N2Feed | inlet -> N2Boost | gas | 10 | 40 | 24.9 | service window | 18.0 |
+| N2Feed | inlet -> N2Boost | gas | 10 | 40 | 24.9 | service window | 14.0 |
 | N2Compressed | N2Boost -> N2Cooler | gas | 8 | 40 | 16.7 | erosion rho v^2 | 20.5 |
 | N2Cooled | N2Cooler -> MakeupMix | gas | 6 | 40 | 19.0 | erosion rho v^2 | 27.0 |
-| H2Feed | inlet -> MakeupMix | gas | 10 | 40 | 21.2 | service window | 7.4 |
+| H2Feed | inlet -> MakeupMix | gas | 10 | 40 | 21.2 | service window | 8.8 |
 | Makeup30 | MakeupMix -> MakeupComp1 | gas | 10 | 40 | 28.2 | service window | 13.3 |
 | Makeup67 | MakeupComp1 -> Intercooler | gas | 8 | 40 | 27.3 | service window | 43.6 |
 | Makeup67Cool | Intercooler -> MakeupComp2 | gas | 8 | 40 | 20.4 | erosion rho v^2 | 28.7 |
@@ -605,11 +648,11 @@ that no book in the folder gives.  `line01_pumped_drum` works one line by hand.
 | ChilledEffluent | Chiller -> Separator | two-phase | not sized | | | | |
 | RawLiquid | Separator -> LetdownHP | liquid | 4 | 80 | 2.8 | service window | 40.3 |
 | UnreactedGas | Separator -> PurgeSplit | gas | 10 | 160 | 16.7 | erosion rho v^2 | 35.2 |
-| Purge | PurgeSplit -> outlet | gas | 0.25 | 80 | 11.2 | erosion rho v^2 | 867.1 |
+| Purge | PurgeSplit -> outlet | gas | 0.25 | 80 | 11.9 | erosion rho v^2 | 1026.6 |
 | LetdownLiquid | LetdownHP -> StorageFlash | liquid | 4 | 40 | 2.5 | service window | 45.1 |
-| LetdownGas | LetdownHP -> outlet | gas | 0.5 | 40 | 18.9 | service window | 168.9 |
-| ProductNH3 | StorageFlash -> outlet | liquid | 4 | 40 | 2.4 | service window | 158.0 |
-| FlashGas | StorageFlash -> outlet | gas | 3.5 | 40 | 26.7 | service window | 4.3 |
+| LetdownGas | LetdownHP -> outlet | gas | 0.5 | 40 | 18.9 | service window | 176.6 |
+| ProductNH3 | StorageFlash -> outlet | liquid | 4 | 40 | 2.4 | service window | 157.5 |
+| FlashGas | StorageFlash -> outlet | gas | 3.5 | 40 | 26.7 | service window | 3.6 |
 
 What to read in it.  On the dense loop gas (40-50 kg/m3 at 150 bar) the 15-30 m/s window
 is not what sets the bore: the declared rho v^2 limit is, so those lines run at 16-17 m/s

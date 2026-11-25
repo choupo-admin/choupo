@@ -144,11 +144,11 @@ export function outsideRange(value: number, r: Range | null): "below" | "above" 
 export interface EquipItem { name: string; cp: number; fbm: number }
 
 /** Choupo's FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0
- *  (EconomicsPass.cpp:3080).  On this page the items are at base conditions,
+ *  (EconomicsPass.cpp:3084).  On this page the items are at base conditions,
  *  so C_BM0 = C_BM: a stated simplification, not the engine's per-item
  *  material and pressure factors. */
 export const ENGINE_CONTINGENCY_FEE = 1.18;   // costing::contingencyAndFee, CostingModel.H:69
-export const ENGINE_SITE_FACTOR = 0.50;       // EconomicsPass.cpp:2928
+export const ENGINE_SITE_FACTOR = 0.50;       // EconomicsPass.cpp:2932
 
 export interface BareModule {
   sumCp: number;
@@ -315,7 +315,7 @@ export interface WcResult {
 }
 
 /** (i) itemised -- a "day" of an annual figure is 1/365 of it, as in the
- *  engine (EconomicsPass.cpp:255, :404-:410); (ii) a fraction of sales;
+ *  engine (EconomicsPass.cpp:256, :404-:410); (ii) a fraction of sales;
  *  (iii) a fraction of the fixed capital. */
 export function workingCapitals(w: WcInputs): WcResult {
   const rawStock = w.rawBill * w.daysRaw / 365;
@@ -378,7 +378,7 @@ export interface LoanSchedule {
   idcNote: boolean;
 }
 
-/** The engine's convention (EconomicsPass.cpp:1979-2047): construction year k
+/** The engine's convention (EconomicsPass.cpp:1983-2051): construction year k
  *  draws debtFraction x FCI / Nc at the END of the year (the page spreads the
  *  outlay evenly; the engine follows the case's capital schedule); the
  *  interest on the balance already drawn is capitalised; in operation the
@@ -423,16 +423,16 @@ export function loanSchedule(L: LoanInputs): LoanSchedule {
 export interface EngineSource { file: string; line: number; needle: string; says: string }
 
 export const ENGINE_SOURCES: readonly EngineSource[] = [
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 3087,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 3091,
     needle: "const scalar langFactor   = econDict_->lookupScalarOrDefault(\"langFactor\", 3.63);",
     says: "the Lang cross-check factor defaults to 3.63 (solids-fluids) and can be declared as langFactor" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 3088,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 3092,
     needle: "const scalar FCI_Lang     = langFactor * sum_Cp;",
     says: "FCI_Lang = K times the sum of the purchased costs; a reconciliation line, never fed into the FCI" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 3080,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 3084,
     needle: "const scalar FCI = contingencyFee * (sum_C_BM + bldg.cost)",
     says: "the engine's FCI: contingencyFee times the sum of C_BM plus siteFactor times the sum of the base-case C_BM" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 2928,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 2932,
     needle: "lookupScalarOrDefault(\"siteFactor\",           0.50)",
     says: "siteFactor defaults to 0.50" },
   { file: "src/postProcessing/costing/CostingModel.H", line: 69,
@@ -441,31 +441,31 @@ export const ENGINE_SOURCES: readonly EngineSource[] = [
   { file: "src/postProcessing/costing/Turton.cpp", line: 755,
     needle: "const scalar C_TM       = costing::contingencyAndFee * C_BM;",
     says: "each item's total module cost is 1.18 times its bare-module cost" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 279,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 280,
     needle: "WorkingCapitalBuildUp buildWorkingCapital(",
     says: "the itemised working capital build-up (days of stock, receivables, payables, minimum cash)" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 255,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 256,
     needle: "of an annual figure is 1/365 of it, for every line alike.",
     says: "a day of an annual figure is 1/365 of it, for every line alike" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 404,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 405,
     needle: "dRec / 365.0 * R,",
     says: "receivables are days/365 of the revenue (at the sales price)" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 410,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 411,
     needle: "dPay / 365.0 * C_RM,",
     says: "payables are days/365 of the raw-material bill" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 2880,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 2884,
     needle: "constexpr scalar workingCapitalDefault = 0.15;",
     says: "without a model the working capital is the fraction 0.15 of the FCI" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 619,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 620,
     needle: "THE LOAN AND THE EQUITY CASH FLOW (G4) -> reports/economics/financing.csv",
     says: "the loan schedule is written to reports/economics/financing.csv when the case declares financing {}" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 1985,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 1989,
     needle: "draw[at(k - Nc)] += fin.debtFraction",
     says: "construction draws: debtFraction of each year's capital outlay, at the end of the year" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 1997,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 2001,
     needle: "y.interestCapitalised = r * B;",
     says: "interest during construction is r times the balance already drawn, added to the balance" },
-  { file: "src/postProcessing/EconomicsPass.cpp", line: 2018,
+  { file: "src/postProcessing/EconomicsPass.cpp", line: 2022,
     needle: "y.interestPaid = r * B;",
     says: "operating years: interest on the opening balance is paid" },
 ];

@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction C2H5+water=OH+ethane
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 68 (p. 332)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "C2H6 + OH = C2H5 + H2O";
+limitingReactant  ethane;
+stoichiometry
+(
+        { component C2H5;    nu  1; }
+        { component OH;      nu -1; }
+        { component ethane;  nu -1; }
+        { component water;   nu  1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 8700000000;  b 1.05;  Ea 1810;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989 A68; MB1989_ethane A68; MillerBowman1989_AppA A68; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix A (C/H/O/N mechanism)";
+    page 332;
+    reaction 68;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A, reaction 68 (journal p. 332), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

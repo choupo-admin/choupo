@@ -113,7 +113,9 @@ import { LessonQuiz } from "./lessonQuiz.js";
 // arithmetic.
 import { axisDomain, type Domain } from "./VanHeerdenTool.js";
 import { OriginMark } from "./origin.js";
-import { LastPercentCard, LoadingCollapseCard, SprayChamberCard } from "./DryingCards.js";
+import {
+  HotProductCard, LastPercentCard, LoadingCollapseCard, SprayChamberCard, TrayDayCard,
+} from "./DryingCards.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type UnitKpis = { [key: string]: number };
@@ -1271,6 +1273,8 @@ export function DryingCurveTool(): JSX.Element {
         )}
         {lessonStep(7)}
         <LastPercentCard run={{ traj: trajectory, kpis: kpis?.[view.unit] }} />
+        <TrayDayCard />
+        <HotProductCard />
         {lessonStep(8)}
         <SprayChamberCard />
 

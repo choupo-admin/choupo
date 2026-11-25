@@ -32576,6 +32576,16 @@ $d_{32}$ shrinking to the powder $d_p$) gives the particle PSD; the
 evaporated; the \textbf{wet-bulb} temperature (a Newton-1D) is the
 wet-surface temperature during constant-rate drying; and the
 \textbf{Ranz--Marshall}\cite{RanzMarshall1952} transfer coefficients set the drying-rate curve.
+The wet bulb is the root of the adiabatic-saturation equation
+$Y_{\mathrm{sat}}(T_{wb}) - Y = (c_{p,c} + Y c_{p,v})(T - T_{wb})/\lambda(T_{wb})$,
+searched between $0.5\,^{\circ}$C and the air temperature.  Air so dry and
+cold that the root would lie below that floor (dry air at 5~$^{\circ}$C has
+$T_{wb}\approx -3\,^{\circ}$C) is \emph{refused by name} by every caller
+--- the dryers, the cooling tower --- instead of being answered with the
+floor: there is no ice or supercooled-water branch, and the bracket's sign
+and the final residual are checked (gate \texttt{check\_dryer\_arrangements},
+section~f, against an independent Wagner--Pruss root and the psychrometer
+equation).
 They converge on the \emph{residual moisture} --- and here is the
 lesson: the endpoint is \emph{not} ``everything evaporates''.  The GAB
 sorption isotherm pins the equilibrium moisture $X_e$ to the air's
@@ -33402,6 +33412,38 @@ It also applies the classical $CP$ rule --- above the pinch $CP_h \le
 CP_c$, below it $CP_h \ge CP_c$ --- and reports, per row, whether the pair
 obeys it.
 
+\paragraph{Feasible at $\Delta T_{\min}$ is not the same as compatible with
+maximum energy recovery.}\label{par:pinch-penalty}
+$Q_{\max}$ is the bound of one pair \emph{alone}: it guarantees the
+approach, not the targets.  A match that is feasible at $\Delta T_{\min}$
+can still turn the hot and cold utility targets into larger numbers --- most
+plainly when the problem has \emph{several} pinches (the problem table's
+corrected cascade touches zero at more than one interior boundary) and the
+match carries heat across one of them, but also in a single-pinch problem
+when a match uses up the stream's pinch-end.  Choupo therefore recomputes
+the problem table after each candidate: the hot piece is cooled from its
+top and the cold piece heated from its bottom by $Q_{\max}$ (the
+counter-current arrangement the bound assumes), the targets $Q_{H,\min}'$
+are rebuilt from the whole remaining population, and the row carries
+\begin{equation}\label{eq:pinch-penalty}
+  \Delta Q_{\mathrm{pen}} \;=\; Q_{H,\min}' - Q_{H,\min}\;\ge 0
+\end{equation}
+(the cold-utility target rises by the same amount, since the enthalpy
+balance is unchanged), in \texttt{targetPenalty\_kW}, together with the
+largest duty that leaves both targets alone
+(\texttt{maximumTargetPreservingDuty\_kW}, found by bisection on the
+penalty).  A row with $\Delta Q_{\mathrm{pen}}=0$ is a ``thermodynamically
+admissible candidate''; a row with a positive penalty is reported as
+``temperature-feasible at dTmin but NOT compatible with maximum energy
+recovery'', with the penalty in kW.  The \texttt{abovePinch} /
+\texttt{belowPinch} labels and the $CP$ rule refer to the hottest pinch; the
+penalty needs no such choice, because it is measured by the targets
+themselves.  Classic four-stream problem: the below-pinch pair H2--C1 is
+feasible for 125~kW, but made in full it raises both targets by
+15.6~kW; at most the duty in \texttt{maximumTargetPreservingDuty\_kW} keeps
+them.  The check is an independent problem table in the pinch gate
+(\texttt{check\_pinch}, arm \texttt{pinch\_mer}).
+
 \begin{pitfall}
 \textbf{The $CP$ rule binds only \emph{at} the pinch.}  A match that
 violates it is not thereby forbidden: it simply cannot be the match that
@@ -33414,8 +33456,9 @@ striking it out.
 The candidate table is an \textbf{analysis}, never a synthesis.  Choupo
 does not draw your network, does not rewrite your flowsheet, and ---
 deliberately, and checked by a gate --- \emph{never uses the word
-``optimal''}.  Every feasible row is a ``thermodynamically admissible
-candidate''.  Which candidates become exchangers is the engineer's
+``optimal''}.  Every feasible row whose full duty keeps the energy
+targets is a ``thermodynamically admissible candidate''; one that raises
+them is flagged with the penalty (Eq.~\eqref{eq:pinch-penalty}).  Which candidates become exchangers is the engineer's
 decision, and it involves plot plans, control, startup and safety that no
 temperature table knows about.
 \end{keyidea}
@@ -36084,6 +36127,25 @@ droplet size is read from two runs, not asserted.  The engine's drop size is sin
 is an interpolation for display (\file{SprayDryer.cpp}), so it is not shown.  \emph{In-sample statement:} the tray and spray cases are
 hypothetical teaching cases with declared $R_c$, $X_c$ and curve.
 
+\subsection{The day of a batch tray dryer}\label{sec:drying-tray-day}
+A batch dryer dries only during one step of a cycle.  With the handling times $t_\mathrm{load}$, $t_\mathrm{unload}$
+and $t_\mathrm{clean}$ and the drying time $t_\mathrm{dry}$ of the batch,
+\begin{equation}
+  t_\mathrm{cycle}=t_\mathrm{load}+t_\mathrm{dry}+t_\mathrm{unload}+t_\mathrm{clean},\qquad
+  \dot m_\mathrm{day}=\frac{24\,\mathrm{h}}{t_\mathrm{cycle}}\,m_s,\qquad
+  f_\mathrm{idle}=\frac{t_\mathrm{cycle}-t_\mathrm{dry}}{t_\mathrm{cycle}},
+\end{equation}
+with $m_s$ the dry solid of one batch.  Halving the drying time multiplies the day's output by
+$(t_\mathrm{cycle})/(t_\mathrm{cycle}-t_\mathrm{dry}/2)$, which is below 2 whenever the handling time is not zero, and cutting the drying to nothing
+gives the ceiling $24\,m_s/(t_\mathrm{load}+t_\mathrm{unload}+t_\mathrm{clean})$ that the handling alone sets.  The page's card reads $t_\mathrm{dry}$
+off the emitted $X(t)$ column of \code{dryer01\_sucrose\_tray} at a specification chosen by the reader (interpolating between the
+two samples that bracket it), takes $m_s=m_\mathrm{charge}/(1+X_0)$ from two of that run's kpis, and leaves the three handling
+times to the reader: they are assumptions, not data of the tray, and the dryer is taken to run round the clock with no waiting between
+batches, the output being a campaign average, not a whole number of batches.  Perry gives the reason a tray dryer is rarely economical except for a long cycle, several
+products needing strict batch identity or a small quantity: the labour of loading and unloading (\emph{Perry's Chemical Engineers' Handbook},
+9th ed., p.~12-39).  \emph{In-sample statement:} the drying time is the engine's for one tray of sucrose in declared air; the cycle
+arithmetic is a definition, not a model.
+
 \subsection{Continuous convective dryers: co-current, counter-current and cross-flow}\label{sec:dryer-flow-arrangements}
 
 \code{convectiveDryer} (\file{ConvectiveDryer.cpp}) dries a sorbing solid on its characteristic
@@ -36162,6 +36224,61 @@ that cannot supply the heat or would saturate).  \emph{In-sample statement:} $k_
 curve of the witnesses are hypothetical teaching values; the arrangements are verified against
 independent integrations of the same equations (gate \code{check\_dryer\_arrangements}), not
 against a measured dryer.
+
+\subsection{The solid's temperature in the falling-rate period}\label{sec:batch-dryer-solid-T}
+
+The tray dryer (\code{batchDryer}) holds the wet surface at the wet-bulb temperature
+$T_{wb}$ of the declared air for the whole run: while free water covers the surface the
+heat arriving by convection is spent entirely on evaporation, and $T_{wb}$ is where the two
+balance.  Once the constant-rate period ends ($X\le X_c$) that balance no longer holds: the
+flux $R$ falls, the latent load $R A\lambda$ falls with it, and the surplus heats the
+solid toward the air.  With \code{solidTemperature integrated;} the unit integrates this.
+
+\paragraph{Equations as implemented.}  One lumped temperature $T_s$ for the dry solid and
+its moisture (no internal gradient: small Biot number), the surface at $T_{wb}$ until $X_c$,
+\begin{align}
+  C(X)\,\frac{\mathrm{d}T_s}{\mathrm{d}t} &= h A\,(T_{air}-T_s) - R\,A\,\lambda(T_s)
+      \quad (X\le X_c), & T_s(t_c) &= T_{wb},
+  \label{eq:solidT-balance}\\
+  C(X) &= m_s\,(c_{p,s} + X\,c_{p,w}), \label{eq:solidT-heatcap}\\
+  h &= k_Y\,(c_{p,c} + Y c_{p,v}) = k_Y\,c_H. \label{eq:solidT-h}
+\end{align}
+$m_s$ is the dry-solid mass, $A$ the exposed area, $\lambda$ the latent heat of the
+moisture (Watson), $c_{p,s}$ and $c_{p,w}$ the solid's and the liquid moisture's heat
+capacities (the records' \code{solidHeatCapacity} and \code{liquidHeatCapacity}, evaluated
+once at the mean of $T_{wb}$ and $T_{air}$), $c_H$ the humid heat of the air.
+Equation~\eqref{eq:solidT-h} is the Chilton--Colburn analogy at Lewis~$=1$ --- the very
+relation the wet-bulb equation is written in, $Y_{sat}(T_{wb})-Y = c_H (T_{air}-T_{wb})/\lambda$.
+Two consequences, and both are checked in the witness: at the wet bulb
+$hA(T_{air}-T_{wb}) = R_c A\lambda(T_{wb})$, so the right-hand side of
+Eq.~\eqref{eq:solidT-balance} is zero at $X_c$ and the temperature leaves $T_{wb}$
+continuously; and $X\to X_{eq}$ gives $R\to 0$ and $T_s\to T_{air}$.
+
+\paragraph{The energy ledger.}  Two more integrals are carried beside $T_s$,
+$E_{conv}=\int hA(T_{air}-T_s)\,\mathrm{d}t$ and
+$E_{out}=\int R A\,[c_{p,w}(T_s-T_{ref})+\lambda(T_s)]\,\mathrm{d}t$ with $T_{ref}=T_{wb}$
+(the vapour leaves at $T_s$, carrying the liquid's sensible heat and the latent heat).
+The control volume is the solid and its liquid moisture, whose enthalpy relative to
+$T_{ref}$ is $H=(m_s c_{p,s}+m_w c_{p,w})(T_s-T_{ref})$; differentiating and using
+$\mathrm{d}m_w/\mathrm{d}t=-RA$ gives Eq.~\eqref{eq:solidT-balance} back, and the ledger
+closes as
+\[
+  E_{conv} - E_{out} = (m_s c_{p,s}+m_w c_{p,w})\,(T_s-T_{ref}),
+\]
+published as \code{solidEnergy\_closure\_rel} (the residual is the integrator's).
+
+\paragraph{Validity and in-sample statement.}  $R$ stays the characteristic drying curve
+and does not read $T_s$ (a warmer surface would evaporate faster; the curve is measured at
+a given air and carries it implicitly); $c_p$ are constants; the lumped solid is valid for
+$\mathrm{Bi}=hL/k_s\lesssim0.1$ (a thin tray of a conducting solid) and optimistic for a
+thick bed; the charge starts at $T_{wb}$ (its warm-up from the charged temperature is
+outside).  The spray dryer's powder temperature profile
+is \emph{not} this balance: the particle there is drawn by interpolation between the wet
+bulb and the exhaust temperature, and is labelled as a drawing.  Witness
+\code{dryer03\_solid\_temperature}: the two equations integrated outside the engine
+(constants as printed) end at $T_s=331.7796$~K against the engine's $331.7787$~K; the ledger
+closes to $10^{-9}$.  No measured solid temperature stands behind it: the numbers are a
+consequence of the stated model, verified against its own equations, not against a dryer.
 
 \subsection{Spray drying}
 A spray dryer atomises a solution into a cloud of droplets and dries them in hot
@@ -36413,6 +36530,49 @@ and the \emph{Reaction Engineering Approach}, Chen \& Xie\cite{ChenXie1997}, \em
 15 (1997) 1063 (DOI 10.1080/07373939708917282) and Chen, \emph{Drying Technology}
 26 (2008) 627 (DOI 10.1080/07373930802045922), which replaces the critical-moisture
 break with a smooth apparent activation energy $\Delta E_v(X)$.
+
+\subsection{Fines on the exhaust}\label{sec:spray-dryer-fines}
+
+By default every particle of the spray dryer leaves in the powder, and the cyclone behind
+it is idle.  In a dryer with \emph{two-point discharge} the coarse fraction leaves by
+gravity from the base of the chamber and ``the fine fraction is recovered by secondary
+equipment downstream of the chamber air exit''; with single-point discharge the spent air
+``usually carries the total powder load''\cite{Perry9,vantLand2011}.  The share that leaves
+with the air is a property of the cone, the take-off and the powder, and no source read
+gives a number for it, so Choupo does not predict it.  The case declares it, and the
+unit does the bookkeeping: \code{operation \{ carryOver \{ fraction $f$; \} \}}, or
+\code{carryOver \{ cutDiameter $d_c$; \}}.
+
+\paragraph{Equations as implemented.}  The powder's size distribution is the 15-class
+Rosin--Rammler distribution already computed (class centres $d_k$, mass fractions $w_k$).
+With a \emph{fraction} the share is $c=f$ and both outlets keep the same distribution (a
+share carries no size information).  With a \emph{cut} the classes with $d_k<d_c$ leave with
+the exhaust,
+\[
+  c = \sum_{d_k<d_c} w_k,\qquad
+  w_k^{\text{fines}}=\frac{w_k}{c}\ (d_k<d_c),\qquad
+  w_k^{\text{powder}}=\frac{w_k}{1-c}\ (d_k\ge d_c).
+\]
+The dry solid is split, $\dot n_s^{\text{exhaust}}=c\,\dot n_s$ and
+$\dot n_s^{\text{powder}}=(1-c)\,\dot n_s$; the exhaust is a gas stream carrying a solid
+(its \code{solids} and its \code{psd}, which a cyclone reads); the water leaving unevaporated stays
+with the powder.  Mass and elements close because the solid is only moved from one outlet
+to the other; the energy balance $H_{powder}+H_{exhaust}=H_{feed}+H_{air}$ is the same
+equation with the solid summed over the two outlets, both at $T_{out}$, so $T_{out}$ does not
+move.  With the block declared the KPIs \code{powder\_dry} and \code{powder\_flow} are the
+powder outlet's and \code{fines\_flow} and \code{carryOver} are added; without it nothing
+changes.
+
+\paragraph{Validity.}  The cut is sharp on a discretised distribution (it resolves the share
+to a class, a factor $1.4$ in diameter) and is a pedagogical device, not a collection
+efficiency: the grade-efficiency curve belongs to the separator that receives the fines.
+The residual water staying with the powder is an announced assumption (the fines are the
+smallest particles and the first to dry; a liquid cannot ride on a gas stream).  A share
+computed from the particle terminal velocity against the chamber's gas velocity was
+considered and rejected: the unit has no cone or exit duct, so the velocity that matters is
+not in the model.  \emph{In-sample statement:} witness \code{sprayDryer08\_fines} is a
+consequence of the declared $20\,\mu\mathrm{m}$ cut on the sugar case's distribution, not a
+measurement of any dryer.
 
 \section{The simple unit operations}\label{ch:simple-ops}
 
@@ -36815,6 +36975,84 @@ raw materials alike), a utility bill not proportional to throughput, a
 working capital built up with the ramp-up (it is invested in full at
 start-up, and the run says so), and any tax treatment of the start-up cost
 other than an expense of the first operating year.
+
+\subsection{The plant's books: income statement, balance sheet, cash-flow
+statement}\label{sec:plant-books}
+
+The appraisal above is a column of cash flows.  An accountant keeps the same
+plant in three yearly statements, and a student who can read them can check the
+appraisal against a second description of the same money.  \code{PlantBooks}
+writes them from the appraisal's own yearly rows (it adds no input and moves no
+NPV, IRR or payback): \code{incomeStatement.csv}, \code{balanceSheet.csv} and
+\code{cashFlowStatement.csv} in \code{reports/economics/}, three sheets of \code{cashFlow.ods}, and the
+\code{books} block of the result.  Years run $t=1-N_c,\dots,N$ as in the cash
+flow, year~0 the end of construction.  The design record is
+\code{docs/design/plant-books.md}.
+
+\paragraph{Income statement}, operating year $t\ge1$, with $p_t$ the production
+fraction, $F$ the fixed capital, $C_{OL}$ the operating labour and
+$C_{\mathrm{var}}=C_{RM}+C_{UT}+C_{WT}$ the variable bill:
+\begin{align}
+\text{variable cost}_t &= 1.23\,p_t\,C_{\mathrm{var}}, &
+\text{fixed cost}_t &= 0.180\,F + 2.73\,C_{OL}, \label{eq:books-cost}\\
+\text{gross margin}_t &= R_t - \text{variable cost}_t, &
+\mathrm{EBITDA}_t &= \text{gross margin}_t - \text{fixed}_t - \text{royalty}_t - S_t,\\
+\mathrm{EBIT}_t &= \mathrm{EBITDA}_t - D_t, &
+\mathrm{PBT}_t &= \mathrm{EBIT}_t - I_t, \label{eq:books-pbt}\\
+\mathrm{PAT}_t &= \mathrm{PBT}_t - T_t, &
+T_t &= \tau\,\mathrm{PBT}_t \ (\text{by the case's \code{taxOnLoss}}).
+\end{align}
+$R_t$ is the revenue, $S_t$ the start-up cost (year~1), $D_t$ the depreciation
+(the plant's $F/N_d$ over the depreciable life $N_d$, plus the depreciation of
+the interest capitalised on a declared loan), $I_t$ the interest paid, $\tau$
+the tax rate.  In the last year the plant is sold at its salvage value $V$: the
+\emph{result on disposal} is $V - B_N$ with $B_N$ the book value (cost less
+accumulated depreciation), and the tax on the sale is $\tau V$, as the
+appraisal charges it; net profit adds both to $\mathrm{PAT}_N$.  When
+$N_d\le N$ the book value is nil.
+
+\paragraph{Balance sheet}, at the end of each year:
+\begin{equation}
+\underbrace{A^{\mathrm{fixed}}_t - \textstyle\sum_{s\le t}D_s + L + \mathrm{WC}^{\mathrm{assets}} + \mathrm{cash}_t}_{\text{assets}}
+= \underbrace{\mathrm{payables} + \mathrm{loan}_t}_{\text{liabilities}}
++ \underbrace{\textstyle\sum_{s\le t}\mathrm{paid\text{-}in}_s + \sum_{s\le t}(\mathrm{net\ profit}_s-\mathrm{div}_s)}_{\text{equity}} .
+\label{eq:books-balance}
+\end{equation}
+$A^{\mathrm{fixed}}_t$ is the capital spent so far (with capitalised interest),
+$L$ the land at cost (never depreciated), $\mathrm{WC}^{\mathrm{assets}}$ the
+working capital's stocks, receivables and operating cash reserve (or one
+undivided line when the case states the working capital as a fraction of $F$),
+payables the supplier credit of the working capital.  The net
+working capital $\mathrm{WC}=\mathrm{WC}^{\mathrm{assets}}-\mathrm{payables}$ is
+the amount the NPV invests at year~0 and recovers at $N$.
+
+\paragraph{Cash-flow statement.}  Operations $=\mathrm{PAT}_t + D_t$; investing
+$= -(\text{capital}) - L - \mathrm{WC}$ in construction and, in year $N$,
+$+\mathrm{WC} + L + V - \tau V$; financing $=$ share capital paid in $+$ loan
+drawn $-$ loan repaid $-$ dividends.  Closing cash is opening cash plus the
+three.
+
+\paragraph{The identities}, each held to $10^{-9}$ of the sheet's size in every
+year and by the gate \code{check\_plant\_books}:
+(i) eq.~\eqref{eq:books-balance}; (ii) operations $+$ investing $+$ loan flows
+$=$ the appraisal's cash flow of the year (the equity cash flow when a loan is
+declared); (iii) the cash-flow statement's closing cash is the balance sheet's
+cash; (iv) $\mathrm{RE}_t=\mathrm{RE}_{t-1}+\mathrm{net\ profit}_t-\mathrm{div}_t$;
+(v) $\mathrm{EBIT}_t$ is the appraisal's taxable income (before interest);
+(vi) $\sum_t \mathrm{CF}_t = \mathrm{cash}_N + \sum\mathrm{div} - \sum\mathrm{paid\text{-}in}$.
+A failing identity means an account is missing from the appraisal; it is
+reported, not plugged.
+
+\paragraph{Accounting choices.}  No dividends (the cash stays in the plant);
+the owners pay in what the construction costs beyond the loan, so cash is nil at
+start-up; tax is paid in the year it arises (no deferred tax, no loss
+carry-forward, as the DCF has none); interest during construction is
+capitalised and depreciated with the plant; the last balance sheet is after the
+wind-up (plant sold, land and working capital turned into cash); negative cash
+is shown and flagged, never hidden by an invented credit line.  The terms
+(EBITDA, EBIT, retained earnings) follow common international usage; no
+country's chart of accounts is imposed.  Worked cases: \code{economics01\_esterification\_dcf}
+(unlevered) and \code{economics03\_startup\_years} (a loan).
 
 % ---------------------------------------------------------------------
 \section{Turton bare-module costing}\label{ch:cost-guthrie}
@@ -38387,6 +38625,9 @@ $N/N_c=f(\Phi)$.
 15, 1063 (1997), DOI 10.1080/07373939708917282. The reaction engineering
 approach to falling-rate drying.
 
+\bibitem{vantLand2011} van~'t~Land, C.~M., \emph{Drying in the Process Industry},
+Wiley, 2011, Sec.~8.7 (p.~154): product recovery of a spray dryer.
+
 \bibitem{Rosen1977} Rosen, E. M., \& Pauls, A. C., ``Computer Aided
 Chemical Process Design: The FLOWTRAN System'', \emph{Computers \&
 Chemical Engineering}, 1(1), 11--21 (1977). The canonical
@@ -38901,7 +39142,16 @@ dependence rides in automatically through the $c_p$ integrals.  A
 \code{dH\_rxn} entry in \code{constant/reactions} is \emph{not} a
 primary input: it is an announced, cross-checked override honoured
 only when a species deliberately lacks formation data, and the engine
-warns when both exist and disagree.
+warns when both exist and disagree.  The integrator reads
+$\Delta H_r(T)$ at the \emph{current} $T$ of every right-hand-side
+evaluation (and the Jacobian's $T$ column carries $d\Delta H_r/dT$, the
+reaction's $\Delta c_p$), so \eqref{eq:batch-energy} integrates
+$H=\sum_i n_i h_i(T)=\text{const}$ on the one enthalpy surface the
+balances use.  Until 2026-11-25 $\Delta H_r$ was resolved once at the charge
+temperature: a restart from a written instant resolved it again at that
+instant's $T$ and ended 6\,mK away, and $H(\text{end})-H(\text{charge})$ was
+24\,J on \code{batch02\_adiabatic}; it is now 0.6\,J.  A declared
+\code{dH\_rxn} override has no $T$ dependence and stays constant.
 
 The full state derivative is, packed:
 \[
@@ -41881,11 +42131,13 @@ three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
 grid and $T$ within 0.25~K along the trajectory
 (\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
 
-\subsection{The gas-phase reaction library: one record per reaction}\label{sec:kinetics-library}
+\subsection{The gas-phase reaction library: one folder per reaction, one file per source}\label{sec:kinetics-library}
 The elementary reactions of a gas-phase mechanism have a home of their own,
 \file{data/standards/kinetics/}, built like the binary-pair catalogues: ONE
-record per reaction (\code{recordType elementaryReaction}), a case that asks for
-a \emph{set} by name, and the precedence case $>$ standards $>$ \file{data/local}.
+FOLDER per reaction and, in it, ONE FILE per published source of its rate
+constant (\code{recordType elementaryReaction}), a case that asks for
+a \emph{set} by name, and the precedence case $>$ standards $>$ \file{data/local},
+decided per (reaction, source).
 Before it, the 21 reactions of the H$_2$/O$_2$ mechanism of
 \'O~Conaire, Curran, Simmie, Pitz and Westbrook (Int.\ J.\ Chem.\ Kinet.\ 36
 (2004) 603, Table~I) were written out by copy in eleven case files, so a constant
@@ -41907,6 +42159,7 @@ stoichiometry ( { component H; nu -1; } { component O; nu 1; }
                 { component O2; nu -1; } { component OH; nu 1; } );
 kinetics { type modifiedArrhenius;  A 1.91e14;  b 0.00;  Ea 16.44;
            units { A "cm3/mol/s"; Ea "kcal/mol"; } }
+printedEquation   "H + O2 = O + OH";
 sets   { OConaire2004 R1_H_O2_O_OH; }
 source { citation "O Conaire, Curran, Simmie, Pitz and Westbrook, ...";
          doi "10.1002/kin.20036"; table "Table I"; page 607; reaction 1; }
@@ -41918,9 +42171,22 @@ that the side whose sorted list is smaller comes first (the reverse is the SAME
 reaction), \code{+M} and \code{(+M)} are suffixes of each side and distinct from
 the bare reaction, an irreversible reaction is written \code{A+B\textasciitilde{}C+D}
 as written, and a summed duplicate (CHEMKIN DUPLICATE, the pairs~14 and~19 of
-Table~I) carries \code{@1}, \code{@2}.  The file stem IS that string
-(\code{H+O2=O+OH.dat}, \code{H+O2(+M)=HO2(+M).dat}); the reader refuses a record
-whose name is not the canonical equation of its content.  The mechanism's own
+Table~I) carries \code{@1}, \code{@2}.  The FOLDER's name IS that string
+(\file{kinetics/H+O2=O+OH/}, \file{kinetics/H+O2(+M)=HO2(+M)/}) and each
+\emph{source} is a file in it, named for the source
+(\file{kinetics/H+O2=O+OH/OConaire2004.dat}, \file{.../MillerBowman1989.dat}): two
+published constants of one reaction coexist, side by side, and neither is the
+reaction.  The reader refuses a record whose folder is not the canonical equation
+of its content, a file lying loose in \file{kinetics/}, and a name Windows or macOS
+would refuse (one holding a colon, asterisk, question mark, angle bracket, double quote, backslash or vertical bar, a space, or two names equal ignoring case; the gate
+holds the same rule).  The species of a record are the catalogue's (\code{water}, \code{ethane});
+the equation AS THE SOURCE PRINTS IT, with the paper's own symbols and its own
+orientation, is kept in \code{printedEquation} and shown beside the canonical name wherever the run
+names a reaction.  A species on BOTH sides (a catalyst or an unchanged collider: $2\,\mathrm{H}+\mathrm{H_2}\rightleftharpoons 2\,\mathrm{H_2}$,
+$\mathrm{HCCOH}+\mathrm{H}\rightleftharpoons\mathrm{CH_2CO}+\mathrm{H}$) makes a \code{spectators true;} record: its
+\code{order} (left) and \code{orderRev} (right) are the multiplicities, the equation is read from them (the net
+coefficient alone cannot tell $2\mathrm{H}+\mathrm{H_2}$ from $2\mathrm{H}+\mathrm{CO_2}$), and $\mathrm{orderRev}-\mathrm{order}=\nu$ is checked.
+The mechanism's own
 label (\code{R1\_H\_O2\_O\_OH}) is the record's alias WITHIN a set, so a unit's
 \code{reactions ( R1\_H\_O2\_O\_OH \ldots )} list does not change.
 
@@ -41929,7 +42195,11 @@ and $0$ for a product, and an \code{order} written on one is refused by name; a
 record that declares them (a global rate law) says \code{global true;} and writes
 every order.  An explicit reverse is allowed (below).
 
-\emph{A set} is derived from the records: those whose \code{sets \{\}} names it.
+\emph{A set} is derived from the records: those whose \code{sets \{\}} names it, and it draws ONE
+source per equation (a set naming one equation from two sources is refused, by name).  A \code{reactionRecords} entry names
+a reaction and, when the library holds it from several sources, the source:
+\code{\{ record "H+O2=O+OH"; source MillerBowman1989; name myR1; \}}; with no source and two or more
+carrying it the run is REFUSED, listing them -- the case chooses, the library never does.
 A case writes \code{reactionSet OConaire2004;} (or \code{reactionSets ( A B );},
 or \code{reactionRecords ( \{ record "H+O2=O+OH"; name myR1; \} );}) in its
 \code{constant/reactions}, and the engine hands every unit the very entries the
@@ -41973,30 +42243,35 @@ the ratio is~1; a ratio away from 1 is the mechanism's own thermodynamic
 inconsistency, shown, not corrected.
 
 \emph{Validity and what is not claimed.}  The record's numbers are those of the
-source, as read from its page; the seed holds 21 O~Conaire entries, each equal to
-journal page~607 as the review of 2026-11-21 read it, and the Zeldovich and
+source, as read from its page; the library holds 21 O~Conaire entries, each equal to
+journal page~607 as the review of 2026-11-21 read it, and the eight Zeldovich and
 N$_2$O reactions of Glarborg et al.\ (Prog.\ Energy Combust.\ Sci.\ 67 (2018) 31,
-Tables~2 and~5), whose page nobody in this tree has read (\code{page unrecorded},
-\code{interim}).  The carbon chain of Miller and Bowman (\emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287,
-Appendix~A, journal pp.~331 and~332) is seeded as one record per reaction: the C$_1$ chain from CH$_4$ to CO$_2$
+Tables~2 and~5, journal pp.~34 and~41), each read from the page image twice on 2026-11-25 (no digit differed from
+the values the cases carried; gate arm a5).  The whole of Miller and Bowman (\emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287,
+Appendix~A, 235 reactions on journal pp.~331--336, and Appendix~B, 73 reactions on pp.~337--338) is one record per
+reaction in the source \code{MillerBowman1989}, the numbers taken from the review's table and from nothing else;
+Appendix~A is the set \code{MillerBowman1989\_AppA}, Appendix~B the set \code{MillerBowman1989\_AppB}.  Where
+Appendix~B repeats a reaction with the same numbers the one record is a member of both sets; where B prints other numbers
+(the efficiencies of $\mathrm{H}+\mathrm{O_2}+\mathrm{M}$ and of $2\mathrm{H}+\mathrm{M}$, the $A$ of
+$\mathrm{N_2O}+\mathrm{M}$) B's value is a second file of that folder, \file{MillerBowman1989\_B.dat}, which the set
+\code{MillerBowman1989\_AppB} draws.  Its hydrogen--oxygen reactions sit beside \'O~Conaire's in the same folders.
+The C$_1$ chain from CH$_4$ to CO$_2$
 (reactions 2 to 64 that name only C$_1$ species, H and~O, without the singlet CH$_2$ and the CH$_2$OH branch) and the
-ethane route (reactions 1, 65 to 68, 74, 75).  They belong to the set \code{MillerBowman1989} and to one of five stage
+ethane route (reactions 1, 65 to 68, 74, 75) keep the set \code{MillerBowman1989} and one of five stage
 sets (\code{MB1989\_attack}, \code{MB1989\_methyl}, \code{MB1989\_formyl}, \code{MB1989\_carbonMonoxide},
 \code{MB1989\_ethane}) so that a case, or a student, adds them one step at a time; every constant is equal to the
 table the review of 2026-11-22 read from the page images (the gate's arm a4), and every record says that it is one
-mechanism's value and not an evaluated constant.  The hydrogen-oxygen reactions of that appendix are NOT seeded: the
-library already holds the \'O~Conaire expression for each of those equations, and one equation has one record.  The
+mechanism's value and not an evaluated constant.  The
 EduTool \emph{Assemble methane combustion} runs the sets as a ladder.  The library does not choose between two measurements of one
-reaction, does not carry a reaction's validity range beyond the source's, and
+reaction (the case does), does not carry a reaction's validity range beyond the source's, and
 holds no pressure-dependent table yet (\code{plog} records are admitted by the
 grammar and none is seeded).  \emph{Identity of a summed reaction, and an open question.}  The terms of a summed
 reaction are \code{X@1}, \code{X@2}, \ldots, numbered from~1 without a gap and at
 least two; a bare \code{X} beside them, or a lone \code{X@1}, is refused by name.  A
-collider-specific fall-off (\code{(+AR)}) carries the collider in its stem.  What the
-library does NOT decide is how to hold SEVERAL alternative rate expressions for one
-equation (two evaluations of the same reaction, which a case must choose between
-rather than add): the \code{@n} suffix means ``summed'', never ``alternative''.
-That decision is needed before a second mechanism is imported.
+collider-specific fall-off (\code{(+AR)}) carries the collider in its stem.  SEVERAL alternative rate
+expressions for one equation (two evaluations of the same reaction, which a case must choose between
+rather than add) are the several FILES of the folder: the \code{@n} suffix means ``summed'', never
+``alternative'', and the terms of a summed reaction are counted per source.
 Gate: \code{bin/curate/check\_kinetics\_library.py}.
 
 \subsection{Steam cracking of ethane: the molecular scheme of Sundaram and Froment}\label{sec:cracking-molecular}

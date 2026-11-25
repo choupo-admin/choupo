@@ -1032,7 +1032,10 @@ Corollaries, each paid for:
     it); else the tool that runs the risky step WARNS at that moment
     (`bin/integrate`); a sentence here only for what no machine can see.  An
     error that recurs while its rule is only a sentence is moved into a machine
-    in the next slice (C485).
+    in the next slice (C485).  The last rung is
+    in place: `bin/integrate` records each validation (`bin/curate/validation_record.py`)
+    and `bin/hooks/pre-push` refuses a push to `main` whose tree has no recorded
+    validation or a red one (`CHOUPO_PUSH_UNVALIDATED="reason"` overrides, loudly).
 
 ### Pedagogical mindset, not industrial
 

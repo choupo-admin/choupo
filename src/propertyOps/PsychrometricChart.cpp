@@ -106,6 +106,11 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     if (dict->found("grid") && dict->subDict("grid")->found("n"))
         n = std::max<std::size_t>(8, static_cast<std::size_t>(dict->subDict("grid")->lookupScalar("n")));
 
+    //  CURVE IDENTITY (2026-11-25, third external review): the adiabatic and
+    //  wet-bulb anchors were keyed with static_cast<int>, so `wetBulb (20.1
+    //  20.9)` gave two curves both named `adiabatic:20` and the GUI joined
+    //  them.  Every family now keys on rhLabel (the value as given; an
+    //  integer prints as before, so existing keys are unchanged).
     //  LABEL THE CURVE WITH THE VALUE GIVEN, not a truncation of it.  The
     //  list is in PERCENT, and `static_cast<int>` collapsed anything below 1
     //  to the same "rh:0" -- so a user writing fractions (0.2 0.4 0.6 0.8,
@@ -237,9 +242,9 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 cs = cpc + (Y > 0 ? Y : 0.0) * cpv;
                 Y  = Yas - cs * (Tc_ - TasC) / lam;
                 if (Y < 0.0) break;
-                csv << Tc_ << "," << Y << ",adiabatic:" << static_cast<int>(TasC) << "\n";
-                tab.rows.push_back({ Tc_, Y, 2.0, static_cast<double>(static_cast<int>(TasC)) });
-                note(2, static_cast<double>(static_cast<int>(TasC)));
+                csv << Tc_ << "," << Y << ",adiabatic:" << rhLabel(TasC) << "\n";
+                tab.rows.push_back({ Tc_, Y, 2.0, TasC });
+                note(2, TasC);
                 if (k == 0) ++nAdiabaticDrawn;
                 //  The adiabatic line's END is where the latent-heat term has
                 //  done its work; it moves with Hvap and with the moist-gas
@@ -314,9 +319,9 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 const double Tc_ = TasC + (TmaxC - TasC) * static_cast<double>(k) / static_cast<double>(n - 1);
                 const double Y = Yas - slope * (Tc_ - TasC);
                 if (Y < 0.0) break;
-                csv << Tc_ << "," << Y << ",wetbulb:" << static_cast<int>(TasC) << "\n";
-                tab.rows.push_back({ Tc_, Y, 3.0, static_cast<double>(static_cast<int>(TasC)) });
-                note(3, static_cast<double>(static_cast<int>(TasC)));
+                csv << Tc_ << "," << Y << ",wetbulb:" << rhLabel(TasC) << "\n";
+                tab.rows.push_back({ Tc_, Y, 3.0, TasC });
+                note(3, TasC);
                 if (k == 0)
                 {
                     ++nTrueWetBulbDrawn;

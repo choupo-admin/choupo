@@ -1459,6 +1459,27 @@ def main(argv):
     return code
 
 
+def record_validation(o, label, wt, v, code):
+    """One row in the automatic validation record (C485), keyed by the tree
+    of the integration HEAD, which bin/curate/validation_record.py reads and
+    bin/hooks/pre-push checks before a push to main."""
+    try:
+        tree = git(wt, "rev-parse", "HEAD^{tree}")
+        failed = [n for n, ok, _ in v["results"] if ok is not True]
+        verdict = ("unvalidated" if not o["validate"] else
+                   "ok" if code == 0 else "blocked" if code == 3 else "fail")
+        n = len(v["results"])
+        subprocess.run([sys.executable, str(TOOL_ROOT / "bin/curate/validation_record.py"),
+                        "add", "--tree", tree, "--verdict", verdict,
+                        "--what", f"bin/integrate {label}", "--checks", str(n),
+                        "--failed", ",".join(failed) or ("stopped" if "stop" in v else "")],
+                       cwd=wt, check=True)
+        say(f"validation recorded: {verdict}, {n} checks, {len(failed)} failed "
+            f"(tree {tree[:10]})")
+    except Exception as e:  # the record is a convenience, never the verdict
+        say(f"validation NOT recorded: {e}")
+
+
 def print_verdict(o, label, br_sha, base_sha, wt, v, code):
     lines = ["", "=" * 76, f"INTEGRATION VERDICT  {label} ({br_sha[:10]}) "
              f"onto {o['base']} ({base_sha[:10]})   [{stamp().strip()}]",
@@ -1516,6 +1537,7 @@ def print_verdict(o, label, br_sha, base_sha, wt, v, code):
                      "pushed.")
     text = "\n".join(lines)
     say(text)
+    record_validation(o, label, wt, v, code)
     if LOGDIR[0] is not None:
         try:
             (LOGDIR[0] / "verdict.txt").write_text(text + "\n")

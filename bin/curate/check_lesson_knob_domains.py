@@ -157,6 +157,18 @@ DOMAINS = [
     (M + "DryingCards.tsx", "targetX", 0.0, None,
      "a dry-basis moisture target is not negative; the slider offers 0.01 to 0.3 kg/kg, the page's own choice around the "
      "tray's corner and floor (C508)", False),
+    (M + "DryingCards.tsx", "dayTargetX", 0.0, None,
+     "a dry-basis moisture target is not negative; the slider offers 0.02 to 0.25 kg/kg, the page's own choice around the "
+     "tray's corner and floor (C508 reopened)", False),
+    (M + "DryingCards.tsx", "loadH", 0.0, None,
+     "a handling time is not negative and has no upper physical bound; the slider offers 0.1 to 4 h, an assumption the "
+     "reader declares (C508 reopened)", False),
+    (M + "DryingCards.tsx", "unloadH", 0.0, None,
+     "a handling time is not negative and has no upper physical bound; the slider offers 0.1 to 4 h, an assumption the "
+     "reader declares (C508 reopened)", False),
+    (M + "DryingCards.tsx", "cleanH", 0.0, None,
+     "a handling time is not negative and has no upper physical bound; the slider offers 0 to 8 h, an assumption the "
+     "reader declares (C508 reopened)", False),
     (M + "DryingCurveTool.tsx", "area", 0.0, None,
      "the tray loading (kg of dry solid per m2 of exposed surface) is positive; the box runs from 1 to 20, the page's "
      "own choice (C508)", False),

@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction C+OH=CO+H
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 39 (p. 331)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "C + OH = CO + H";
+limitingReactant  C;
+stoichiometry
+(
+        { component C;       nu -1; }
+        { component CO;      nu  1; }
+        { component H;       nu  1; }
+        { component OH;      nu -1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 5e+13;  b 0;  Ea 0;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989_AppA A39; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix A (C/H/O/N mechanism)";
+    page 331;
+    reaction 39;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A, reaction 39 (journal p. 331), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

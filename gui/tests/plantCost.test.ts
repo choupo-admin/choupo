@@ -58,10 +58,11 @@ describe("every engine claim is held to the line it cites", () => {
     // C259: the previous list ("2970-2971", "2963", "2821", "240", "216", "2773", "555",
     // "1896", "1908", "1929") pinned numbers each ONE LINE LOW against the lines that
     // carry the quoted text (the ENGINE_SOURCES test above holds those); corrected.
-    // lote 1119: +1 on those below EconomicsPass.cpp:3088 after C389 (price origin), print at 3802.
+    // lote 1119: +1 on those below EconomicsPass.cpp:3092 after C389 (price origin), print at 3802.
+    // C524 (2026-11-25): +1 above the books hook, +4 below it.
     // C269 (2026-11-09) moved them again: the tax-on-loss rule and the Turton
     // extrapolation advisory inserted lines above every one but 69/217/241/556.
-    for (const cite of ["3087-3088", "3080", "2928", "69", "755", "279", "255", "2880", "619", "1985", "1997", "2018"])
+    for (const cite of ["3091-3092", "3084", "2932", "69", "755", "280", "256", "2884", "620", "1989", "2001", "2022"])
       expect(text, cite).toContain(cite);
   });
   it("the engine's constants are the ones the page defaults to", () => {

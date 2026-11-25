@@ -4336,6 +4336,23 @@ PYEOF
     fi
     rm -f /tmp/adiabappr.$$
 
+    # adiabatic-restart gate (C521, 2026-11-25).  The adiabatic liquid batch
+    # vessel integrated a heat of reaction frozen at the charge T, so a restart
+    # from a written instant re-resolved it at that instant's T and ended 6 mK
+    # away (batch02/04/06), and H(end) - H(charge) was 24 J.  It now integrates
+    # H = const on the canonical surface.  Arms: a restart of batch02 from
+    # t = 300 ends on the uninterrupted T_final and n_ethylAcetate_final; the
+    # trajectory agrees at t = 310; a source arm on the energy equation.
+    if gate_exec "$ROOT/bin/curate/check_adiabatic_restart.py" > /tmp/adiabrest.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "adiabatic-restart-gate" "$(gate_claim check_adiabatic_restart /tmp/adiabrest.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_adiabatic_restart.py)\n" "adiabatic-restart-gate"
+        cat /tmp/adiabrest.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/adiabrest.$$
+
     # feed-thermal-state gate (2026-09-12).  `operation.feedQuality` was a
     # SECOND HOME for a fact the feed stream already carries, and the
     # single-feed solver paths never reconciled the two: column01_benzene_
@@ -6370,6 +6387,33 @@ PYEOF
     fi
     rm -f /tmp/elemrate.$$
 
+    # gibbs-scale-invariance gate (2026-11-25, backlog C497).  The element-potential
+    # Newton stopped on an ABSOLUTE 1e-8 mol/s: at feeds x1e6 two cases did not
+    # converge, at x1e-6 trace fractions moved up to 8 %.  Each Gibbs witness at
+    # both scales must reproduce its shipped compositions.
+    if gate_exec "$ROOT/bin/curate/check_gibbs_scale_invariance.py" > /tmp/gibbsscale.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gibbs-scale-invariance-gate" "$(head -1 /tmp/gibbsscale.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gibbs_scale_invariance.py)\n" "gibbs-scale-invariance-gate"
+        cat /tmp/gibbsscale.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gibbsscale.$$
+
+    # inactive-properties gate (2026-11-25, backlog C154).  A record value the
+    # op left out of the physics (a membrane's A_w when the bench imposes J_v)
+    # is published as `inactiveProperties`, true to the record it names.
+    if gate_exec "$ROOT/bin/curate/check_inactive_properties.py" > /tmp/inactprop.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "inactive-properties-gate" "$(head -1 /tmp/inactprop.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_inactive_properties.py)\n" "inactive-properties-gate"
+        cat /tmp/inactprop.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/inactprop.$$
+
     # plog gate (2026-11-20).  `type plog` (CHEMKIN-II PLOG) interpolates ln k
     # linearly in ln P between tabulated pressures, clamps outside them and sums
     # lines at one pressure.  Four pfr witnesses whose tables all give the
@@ -7345,6 +7389,25 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/exportalone.$$
+
+    # THE PROOFS OF NINE OVER THE WHOLE CORPUS (C492, 2026-11-25): six proofs no
+    # golden can see (every feed x2, the component order reversed, the units
+    # written in SI, the closures recomputed outside the engine, admissibility,
+    # a no-op restart) held to a ledger of known violations that only shrinks.
+    # Real defects it would have caught: x_B_HK 0.884 -> 0.095 by list order
+    # (C504), a restart that moved a bottoms temperature 0.7 K (C516).
+    # One engine run per case per proof -- nightly tier.
+    if nightly_defer check_proofs; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_proofs.py" > /tmp/proofs9.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "proofs-of-nine-gate" "$(head -1 /tmp/proofs9.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_proofs.py)\n" "proofs-of-nine-gate"
+        head -30 /tmp/proofs9.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/proofs9.$$
 
     # C2 solid-equilibrium spike gate (2026-08-08).  Keeps the spike's
     # architectural evidence LIVE for the review that decides migration:
@@ -9673,6 +9736,25 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/debtfin.$$
+
+    # Plant-books gate (2026-11-25, DEV.md 4c C524): the economics pass's
+    # income statement, balance sheet and cash-flow statement.  Six witnesses
+    # (an unlevered loss-maker, a copy with a loan, a taxOnLoss none copy, the
+    # start-up-years case with its shipped loan, the building/royalty case and
+    # the reference plant) are rebuilt BY HAND from the published cash-flow rows
+    # and loan schedule; the engine's statements must equal them account by
+    # account, assets = liabilities + equity and the cash ties to the
+    # appraisal in every year (1e-9), and eight accounts moved by 1e-6 of the
+    # sheet are each caught.
+    if gate_exec "$ROOT/bin/curate/check_plant_books.py" > /tmp/plantbooks.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "plant-books-gate" "$(gate_claim check_plant_books /tmp/plantbooks.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_plant_books.py)\n" "plant-books-gate"
+        cat /tmp/plantbooks.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/plantbooks.$$
 
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal

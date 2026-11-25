@@ -201,6 +201,11 @@ kinetics
    reactions, lower T exothermic ones; for dn > 0 (more moles out) low P helps; for
    dn < 0 high P helps.  Always compute the equilibrium conversion
    (`equilibriumReactor`) before asserting a per-pass conversion.
+3b. Gas-phase mechanisms: the elementary reactions live in `data/standards/kinetics/<equation>/<Source>.dat` (one folder per reaction, one file
+   per published source: `H+O2=O+OH/OConaire2004.dat` and `.../MillerBowman1989.dat` coexist).  A case writes `reactionSet OConaire2004;`
+   (or `MillerBowman1989_AppA`, `Glarborg2018`, `reactionSets ( ... )`) in `constant/reactions`, or
+   `reactionRecords ( { record "H+O2=O+OH"; source MillerBowman1989; name myR1; } );` -- the source is required when two carry the equation.
+   Each record keeps the equation as the paper prints it (`printedEquation`).  Theory Guide `sec:kinetics-library`.
 4. Choose conversion/kinetics/equilibrium by data: have a rate law -> pfr/cstr;
    have catalyst per-pass data -> conversionReactor; neither and fast reaction at
    high T -> equilibriumReactor (maybe with `temperatureApproach` 10-50 K, labelled

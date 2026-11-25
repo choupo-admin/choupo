@@ -85,7 +85,7 @@ import { useReducedMotion } from "@mantine/hooks";
 import { ActionIcon, Anchor, Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
 import { IconHelp, IconX } from "@tabler/icons-react";
 import { keyHelp, type KeyHelp } from "../case/keyHelp.js";
-import { inactiveLines, unreadKeysFromLog } from "../case/inactiveKeys.js";
+import { inactiveLines, inactiveRecordLines, unreadKeysFromLog } from "../case/inactiveKeys.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
 import { openGuide } from "../help/guideLinks.js";
 import { FileTree } from "./FileTree.js";
@@ -395,9 +395,14 @@ export function CaseWorkspace() {
    * never read -- the engine's own `[dict]` report -- is drawn dimmed with a
    * tag, so a value that did nothing is not mistaken for one that did. */
   const runLog = useStore((s) => s.runLog);
+  const recordFacts = useStore((s) => s.propsRunResult?.operationResults);
   const inactive = useMemo(
-    () => (/(^|\/)system\/propsDict$/.test(active ?? "") ? inactiveLines(activeText ?? "", unreadKeysFromLog(runLog)) : new Map<number, string>()),
-    [active, activeText, runLog]);
+    () => {
+      if (/(^|\/)system\/propsDict$/.test(active ?? "")) return inactiveLines(activeText ?? "", unreadKeysFromLog(runLog));
+      const facts = (recordFacts ?? []).flatMap((o) => o.inactiveProperties ?? []);
+      return inactiveRecordLines(active ?? "", activeText ?? "", facts);
+    },
+    [active, activeText, runLog, recordFacts]);
 
   /* THE SELECTED LINE and F1's answer for its key (DEV.md 4c C154). */
   const [activeLine, setActiveLine] = useState<{ path: string; line: number } | null>(null);

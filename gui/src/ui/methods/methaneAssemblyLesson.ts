@@ -78,7 +78,7 @@ export const METHANE_STEPS: readonly LessonStep[] = [
       + "to call an ignition.  A mechanism is not a mixture: the species a case holds do nothing "
       + "until a reaction names them.",
     note: "How a case asks for sets: reactionSets in constant/reactions, read by "
-      + "src/thermo/reaction/KineticsLibrary.cpp:388-389.  The library records are in data/standards/kinetics/.",
+      + "src/thermo/reaction/KineticsLibrary.cpp:461-462.  The library records are in data/standards/kinetics/.",
   },
   {
     n: 3,
@@ -152,7 +152,7 @@ export const METHANE_STEPS: readonly LessonStep[] = [
       + "once for the base case and once per reaction with that one reaction's rate multiplied by a "
       + "factor, forward and reverse together, so the equilibrium state is the same in every run.  "
       + "The sensitivity coefficient is the change in the logarithm of the delay per unit change "
-      + "in the logarithm of the rate constant (src/unitOperations/batch/BatchReactor.cpp:926).  "
+      + "in the logarithm of the rate constant (src/unitOperations/batch/BatchReactor.cpp:927).  "
       + "A negative coefficient means that a faster reaction brings the ignition forward, a positive "
       + "one that it delays it.  The page lists the largest.  Two reactions of the methyl radical "
       + "head the list and pull in opposite directions: the branching of CH3 with oxygen brings "

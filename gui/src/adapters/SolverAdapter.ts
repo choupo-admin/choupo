@@ -213,6 +213,10 @@ export interface OperationResult {
   /** The op's own NON-ZERO return code; absent = it ran to its end.  The run
    *  status, kept apart from the status of the evidence (`curation`). */
   rc?: number;
+  /** Record values the op read and did NOT use (DEV.md 4c C154): the record it
+   *  came from (`membrane <name>`), the key, and the engine's reason -- e.g. a
+   *  membrane's `A_w` when the bench imposes the flux.  Absent = none claimed. */
+  inactiveProperties?: { source: string; key: string; reason: string }[];
 }
 
 /** Provenance of a raw experimental dataset (B1): where the lab data came from. */
@@ -1395,6 +1399,35 @@ export interface Economics {
   operatingHours?: number;
   operatingHoursFrom?: string;
   utilityBill?: number;
+  /** THE PLANT'S BOOKS (DEV.md 4c C524): the income statement, balance sheet
+   *  and cash-flow statement of the same appraisal, as the engine wrote them.
+   *  Absent from an older payload -- then no statement is drawn. */
+  books?: EconomicsBooks;
+}
+
+/** One account over all the years of a statement (accounts down, years
+ *  across); `help` is the engine's one-line plain-language definition. */
+export interface BooksRow {
+  key: string;
+  label: string;
+  help: string;
+  subtotal: boolean;
+  values: number[];
+}
+
+/** The three statements, tied together, and the identities that tie them. */
+export interface EconomicsBooks {
+  basis: string;              // "project" | "equity"
+  years: number[];
+  incomeStatement: BooksRow[];
+  balanceSheet: BooksRow[];
+  cashFlowStatement: BooksRow[];
+  checks: {
+    balanceError: number; cashTieError: number; incomeTieError: number;
+    retainedEarningsError: number; ownersError: number; worstError: number;
+    worstIdentity: string; worstYear: number; closingCash: number;
+    shareCapitalPaidIn: number; cashOverdrawn: boolean;
+  };
 }
 
 /** The land as the engine priced it.  `areaFrom` is "layoutPlot" (the plot

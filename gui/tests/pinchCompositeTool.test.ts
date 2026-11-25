@@ -267,6 +267,25 @@ describe("candidateFlag -- which rows the table visibly marks", () => {
   });
 });
 
+describe("candidateMatches.csv with the target-penalty columns (several pinches)", () => {
+  const HDR = "region,hotStream,coldStream,temperatureFeasible,pinchRule,"
+    + "maximumCandidateDuty_kW,limitingReason,recommendation,"
+    + "targetPenalty_kW,maximumTargetPreservingDuty_kW";
+  const csv = HDR + "\n"
+    + "belowPinch,coolerH1,heaterC1,yes,not a pinch match (CP rule does not bind),5,"
+    + "hot stream duty exhausted,temperature-feasible at dTmin but NOT compatible with maximum energy recovery: "
+    + "the full 5 kW raises both utility targets by 5 kW (at most 0 kW leaves them alone),5,0\n"
+    + "abovePinch,coolerH2,heaterC2,yes,not a pinch match (CP rule does not bind),2,"
+    + "hot stream duty exhausted,thermodynamically admissible candidate,0,2\n";
+  it("reads the extended header and flags a feasible match that costs energy", () => {
+    const rows = parseCandidateMatches(csv);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]!.targetPenalty_kW).toBe(5);
+    expect(candidateFlag(rows[0]!)).toBe("costsEnergy");
+    expect(candidateFlag(rows[1]!)).toBeNull();
+  });
+});
+
 // ---- The standalone classroom witness: knobs vs the REAL bundled corpus -----
 // No WASM here: what is verified is the KNOB MAP — every ScalarOverride the
 // tool declares must resolve, uniquely, against the witness's own raw dict

@@ -7,7 +7,6 @@
 # (C184, C477, C499 on 2026-11-24; Vitor: "não ponhas da outra porque ele é que gere").  It moves in the commit that moves the item's row.
 C124	70	faltam permutadores laterais e pumparounds
 C135	0	nada construído
-C154	75	falta um ponto
 C159	0	nada construído
 C199	70	faltam três peças
 C205	30	faltam cinco unidades
@@ -54,19 +53,13 @@ C485	75	faltam três das máquinas
 C491	40	2 das 5 provas medidas
 C492	40	seis provas em todos os casos estacionários, num ramo
 C496	50	medido; a revisão pediu 11 correções
-C497	0	remédio identificado, por fazer
 C502	0	nada construído
-C506	0	nada construído
 C507	0	nada construído
-C512	0	nada construído
 C513	60	uma lei e cinco registos no main
-C519	0	nada construído
 C520	0	nada construído
-C521	5	causa encontrada
 C309	40	lotes restantes bloqueados por dados
 C454	35	cerca de 6 das 18 famílias
-C508	70	páginas no main; faltam dois tipos e a tabela
-C524	20	fluxo de caixa, fundo de maneio e tornado já existem
 C525	0	nada construído
 C526	5	cenários corridos
-C527	10	confirmados; um general em curso
+C529	5	um general em curso
+C530	5	um general em curso

@@ -68,9 +68,9 @@ def chain():
     out = []
     for sid, label, sets in STAGES:
         items = []
-        for fn in sorted(os.listdir(kin)):
-            if not fn.endswith(".dat"):
-                continue
+        #  a reaction is a folder (its canonical equation), a source a file in it (C339)
+        for fn in sorted(os.path.join(d, f) for d in os.listdir(kin) if d != "sets" and os.path.isdir(os.path.join(kin, d))
+                         for f in os.listdir(os.path.join(kin, d)) if f.endswith(".dat")):
             t = open(os.path.join(kin, fn)).read()
             m = re.search(r"^sets\s*\{([^}]*)\}", t, re.M)
             if not m:
@@ -83,7 +83,7 @@ def chain():
                         eq = [r for r in oc.values() if r[1] == rx][0][3]
                     else:
                         eq = mb[rx]["equation"].replace("=", " = ").replace("+", " + ").replace("( + M)", "(+M)")
-                    items.append(dict(label=lab, equation=eq, page=int(page), record=fn[:-4], reaction=rx))
+                    items.append(dict(label=lab, equation=eq, page=int(page), record=os.path.dirname(fn), reaction=rx))
         items.sort(key=lambda d: (int(re.sub(r"\D", "", d["reaction"]) or 0), d["reaction"]))
         out.append(dict(id=sid, label=label, sets=sets, reactions=items))
     return out

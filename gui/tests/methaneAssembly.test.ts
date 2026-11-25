@@ -96,7 +96,7 @@ describe("methane-assembly: the chain data is the library, and the cases list it
     for (const c of CHAIN) {
       expect(c.reactions.length, c.id).toBeGreaterThan(0);
       for (const r of c.reactions) {
-        const f = `data/standards/kinetics/${r.record}.dat`;
+        const f = `data/standards/kinetics/${r.record}/${c.sets.includes("OConaire2004") ? "OConaire2004" : "MillerBowman1989"}.dat`;
         expect(existsSync(new URL(`../../${f}`, import.meta.url)), f).toBe(true);
         const txt = tree(f);
         const sets = /^sets\s*\{([^}]*)\}/m.exec(txt)![1]!;
@@ -110,8 +110,11 @@ describe("methane-assembly: the chain data is the library, and the cases list it
     const dir = "data/standards/kinetics";
     for (const c of CHAIN) {
       for (const s of c.sets) {
-        const members = readdirSync(new URL(`../../${dir}`, import.meta.url))
-          .filter((f) => f.endsWith(".dat"))
+        //  a reaction is a folder, a source a file in it: every record of the library, whatever its source
+        const members = readdirSync(new URL(`../../${dir}`, import.meta.url), { withFileTypes: true })
+          .filter((d) => d.isDirectory() && d.name !== "sets")
+          .flatMap((d) => readdirSync(new URL(`../../${dir}/${d.name}`, import.meta.url))
+            .filter((f) => f.endsWith(".dat")).map((f) => `${d.name}/${f}`))
           .flatMap((f) => {
             const m = /^sets\s*\{([^}]*)\}/m.exec(tree(`${dir}/${f}`));
             const hit = m ? [...m[1]!.matchAll(/(\w+)\s+(\w+);/g)].find((x) => x[1] === s) : undefined;
@@ -291,8 +294,8 @@ describe("methane-assembly: the lesson", () => {
     const cited = new Set([...all.matchAll(/((?:[A-Za-z0-9_]+\/)+[A-Za-z0-9_]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
       "src/applications/choupoBatch/main.cpp:2507": "if (d > best) { best = d; tIgn = tr[k].first; }",
-      "src/unitOperations/batch/BatchReactor.cpp:926": "else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;",
-      "src/thermo/reaction/KineticsLibrary.cpp:388-389": /reactionSets[\s\S]*lookupWordList\("reactionSets"\)/,
+      "src/unitOperations/batch/BatchReactor.cpp:927": "else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;",
+      "src/thermo/reaction/KineticsLibrary.cpp:461-462": /reactionSets[\s\S]*lookupWordList\("reactionSets"\)/,
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

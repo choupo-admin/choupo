@@ -708,7 +708,7 @@ const FINDING_KINDS_THAT_FLAG = new Set(
    "exposedInZone", "exposedDownwind", "carParkReverseExit", "singleEntrance",
    //  C134: an item in the open that holds liquid and that no containment
    //  encloses.
-   "unbundedLiquid"]);
+   "unbundedLiquid", "serviceClearance"]);  // C507: the tube bundle cannot be pulled
 
 /** Findings that name a ROAD (its `a`), told in the road's tooltip. */
 const ROAD_FINDINGS = new Set(["roadInZone", "roadDisconnected"]);

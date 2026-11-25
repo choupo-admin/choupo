@@ -144,6 +144,158 @@ def exhaust_T_hand(k, S, G, Xout):
     return 273.15 + (hex_ - Yex * LAM0) / (CPD + CPV * Yex), Yex
 
 
+# ---- (f) the wet bulb: a floor that is refused, and a root that is checked ----
+#
+# DEFECT NAMED (third external review, 2026-11-25): psychrometry::wetBulb
+# bisected from a floor of 273.65 K and never looked at the sign there nor at
+# the final residual, so dry air at 1, 5 and 10 C returned 0.5 C.  Every
+# caller of the shared function must now refuse such air BY ITS OWN NAME.
+
+def wb_independent(T, Y, cpa=1.040, cpv=1.86):
+    """Adiabatic-saturation temperature of N2 + water at 1 atm from raw
+    inputs: Wagner-Pruss psat, lambda(T_C) = 2501 - 2.361 T_C kJ/kg, constant
+    cp (kJ/kg K).  Bisection on  Y_sat(Twb) - Y - (cpa + Y cpv)(T - Twb)/lam."""
+    P = 101325.0
+    def f(Tw):
+        ps = psat(Tw)
+        ysat = (MV / 28.0134) * ps / (P - ps)
+        lam = 2501.0 - 2.361 * (Tw - 273.15)
+        return ysat - Y - (cpa + Y * cpv) * (T - Tw) / lam
+    lo, hi = 273.15, T
+    if f(lo) >= 0.0:
+        return None
+    for _ in range(200):
+        m = 0.5 * (lo + hi)
+        lo, hi = (lo, m) if f(m) >= 0.0 else (m, hi)
+    return 0.5 * (lo + hi)
+
+
+def wb_psychrometer(T, Y):
+    """Second route: the psychrometer equation p_v = p_sat(Twb) - A P (T - Twb)
+    with A = 6.6e-4 /K (ventilated bulb; the Lewis factor of the equation is
+    about 0.95 against the adiabatic one), p_v from Y.  Differs from the
+    adiabatic route by a few tenths of a K at these states."""
+    P = 101325.0
+    pv = P * Y / (Y + MV / 28.0134)
+    lo, hi = 273.15, T
+    g = lambda Tw: psat(Tw) - 6.6e-4 * P * (T - Tw) - pv
+    if g(lo) >= 0.0:
+        return None
+    for _ in range(200):
+        m = 0.5 * (lo + hi)
+        lo, hi = (lo, m) if g(m) >= 0.0 else (m, hi)
+    return 0.5 * (lo + hi)
+
+
+def wet_bulb_checks(tmp):
+    import shutil
+    BATCH = ROOT / "tutorials/batch/drying/dryer01_sucrose_tray"
+    TOWER = ROOT / "tutorials/steady/heat/coolingTower01_merkel"
+    SOLID = DRY / "solidDryer01_sugar"
+    EVAP = DRY / "evapDryer01_nacl"
+
+    # (f1) the root, against the adiabatic-saturation equation from RAW inputs
+    #      (not the engine's residual) and against the psychrometer equation.
+    w = Path(tmp) / "wbB"
+    case_records.copytree(BATCH, w)
+    import subprocess
+    p = subprocess.run([str(ROOT / "build/linux64Gcc/choupoBatch"), "."], cwd=w,
+                       capture_output=True, text=True, timeout=600,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+    out = p.stdout + p.stderr
+    m = re.search(r'"T_wb":\s*([0-9.eE+-]+)', out)
+    if p.returncode != 0 or not m:
+        fail("(f1) batchDryer witness did not run / publish T_wb:\n" + out[-600:])
+    Twb = float(m.group(1))
+    ref = wb_independent(333.15, 0.010)
+    ref2 = wb_psychrometer(333.15, 0.010)
+    if ref is None or abs(Twb - ref) > 0.3:
+        fail(f"(f1) batchDryer T_wb {Twb:.3f} K vs independent adiabatic-saturation"
+             f" root {ref} K (band 0.3 K: hand cp and lambda)")
+    if ref2 is None or abs(Twb - ref2) > 1.0:
+        fail(f"(f1) batchDryer T_wb {Twb:.3f} K vs psychrometer-equation route"
+             f" {ref2} K (band 1 K)")
+    w = Path(tmp) / "wbT"
+    case_records.copytree(TOWER, w)
+    rc, o = ccd.run(w)
+    m = re.search(r'"T_wb_in":\s*([0-9.eE+-]+)', o)
+    if rc != 0 or not m:
+        fail("(f1) cooling tower witness did not run:\n" + o[-600:])
+    Tw2 = float(m.group(1))
+    Yt = 1.3 * MV / (65 * 28.0134)
+    ref = wb_independent(298.15, Yt)
+    if ref is None or abs(Tw2 - ref) > 0.3:
+        fail(f"(f1) cooling tower T_wb_in {Tw2:.3f} K vs independent root {ref} K")
+    print(f"  wet bulb: batch dryer {Twb:.3f} K (independent {wb_independent(333.15, 0.010):.3f},"
+          f" psychrometer eq. {wb_psychrometer(333.15, 0.010):.3f}); tower {Tw2:.3f} K"
+          f" (independent {ref:.3f})")
+
+    # (f2) every caller refuses dry air below freezing's wet bulb, by its name.
+    def cold(case, rel, binary, unit, kind):
+        pr = Path(tmp) / ("cold_" + case.name)
+        if pr.exists():
+            shutil.rmtree(pr)
+        case_records.copytree(case, pr)
+        f = pr / rel
+        t = f.read_text()
+        if kind == "stream":
+            t = re.sub(r"\nT\s+[0-9.]+ K;", "\nT               278.15 K;", t, count=1)
+            t = re.sub(r"(water\s+)[0-9.]+(\s+kmol/h;)", r"\g<1>0.000001\2", t, count=1)
+        else:
+            t = re.sub(r"T\s+333\.15 K;", "T        278.15 K;", t, count=1)
+            t = re.sub(r"Y\s+0\.010;", "Y        0.0;", t, count=1)
+        f.write_text(t)
+        p = subprocess.run([str(ROOT / "build/linux64Gcc" / binary), "."], cwd=pr,
+                           capture_output=True, text=True, timeout=600,
+                           env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+        o = p.stdout + p.stderr
+        if p.returncode == 0:
+            fail(f"(f2) {case.name}: dry air at 5 C RAN -- the wet bulb of 0.5 C"
+                 " would have been returned; the refusal is missing")
+        if "below the bracket floor" not in o or unit not in o:
+            fail(f"(f2) {case.name}: refused, but not by this unit's name"
+                 f" ('{unit}') with the floor wording:\n{o[-600:]}")
+    cold(C03, "0/hotAir", "choupoSolve", "dryer", "stream")
+    cold(SOLID, "0/hotAir", "choupoSolve", "solidDryer", "stream")
+    cold(EVAP, "0/hotGas", "choupoSolve", "dryer", "stream")
+    cold(TOWER, "0/air", "choupoSolve", "CoolingTower", "stream")
+    cold(BATCH, "system/flowsheetDict", "choupoBatch", "dryer", "dict")
+
+    # (g) CURVE IDENTITY of the chart (third external review, 2026-11-25): the
+    #     adiabatic / wet-bulb anchors were keyed with static_cast<int>, so
+    #     `wetBulb (20.1 20.9)` drew two curves both named adiabatic:20.
+    PSY = ROOT / "tutorials/props/heat/psychro02_air_water"
+    pr = Path(tmp) / "chart"
+    case_records.copytree(PSY, pr, ignore=shutil.ignore_patterns("expected", "log.*"))
+    d = pr / "system/propsDict"
+    t = d.read_text()
+    t2 = re.sub(r"wetBulb\s+\([^)]*\);", "wetBulb ( 20 20.1 20.9 );", t, count=1)
+    if t2 == t:
+        fail("(g) could not rewrite the chart's wetBulb list")
+    d.write_text(t2)
+    p = subprocess.run([str(ROOT / "build/linux64Gcc/choupoProps"), "."], cwd=pr,
+                       capture_output=True, text=True, timeout=600,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+    if p.returncode != 0:
+        fail("(g) the chart did not run:\n" + (p.stdout + p.stderr)[-600:])
+    curves = {}
+    for line in (pr / "psychroChart.csv").read_text().splitlines()[1:]:
+        a = line.split(",")
+        curves.setdefault(a[2], []).append((float(a[0]), float(a[1])))
+    for fam in ("adiabatic", "wetbulb"):
+        names = sorted(c for c in curves if c.startswith(fam + ":"))
+        want = [f"{fam}:20", f"{fam}:20.1", f"{fam}:20.9"]
+        if names != sorted(want):
+            fail(f"(g) {fam} curves are {names}, want {sorted(want)}")
+    # each decimal curve starts at ITS OWN saturation point (T = anchor), so
+    # the three first points are three different temperatures, and the
+    # integer key is the old spelling (psychro02's golden stays byte-identical).
+    firsts = sorted(curves["adiabatic:" + s][0][0] for s in ("20", "20.1", "20.9"))
+    if not (abs(firsts[0] - 20.0) < 1e-6 and abs(firsts[1] - 20.1) < 1e-6
+            and abs(firsts[2] - 20.9) < 1e-6):
+        fail(f"(g) adiabatic curves do not start at their anchors: {firsts}")
+
+
 def main():
     if not ccd.BIN.exists():
         fail(f"{ccd.BIN} is missing -- build first")
@@ -306,6 +458,8 @@ def main():
                 fail(f"(e) probe '{label}': refused, but not by name"
                      f" (expected '{needle}'):\n{o[-500:]}")
 
+        wet_bulb_checks(tmp)
+
     print("check_dryer_arrangements: OK -- co-, counter- and cross-flow on one"
           " feed and one air: every dryer closes its water balance (1e-9) and"
           " first law (1e-3 kW); the cross-flow equals an independent RK4 of"
@@ -314,7 +468,9 @@ def main():
           " co/counter profiles re-derive their rate law and water balance"
           " outside the unit; counter < co as the book says (van 't Land p."
           " 42) and counter < cross < co as these conditions give; five"
-          " refusals by name.  NOT checked: a measured dryer.")
+          " refusals by name; the wet bulb equals an independent adiabatic-saturation"
+          " root (0.3 K) and the psychrometer equation (1 K), and dry air at 5 C"
+          " is refused by name by five callers.  NOT checked: a measured dryer.")
     return 0
 
 

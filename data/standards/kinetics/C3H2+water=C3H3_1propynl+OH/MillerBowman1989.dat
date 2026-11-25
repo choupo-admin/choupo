@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction C3H2+water=C3H3_1propynl+OH
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 121 (p. 334)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "C3H3 + OH = C3H2 + H2O";
+limitingReactant  C3H3_1propynl;
+stoichiometry
+(
+        { component C3H2;    nu  1; }
+        { component C3H3_1propynl; nu -1; }
+        { component OH;      nu -1; }
+        { component water;   nu  1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 2e+13;  b 0;  Ea 0;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989_AppA A121; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix A (C/H/O/N mechanism)";
+    page 334;
+    reaction 121;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A, reaction 121 (journal p. 334), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

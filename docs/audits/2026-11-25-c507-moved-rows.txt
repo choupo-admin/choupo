@@ -1,0 +1,38 @@
+# Golden rows moved by C507 (service clearance), greenAmmoniaPEQ_baseCase ONLY (2026-11-25)
+# The only change to the case: layoutDict, FEHE x 40 m -> 37.8 m (2.2 m west) so the water cooler's 7.6 m bundle can be pulled toward it, and a new
+# `serviceClearance` block (declaration, not a result).  Re-recorded with `bin/runTests --record`; rows whose value did not change keep their old line.
+# Every closure (mass, elements, energy) is unchanged: nothing outside layout.* moved.
+# 27 rows moved (old -> new), 0 added, 0 dropped, 3154 unchanged.
+
+== MOVED (old -> new) ==
+layout FEHE x: 40 -> 37.8
+layout junction:LoopMix x: 41.3333333333 -> 40.6
+layout pipe:Makeup length: 21.2904074632 -> 20.5570741298
+layout pipe:CompRecycle length: 36.1666666667 -> 36.9
+layout pipe:Mixed length: 23.9333333333 -> 25.4
+layout pipe:CooledEffluent length: 48.1818117 -> 50.3818117
+layout line:Makeup length: 21.2904074632 -> 20.5570741298
+layout line:Makeup lineDropFriction: 17620.7138224 -> 17382.1709054
+layout line:Makeup lineDrop: 20583.5324466 -> 20344.9895296
+layout line:CompRecycle length: 36.1666666667 -> 36.9
+layout line:CompRecycle lineDropFriction: 39558.6492366 -> 39900.9698617
+layout line:CompRecycle lineDrop: 41271.4045197 -> 41613.7251448
+layout line:Mixed length: 23.9333333333 -> 25.4
+layout line:Mixed lineDropFriction: 18835.4019156 -> 19189.905366
+layout line:Mixed lineDrop: 16125.2846685 -> 16479.7881189
+layout line:CooledEffluent length: 48.1818117 -> 50.3818117
+layout line:CooledEffluent lineDropFriction: 27512.2728342 -> 28052.1081475
+layout line:CooledEffluent lineDrop: 27802.7934571 -> 28342.6287703
+layout summary pipeLength: 1486.82370181 -> 1494.59975648
+layout pipe:PreheatedFeed length: 55.2484208737 -> 57.3031148737
+layout pipe:CONVERTER.HotEffluent length: 48.2028757435 -> 50.2575697435
+layout line:PreheatedFeed length: 55.2484208737 -> 57.3031148737
+layout line:PreheatedFeed lineDropFriction: 35780.0935403 -> 36352.3494388
+layout line:PreheatedFeed lineDrop: 40287.3572683 -> 40859.6131667
+layout line:CONVERTER.HotEffluent length: 48.2028757435 -> 50.2575697435
+layout line:CONVERTER.HotEffluent lineDropFriction: 36042.4070253 -> 36600.002569
+layout line:CONVERTER.HotEffluent lineDrop: 36334.3218945 -> 36891.9174381
+
+== ADDED ==
+
+== DROPPED ==

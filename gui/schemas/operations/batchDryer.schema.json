@@ -74,6 +74,17 @@
       ],
       "additionalProperties": false
     },
+    "solidTemperature": {
+      "type": "string",
+      "enum": [
+        "held",
+        "integrated"
+      ],
+      "title": "Solid temperature",
+      "description": "`held` (default): the surface sits at the air's wet bulb for the whole run, the solid's temperature is not integrated. `integrated`: the surface stays at the wet bulb while X > X_c (the constant-rate period IS the wet bulb), then a LUMPED solid (one temperature for the dry solid and its water) heats under C(X) dT_s/dt = h A (T_air - T_s) - R A lambda(T_s), C = m_s (cp_s + X cp_w), h = k_Y (cp_c + Y cp_v) (Chilton-Colburn at Lewis = 1, the wet bulb's own relation); R is the characteristic drying curve and does not read T_s; X -> X_eq drives T_s -> T_air. Needs the solid's `solidHeatCapacity {}` and the moisture's `liquidHeatCapacity {}`. Publishes T_solid_final and the energy ledger solidEnergy_conv_kJ / _out_kJ / _stored_kJ / _closure_rel; the trajectory gains dryer.T_solid_K. Theory Guide sec:batch-dryer-solid-T.",
+      "default": "held",
+      "unit": "-"
+    },
     "moisture": {
       "type": "string",
       "title": "Moisture component",

@@ -1533,6 +1533,25 @@ terms, checked by hand in its postDict); the gate
 `bin/curate/check_debt_financing.py` holds it and builds further probes from
 a loan-free copy of it and from `economics01_esterification_dcf`.
 
+**THE PLANT'S BOOKS (2026-11-25, DEV.md 4c C524) -- nothing to declare.**  Every
+case with an `economics {}` block also gets the appraisal read as an income
+statement, a balance sheet and a cash-flow statement, tied together:
+`reports/economics/{incomeStatement,balanceSheet,cashFlowStatement}.csv`
+(accounts down, years across), three more sheets in `cashFlow.ods`, the
+`economics.books` object of the result (every account with a one-line
+`help`, the identities' errors) and `kpis.books.*`
+(`totalAssets_y<t>`, `totalLiabilities_y<t>`, `totalEquity_y<t>`, a negative
+year as `ym<n>`; `worstRelativeError`, `closingCash`, `shareCapitalPaidIn`).
+They add no input and move no NPV, IRR or payback.  Choices: no dividends
+(cash accumulates), the owners pay in what construction costs beyond the loan,
+tax in the year it arises, interest during construction capitalised, the last
+balance sheet after the wind-up.  Held every year to 1e-9: assets = liabilities
++ equity; operations + investing + loan flows = the appraisal's cash flow;
+closing cash = the balance sheet's cash; retained earnings roll forward;
+EBIT = the taxable income.  A run that cannot tie says which identity and year
+(an account missing from the appraisal) and the gate fails.  Gate
+`bin/curate/check_plant_books.py`; record `docs/design/plant-books.md`.
+
 **TAX ON A LOSS (2026-11-09, DEV.md 4c C269 decision (2)).**  One opt-in word
 in the same `economics {}` block says what a loss year's tax is:
 
@@ -2166,6 +2185,24 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `netVolume`, `requiredVolume`); the outline and the pit enter the plot.
   The draft carries none.  The 3D view draws the wall on the outline (its
   thickness drawing) and the pit as a recess.
+
+* **`serviceClearance` (C507): can the tube bundle be pulled?**  A block
+  `serviceClearance { clearance 1.5 m; source "..."; reason "..."; items ( { item "FEHE";
+  channelEnd west; reason "..."; } ... ); }`.  For each listed placed
+  shell-and-tube exchanger (kind `shellTubeHX`, lying `alongX` or `alongY`, in the open,
+  with a `tubeLength` on its design sheet) the zone from the channel-end face
+  outward, as wide and as high as the item, of length `tubeLength + clearance`, is swept for
+  the nearest blocker: another item's plan box (a vertical cylinder by its bounding
+  square), the fence line, the pipe rack when its lowest tier is below the item's top.
+  The tube length is a FACT (the sizer's); `clearance` is a CONVENTION the case owns, with
+  its `source` and `reason`, and no default is shipped.  ANNOUNCED
+  `serviceClearance` (`a` the exchanger, `b` the blocker, `value` the clear length, `limit`
+  the length needed, pinned by the `layout` golden kind).  No `serviceClearance` block, or an
+  exchanger it does not list: a line on stderr and in the advisories (info) saying the
+  withdrawal is NOT checked.  REFUSED: an item that is not a placed exchanger with a
+  tube length, listed twice, standing vertical, or a `channelEnd` that is not an end of its
+  axis, a negative `clearance`, a missing `source`/`reason`.  Not checked: bund walls and
+  kerbs, a pipe leaving its own nozzle across the zone, a crane's reach.
 * THE GMP INTERIOR (C97).  A pharmaceutical plant is a building before it is
   a plot plan: `building {}` in the same `layoutDict` declares its floors,
   its rooms (a box on a floor, a cleanliness `grade` -- EU GMP Annex 1's

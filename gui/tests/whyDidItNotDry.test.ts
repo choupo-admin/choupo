@@ -296,7 +296,7 @@ describe("the pages", () => {
     expect(arr).toBeLessThan(drawer);
     const drawerHtml = h.slice(drawer, h.indexOf("Check your understanding"));
     expect(drawerHtml).not.toMatch(/<details[^>]*\sopen/);
-    for (const needle of ["Ask the tree", "data-habitual-tables", "data-dryer-energy", "The seven side by side",
+    for (const needle of ["Ask the tree", "data-habitual-tables", "data-dryer-energy", "The nine side by side",
       "data-checklist-table", "The drum dryer in two books"])
       expect(drawerHtml, needle).toContain(needle);
     expect(drawerHtml).toContain("This is what the books say; the cards above are what the engine says.");
@@ -321,7 +321,7 @@ describe("the lesson and its claims", () => {
       ["src/unitOperations/heatTransfer/SolidDryer.cpp", 268, "T_floor = psychrometry::gasWetBulb"],
       ["src/unitOperations/heatTransfer/SprayDryer.cpp", 665, "const scalar d   = (d32 > 0.0)"],
       ["src/unitOperations/heatTransfer/SprayDryer.cpp", 772, "Residence time = chamber height"],
-      ["src/unitOperations/heatTransfer/SprayDryer.cpp", 915, "Tpz = T_wb + (Tgz - T_wb)"],
+      ["src/unitOperations/heatTransfer/SprayDryer.cpp", 921, "Tpz = T_wb + (Tgz - T_wb)"],
     ];
     for (const [file, line, text] of ANCHORS)
       expect(read(file).split("\n")[line - 1], `${file}:${line}`).toContain(text);

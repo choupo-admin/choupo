@@ -3818,6 +3818,10 @@ Three further cards read the engine's runs: the tray \emph{loading} $L=m_s/A$ (t
 \emph{the spray chamber} (the residence, the constant-rate time and the falling-rate constant of \code{sprayDryer01\_sugar}
 at four heights and two wheel speeds; no particle temperature is shown, the engine does not solve it).  Theory:
 Section~\ref{sec:drying-loading-tail-chamber}.
+A fourth card, \emph{the day of a tray dryer}, puts the engine's drying time of \code{dryer01\_sucrose\_tray} to a specification you choose
+inside a cycle of load, dry, unload and clean, whose three handling times you declare (assumptions, marked): it prints the cycle, the batches
+and the dry solid per day, and the share of the cycle in which nothing dries, to show that halving the drying time does not double the output.
+Theory: Section~\ref{sec:drying-tray-day}.
 \declaredanchor{ch:drying}
 
 \subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
@@ -3825,8 +3829,9 @@ The page now opens on \emph{what you cannot calculate}: the bill of tests, the n
 test of the sample (critical moisture, the falling-rate curve, the gas-film coefficient, the sorption constants)
 against those the plant decides, each with the number the bundled case declares; then the three flow
 arrangements, and last, in a collapsed drawer, the selection tree and the tables of the books, none of them removed.
-A \emph{selection} aid: the seven dryer types that do most of the drying ---
-spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
+A \emph{selection} aid: the nine dryer types that do most of the drying ---
+spray, direct-heat rotary, fluidised bed, tray, belt, drum, freeze, the flash (pneumatic-conveying)
+dryer and the agitated vacuum dryer (conical, double-cone, pan) ---
 each drawn as a schematic made for the page (wet feed and wet material in
 blue, hot gas in red, product in amber, vapour in grey, a cold surface in
 teal; none copied from a book), and a tree that
@@ -3860,7 +3865,7 @@ Where the books disagree --- Perry marks the batch tray `not applicable' to a
 free-flowing powder, van~'t Land and Mujumdar admit it; for a fine powder in a
 continuous dryer Perry admits a fluidised bed ``if not too dusty'' while van~'t
 Land's tree and Mujumdar's remark on entrainment send it to an indirect rotary
-or a disk dryer (so the rule's answer is \emph{outside the seven}); Perry's
+or a disk dryer (so the rule's answer is \emph{outside the nine}); Perry's
 drum evaporation of 7--11~g/(m$^2$\,s), i.e.\ 25--40~kg/(m$^2$\,h), differs
 from Mujumdar's 6--20 --- the page says so.  One error of a book is named and
 not copied: Mujumdar p.~22 says the heat of sublimation is ``severalfold lower''
@@ -3874,8 +3879,8 @@ drum has no gas stream.  The throughput bands are Perry's (batch below about
 The comparison table gives residence time, energy per kilogram of water
 (Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray dryer, 3\,200--6\,500
 for a drum dryer), capacity and typical products, and prints \emph{not cited}
-in every cell the four books leave blank (the energy of the batch tray and the
-freeze dryer, the capacity of the fluidised bed; Towler's Table~10.7 fills the
+in every cell the four books leave blank (the energy of the batch tray, the
+freeze dryer and the agitated vacuum dryer, the capacity of the fluidised bed; Towler's Table~10.7 fills the
 tray, 0.15--1.0~kg/(h\,m$^2$), and the belt, 1.5--35~kg/(h\,m$^3$)).  Below it come the
 habitual tables, each transcribed at its page, pinned cell by cell by the test
 and rendered as a table: Mujumdar's Table~1.1 with its eleven feed columns, his
@@ -3887,14 +3892,39 @@ vacuum, retention time, heat transfer, capacity), and the drum dryer in
 Perry's Table~12-46 and Mujumdar's numbers side by side.  A small
 bench turns a dry-solid rate and two moistures into the water to evaporate and
 the heat duty of each priced type, as the page's own arithmetic on the cited
-range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The four
+range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The five
 types the engine models open their tutorial case in a new tab:
 \code{steady/drying/sprayDryer01\_sugar},
 \code{steady/drying/convDryer01\_sugar\_curve} (the continuous convective
 family, which has no rotary geometry),
 \code{steady/drying/solidDryer01\_sugar} (nearest to a well-mixed bed) and
-\code{batch/drying/dryer01\_sucrose\_tray}; the drum, belt and freeze dryers
-have no model and say so.  The selection computes nothing and replaces no
+\code{batch/drying/dryer01\_sucrose\_tray}, and, for the flash dryer,
+\code{steady/drying/evapDryer01\_nacl} (the evaporative dryer: free surface water into
+a hot gas until the water is gone, the exhaust saturates or the gas runs out of heat,
+which is how a flash dryer is limited; it has no residence time or duct, so it cannot
+say whether a few seconds suffice); the drum, belt, freeze and agitated vacuum dryers
+have no model and say so, the last with the nearest unit named (the batch dryer is a
+tray in air, not a jacketed vessel under vacuum).
+
+Two types were added when the page was reopened.  The \emph{flash} dryer is a pick
+only where a book makes it one: van~'t Land's continuous tree ends at it when a test
+shows the drying over in about 10~s (a switch you set; his Chapter~7 puts the largest
+particle at 1--2~mm, which the tree does not, and the page says so), and Perry and
+Mujumdar admit it for a paste mixed back with dry product.  The \emph{agitated
+vacuum} dryer is the batch answer for a liquid or a paste (Mujumdar p.~24, van~'t Land
+Fig.~3.10) and, with the vacuum tray, for a granular solid at 30~$^\circ$C or a fine,
+flammable one (van~'t Land Fig.~3.1); Perry names its forms (pan, spherical, conical,
+side-screw, batch paddle, ploughshare; the tumbler or double-cone turns the shell),
+its 50--150~$^\circ$C jacket, its 3--30~kPa and its batches of 1000~L or less.  Three
+further questions are asked as warnings, never silently: whether the dust or the
+solvent vapour can burn (vacuum, inert gas, closed cycle or an indirect dryer, each
+at its page), whether the feed is sticky and must be mixed back or pre-formed, and
+what stands before and after the dryer (feed handling, exhaust cleaning, cooling the
+product).  Every answer carries Perry's plain statement that this is a first screen
+and that drying tests and the vendors' quotations decide (p.~12-37).  Where Towler
+and Perry give the tray's capacity, 0.15--1.0 against 0.0025--0.025~kg/(s\,m$^2$),
+the page shows both and says that a per-minute reading would reconcile the lower
+ends.  The selection computes nothing and replaces no
 drying test.
 
 \paragraph{Co-current, counter-current, cross-flow.}  A closing section (steps

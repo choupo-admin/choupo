@@ -75,6 +75,8 @@ Siblings: `filter02_caco3_pressWashing`, `filter03_drum_area_medium_tabulatedWas
 ```
 The feed's density, viscosity and surface tension come from the property dictionary (`transport { liquid { viscosity ... } }`, `transport { interface { surfaceTension ... } }`); typing `viscosity`, `density`, `sigma` in `operation` is refused by name. Variants: `sprayDryer02_residence_sweep`, `sprayDryer03_pressure_nozzle`, `sprayDryer05_whey`, `sprayDryer07_design`; solid dryer `solidDryer01_sugar`; evaporative `evapDryer01_nacl`; convective `convDryer01_sugar_curve`, `convDryer02_sugar_countercurrent`.
 
+Fines (opt-in): `operation { carryOver { cutDiameter 20e-6 m; } }` (or `fraction 0.15;`, one of the two) sends the powder's size classes below the cut to the exhaust as a solid, so a cyclone behind the dryer works; the share is the case's, never predicted (`sprayDryer08_fines`; `docs/design/spray-dryer-fines.md`). Tray dryer (`batchDryer`, choupoBatch): `solidTemperature integrated;` adds the solid's heat balance in the falling-rate period (`dryer03_solid_temperature`).
+
 ## 7. Crystallisation
 
 Verbatim keys from `tutorials/steady/crystallisation/crystalliser02_msmpr`:

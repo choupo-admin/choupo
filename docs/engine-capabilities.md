@@ -239,8 +239,12 @@ shifted composite polylines for plotting.  **P2 (ratified + built
 `reports/pinch/candidateMatches.csv` — exhaustive hot×cold pairs per
 region, the exact counter-current end-approach bound, the CP rule binding
 only AT the pinch — plus the coursework violation diagnostics (heater
-below / cooler above the pinch).  Every feasible row is a
-"thermodynamically admissible candidate"; the word "optimal" never appears
+below / cooler above the pinch).  Every feasible row whose full duty keeps the energy targets is a
+"thermodynamically admissible candidate"; one that is temperature-feasible but
+raises the targets (several pinches; or a stream's pinch-end used up) is
+flagged with `targetPenalty_kW` and `maximumTargetPreservingDuty_kW`, from the
+problem table recomputed after the match (KPI `candidates_mer_compatible`;
+witness `pinch02_two_pinches_mer`); the word "optimal" never appears
 (gate-enforced).  The pass ANALYSES only — it never rewrites the network
 (P3 area/cost targets stay deliberately not built;
 `docs/design/pinch-programme-scope.md`).  (This paragraph said "P2 …

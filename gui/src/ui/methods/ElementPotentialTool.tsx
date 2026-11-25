@@ -126,7 +126,7 @@ function NewtonTable({ recs, stage, elements, species, showLnn }: {
       <Text size="xs" c="dimmed" mt={4}>
         {end === null ? "The log records no end for this route."
           : end.converged
-            ? `Converged at iteration ${end.iteration}: |F| under 10⁻⁸ mol/s.`
+            ? `Converged at iteration ${end.iteration}: |F| under 10⁻⁸ of the feed's moles.`
             : `STOPPED at iteration ${end.iteration}, not converged.`}
         {" "}α is the fraction of the Newton step taken from that iterate;
         the last row takes none.

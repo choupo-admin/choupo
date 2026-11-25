@@ -65,6 +65,14 @@ GL = {
     "N2O16_N2O_H_N2_OH": ("Table 5", "R16"), "N2O17_NH_NO_N2O_H": ("Table 5", "R17"),
     "N2O18_N2O_O_2NO": ("Table 5", "R18"), "N2O19_N2O_O_N2_O2": ("Table 5", "R19"),
 }
+# the page of the journal image each table was read from (docs/reviews/2026-11-25-kinetics-glarborg/)
+GLTSV = os.path.join(ROOT, "docs", "reviews", "2026-11-25-kinetics-glarborg", "glarborg2018_table.tsv")
+
+
+def glarborg_rows():
+    with open(GLTSV) as f:
+        lines = [l for l in f if not l.startswith("#")]
+    return {r["row"]: r for r in csv.DictReader(lines, delimiter="\t")}
 
 
 # ---- identity: the SAME rule as KineticsLibrary.cpp canonicalStem ----------
@@ -73,6 +81,12 @@ def canonical(nu, form, reversible, duplicate=0):
     for sp, n in nu:
         assert n == int(n) and n != 0
         (lhs if n < 0 else rhs).extend([sp] * abs(int(n)))
+    return canonical_sides(lhs, rhs, form, reversible, duplicate)
+
+
+def canonical_sides(lhs, rhs, form, reversible, duplicate=0):
+    """The same, from the two sides' multiplicities (a species may be on both: `spectators true;`)."""
+    lhs, rhs = list(lhs), list(rhs)
     lhs.sort()
     rhs.sort()
     suf = {"": "", "+M": "+M", "(+M)": "(+M)"}[form]
@@ -137,8 +151,8 @@ def add_collider(kin_text, raw):
 def header(stem, what):
     return ("/*--------------------------------*- Choupo -*-----------------------*\\\n"
             "  Elementary reaction %s\n  %s\n"
-            "  Written by bin/curate/make_kinetics_seed.py; the file name is the\n"
-            "  canonical equation (src/thermo/reaction/KineticsLibrary.H).\n"
+            "  Written by bin/curate/make_kinetics_seed.py; the FOLDER name is the\n"
+            "  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).\n"
             "\\*---------------------------------------------------------------------------*/\n"
             % (stem, what))
 
@@ -147,12 +161,12 @@ def stoich_text(nu):
     return "\n".join("        { component %s nu %2d; }" % ((sp + ";").ljust(8), n) for sp, n in nu)
 
 
-def build(e, setname, source_block, prov, what, dup, reviewReason):
+def build(e, setname, source_block, prov, what, dup, reviewReason, printed=""):
     stem_form = {"thirdBody": "+M", "falloff": "(+M)"}.get(kin_type(e["kin"]), "")
     stem = canonical(e["nu"], stem_form, e["reversible"] == "true", dup)
     text = (header(stem, what) +
             "recordType        elementaryReaction;\n"
-            "reversible        %s;\n%s"
+            "reversible        %s;\n%s%s"
             "limitingReactant  %s;\n"
             "stoichiometry\n(\n%s\n);\n"
             "kinetics\n{\n%s\n}\n"
@@ -162,10 +176,12 @@ def build(e, setname, source_block, prov, what, dup, reviewReason):
             "reviewReason      \"%s\";\n"
             "%s\n"
             % (e["reversible"], ("duplicate         %d;\n" % dup) if dup else "",
+               ('printedEquation  "%s";\n' % printed) if printed else "",
                e["limiting"], stoich_text(e["nu"]), e["kin"], setname, e["label"],
                source_block, reviewReason, prov))
-    os.makedirs(KIN, exist_ok=True)
-    with open(os.path.join(KIN, stem + ".dat"), "w") as f:
+    #  A reaction is a folder named by its canonical equation, a source a file in it (C339).
+    os.makedirs(os.path.join(KIN, stem), exist_ok=True)
+    with open(os.path.join(KIN, stem, setname + ".dat"), "w") as f:
         f.write(text)
     return stem
 
@@ -211,21 +227,35 @@ def main():
                     "        uncertainty   \"not given by the source\";\n    }\n}" % (OC_CITE, rx))
             build(e, "OConaire2004", src, prov, "%s, reaction %s of Table I" % (OC_CITE, rx), dup,
                   "transcribed by hand from journal page 607 and re-read against the page image by a reviewer "
-                  "(docs/reviews/2026-11-21-kinetics-seed/); not yet read back by the curator")
+                  "(docs/reviews/2026-11-21-kinetics-seed/); not yet read back by the curator",
+                  printed=re.sub(r"\s*\(.*\)$", "", r["equation_as_printed"]))
             seen_oc += 1
         elif lab in GL:
             table, rx = GL[lab]
+            grow = glarborg_rows()
+            hi = grow["R15H" if rx == "R15" else rx]
+            got = [numbers(e["kin"])]
+            want = [(float(hi["A"]), float(hi["beta"]), float(hi["E_cal_mol"]))]
+            if kin_type(e["kin"]) == "falloff":
+                lo = grow[rx + "L"]
+                low_m = re.search(r"low\s+\{\s*A\s+(\S+);\s+b\s+(\S+);\s+Ea\s+(\S+);", e["kin"])
+                got.append(tuple(float(x) for x in low_m.groups()))
+                want.append((float(lo["A"]), float(lo["beta"]), float(lo["E_cal_mol"])))
+            if got != want:
+                sys.exit("%s: the shipped numbers %s are not the journal page's %s" % (lab, got, want))
+            page = hi["page"]
             src = ("source\n{\n    citation \"%s\";\n    doi \"%s\";\n"
-                   "    table \"%s\";\n    page unrecorded;\n    reaction \"%s\";\n"
-                   "    note \"typed as nox01_zeldovich_postflame carried it (mol-cm-s-cal); the page of the paper was not read in this tree\";\n}"
-                   % (GL_CITE, GL_DOI, table, rx))
+                   "    table \"%s\";\n    page %s;\n    reaction \"%s\";\n"
+                   "    note \"as printed (mol, cm, s, cal); the values nox01_zeldovich_postflame carried, held to the journal page image (read twice 2026-11-25, no digit differs)\";\n}"
+                   % (GL_CITE, GL_DOI, table, page, rx))
             prov = ("provenance\n{\n    kinetics\n    {\n        origin        literature;\n"
-                    "        method        \"%s, %s, reaction %s, A in cm3 mol-1 s-1, Ea in cal/mol; page not recorded\";\n"
+                    "        method        \"%s, %s, reaction %s (journal p. %s), A in cm3 mol-1 s-1, Ea in cal/mol, as printed\";\n"
                     "        methodVersion \"Prog. Energy Combust. Sci. 67 (2018) 31\";\n"
-                    "        uncertainty   \"not given by the source\";\n    }\n}" % (GL_CITE, table, rx))
-            build(e, "Glarborg2018", src, prov, "%s, %s, reaction %s" % (GL_CITE, table, rx), 0,
-                  "typed from the case that carried it (nox01_zeldovich_postflame); the journal page was never read "
-                  "here, so no value has a verified page")
+                    "        uncertainty   \"not given by the source\";\n    }\n}" % (GL_CITE, table, rx, page))
+            build(e, "Glarborg2018", src, prov, "%s, %s, reaction %s (p. %s)" % (GL_CITE, table, rx, page), 0,
+                  "typed from the case that carried it (nox01_zeldovich_postflame) and read back against the journal page image "
+                  "(docs/reviews/2026-11-25-kinetics-glarborg/), twice; not yet read back by the curator",
+                  printed=hi["equation_as_printed"])
             seen_gl += 1
         else:
             sys.exit("entry %s is in neither set" % lab)

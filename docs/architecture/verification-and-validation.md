@@ -45,6 +45,61 @@ uncited aqueous species). A green suite must not be read as covering those.
 | **expected refusal** | the engine refuses what the doctrine says it must | 5 named + the refusal gates |
 | **validation** | agreement with an **independent published result the model was not fitted to** | **a small named subset** |
 
+## 2b. The proofs of nine: a class apart from the anchors (C492, 2026-11-25)
+
+A **proof** is a relation the engine must satisfy for ANY case, measured with no experiment:
+scale every feed by 2 and every extensive result doubles while every intensive one is unchanged;
+reverse the `components` list and nothing but the order of the printed names moves; write a
+pressure in Pa instead of bar; recompute the mass and element closures from the raw state files
+with a reader that shares no code with the engine; check that every published stream is
+admissible; restart a case from its own written state and end on the same answer.  A proof
+proves LOGIC, never physics: it is **not an anchor** (an anchor is a number an independent
+experiment or publication states about a model the case was not fitted to, section 3) and the
+word *validation* is not claimed for it.  The two are counted apart and shown apart.
+
+Every proof has three states and a fourth is forbidden:
+
+| state | means |
+|---|---|
+| HOLDS | the relation was exercised on the case and held within its tolerance |
+| VIOLATES | it was exercised and broke; triaged as ENGINE, CASE or PROOF (the tool's own error) |
+| NOT JUDGED | the proof could not be applied, with the reason named (a size no unit rule scales, a flowsheet the independent reader refuses); never a green tick for a refusal |
+
+| proof | relation | what it found on 2026-11-25 |
+|---|---|---|
+| T1 homogeneity | every feed x k: extensive results x k, intensive equal; declared sizes scaled by the per-unit rule below | tray-column pressure drop is not degree-one homogeneous (weir loading is per length, not per area): a limit of the proof, now a named NOT JUDGED |
+| T2 component order | `components` and every flow table reversed: results equal by name | the key purities followed the list (x_B_HK 0.884 against 0.095, C504); membranes, electrodialysis, PhaseChanger, alpha_mean (C514) |
+| T3 unit writing | bar, kmol/h, kg/h, kW rewritten in SI: every result equal to 1e-8 | solver tolerance amplified in two cases (no defect) |
+| T4 closure outside | mass and element closure recomputed from `converged/` | claus01, ammonia01: the record MW against its formula (C517); membrane08 first showed 100.03 % and was the PROOF's fault (a unit's `supplies` key makes an outlet a plant feed, C500); the reader now knows it |
+| T5 admissibility | flows >= 0, fractions in [0,1] summing to 1, T and P positive | nothing left to find after C498 |
+| T6 restart | `converged/` read back as `0/`: same answer | converged/ dropped a declared phase pin (stripper01: 0.7 K, C516); the engine refused its own speciation block (marcilla01) |
+
+**Where they live.**  `bin/curate/proofs.py` (T1-T6, one loop: copy, transform, run, compare),
+`proofs_closure.py` (the independent reader of T4), `proofs_time.py` (T3, T4 and T6 for
+`choupoBatch`, `choupoCtrl` and `choupoSemiContinuous`; a measurement, nothing pinned).  The
+corpus verdict is held by the gate **`check_proofs`** (NIGHTLY tier: `bin/runTests --nightly`;
+printed DEFERRED by name in every other run): per proof, every VIOLATES must be a row of
+`bin/curate/proofs_ledger.tsv` with a reason and a date; a row whose case no longer violates
+fails until it is deleted; the NOT JUDGED count of each (proof, reason class) is pinned and may
+neither rise (a proof went blind) nor fall without lowering the pin; a proof that crashes is
+the class `tool error`, pinned at 0.  Measured 2026-11-25 on the laptop, three cases at a time at
+nice 12: **526 s** for 377 cases and six proofs.  The cheap pair (T4, T5), which runs no engine,
+is NOT in the ordinary sweep: T4 reads every converged state (160 s on one process) and T5's
+subject is refused by the engine itself since C498, so by rule 4e(4) it has no defect left to
+catch.
+
+**The T1 domain is a per-unit rule, never a blanket one** (`UNIT_RULES` in `proofs.py`).  A size
+the case declares is SCALED with the feed where it is extensive (a volume, a duty, a flow rate,
+the `vessels` of identical parallel vessels), left alone where the model reads it only as
+an intensive length (the mechanism for a cross section, D x sqrt k, exists but no rule claims it yet), and anything not named keeps the case NOT JUDGED with the unit type and the
+key in the reason.  A size is never silently left unscaled: the first run of the rule marked
+`UA`, `vessels` and a heater's `Q_recovery_max_kW` wrong in turn, each showing as a VIOLATES the
+hand check traced to the proof, not the engine.  The rules and their hand checks are in
+`docs/audits/2026-11-25-proofs-t1-rules.md`.
+
+NOT done in this slice: the proofs panel of the GUI and its EduTool (C492, after 2 December);
+the proofs computed by the engine per run (the second-law ledger, C491).
+
 ## 3. The validation subset, named — and recounted (2026-08-08)
 
 > **This section undercounted, in exactly the way §1 warns about.**  It named

@@ -57,7 +57,7 @@ public:
         : core_(core), xL_(xL), xU_(xU), xR_(xR), n_(xR.size()), m_(core.numConstraints()),
           rho_(rho), zeta_(std::sqrt(mu)), D_(xR.size())
     {
-        for (std::size_t i = 0; i < n_; ++i) D_[i] = std::min(1.0, 1.0 / std::max(std::abs(xR[i]), 1e-300));
+        for (std::size_t i = 0; i < n_; ++i) { const scalar a = std::abs(xR[i]); D_[i] = a > 1.0 ? 1.0 / a : 1.0; }
         sVector c;
         sVector p(m_, 0.0), nn(m_, 0.0);
         if (core.constraints(xR, c))

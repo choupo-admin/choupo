@@ -24,10 +24,12 @@
   can mark it.  It decides nothing itself: a key is inactive only because
   the engine said it was never read.
 
-  Scope, said plainly: the engine audits the operations of a propsDict, so
-  only those lines can be marked.  A value the engine reads from a record on
-  disk (a membrane record's `A_w` in a bench that imposes the flux) is not in
-  the operation's dictionary and is not audited; no mark is drawn for it.
+  Record values are a second source (the engine's structured fact): a value
+  the engine reads from a RECORD on disk (a membrane record's `A_w` in a bench
+  that imposes the flux) is not in the operation's dictionary, so the audit
+  cannot see it; the op publishes it as `inactiveProperties` in its
+  `operationResults` entry, and `inactiveRecordLines` marks the key's line in
+  that record's file.
   Pure: no React, no store.
 \*---------------------------------------------------------------------------*/
 
@@ -78,6 +80,26 @@ export function inactiveLines(propsDictText: string, unread: readonly UnreadKey[
       const chain = at.chain.filter((c) => c !== "[]" && c !== "operations").join(" ");
       if (chain === want) marks.set(l, `\`${u.key}\` is declared but the run never read it (the engine's own report): it had no effect on this run`);
     }
+  }
+  return marks;
+}
+
+/** The 1-based lines of a RECORD file (`membrane <name>`: a file whose path
+ *  ends `<name>.dat`) that declare a property the engine reported inactive,
+ *  mapped to the engine's own reason.  `source` is the engine's `membrane
+ *  <name>`; only a top-level `key value;` line of that file is marked. */
+export function inactiveRecordLines(
+  filePath: string,
+  text: string,
+  facts: readonly { source: string; key: string; reason: string }[],
+): Map<number, string> {
+  const marks = new Map<number, string>();
+  const lines = text.split("\n");
+  for (const f of facts) {
+    const name = f.source.split(/\s+/).pop() ?? "";
+    if (name === "" || !filePath.endsWith(`/${name}.dat`) && filePath !== `${name}.dat`) continue;
+    const re = new RegExp(`^\\s*${f.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s`);
+    lines.forEach((ln, i) => { if (re.test(ln)) marks.set(i + 1, `\`${f.key}\` is read from the record and not used in this run: ${f.reason}`); });
   }
   return marks;
 }

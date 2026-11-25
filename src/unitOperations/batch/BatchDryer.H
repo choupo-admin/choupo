@@ -90,6 +90,28 @@ Description
 
         dn_moisture/dt = -R A / MW_moisture / 1000       [kmol/s]
 
+    THE SOLID'S TEMPERATURE (opt-in, `operation { solidTemperature
+    integrated; }`; default `held`, byte-identical to the unit before it).
+    Held, the surface sits at T_wb throughout.  Integrated, the surface stays
+    at T_wb while X > X_c (hypothesis 2, unchanged: the constant-rate period
+    IS the wet bulb) and, once the constant-rate period ends, the LUMPED
+    solid (one temperature T_s for the dry solid and its water) heats under
+
+        C(X) dT_s/dt = h A (T_air - T_s) - R A lambda(T_s),
+        C(X) = m_s (cp_s + X cp_w),     h = k_Y (cp_c + Y cp_v)
+
+    h comes from the unit's own k_Y by the Chilton-Colburn / Lewis analogy at
+    Lewis = 1, the very relation the wet-bulb equation uses, so at X_c the two
+    terms cancel (dT_s/dt = 0) and the temperature leaves the wet bulb
+    continuously; R stays the characteristic drying curve (it does not read
+    T_s: an announced assumption); the lumped solid has no internal gradient
+    (small Biot).  X -> X_eq drives R -> 0 and T_s -> T_air.  Three extra
+    packed rows carry T_s [K] and the two energy integrals the unit's energy
+    ledger is made of, E_conv = int h A (T_air - T_s) dt and
+    E_out = int R A (cp_w (T_s - T_ref) + lambda(T_s)) dt, T_ref = T_wb; the
+    ledger closes as E_conv - E_out = DeltaH_solid = (m_s cp_s + m_w cp_w)
+    (T_s - T_ref).  Derivation: Theory Guide, label sec:batch-dryer-solid-T.
+
     ENERGY.  The latent heat of the evaporation comes from the air, and
     the air is outside the campaign boundary: nothing in this vessel can
     price it.  energyLedgerGap() says exactly that and vesselEnthalpy()
@@ -127,10 +149,11 @@ public:
 
     // ---- Packed-ODE form: Y = the vessel's mole vector [kmol] --------
     bool        hasOdeForm() const override { return true; }
-    sVector     odeState()   const override { return state_.n; }
+    sVector     odeState()   const override;
     void        setOdeState(const sVector& y) override;
     sVector     odeDerivative(const sVector& y) const override;
     std::size_t odeNPositive() const override { return state_.n.size(); }
+    std::string odeRowLabel(std::size_t i) const override;
 
     const BatchState& state() const override { return state_; }
 
@@ -183,6 +206,16 @@ private:
     scalar nWater0_ = 0.0;        // charged moisture             [kmol]
     scalar nBooked_ = 0.0;        // evaporated water already booked as outlet [kmol]
     scalar X_0_     = 0.0;        // initial moisture             [kg/kg]
+
+    // THE SOLID'S TEMPERATURE (opt-in; see the class note).  Three extra
+    // packed rows [T_s, E_conv, E_out] follow the mole vector when integrated.
+    bool   solidT_  = false;
+    scalar cpS_ = 0.0, cpW_ = 0.0;   // J/(kg K), at the mean of T_wb and T_air
+    scalar hConv_   = 0.0;           // h = k_Y c_H                  [W/(m^2 K)]
+    scalar Ts_ = 0.0, Econv_ = 0.0, Eout_ = 0.0;   // K, J, J
+    scalar Tref_    = 0.0;           // the energy datum of the ledger (= T_wb) [K]
+    scalar lambdaOf_(scalar T) const;              // latent heat [J/kg]
+    scalar heatCap_(scalar X) const;               // C(X)        [J/K]
 
     // OBSERVED break time: the crossing of X_c, linearly interpolated
     // between the two bracketing ACCEPTED states (dX/dt is exactly

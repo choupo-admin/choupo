@@ -302,16 +302,25 @@ reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its 
 SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
 `order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
 Gate `check_elementary_rates` (s, d, b, B).
-**THE REACTION LIBRARY (C458 slice 1; Theory Guide `sec:kinetics-library`).**  One record per elementary gas-phase reaction under
-`data/standards/kinetics/` (`recordType elementaryReaction`; the file name is the CANONICAL EQUATION -- species sorted within each side,
-reversible oriented smaller side first, `+M` / `(+M)` suffix, `~` for an irreversible one, `@1`/`@2` for a summed duplicate:
-`H+O2=O+OH.dat`, `H+O2(+M)=HO2(+M).dat`), in the same `stoichiometry` / `kinetics` grammar as a case, WITHOUT `order` (derived = -nu; an
+**THE REACTION LIBRARY (C458, C339; Theory Guide `sec:kinetics-library`).**  One FOLDER per elementary gas-phase reaction under
+`data/standards/kinetics/` and one FILE per published SOURCE in it (`recordType elementaryReaction`; the folder name is the CANONICAL
+EQUATION -- species sorted within each side, reversible oriented smaller side first, `+M` / `(+M)` suffix, `~` for an irreversible one,
+`@1`/`@2` for a summed duplicate; the folder is the equation and the file is the source: folder `H+O2=O+OH`, files `OConaire2004.dat` and `MillerBowman1989.dat`, so two published
+rate constants of one reaction coexist; no `: * ? < > " \ |` or space in a name, no two names equal ignoring case).  Species are the
+catalogue's (`water`, `ethane`); `printedEquation "H + O2 = O + OH";` is the equation as the source prints it, shown beside the canonical
+name wherever the run names a reaction.  A species on both sides (`2H+H2=2H2`) is a `spectators true;` record (`order` left, `orderRev`
+right).  The grammar is the same `stoichiometry` / `kinetics` grammar as a case, WITHOUT `order` (derived = -nu; an
 `order` is refused unless the record says `global true;`), plus `sets { OConaire2004 R1_H_O2_O_OH; }` (the set and the mechanism's own
 label), `source { citation; doi; table; page; }` and `provenance`.  A case asks for a set in its `constant/reactions`:
-`reactionSet OConaire2004;` (or `reactionSets ( A B );`, or `reactionRecords ( { record "H+O2=O+OH"; name myR1; } );`) and its units list
+`reactionSet OConaire2004;` (or `reactionSets ( A B );`, or `reactionRecords ( { record "H+O2=O+OH"; source MillerBowman1989; name myR1; } );`
+-- `source` is REQUIRED when the library holds the equation from more than one source: the run is refused, listing them, a set draws one source
+per equation) and its units list
 the labels (`reactions ( R1_H_O2_O_OH ... )`) exactly as before -- inline entries beside it stay legal.  Precedence: the case's
 `constant/kinetics/` (a record there declares `variationOf "<stem>";`), then `data/standards/kinetics/`, then `data/local/kinetics/`
-(UNVERIFIED).  Sets seeded: `OConaire2004` (21 entries, Table I, journal p. 607) and `Glarborg2018` (Zeldovich and N2O, page unrecorded).
+(UNVERIFIED), per (equation, source).  Sources: `OConaire2004` (21 entries, Table I, journal p. 607), `Glarborg2018` (Zeldovich and N2O,
+Tables 2 and 5, pp. 34 and 41, read twice 2026-11-25) and `MillerBowman1989` (the whole of Appendix A, 235 reactions, and Appendix B, 73;
+sets `MillerBowman1989_AppA`, `MillerBowman1989_AppB`, the C1 chain `MillerBowman1989` and its stage sets; Appendix B's differing values in
+`MillerBowman1989_B.dat`).
 Read by `batchReactor`, `dynamicCSTR`, the flowsheet reactors and `reactionGibbs`.  The run prints the sets used and, for a set whose
 declared thermo is a catalogue home, K_c(set)/K_c(run) per reaction; for an explicit reverse (`A_rev`/`Ea_rev`, or two irreversible
 entries that are each other's reverse) k_f/k_r against K_c(T) in `batchReactor`.  Witnesses: `ignition01_h2o2` and its variants,
@@ -2281,7 +2290,10 @@ each channel node):
   charge FITTED as a function of the feed) and `profile <file>.csv;` (the
   solved c_i(x) and psi(x)), and publishes `dPsi_m_V_p<p>`, the potential
   difference across the membrane (permeate against the feed-side solution
-  at the wall, both Donnan jumps included).  It publishes two named TABLES
+  at the wall, both Donnan jumps included).  Because J_v is imposed the record's
+  `A_w` is never used: the op publishes it as `inactiveProperties` (source
+  `membrane <name>`, key, reason) in its `operationResults` entry, and the case
+  tab dims that line in the record (a structured fact, not a log line).  It publishes two named TABLES
   a view draws (`points`: one row per J_v; `pore`: the solved profile), and
   its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
   `nanofiltran_geraldesAlves2008`: part A code to code, part B Bowen &
@@ -2961,6 +2973,22 @@ dryingCurve  sucroseDrying;          // -> constant/dryingKinetics
 Component must have a `sorption {}` block (typically case-local
 overlay per axiom 4) for the GAB isotherm + Xc.
 
+**Fines on the exhaust** (opt-in, C512, Theory Guide `sec:spray-dryer-fines`,
+record `docs/design/spray-dryer-fines.md`).  By default every particle is
+powder and a cyclone behind the dryer is idle.  `operation { carryOver { fraction
+f; } }` or `carryOver { cutDiameter d; }` (exactly one) moves a share of the dry
+solid to the exhaust stream's own `solids` (and `psd`): the case DECLARES it, the
+engine does not predict it (no source read gives a share, and the unit has no
+chamber exit velocity).  With a cut, the size classes of the powder's own
+distribution below `d` leave with the exhaust.  Mass, elements and energy close
+(the solid only changes outlet, both at `T_out`); the residual water stays on the
+powder (announced); `powder_dry` and `powder_flow` become the powder outlet's and
+`fines_flow`, `carryOver` are added.  The profile column of `model
+langrishKockel` for the particle temperature is `T_particle_drawn`: an
+interpolation between the wet bulb and the gas, labelled as a drawing.  Witness:
+`tutorials/steady/drying/sprayDryer08_fines` (a 20 µm cut on the sugar case:
+11.2 % of the solid on the exhaust).
+
 **Several solids** (2026-10-18, DEV.md 4c C97): every non-volatile the feed
 carries, dissolved or suspended, leaves in the powder (the polymer of an
 amorphous solid dispersion beside its drug); the particle density is their
@@ -3491,7 +3519,7 @@ Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
 (T integrated via Σ rᵢΔH/ΣnᵢCp).  Single or list of reactions
 (`reactions (A B );`).
 **Adiabatic energy basis** `operation { mode adiabatic; energy liquidDH | gasConstantV | gasConstantP; }`:
-`liquidDH` (default) = sum r V dH over liquid Cp; `gasConstantV` = closed rigid ideal gas, dU = 0,
+`liquidDH` (default) = sum r V dH(T) over liquid Cp, dH re-read at the vessel's T at every step so H = const on the canonical surface (a restart from a written instant reproduces the uninterrupted run; a declared `dH_rxn` override stays constant); `gasConstantV` = closed rigid ideal gas, dU = 0,
 dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at the holdup's FIXED P,
 dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
 declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
@@ -3921,12 +3949,30 @@ verdict (the heat is the air's, from outside the campaign).
   }
 }
 ```
+**The solid's temperature** (opt-in, C512, Theory Guide `sec:batch-dryer-solid-T`):
+`solidTemperature held;` (default, byte-identical) keeps the surface at the wet
+bulb for the whole run; `solidTemperature integrated;` keeps it there while
+`X > X_c` and then integrates one lumped temperature for the solid and its water,
+`C(X) dT_s/dt = h A (T_air − T_s) − R A λ(T_s)`, `C = m_s (cp_s + X cp_w)`,
+`h = k_Y (cp_c + Y cp_v)` (Chilton-Colburn at Lewis = 1, the wet bulb's own
+relation, so the temperature leaves the wet bulb continuously at `X_c`).  `R`
+is the drying curve and does not read `T_s`; the solid has no internal
+gradient; `X → X_eq` gives `T_s → T_air`.  Needs the solid's
+`solidHeatCapacity {}` and the moisture's `liquidHeatCapacity {}` (refused by
+name otherwise).  Adds the KPIs `T_solid_final`, `h_conv`,
+`solidEnergy_conv_kJ`, `solidEnergy_out_kJ`, `solidEnergy_stored_kJ`,
+`solidEnergy_closure_rel` (the unit's heat balance closes: heat in − heat out
+with the vapour = sensible storage) and the trajectory column `dryer.T_solid_K`.
+
 KPIs: `X_initial`, `X_critical`, `X_equilibrium`, `X_final`, `T_wb`,
 `R_constant`, `latentDuty_kW`, `latentEnergy_kJ`.  Witnesses:
 `tutorials/batch/drying/dryer01_sucrose_tray` (the linear curve, hand
 estimate in its header) and
 `tutorials/batch/drying/dryer02_characteristic_curves` (one tray, four
-curve shapes; gate `check_drying_curve`).
+curve shapes; gate `check_drying_curve`),
+`tutorials/batch/drying/dryer03_solid_temperature` (dryer01 with the solid's
+temperature integrated: 300.52 K to 331.78 K, the ledger closing to 1e-9, a
+hand and an independent integration in its header).
 
 ### `batchDiafilter`
 A stirred RETENTATE vessel behind a membrane — the batch half of the

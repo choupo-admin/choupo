@@ -314,6 +314,9 @@
   "BondEnergy": [
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
+  "BooksRow": [
+   "src/core/ResultRecords.H"
+  ],
   "BracketedRoot": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
@@ -1901,6 +1904,9 @@
   ],
   "Plan": [
    "src/propertyOps/FitAlphaRows.H"
+  ],
+  "PlantBooks": [
+   "src/core/ResultRecords.H"
   ],
   "PlantLayoutRecord": [
    "src/core/ResultRecords.H"

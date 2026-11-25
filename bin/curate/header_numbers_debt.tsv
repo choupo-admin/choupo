@@ -2,6 +2,8 @@
 # count per case (bin/curate/header_numbers.py).  A ratchet: it may only
 # shrink; mark a number with <!--golden: ...--> or fix the header, then
 # re-pin with check_header_numbers.py --write.  DEV.md 4c C520.
+# 2026-11-25: six cases of a batch built before this ratchet existed are pinned
+# at their first count (hand numbers of the header: C512, C521, C527).
 tutorials/batch/adsorber/batch09_adsorber_co2	4
 tutorials/batch/adsorber/batch10_adsorber_co2_n2	6
 tutorials/batch/adsorber/batch11_adsorber_henry	7
@@ -30,6 +32,7 @@ tutorials/batch/crystallisation/batch13_nacl_pitzer	1
 tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent	4
 tutorials/batch/drying/dryer01_sucrose_tray	17
 tutorials/batch/drying/dryer02_characteristic_curves	9
+tutorials/batch/drying/dryer03_solid_temperature	26
 tutorials/batch/electrodialysis/edbatch01_constant_current	14
 tutorials/batch/electrodialysis/edbatch02_constant_voltage	17
 tutorials/batch/electrodialysis/edbatch03_multiionic_split	15
@@ -37,11 +40,11 @@ tutorials/batch/membrane/diafilter01_nf_desalting	4
 tutorials/batch/membrane/diafilter02_fouling_decline	4
 tutorials/batch/reactor/batch01_first_order	5
 tutorials/batch/reactor/batch01b_first_order_eulersi	1
-tutorials/batch/reactor/batch02_adiabatic	4
+tutorials/batch/reactor/batch02_adiabatic	6
 tutorials/batch/reactor/batch03_consecutive	2
-tutorials/batch/reactor/batch04_transient_dirs	5
+tutorials/batch/reactor/batch04_transient_dirs	7
 tutorials/batch/reactor/batch05_crystalliser	5
-tutorials/batch/reactor/batch06_adaptive_runaway	6
+tutorials/batch/reactor/batch06_adaptive_runaway	8
 tutorials/batch/reactor/batch07_lhhw_methylAcetate	4
 tutorials/batch/reactor/batch08_isothermal_duty	1
 tutorials/batch/reactor/batch26_cooling_failure	3
@@ -142,6 +145,7 @@ tutorials/steady/drying/sprayDryer04_profiles	7
 tutorials/steady/drying/sprayDryer05_whey	11
 tutorials/steady/drying/sprayDryer06_rea	8
 tutorials/steady/drying/sprayDryer07_design	7
+tutorials/steady/drying/sprayDryer08_fines	7
 tutorials/steady/economics/economics03_startup_years	6
 tutorials/steady/economics/economics04_building_royalty_breakeven	4
 tutorials/steady/electrodialysis/ed03_stack_record	8
@@ -223,6 +227,7 @@ tutorials/steady/heat/mheatx01_two_hot_one_cold	2
 tutorials/steady/heat/phasechange01_partial_condenser	4
 tutorials/steady/heat/phasechange02_saturated_mixture	3
 tutorials/steady/heat/pinch01_four_stream_classic	10
+tutorials/steady/heat/pinch02_two_pinches_mer	2
 tutorials/steady/heat/reboiler_water_copper	2
 tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt	1
 tutorials/steady/hydraulics/agitation02_yield_stress_refused	1

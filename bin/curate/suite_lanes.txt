@@ -93,6 +93,7 @@
 #  re-proves what did not change.  The only list; runTests nightly_set reads it.
 NIGHTLY | - | bin/curate/check_regressed_pairs.py     | re-runs every regressed fit (about 5 minutes on a pool of eight): the catalogue records change rarely
 NIGHTLY | - | bin/curate/check_exported_case_runs_alone.py | exports one case per tutorial family and runs it with the catalogue hidden (about 80 seal-and-run pairs, many minutes); a record home the closure forgot changes with the engine, not with a case
+NIGHTLY | - | bin/curate/check_proofs.py              | the six proofs of nine (feeds x2, component order, unit writing, closures recomputed outside, admissibility, no-op restart) over every steady and plant case, held to a ledger that only shrinks; one engine run per case per proof, about 9 minutes on three processes (measured 2026-11-25)
 NIGHTLY | - | bin/curate/check_gate_selftest.py       | tests the gates by sabotage (a gate that tests gates); minutes of builds
 NIGHTLY | - | bin/curate/check_gates_judge_tracked.py | re-proves that the gates read the tracked tree, not the disk; the claim does not move with a case or a record
 
@@ -155,6 +156,7 @@ PRE  | PAR    | bin/curate/check_forward_order.py                  | on gatekit 
 PRE  | ISO*2  | bin/curate/check_pellet_announcement.py            | ISO (private slot tree; measured: writes tutorials/batch/reactor/batch07_lhhw_methylAcetate/.tmp_1020 (+411 more))
 PRE  | PAR    | bin/curate/check_reaction_subset_approach.py       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_adiabatic_approach_direction.py   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_adiabatic_restart.py              | runs two copies of batch02 in a private tempfile.mkdtemp under /tmp; writes nothing in the tree; no make, no node, no nested walk
 PRE  | ISO    | bin/curate/check_feed_thermal_state.py             | ISO (private slot tree; measured: writes tutorials/steady/distillation/column01_benzene_toluene/converged (+14 more))
 PRE  | ISO    | bin/curate/check_overspecified_stream.py           | ISO (private slot tree; measured: writes balanceTrajectory.csv (+32 more))
 PRE  | ISO    | bin/curate/check_evaporator_chest_phase.py         | ISO (private slot tree; measured: writes tutorials/steady/evaporation/evaporator02_triple_effect_sugar/converged (+49 more))
@@ -375,6 +377,8 @@ PRE  | ISO*2  | bin/curate/check_driver_convergence.py               | C470 (202
 PRE  | ISO    | bin/curate/check_dynamic_cstr_level.py               | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_dynamic_views.py                    | C487 slice 2 (2026-11-23): runs each case in a private copy (gatekit.probe_copy) and writes nothing else in the tree; ISO to match its neighbours that run cases
 PRE  | ISO    | bin/curate/check_dynamic_tank.py                     | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
+PRE  | ISO    | bin/curate/check_gibbs_scale_invariance.py            | C497 (2026-11-25): runs two cases x3 scales in private copies (gatekit.probe_copy), 0.3 s, writes nothing else in the tree
+PRE  | ISO    | bin/curate/check_inactive_properties.py              | C154 (2026-11-25): runs two props cases in private copies (gatekit.probe_copy), 2 s, writes nothing else in the tree
 PRE  | ISO    | bin/curate/check_elementary_rates.py                 | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_extractor_validation.py             | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_flash_specification.py              | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
@@ -447,7 +451,8 @@ POST | PAR    | bin/curate/check_postdict_audit.py                 | traced: wri
 POST | ISO      | bin/curate/check_cost_provenance.py                | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/plant/greenAmmoniaPEQ_baseCase/converged (+84 more)
 POST | PAR    | bin/curate/check_economic_sensitivity.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | PAR    | bin/curate/check_debt_financing.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-POST | PAR*3  | bin/curate/check_plant_layout.py                   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool; 2026-11-24: PAR*3 because the gate now runs its engine solves in its OWN pool of CHOUPO_GATE_JOBS (default min(4, cpu_count)) slots, 29 MB each, 664 s -> 141 s alone on 4 cores, so it counts as three of the sweep's slots (as check_column_thermo_consistency does)
+POST | PAR*2  | bin/curate/check_plant_books.py                     | C524: six probe copies in gatekit temp dirs, no make, no node, no nested walk; 39 s alone
+POST | PAR*3  | bin/curate/check_plant_layout.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool; 2026-11-24: PAR*3 because the gate now runs its engine solves in its OWN pool of CHOUPO_GATE_JOBS (default min(4, cpu_count)) slots, 29 MB each, 664 s -> 141 s alone on 4 cores, so it counts as three of the sweep's slots (as check_column_thermo_consistency does)
 POST | ISO      | bin/curate/check_gmp_layout.py                     | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: exit 1 in the traced sweep: its writes are not known in full
 POST | ISO      | bin/curate/check_batch_plan.py                     | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: exit 1 in the traced sweep: its writes are not known in full
 POST | ISO      | bin/curate/check_estimate_class.py                 | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/steady/economics/economics01_esterification_dcf/converged (+20 more)

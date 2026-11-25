@@ -1,7 +1,7 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Reaction set MillerBowman1989: the whole C1 chain below, 46 reactions of Appendix A.
-  A part of the C/H/O chain of Miller & Bowman 1989, Appendix A; the hydrogen-oxygen
-  reactions of that appendix are the OConaire2004 set's.  Its members are the
+  Reaction set MillerBowman1989: the C1 chain below, 46 reactions of Appendix A.
+  Miller & Bowman 1989; the hydrogen-oxygen reactions of Appendix A are also the
+  OConaire2004 set's (a second source of the same equations).  Its members are the
   records whose `sets {}` names it.
 \*---------------------------------------------------------------------------*/
 recordType  kineticsSet;

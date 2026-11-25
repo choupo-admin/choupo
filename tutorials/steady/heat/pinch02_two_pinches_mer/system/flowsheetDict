@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  TWO PINCHES, and a match that is feasible at dTmin yet costs energy
+  (regression for PinchPass.cpp, third external review, 2026-11-25).
+  hxFluid has a constant cp = 100 J/(mol K), so CP = F*cp exactly:
+
+    stream  F [mol/s]  CP [kW/K]   T_in [K]  T_out [K]   Q [kW]
+    H1 hot     10         1.0        370        340        -30
+    H2 hot      5         0.5        400        310        -45
+    C1 cold     5         0.5        280        290         +5
+    C2 cold    15         1.5        320        360        +60
+
+  dTmin = 20 K (shift hot -10 K, cold +10 K).  Targets Q_H,min = 0 kW,
+  Q_C,min = 10 kW; the corrected cascade touches zero at TWO interior
+  boundaries, T* = 360 K and 330 K.
+
+  The candidate H1 -> C1 (5 kW) is temperature-feasible at dTmin, but
+  once made the targets are 5 kW / 15 kW (an independent problem table,
+  tests/pinch_two_pinches.py, gives the same): it crosses the second pinch.
+  The pass used to call it "thermodynamically admissible" with no flag; it
+  now reports targetPenalty_kW = 5 and "NOT compatible with maximum energy
+  recovery".
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        coolerH1;
+        type        heater;
+        in          h1In;
+        outputs     ( h1Out );
+        operation   { Q  -30.0 kW; }   // 370 K -> 340 K at CP = 1 kW/K
+    }
+    {
+        name        coolerH2;
+        type        heater;
+        in          h2In;
+        outputs     ( h2Out );
+        operation   { Q  -45.0 kW; }   // 400 K -> 310 K at CP = 0.5 kW/K
+    }
+    {
+        name        heaterC1;
+        type        heater;
+        in          c1In;
+        outputs     ( c1Out );
+        operation   { Q  5.0 kW; }     // 280 K -> 290 K at CP = 0.5 kW/K
+    }
+    {
+        name        heaterC2;
+        type        heater;
+        in          c2In;
+        outputs     ( c2Out );
+        operation   { Q  60.0 kW; }    // 320 K -> 360 K at CP = 1.5 kW/K
+    }
+);
