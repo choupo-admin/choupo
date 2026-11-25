@@ -119,12 +119,20 @@ def fresh_copy(case, dst):
     return dst
 
 
+def bin_for(d):
+    """the binary of the case's `application` (choupoSolve unless PROOFS_BIN says otherwise for it)."""
+    app = app_of(d) or 'choupoSolve'
+    if app == 'choupoSolve':
+        return BIN
+    return BIN.parent / app
+
+
 def run_in(d):
     """run the binary in directory d.  -> dict(json, err, secs)"""
     wait_lock()
     t0 = time.time()
     try:
-        p = subprocess.run([str(BIN), '.'], cwd=d, env=dict(os.environ, CHOUPO_HOME=str(WT)),
+        p = subprocess.run([str(bin_for(d)), '.'], cwd=d, env=dict(os.environ, CHOUPO_HOME=str(WT)),
                            capture_output=True, text=True, timeout=TIMEOUT)
     except subprocess.TimeoutExpired:
         return {'json': None, 'err': 'timeout %d s' % TIMEOUT, 'secs': TIMEOUT}
