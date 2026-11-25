@@ -217,8 +217,9 @@ struct SQPOptions
     //  C496 F11 (adaptiveFd only): the stationarity tolerance is tolStat times
     //  S = max(1, ||grad f||inf, max_i |lambda_i| ||grad c_i||inf), the size
     //  of the terms whose cancellation grad L measures (a scaling of our own,
-    //  in the spirit of the usual relative dual-infeasibility test).  Off:
-    //  the absolute tolStat.
+    //  in the spirit of the usual relative dual-infeasibility test); the step
+    //  must also be small (||d||inf <= 1e-4 max(1,|x|)) and the complementarity
+    //  tolerance is tolCompl max(1, ||lambda||inf).  Off: the absolute tolerances.
     bool    scaledStationarity = true;
 
     // Per-iteration callback (logging / CSV).

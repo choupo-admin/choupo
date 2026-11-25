@@ -296,6 +296,9 @@ void defineArms()
             p.lo = {-10.0, -10.0}; p.hi = {10.0, 10.0}; p.x0 = {0.0, 0.0};
             p.noise = 1.0e-6; p.seed = 1000ULL + 7919ULL * s;
             SQPOptions oo = baseOpts(); oo.maxIter = 300;
+            //  the bar is a bar of the gradient noise, not of how far the iterate is from
+            //  the noisy optimum (the displacement is OMITTED, and says so): tight convergence
+            oo.scaledStationarity = false;
             Run r = run(p, oo);
             //  only a run that reached stationarity says what the bar is a bar OF;
             //  one stopped on maxIter or a line search carries a non-convergence error
@@ -317,8 +320,8 @@ void defineArms()
         std::sort(dev.begin(), dev.end());
         const scalar sd = 1.4826 * dev[dev.size() / 2];
         (void)m;
-        //  the printed bar is 2 sd, so the bar and 2 sd of the runs are compared
-        const scalar ratio = mb / std::max(2.0 * sd, 1.0e-300);
+        //  the review's criterion: mean printed bar over the actual sd of the runs
+        const scalar ratio = mb / std::max(sd, 1.0e-300);
         if (ratio < 0.5 || ratio > 2.0)
             return "mean bar " + num(mb) + " vs actual sd " + num(sd) + " (ratio " + num(ratio) + ") over "
                  + std::to_string(lams.size()) + " seeds";

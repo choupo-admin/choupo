@@ -432,21 +432,36 @@ SQPResult sqp(const SQPEvaluator& eval,
             const bool wantCentral = forceCentral || sgF > 0.1 * opts.tolStat;
             scalar hC = 0.0;
             bool haveM = false;
-            if (wantCentral && cenLast && x[j] - 2.0 * tLast >= lo[j] && x[j] + 2.0 * tLast <= hi[j])
+            //  third derivative from f(x +- t3), f(x +- 2 t3); t3 is the last
+            //  curvature probe when the box has room for +-2t3 (its two points are
+            //  reused), otherwise the widest that does (four new evaluations)
+            const scalar room3 = std::min(hi[j] - x[j], x[j] - lo[j]);
+            const scalar t3 = std::min(tLast, 0.45 * room3);
+            if (wantCentral && t3 >= 1.0e-7)
             {
-                //  third derivative from f(x +- t), f(x +- 2t)
-                sVector xp = x, xm = x; xp[j] += 2.0 * tLast; xm[j] -= 2.0 * tLast;
+                const bool reuse = cenLast && t3 == tLast;
+                sVector xp = x, xm = x; xp[j] += 2.0 * t3; xm[j] -= 2.0 * t3;
                 const SQPResponse rp = E(xp), rm = E(xm);
-                if (usable(rp) && usable(rm))
+                SQPResponse r1, r2;
+                bool ok3 = usable(rp) && usable(rm);
+                sVector fp3 = fpL, fm3 = fmL;
+                if (ok3 && !reuse)
+                {
+                    sVector x1 = x, x2 = x; x1[j] += t3; x2[j] -= t3;
+                    r1 = E(x1); r2 = E(x2);
+                    ok3 = usable(r1) && usable(r2);
+                    if (ok3) { fp3 = flat(r1); fm3 = flat(r2); }
+                }
+                if (ok3)
                 {
                     const sVector a2 = flat(rp), b2 = flat(rm);
                     haveM = true;
                     for (std::size_t r = 0; r < nR; ++r)
                     {
-                        const scalar D3 = a2[r] - 2.0 * fpL[r] + 2.0 * fmL[r] - b2[r];
+                        const scalar D3 = a2[r] - 2.0 * fp3[r] + 2.0 * fm3[r] - b2[r];
                         Mr[r] = (std::abs(D3) >= 100.0 * epsR[r])
-                              ? std::max(0.1, std::abs(D3) / (2.0 * tLast * tLast * tLast))
-                              : std::max(0.1, 100.0 * epsR[r] / (2.0 * tLast * tLast * tLast));
+                              ? std::max(0.1, std::abs(D3) / (2.0 * t3 * t3 * t3))
+                              : std::max(0.1, 100.0 * epsR[r] / (2.0 * t3 * t3 * t3));
                     }
                 }
             }
@@ -1078,11 +1093,15 @@ SQPResult sqp(const SQPEvaluator& eval,
                     S = std::max(S, std::abs(QP.lambdaIneq[mUser + r]));
             tolStatEff = opts.tolStat * S;
         }
+        //  complementarity |lambda g| meets the same scaling: a multiplier of 2.4e6
+        //  times a residual inside the feasibility tolerance (1e-6) is not zero
+        const scalar tolComplEff = (opts.adaptiveFd && opts.scaledStationarity)
+            ? opts.tolCompl * std::max(1.0, normInf(lamIneqNew)) : opts.tolCompl;
         const bool kktOK =
                kktStat     <= tolStatEff
             && kktFeasEq   <= opts.tolFeasEq
             && kktFeasIneq <= opts.tolFeasIneq
-            && kktCompl    <= opts.tolCompl
+            && kktCompl    <= tolComplEff
             //  Under the scaled tolerance the QP step must be small too: at a QP
             //  solution ||grad L||inf of the QP's own multipliers IS ||B d||inf,
             //  so a tolerance scaled by a gradient of 1e10 would pass a step of
