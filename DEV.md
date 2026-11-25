@@ -5686,6 +5686,11 @@ accepts today, and that is a policy call.
 > the engine's `valve` has no Cv, C214 W5).  C510 compressor selection, C511 filter cycle, C512 fines and solid
 > temperature in the spray dryer: after 2 December.  Read back by the architect: the gains (2.8, 33.8), the dryer
 > goldens, evapDryer02's false sentence, the idle cyclone.
+> C508 and C509 LANDED 2026-11-25 (239 of 240 plan gates, the self-test left to the nightly tier; GUI 49/0;
+> 20 touched cases).  C508: `why-did-it-not-dry` (air, time or isotherm, ordered from four engine runs), the
+> drying page grown (loading, the last percent, the spray chamber), the selection tables last; evapDryer02's and
+> the sugar plant's sentences corrected.  C509: `control-valve`, seven cards, the authority from an engine run,
+> gains checked by hand; the speed-control card not built.  Seen by the architect in screenshots, not by Vítor.
 
 > **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
 > packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
