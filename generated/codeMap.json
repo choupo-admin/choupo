@@ -425,6 +425,9 @@
   "ClosureInputs": [
    "src/reporting/ModelBoundaryLedger.H"
   ],
+  "ClosureReading": [
+   "src/outerDriver/ClosureGuard.H"
+  ],
   "ClosureVariable": [
    "src/result/ClosureVariable.H"
   ],
@@ -1434,6 +1437,18 @@
   ],
   "LookupBase": [
    "src/propertyOps/CatalogueLookup.H"
+  ],
+  "MADSOptions": [
+   "src/solver/MADS.H"
+  ],
+  "MADSResponse": [
+   "src/solver/MADS.H"
+  ],
+  "MADSResult": [
+   "src/solver/MADS.H"
+  ],
+  "MADSTrace": [
+   "src/solver/MADS.H"
   ],
   "Manipulate": [
    "src/outerDriver/DesignSpec.H"
@@ -4412,6 +4427,7 @@
    "src/postProcessing/layout/TypicalTrain.H",
    "src/postProcessing/views/RunPublications.H",
    "src/postProcessing/views/Views.H",
+   "src/reporting/BalanceAlarm.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
    "src/result/ClosureVariable.H",
@@ -4808,6 +4824,7 @@
    "src/postProcessing/views/BatchPublications.H",
    "src/postProcessing/views/DynamicPublications.H",
    "src/postProcessing/views/Views.H",
+   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ComponentIdentity.H",
    "src/result/ResultEmitter.H",
@@ -5176,17 +5193,20 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/outerDriver/ClosureGuard.H",
    "src/outerDriver/ConstraintSpec.H",
    "src/outerDriver/OptimizationDriver.H",
    "src/outerDriver/OuterDriver.H",
    "src/outerDriver/ResponseExtractor.H",
    "src/postProcessing/PostProcessor.H",
+   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/ActiveSetQP.H",
    "src/solver/Convergence.H",
+   "src/solver/MADS.H",
    "src/solver/NelderMead.H",
    "src/solver/NewtonRaphson.H",
    "src/solver/SQP.H",
@@ -9474,6 +9494,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/reporting/BalanceAlarm.H",
    "src/reporting/BalanceMath.H",
    "src/reporting/ClosureByConstruction.H",
    "src/reporting/MassBalanceReport.H",
@@ -10131,6 +10152,10 @@
   "src/solver/LU.cpp": [
    "src/core/Types.H",
    "src/solver/LU.H"
+  ],
+  "src/solver/MADS.cpp": [
+   "src/core/Types.H",
+   "src/solver/MADS.H"
   ],
   "src/solver/NelderMead.cpp": [
    "src/core/Types.H",
@@ -21090,6 +21115,7 @@
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/DominantEigenvalue.cpp",
    "src/solver/LU.cpp",
+   "src/solver/MADS.cpp",
    "src/solver/NelderMead.cpp",
    "src/solver/NewtonND.cpp",
    "src/solver/NewtonRaphson.cpp",
@@ -21546,6 +21572,9 @@
    "src/postProcessing/layout/LineSheets.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp"
+  ],
+  "src/outerDriver/ClosureGuard.H": [
+   "src/outerDriver/OptimizationDriver.cpp"
   ],
   "src/outerDriver/ConstraintSpec.H": [
    "src/outerDriver/OptimizationDriver.cpp",
@@ -22287,8 +22316,12 @@
    "src/propertyOps/Yang2020.cpp"
   ],
   "src/reporting/BalanceAlarm.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/outerDriver/OptimizationDriver.cpp",
    "src/reporting/ElementBalanceReport.cpp",
-   "src/reporting/EnergyBalanceReport.cpp"
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/MassBalanceReport.cpp"
   ],
   "src/reporting/BalanceMath.H": [
    "src/reporting/ElementBalanceReport.cpp",
@@ -23145,6 +23178,10 @@
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NewtonND.cpp"
+  ],
+  "src/solver/MADS.H": [
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/solver/MADS.cpp"
   ],
   "src/solver/NelderMead.H": [
    "src/outerDriver/OptimizationDriver.cpp",

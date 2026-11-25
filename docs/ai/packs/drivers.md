@@ -11,7 +11,7 @@ Read after the brief (`docs/ai/brief.md`). A driver wraps `choupoSolve`: drop a 
 | "How does X trend with T?" (one knob, a range) | `sweep` |
 | "A map over two knobs" | `gridSweep` |
 | "What area gives exactly 4500 kg/h?" (as many knobs as specs) | `designSpec` |
-| "Which reflux minimises the reboiler vapour?" (a best value) | `optimization` (`method nelderMead;` or `sqp;`) |
+| "Which reflux minimises the reboiler vapour?" (a best value) | `optimization` (`method nelderMead;`, `sqp;` or `mads;`) |
 | "The purity-energy trade-off curve" | `paretoSweep` |
 | "One more point" | edit the dict and rerun; no driver |
 | "How exposed is the NPV to the price or the discount rate?" | NO driver: `economics { sensitivity {} }` in the postDict (pack `design-cost`) |
@@ -80,7 +80,7 @@ options   { maxIter 80; tolX 5e-3; tolF 1e-4; simplexInit 0.15; }
 report    { file optimization_history.csv; }
 ```
 - `cost` and `costTotal` objectives REQUIRE a `system/postDict` with sizing and costing (`tutorials/steady/optimisation/optim02_process_cost`, `optim05_reactor_npv`). A driver reports on its run header whether the postDict chain is applied.
-- Nelder-Mead is unconstrained (bounds are a hard box). Constraints are `method sqp;` only:
+- Nelder-Mead is unconstrained (bounds are a hard box). Constraints are `method sqp;` (smooth, shadow prices) or `method mads;` (derivative-free, integer variables native, `options { maxEvaluations; tolX; seed; }`, witness `optim07_mads_mixed_column`):
 ```
 constraints ( { kpi vessel.maxSI_gypsum_wall; atMost 0.0; } );        // atMost | atLeast | equals <rhs>; tol
 ```

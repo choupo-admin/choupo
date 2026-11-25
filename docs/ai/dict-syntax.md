@@ -920,7 +920,7 @@ derived
 ## Optimisation: `method sqp` + the `constraints {}` block (outerDict)
 
 The `optimization` outer driver minimises (or maximises) a scalar objective
-over design variables.  Two methods:
+over design variables.  Three methods:
 
 * `method nelderMead;` — derivative-free simplex, **unconstrained** (box
   bounds only, by clipping).  The default.
@@ -928,7 +928,12 @@ over design variables.  Two methods:
   Programming** (damped-BFGS on the Lagrangian, L1 merit, active-set convex
   QP; Nocedal & Wright Ch.18 / 16.5).  Adds nonlinear **constraints**.
 
-Only `sqp` accepts a `constraints (...)` list (asking Nelder-Mead for
+* `method mads;` — **Mesh Adaptive Direct Search** with the progressive barrier
+  (derivative-free; `integer true;` variables native; options `maxEvaluations`,
+  `tolX`, `seed`; no multipliers).  For non-smooth or integer problems; witness
+  `optim07_mads_mixed_column`.
+
+`sqp` and `mads` accept a `constraints (...)` list (asking Nelder-Mead for
 constraints is a loud error — add a penalty term or switch method):
 
 ```

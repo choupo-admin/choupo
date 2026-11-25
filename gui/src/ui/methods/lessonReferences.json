@@ -2098,6 +2098,36 @@
             "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
             "date": "2026-11-09"
           }
+        },
+        {
+          "text": "Dembo, R. S.; Eisenstat, S. C.; Steihaug, T. (1982). Inexact Newton methods. SIAM Journal on Numerical Analysis 19(2), 400–408.",
+          "doi": "10.1137/0719025",
+          "note": "The forcing term: solve each Newton step only as hard as the outer residual allows.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0719025: authors, title, container, volume 19, issue 2, pages 400-408 and year 1982 matched (2026-11-24)",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Eisenstat, S. C.; Walker, H. F. (1996). Choosing the forcing terms in an inexact Newton method. SIAM Journal on Scientific Computing 17(1), 16–32.",
+          "doi": "10.1137/0917003",
+          "note": "Rules for choosing the forcing term from the previous residuals.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0917003: authors, title, container, volume 17, issue 1, pages 16-32 and year 1996 matched (2026-11-24)",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "OpenFOAM Foundation. OpenFOAM v12 User Guide (CFD Direct): fvSolution.",
+          "url": "https://doc.cfd.direct/openfoam/user-guide-v12/fvsolution",
+          "note": "relTol on an intermediate solve and the Final settings with relTol 0 on the last.",
+          "verified": {
+            "method": "official",
+            "evidence": "doc.cfd.direct/openfoam/user-guide-v12/fvsolution: the pitzDaily example p {relTol 0.01} and pFinal {relTol 0}, and the text that the first solutions of a step use the settings with relTol 0.01 and only the last uses the Final ones, read 2026-11-24",
+            "date": "2026-11-24"
+          }
         }
       ]
     },
@@ -3752,6 +3782,110 @@
             "method": "pdf",
             "evidence": "Library copy Books/seborg-process-dynamics-control-4ed.pdf: title page and the copyright line (2017, 2011, 2004, 1990 John Wiley & Sons) read in the text layer; PDF pp. 242-244 (printed 230-232) and 344-347 (printed 332-335) read in the text layer (printed page = PDF page - 12) (loop-placement, C204)",
             "date": "2026-11-22"
+          }
+        }
+      ]
+    },
+    "optimizers": {
+      "references": [
+        {
+          "text": "Nelder, J. A.; Mead, R. (1965). A simplex method for function minimization. The Computer Journal 7(4), 308–313.",
+          "doi": "10.1093/comjnl/7.4.308",
+          "note": "The method of card 2: reflection, expansion, contraction, and the shrink.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1093/comjnl/7.4.308: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "McKinnon, K. I. M. (1998). Convergence of the Nelder–Mead simplex method to a nonstationary point. SIAM J. Optim. 9(1), 148–158.",
+          "doi": "10.1137/S1052623496303482",
+          "note": "The counter-example of card 6: a smooth convex function on which Nelder-Mead converges to a point that is not stationary. The page uses the function's published form and reproduces the behaviour by running the engine's rules; it does not reprint the proof.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/S1052623496303482: author, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Audet, C.; Dennis, J. E., Jr. (2006). Mesh adaptive direct search algorithms for constrained optimization. SIAM J. Optim. 17(1), 188–217.",
+          "doi": "10.1137/040603371",
+          "note": "The MADS algorithm of card 4. The paper itself was not available to the page's author; the poll-direction construction was read in the erratum below.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/040603371: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Audet, C.; Custódio, A. L.; Dennis, J. E., Jr. (2008). Erratum: Mesh adaptive direct search algorithms for constrained optimization. SIAM J. Optim. 18(4), 1501–1503.",
+          "doi": "10.1137/060671267",
+          "note": "Read in full (the author's preprint, 3 pages): it restates the LTMADS construction of the poll directions (a lower-triangular basis with diagonal +-2^l and the minimal and maximal positive bases) and the relation between the mesh size and the poll size, which card 4 uses.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/060671267: authors, title, container, volume, issue, pages and year matched; the preprint at dm.fct.unl.pt (22_06.pdf) was read",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Audet, C.; Dennis, J. E., Jr. (2009). A progressive barrier for derivative-free nonlinear programming. SIAM J. Optim. 20(1), 445–472.",
+          "doi": "10.1137/070692662",
+          "note": "The progressive barrier of card 4. Not read by the page's author: the page's barrier is a simplified reading of the survey below, and says so.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/070692662: authors, title, container, volume, issue, pages and year matched",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Audet, C.; Le Digabel, S.; Rochon Montplaisir, V.; Tribes, C. (2022). Algorithm 1027: NOMAD version 4: Nonlinear optimization with the MADS algorithm. ACM Trans. Math. Softw. 48(3), 1–22.",
+          "doi": "10.1145/3544489",
+          "note": "Read (the arXiv version 2104.11627): Algorithm 2.1, the mesh size min(poll size, poll size squared) and the success and failure update of the poll size that card 4 follows.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1145/3544489: authors, title, container, volume, issue, pages and year matched; arXiv:2104.11627 was read",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Larson, J.; Menickelly, M.; Wild, S. M. (2019). Derivative-free optimization methods. Acta Numerica 28, 287–404.",
+          "doi": "10.1017/S0962492919000060",
+          "note": "Read (arXiv 1904.11585): the account of the MADS mesh and frame, of the extreme and progressive barriers (the merit function with a non-increasing threshold) and of integer-constrained MADS on which card 4's simplified barrier is written.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1017/S0962492919000060: authors, title, container, volume, pages and year matched; arXiv:1904.11585 was read",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Nocedal, J.; Wright, S. J. (2006). Numerical Optimization, 2nd ed. Springer Series in Operations Research and Financial Engineering. Springer. ISBN 978-0-387-30303-1.",
+          "doi": "10.1007/978-0-387-40065-5",
+          "note": "The SQP method of card 3: the quadratic program per step, the Lagrangian, the merit function and the sensitivity of the optimum to a constraint (the multiplier as a price).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-0-387-40065-5: authors, title, series and year 2006 matched (the DOI is of the online edition of the same book)",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Hock, W.; Schittkowski, K. (1981). Test Examples for Nonlinear Programming Codes. Lecture Notes in Economics and Mathematical Systems 187. Springer.",
+          "doi": "10.1007/978-3-642-48320-2",
+          "note": "The Hock-Schittkowski problems the engine's SQP is proved on before every run (card 3).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-3-642-48320-2: authors, title, series and year 1981 matched",
+            "date": "2026-11-24"
+          }
+        },
+        {
+          "text": "Wolpert, D. H.; Macready, W. G. (1997). No free lunch theorems for optimization. IEEE Trans. Evol. Comput. 1(1), 67–82.",
+          "doi": "10.1109/4235.585893",
+          "note": "Read in full (the copy at cs.ubc.ca): averaged over all cost functions of a finite space, any two algorithms perform identically; Section III-A and IV say what that means for a practitioner whose problems are not uniform.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1109/4235.585893: authors, title, container, volume, issue, pages and year matched; the paper was read",
+            "date": "2026-11-24"
           }
         }
       ]

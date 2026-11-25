@@ -165,14 +165,14 @@ report  { file designspec_history.csv; }    // optional; iteration history
 * After convergence the simulator is replayed once at the design point, so
   the case ends with the full converged output (and `reports{}` run on it).
 
-## 3. `type optimization;` — Nelder-Mead min/max
+## 3. `type optimization;` — Nelder-Mead / SQP / MADS min/max
 
 Canonical cases: `tutorials/steady/optimisation/optim01_column_reflux`
 (KPI objective), `optim02_process_cost` (cost objective via postDict).
 
 ```
 type    optimization;
-method  nelderMead;                        // or `sqp` (the constrained method)
+method  nelderMead;                        // | `sqp` (smooth, constrained, shadow prices) | `mads` (derivative-free, constrained, integers native)
 
 variables                                  // 1..n knobs, RAW dict paths
 (
@@ -212,7 +212,33 @@ report  { file optimization_history.csv; }
   full verbosity at the end.
 * Beyond the box, a `constraints ( { kpi <path>; atMost|atLeast|equals <rhs>;
   tol <x>; } ... );` block is SHIPPED — `method sqp;` only (Nelder-Mead stays
-  unconstrained: give it a penalty term in the objective, or switch to sqp).
+  unconstrained: give it a penalty term in the objective, or switch to sqp
+  or mads).
+
+### `method mads;` (C494) — nonsmooth, constrained, integer
+
+Mesh Adaptive Direct Search with the progressive barrier (`src/solver/MADS.H` says
+what was read and every deviation).  Same `variables`, `objective` and
+`constraints` grammar; differences:
+
+* `integer true;` on a variable is searched NATIVELY (mesh floor of 1) — no
+  enumeration, and any number of integer variables.  Give an `initial` (default: the
+  lower bound).
+* `options { maxEvaluations 1000; tolX 1e-3; seed 0; initialPollSize 0.1; tau 0.5; maxIter 200; }`
+  — `tolX` is the final poll size as a fraction of each variable's range; `seed` is the
+  Halton index offset of the poll directions (same seed, same run); a repeated point is
+  not re-simulated (cache) and not counted.
+* A constraint is relaxable: an infeasible trial point is kept while its violation is
+  below a falling threshold; the end prints `ACTIVE` for constraints within 1e-3 of their
+  bound.  There are NO Lagrange multipliers (use `sqp` for shadow prices on a smooth
+  problem).
+* CLOSURE GUARD (all three methods): an evaluation whose run publishes a mass/element closure above 0.1 % is a FAILED evaluation, and a replay above it is not reported as an optimum (exit non-zero).  A steady optimum's closure is held by the run's own balance reports, not by the guard.
+* Before every run a self-check (HS35 smooth, CB3 non-smooth, vs published optima) runs and
+  is announced; a miss aborts the run.
+* On a smooth problem MADS costs more simulations than `sqp` (measured, table in
+  `docs/audits/2026-11-24-optimizer-comparison.md`); choose it for what `sqp` cannot take.
+* Witness: `tutorials/steady/optimisation/optim07_mads_mixed_column` (stages integer +
+  reflux continuous + purity constraint, one run, against `optim06`'s enumeration).
 
 ## 4. Parameter estimation
 

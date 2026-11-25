@@ -841,3 +841,26 @@ from it, published only if verified (fugacities equal, no phase at the search
 floor) and otherwise REFUSED (converged = false).  The run announces the
 re-solve on stderr and in the advisory log.  The absent port carries F = 0.
 Theory Guide, `sec:vlle-drop-phase`; gate `check_vlle_fallback` arm (k).
+
+### A time-integrated run that creates mass now fails (C495)
+`choupoCtrl` / `choupoSemiContinuous` used to print `[balance] material: ... (NOT closed)`
+and exit 0 (ctrl16 with a hand-written schedule: closure 0.984, 4.3e6 kg created).  A run
+whose own mass or element ledger exceeds 1e-3 now raises the conservation alarm, reports
+NOT CONVERGED and exits non-zero; under `outerDict` that evaluation is a failed point.
+`williamsOttoPlant` refuses by name when a holdup goes negative beyond roundoff
+(1e-6 of the plant holdup) instead of clamping it to zero.
+
+### A reactor that runs out of a reactant, or a unit that publishes a negative flow, is refused (C498)
+A steady unit whose outlet carries a negative component or total flow, a vapour fraction
+outside [0, 1] or a non-finite number is refused by unit, stream, component and value
+(`Flowsheet.cpp` `outletInadmissible`; relative to the unit's own inlet throughput, never
+an absolute mol/s floor).  The `cstr` bounds its extent by EVERY consumed species, not by
+the named `limitingReactant` (which only references the reported X): a law that is zero
+order in a reactant that runs out first (cstr01 with 0.1 kmol/h acid against 0.5 ethanol:
+acid -0.357 at "X = 62.9 %", exit 0, before) has no steady state and is refused with the
+reactant's name.  Same through `reactions ( ... )`.  A steady run whose plant-boundary
+MASS or ELEMENT balance leaves the 0.1 % band now reports NOT CONVERGED and exits 1
+(energy stays an alarm).  Under `outerDict` that verdict is the representative pass's; the
+evaluations before it are not closure-checked for steady cases.
+Theory Guide `sec:flowsheet-admissibility`, `sec:cstr-feasible-extent`; gate
+`check_mass_closure` admissibility arm.

@@ -11151,6 +11151,39 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \end{tutgolden}
 
 \clearpage
+\tutentry{optim07\_mads\_mixed\_column}{tutorials/steady/optimisation/optim07\_mads\_mixed\_column}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The N-vs-R trade solved in ONE MADS run: nStages (integer) and reflux (continuous) searched together, the purity spec on the progressive barrier, against optim06 enumerating one SQP per stage count}
+\begin{tutnarrative}
+sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical Raoult textbook problem, no azeotrope), reused UNCHANGED as the inner problem of a sensitivity sweep: system/outerDict varies units[0].operation.refluxRatio over R = 1.5 .. 5.0 (10 points) and reads T\_top, T\_bottom, x\_D\_LK, x\_B\_HK and V\_strip (the reboiler-duty proxy) -- the classic purity-vs-energy trade-off, one CSV row per R.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{382.837440792}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{353.654550091}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column01}{B}{0.0138888888889}
+\goldrow{kpi}{column01}{D}{0.0138888888889}
+\goldrow{kpi}{column01}{L\_rect}{0.0402994791667}
+\goldrow{kpi}{column01}{L\_strip}{0.0487094265226}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1700.08230114}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1066.38961002}
+\goldrow{kpi}{column01}{Q\_reboiler\_ownEnvelope\_kW}{1207.01661916}
+\goldrow{kpi}{column01}{R}{2.9015625}
+\goldmore{16}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pareto01\_purity\_energy}{tutorials/steady/optimisation/pareto01\_purity\_energy}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

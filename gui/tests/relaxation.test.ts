@@ -25,13 +25,14 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import refs from "../src/ui/methods/lessonReferences.json";
 import { describe, expect, it } from "vitest";
 
 import { applyDictOverride } from "../src/case/methodRun.js";
 import { RELAXATION_LIMITS, RELAXATION_STEPS } from "../src/ui/methods/relaxationLesson.js";
 import {
-  ENGINE_QMAX, ENGINE_QMIN, GAIN_MAX, GAIN_MIN, OPEN_QMAX, OPEN_QMIN, W_MAX,
-  converges, drive, effectiveSlope, optimalW, passesToReduce, region,
+  ENGINE_QMAX, ENGINE_QMIN, GAIN_MAX, GAIN_MIN, INEXACT_TIGHT, OPEN_QMAX, OPEN_QMIN, W_MAX,
+  converges, drive, effectiveSlope, inexactDrive, optimalW, passesToReduce, region,
   relaxationOverrides,
 } from "../src/ui/methods/relaxationMath.js";
 import { wegsteinStep } from "../src/ui/methods/wegsteinMath.js";
@@ -156,8 +157,8 @@ describe("Wegstein is relaxation with w = 1 - q (step 5)", () => {
 });
 
 describe("the lesson", () => {
-  it("has eight numbered steps and three limits, every formula derived", () => {
-    expect(RELAXATION_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  it("has nine numbered steps and three limits, every formula derived", () => {
+    expect(RELAXATION_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     expect(RELAXATION_LIMITS.length).toBe(3);
     for (const s of RELAXATION_STEPS)
       if (s.formula) expect(s.derivation?.length ?? 0, `step ${s.n}`).toBeGreaterThan(0);
@@ -253,5 +254,85 @@ describe("the figures are drawn by the tool", () => {
   it("the Wegstein page gains the same draggable slope", () => {
     const w = readFileSync(join(GUI, "src", "ui", "methods", "WegsteinTool.tsx"), "utf8");
     expect(w).toContain("<SlopeHandle");
+  });
+});
+
+describe("step 8: inexact inner solves", () => {
+  const card = RELAXATION_STEPS.find((s) => s.n === 8)!;
+  const text = [card.body, card.note ?? "", ...(card.where ?? []).map((w) => w.means)].join("\n");
+  const lines = (f: string) => readFileSync(join(REPO, f), "utf8").split("\n");
+
+  it("cites the engine at lines that say what the card claims", () => {
+    const CLAIMS: Record<string, string> = {
+      "RateBasedSegment.cpp:653": "const scalar kInexactFactor = 1.0e-3;",
+      "RateBasedSegment.cpp:654": "const scalar kInexactCap    = 1.0e-6;",
+      "RateBasedSegment.cpp:728": "o.tolerance = std::min(kInexactCap, std::max(newtonTol, kInexactFactor * lastChange));",
+      "RateBasedSegment.cpp:729": "const bool fullTol = (o.tolerance <= newtonTol);",
+      "RateBasedSegment.cpp:780": "if (ch < 1.0e-10 && fullTol) break;",
+      "NewtonND.cpp:163": "return std::sqrt(std::numeric_limits<scalar>::epsilon())",
+      "NewtonND.cpp:769": "auto J = fdJacobian(F, x, Fx, rule, opts.parallel);",
+      "Flowsheet.cpp:4129": "res = solver::newtonND(residual, x0, ndo);",
+    };
+    const HOME: Record<string, string> = {
+      "RateBasedSegment.cpp": "src/unitOperations/distillation/RateBasedSegment.cpp",
+      "NewtonND.cpp": "src/solver/NewtonND.cpp",
+      "Flowsheet.cpp": "src/unitOperations/flowsheet/Flowsheet.cpp",
+    };
+    const cited = new Set([...text.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
+    for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
+    for (const [c, want] of Object.entries(CLAIMS)) {
+      expect(cited.has(c), `claim ${c} is no longer cited`).toBe(true);
+      const [file, ln] = c.split(":") as [string, string];
+      expect(lines(HOME[file]!)[Number(ln) - 1], c).toContain(want);
+    }
+  });
+
+  it("the constants it quotes are the engine's", () => {
+    const src = readFileSync(join(REPO, "src/unitOperations/distillation/RateBasedSegment.cpp"), "utf8");
+    expect(src).toMatch(/kInexactFactor = 1\.0e-3/);
+    expect(src).toMatch(/kInexactCap\s+= 1\.0e-6/);
+    expect(src).toMatch(/newtonTol = 1\.0e-11/);
+    expect(text).toContain("1e-3");
+    expect(text).toContain("1e-6");
+    expect(text).toContain("1e-11");
+  });
+
+  it("the dated measurement adds up and names where it is recorded", () => {
+    const body = card.body;
+    expect(321 + 407 + 378 + 526).toBe(1632);
+    expect(239 + 309 + 278 + 390).toBe(1216);
+    for (const n of ["1632", "1216", "ad528a8c48", "dated, not live"]) expect(body).toContain(n);
+    for (const w of ["ratebased01_schulz_0p10bar", "ratebased04_schulz_delft_0p02bar"])
+      expect(readFileSync(join(REPO, "tutorials/steady/distillation", w, "system/controlDict"), "utf8")).toContain("application");
+  });
+
+  it("states the absence in the tree's own terms: no inexact word in the recycle loop", () => {
+    for (const f of ["src/unitOperations/flowsheet/Flowsheet.cpp", "src/solver/NewtonND.cpp"])
+      expect(readFileSync(join(REPO, f), "utf8"), f).not.toMatch(/[Ii]nexact/);
+  });
+
+  it("lists both papers, each verified on Crossref", () => {
+    const list = (refs as any).lessons.relaxation.references as any[];
+    for (const doi of ["10.1137/0719025", "10.1137/0917003"]) {
+      const r = list.find((x) => x.doi === doi);
+      expect(r, doi).toBeTruthy();
+      expect(r.verified.method).toBe("crossref");
+    }
+    expect(list.some((x) => String(x.url).endsWith("/fvsolution"))).toBe(true);
+  });
+
+  it("the toy: loosening the inside trades inner work for outer passes", () => {
+    const exact = inexactDrive(0.5, 1, 0);
+    const loose = inexactDrive(0.5, 1, 1e-3);
+    expect(exact.stop).toBe("converged");
+    expect(loose.stop).toBe("converged");
+    expect(loose.inner).toBeLessThan(exact.inner);
+    expect(loose.outer).toBeGreaterThanOrEqual(exact.outer);
+    //  the run ends on a pass at the full tolerance
+    expect(loose.tau[loose.tau.length - 1]).toBeLessThanOrEqual(INEXACT_TIGHT);
+    //  tolerances start loose and never exceed the cap
+    expect(Math.max(...loose.tau)).toBeLessThanOrEqual(1e-3);
+    //  a divergent loop stays divergent
+    expect(inexactDrive(1.5, 1, 1e-3).stop).not.toBe("converged");
   });
 });

@@ -584,6 +584,12 @@ export interface RunResult {
    *  Absent where the binary publishes none; the run summary then says it
    *  is not published rather than reading `status` in its place. */
   converged?: boolean;
+  /** SET ONLY ON A DRILLED-IN SECTOR'S SEEDED RESULT (case/resultSlice.ts):
+   *  the sector's name.  The numbers were solved inside the PARENT run, so
+   *  `converged` is that run's verdict, not a test of the sector's own, and the
+   *  engine publishes no first law for a sector at all.  The strip says so
+   *  instead of "not published".  Absent on every real run. */
+  inheritedFrom?: string;
   /** ONE ENTRY PER PHYSICAL STREAM.  The engine's payload is keyed by every
    *  NAME a stream answers to, so the flagship plant arrived as 52 entries for
    *  25 pipes; the adapter keeps the identity and moves the other names into

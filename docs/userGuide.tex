@@ -3425,7 +3425,7 @@ steam flow meet a capacity and a vacuum spec at once).
 
 \begin{lstlisting}[language=dict]
 type    optimization;
-method  nelderMead;                        // or sqp (adds nonlinear constraints)
+method  nelderMead;                        // or sqp (smooth, constrained) or mads (derivative-free, constrained)
 
 variables
 (
@@ -3463,6 +3463,17 @@ maximised subject to wall-scaling constraints, with the calcite
 constraint active at the optimum and its multiplier printed (the
 shadow price of scaling head-room).  Asking Nelder--Mead for
 constraints is a loud error --- add a penalty term or switch method.
+
+\code{method mads;} is the third method: Mesh Adaptive Direct Search, derivative-free, with the
+same \code{constraints (...)} block carried on a progressive barrier and \code{integer true;}
+variables searched natively (no enumeration).  It is for what the SQP cannot take --- a
+non-smooth response, a regime switch, an integer stage count --- and it costs more simulations
+than the SQP on a smooth problem; it prints no shadow prices.  The trace shows, per
+iteration, the poll size, the mesh size, the points polled and cached, the outcome, the best
+objective and the constraint violation; the end prints why it stopped, the simulation count and
+the active constraints.  Options: \code{maxEvaluations}, \code{tolX}, \code{seed}.  Worked
+example: \file{optim07\_mads\_mixed\_column}, the column of \file{optim06\_integer\_stages} with
+stages and reflux searched together in one run (theory: Theory Guide, MADS).
 
 \paragraph{Parameter estimation.}  Regression of model parameters
 against experimental data lives in \code{choupoProps} as the
