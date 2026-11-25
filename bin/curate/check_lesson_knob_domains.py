@@ -218,6 +218,18 @@ DOMAINS = [
     (M + "ControlValveTool.tsx", "xmin", 0.0, 1.0, "the lowest controlling opening is a fraction of travel, in (0, 1)", False),
     (M + "ControlValveTool.tsx", "s", 0.0, 1.0, "a starting valve's capacity relative to the big valve's lies in (0, 1)", False),
     (M + "ControlValveTool.tsx", "FL", 0.0, 1.0, "the liquid pressure recovery factor lies in (0, 1]", False),
+    (M + "CompressorChoiceTool.tsx", "vessel", 0.0, None,
+     "an absolute design pressure is positive and has no upper bound by physics; the page offers 2 to 60 bar "
+     "(its default, 14 bar, sits above the air machine's 12 bar discharge)", False),
+    (M + "CompressorChoiceTool.tsx", "k", 1.0, None,
+     "the shut-off head of a centrifugal machine is at least its design head (a rising head-flow curve) and has "
+     "no upper bound by physics; the page offers 1 to 1.5, a value the student sets (the engine has no map)", False),
+    (M + "CompressorChoiceTool.tsx", "demand", 0.0, 1.0,
+     "the flow the plant takes, as a share of the design flow, lies in (0, 1]", False),
+    (M + "CompressorChoiceTool.tsx", "surge", 0.0, 1.0,
+     "the surge flow as a share of the design flow lies in (0, 1); declared by the student, the engine has no map", False),
+    (M + "CompressorChoiceTool.tsx", "margin", 0.0, None,
+     "a margin kept above the surge flow is non-negative and has no upper bound by physics; the page offers 0 to 0.3", False),
     (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
     (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
     (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
