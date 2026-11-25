@@ -67,6 +67,52 @@ def rows(expected: Path):
     return out
 
 
+def verify_marker(m, table, rel, what):
+    """The error text of one marker (a MARK match) held to the case's `expected`
+    rows `table` (None: no file), or None when the number agrees.  Shared with
+    check_header_numbers.py, which holds the numbers of a case's HEADER to the
+    same rows with the same grammar (DEV.md 4c C520)."""
+    spec = m.group("spec").split()
+    other = None
+    if spec and spec[0].startswith("@"):
+        other = ROOT / "tutorials" / spec[0][1:] / "expected"
+        spec = spec[1:]
+    tbl = table if other is None else (rows(other) if other.exists() else None)
+    keys, cur, scale, off, signs = [], [], 1.0, 0.0, [1.0]
+    for t in spec:
+        if t in ("&", "&-"):
+            keys.append(tuple(cur)); cur = []
+            signs.append(-1.0 if t == "&-" else 1.0)
+        elif t.startswith("*") and len(t) > 1:
+            scale = float(t[1:])
+        elif t.startswith("+") and len(t) > 1:
+            off = float(t[1:])
+        else:
+            cur.append(t)
+    keys.append(tuple(cur))
+    if any(len(k) != 3 for k in keys):
+        return f"{rel}: marker needs 'kind name key': '{m.group(0)}'"
+    if tbl is None:
+        return f"{rel}: the case has no `expected` file"
+    miss = [k for k in keys if k not in tbl]
+    if miss:
+        return (f"{rel}: no row '{' '.join(miss[0])}' in expected "
+                f"(marker after {m.group('num')})")
+    written = m.group("num").replace(",", "").replace(" ", "")
+    d = Decimal(written)
+    dec = max(0, -d.as_tuple().exponent) if "e" not in written.lower() else \
+        max(0, len(written.lower().split("e")[0].split(".")[-1]) if "." in written else 0)
+    if "e" in written.lower():
+        tol = 0.5 * 10 ** (-dec) * 10 ** int(written.lower().split("e")[1])
+    else:
+        tol = 0.5 * 10 ** (-dec)
+    want = sum(sg * tbl[k] for sg, k in zip(signs, keys)) * scale + off
+    if abs(float(written) - want) > tol * (1 + 1e-9):
+        return (f"{rel}: {what} says {written}, the run's row "
+                f"'{' & '.join(' '.join(k) for k in keys)}' gives {want:.10g}")
+    return None
+
+
 def main() -> int:
     bad, n, cases = [], 0, set()
     for readme in sorted(ROOT.glob("tutorials/**/README.md")):
@@ -87,48 +133,9 @@ def main() -> int:
         for m in found:
             n += 1
             cases.add(case)
-            spec = m.group("spec").split()
-            other = None
-            if spec and spec[0].startswith("@"):
-                other = ROOT / "tutorials" / spec[0][1:] / "expected"
-                spec = spec[1:]
-            tbl = table if other is None else (rows(other) if other.exists() else None)
-            keys, cur, scale, off, signs = [], [], 1.0, 0.0, [1.0]
-            for t in spec:
-                if t in ("&", "&-"):
-                    keys.append(tuple(cur)); cur = []
-                    signs.append(-1.0 if t == "&-" else 1.0)
-                elif t.startswith("*") and len(t) > 1:
-                    scale = float(t[1:])
-                elif t.startswith("+") and len(t) > 1:
-                    off = float(t[1:])
-                else:
-                    cur.append(t)
-            keys.append(tuple(cur))
-            if any(len(k) != 3 for k in keys):
-                bad.append(f"{rel}: marker needs 'kind name key': '{m.group(0)}'")
-                continue
-            if tbl is None:
-                bad.append(f"{rel}: the case has no `expected` file")
-                continue
-            miss = [k for k in keys if k not in tbl]
-            if miss:
-                bad.append(f"{rel}: no row '{' '.join(miss[0])}' in expected "
-                           f"(marker after {m.group('num')})")
-                continue
-            key = keys[0]
-            written = m.group("num").replace(",", "").replace(" ", "")
-            d = Decimal(written)
-            dec = max(0, -d.as_tuple().exponent) if "e" not in written.lower() else \
-                max(0, len(written.lower().split("e")[0].split(".")[-1]) if "." in written else 0)
-            if "e" in written.lower():
-                tol = 0.5 * 10 ** (-dec) * 10 ** int(written.lower().split("e")[1])
-            else:
-                tol = 0.5 * 10 ** (-dec)
-            want = sum(sg * tbl[k] for sg, k in zip(signs, keys)) * scale + off
-            if abs(float(written) - want) > tol * (1 + 1e-9):
-                bad.append(f"{rel}: README says {written}, the run's row "
-                           f"'{' & '.join(' '.join(k) for k in keys)}' gives {want:.10g}")
+            err = verify_marker(m, table, rel, "README")
+            if err:
+                bad.append(err)
     if bad:
         print("check_readme_numbers: FAILED")
         for b in bad:

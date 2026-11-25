@@ -91,10 +91,12 @@
       energy recovery        flows balanced to 1e-5; 53.64 bar recovered on
                              5169 m3/h, 7.70 MW hydraulic; the feed's
                              salinity up 1.8 %
-      pump shaft powers      HP pump 9216 kW, booster 439 kW, second-pass
-                             pump 1606 kW, intake 330 kW: 11 590 kW, i.e.
-                             2.82 kWh per m3 of product (2.80 since the
-                             door's density, 2026-11-18; shaft only: no
+      pump shaft powers      HP pump 9120 kW<!--golden: kpi HPpump W_shaft_kW-->, booster 443 kW<!--golden: kpi Booster W_shaft_kW-->, second-pass
+                             pump 1607 kW<!--golden: kpi Pass2Pump W_shaft_kW-->, intake 330 kW<!--golden: kpi IntakePump W_shaft_kW-->: 11 500 kW, i.e.
+                             2.80 kWh per m3 of product (the powers read
+                             9216, 439, 1606, 330 kW and 2.82 kWh/m3 before
+                             the door's density, 2026-11-18; header re-read
+                             2026-11-25 against the golden; shaft only: no
                              motor losses, no pretreatment or post-treatment
                              loads, no product delivery)
 
