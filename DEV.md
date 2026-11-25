@@ -5740,6 +5740,12 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C533 (Vitor, 2026-11-25): which mixture of three solvents dissolves a solid.**  Scatchard-Hildebrand as an activity
+> model (ln gamma_2 = V_2 (delta_2 - delta_bar)^2 phi_1^2 / RT, any number of solvents), with the fusion equation giving the
+> amount; the Hansen triangle for three (today two).  Measured by a scratch run: benzene in three solvents with UNIFAC works
+> (aEq 0.503 at 240 K equals the hand value 0.503); the data that fail: a heat of fusion on the record of water only, 13
+> substances with Hansen numbers.  C226 measured the same day on 947 pairs: 0 new, 547 isothermal only, 292 present.
+
 > **C532. THE LAWS OF EVERY RUN (Vitor, 2026-11-25: "Cada operação, setor e processo global devia gerar isso em cada corrida
 > e lançar alarmes em caso de falha grosseira").**  The laws live in the engine, once per unit kind, never in a folder a
 > case can edit; the CASE holds only its declared specifications; what each run writes into the case is the VERDICT, per
