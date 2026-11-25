@@ -386,6 +386,9 @@
   "ChapmanEnskog": [
    "src/thermo/transport/ChapmanEnskog.H"
   ],
+  "ChartRegion": [
+   "src/core/ResultRecords.H"
+  ],
   "CheckResult": [
    "src/thermo/equationOfState/ReferenceFluid.H"
   ],
