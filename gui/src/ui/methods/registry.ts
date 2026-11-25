@@ -85,7 +85,8 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement";
+  | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
+  | "control-valve";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1246,6 +1247,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "so you see a loop that cannot work. Then the order of the valves: "
       + "inventory, throughput, quality.",
     theory: "ch:dyn-cstr",
+  },
+  //  COMMISSIONED 2026-11-25 (C509): "why does a correctly sized valve still
+  //  control badly?".  A CONSTRUCTION with two engine runs in the browser
+  //  (pumpSystem01 swept over the flow: the pump's rise and the line's drop
+  //  fix the valve's authority; purelaws02: the water's vapour pressure) and
+  //  the page's own model of a valve (three inherent characteristics by
+  //  convention, the installed flow, the gain, the turndown).  Choking and
+  //  cavitation are letdown.ts's.  The last card, the fail position, is
+  //  authored text and says so.
+  {
+    id: "control-valve", blurb: "See what a line does to a control valve: authority, gain, rangeability.",
+    label: "Why does a correctly sized valve still control badly?",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "A control valve shares the pump's pressure with its line, so the drop on its datasheet "
+      + "is whatever the line leaves: the engine's pump and pipe give the valve's authority at a rated "
+      + "flow. Then the inherent characteristics (linear, equal percentage, quick opening, by "
+      + "convention), the installed flow derived in four lines, the loop gain the controller feels "
+      + "against the opening and its largest-to-smallest ratio, the installed turndown of one big "
+      + "valve against a running and a starting valve, why choking and cavitation are checked at "
+      + "small flow, and, as authored text and not computed, why the fail position is not one word.",
+    theory: "sec:control-valve",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a
