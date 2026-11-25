@@ -296,7 +296,7 @@ describe("the pages", () => {
     expect(arr).toBeLessThan(drawer);
     const drawerHtml = h.slice(drawer, h.indexOf("Check your understanding"));
     expect(drawerHtml).not.toMatch(/<details[^>]*\sopen/);
-    for (const needle of ["Ask the tree", "data-habitual-tables", "data-dryer-energy", "The seven side by side",
+    for (const needle of ["Ask the tree", "data-habitual-tables", "data-dryer-energy", "The nine side by side",
       "data-checklist-table", "The drum dryer in two books"])
       expect(drawerHtml, needle).toContain(needle);
     expect(drawerHtml).toContain("This is what the books say; the cards above are what the engine says.");
