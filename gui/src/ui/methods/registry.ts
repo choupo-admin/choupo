@@ -88,7 +88,8 @@ export type MethodToolId =
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
   | "column-design"
   | "control-valve" | "compressor-choice" | "calculated-to-bought"
-  | "filter-press-cycle";
+  | "filter-press-cycle"
+  | "gas-line";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2957,6 +2958,25 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice "
       + "the best volume loses exactly the same share.",
     theory: "sec:cakeFilter-batchPress",
+  },
+  //  COMMISSIONED 2026-11-25 (DEV.md 4c C506, the page of its engine half): an
+  //  all-vapour inlet to the `pipe` unit is a compressible isothermal gas line.
+  //  The page is the engine's own equations (Pipe::solveGasLine) at the inputs
+  //  of tutorials/steady/hydraulics/pipe09_isothermal_gas_line, held to its
+  //  golden by gasLine.test.ts.  On the pump and pipe shelf.
+  {
+    id: "gas-line", blurb: "See how a gas line chokes, and where the textbook shortcut fails.",
+    label: "How far can a gas line go?",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "The compressible isothermal gas line of the engine's pipe: the pressure along the "
+      + "line from the exact equation and from the mean-density shortcut, the shortcut's error "
+      + "against the length with the engine's own 40 % flag level marked as a flag and not a "
+      + "bound, and the isothermal Mach number with the choking pressure and the longest line "
+      + "the flow can use, beyond which the engine stops the run.  Two sliders (flow and length), "
+      + "numbers equal to the recorded run of pipe09_isothermal_gas_line at the case's own "
+      + "flow and length.",
+    theory: "sec:pipe-gasline",
   },
 ];
 

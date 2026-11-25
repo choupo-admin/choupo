@@ -83,6 +83,7 @@ TYPED = [
     (M + "EquilibriumLandscapesTool.tsx", "0.323866847046", "gibbs10_ammonia_fugacity", "kpi ammonia y_NH3"),
     (M + "FlashOperatingLineTool.tsx", "0.30398", "flash01_benzene_toluene", "kpi flash01 V_over_F"),
     (M + "FlashOperatingLineTool.tsx", "0.30398357314", "flash01_benzene_toluene", "kpi flash01 V_over_F"),
+    (M + "gasLine.ts", "1.78433840676e-5", "pipe09_isothermal_gas_line", "kpi P1 viscosity"),
     (M + "PcSaftTheoryTool.tsx", "3.817", "flash20_ethanol_water_pcsaft", "kpi flashNRTL K_ethanol"),
     (M + "SourWaterTool.tsx", "0.007862483", "stripper02_sour_water_h2s", "csv reports/unitOperations/tower/profile.csv 7:m_H2Saq"),
     (M + "SourWaterTool.tsx", "0.27828666", "stripper02_sour_water_h2s", "csv reports/unitOperations/tower/profile.csv 1:m_HS"),
