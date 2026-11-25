@@ -93,3 +93,15 @@ NOTE -- deferred, pending Vitor's explicit sign-off
   * Separating the combustion radicals already flat in data/standards/
     components/ (OH, HO2, CH3, O, ...) -- a migration of the frozen tree,
     NOT done here.
+
+HANSEN ESTIMATES (DEV.md 4c C428 (2), 2026-11-25)
+  hansenEstimates.csv -- first-order ESTIMATES of the Hansen triple (dD, dP, dH,
+  MPa^0.5) from the molecule's UNIFAC groups, Stefanis & Panayiotou, Int. J.
+  Thermophys. 29 (2008) 568-585, Tables 3 and 5.  Written by
+  bin/curate/hansen_from_groups.py (its header holds the validity statement:
+  first-order only, three or more carbons, a group the paper does not list makes
+  the molecule `not estimable`, and the tool's validation against the measured
+  records is its `--validate`).  origin = predictive on every row; nothing here
+  is a measurement and nothing enters data/standards; no runtime code reads it.
+  A catalogue component with a measured `hansen {}` block (Hansen 1967 / 1969)
+  has no row here.
