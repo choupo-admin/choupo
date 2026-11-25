@@ -114,7 +114,7 @@ export function MachineChart({ regions, duty, picked, eligible, onMove, points }
         const pts = `${lx(r.QminCfm)},${ly(r.rMin)} ${lx(r.QmaxCfm)},${ly(r.rMin)} `
           + `${lx(r.QmaxCfm)},${ly(r.rMaxAtQmax)} ${lx(r.QminCfm)},${ly(r.rMaxAtQmin)}`;
         const cx = (lx(r.QminCfm) + lx(r.QmaxCfm)) / 2;
-        const cy = (ly(r.rMin) + (ly(r.rMaxAtQmin) + ly(r.rMaxAtQmax)) / 2) / 2;
+        const cy = (ly(r.rMaxAtQmin) + ly(r.rMaxAtQmax)) / 2 + 12;
         return (
           <g key={r.machine} data-cc-region={r.machine} data-cc-on={on ? "1" : "0"}>
             <polygon points={pts} fill={s.color} fillOpacity={on ? 0.28 : 0.08}
@@ -125,10 +125,10 @@ export function MachineChart({ regions, duty, picked, eligible, onMove, points }
           </g>
         );
       })}
-      {points.map((p) => (
+      {points.map((p, i) => (
         <g key={p.name} data-cc-point={p.name}>
           <path d={`M ${lx(p.cfm)} ${ly(p.ratio) - 4} l 4 4 l -4 4 l -4 -4 Z`} fill={TEXT} />
-          <text x={lx(p.cfm) + 6} y={ly(p.ratio) + 3} fontSize={8} fill={TEXT}>{p.name}</text>
+          <text x={lx(p.cfm) + 6} y={ly(p.ratio) + (i % 2 === 0 ? -5 : 11)} fontSize={8} fill={TEXT}>{p.name}</text>
         </g>
       ))}
       <circle cx={lx(duty.cfm)} cy={ly(duty.ratio)} r={6} fill="none" stroke={TEXT} strokeWidth={2} data-cc-duty="" />
