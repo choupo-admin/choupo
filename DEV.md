@@ -5740,6 +5740,39 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C527. EXTERNAL REVIEW 3 (Vitor, 2026-11-25).**  Five claims against d51d651dab, checked at HEAD by the architect:
+> the CSTR's inadmissible outlet is C498, done (his counterexample now refuses by name); the wet bulb returns about
+> 0.5 C for dry air at 1, 5 and 10 C (no sign test at the bracket, no residual check); the pinch pairs are clipped by the
+> first pinch only, so a candidate across a second pinch is called admissible; psychrometricChart's schema bounds
+> relative humidity to 1 where the engine reads percent; `wetBulb (20.1 20.9)` makes two curves named 20.  The review's
+> harness idea (an independent oracle on raw inputs and outputs) goes to C492.
+
+> **C524, C525, C526 (Vitor, 2026-11-25: "andar por casos que dão prejuízo é muito mau! ... balanços anuais,
+> demonstração de resultados, mapa de cashflow, storm graphic com análise de sensibilidade, fundo de maneio e
+> capitais circulantes! E um EduTool a explicar as partes da análise económica que são difíceis ... O que é um capital
+> circulante? O que é um balanço? ... Devia ser tão fácil de entender que no final o aluno já domina aquilo como se
+> fosse um engenheiro com 50 anos de experiência!").**  C524, the books: income statement and balance sheet per
+> year, the identity assets = liabilities + equity checked every year, tied to the cash flow and the working
+> capital the engine already computes.  C525, the tool for a student with no experience.  C526, the classic process
+> (natural gas) and the PEQ priced consistently: today it buys renewable hydrogen at 8 EUR/kg and sells ammonia at
+> the CONVENTIONAL price, the architect's oversight.  MEASURED: at 1.5 EUR/kg NPV +96 MEUR, IRR 20.1 %, payback
+> 6.6 y; at 1.0, +356 MEUR; break-even 1.685; ACER's data item 972 gives 0.74 to 4.07 EUR2024/kg for natural gas
+> without capture (regions not stated).
+
+> **C525. EDUTOOL: THE ECONOMIC ANALYSIS FROM ZERO (Vitor, 2026-11-25).**  See C524 above: working capital, balance
+> sheet, income statement, cash flow, depreciation, tax, NPV, IRR, payback, sensitivity; numbers from engine runs.
+
+> **C526. THE CLASSIC AMMONIA PLANT, AND THE PEQ PRICED TO PAY (Vitor, 2026-11-25).**  See C524 above.  The site
+> rebuild of the PEQ is in build (the ammonia02 site); reforming, shift, CO2 removal and methanation are the large part.
+
+> C238, 2026-11-25 (Vitor: "E garante que eu não vou passar vergonhas no dia 2!!!").  THE REHEARSAL: a FREEZE on
+> 2026-11-30 at 20:00 (from then only a fix of a demonstration defect lands, with its own rehearsal); every step of
+> docs/demo/demonstration-path-december.md driven on the published site by a script on the laptop's browser
+> (the run, the clicks, a screenshot per step, the numbers read off the screen against the document), on
+> 28, 30 November and 1 December morning; a second run on a machine without a GPU; an offline copy (the local
+> site build) and a screenshot booklet, for a room with no network; the list of questions a colleague asks and
+> the answer; and Vítor sees the list on the 30th.
+
 > **C522. CHOUPO-IP, AN IN-HOUSE PRIMAL-DUAL INTERIOR POINT (Vitor's direction to the cloud, 2026-11-25; its
 > design record is the file interior-point of the cloud branch's design folder).**  WEIGHED AND AGREED by the architect: it
 > serves inner problems with analytic derivatives (Gibbs first, then phase equilibrium, later collocation) and
