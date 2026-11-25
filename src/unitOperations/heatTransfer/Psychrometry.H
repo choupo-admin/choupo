@@ -83,6 +83,7 @@ Description
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -186,9 +187,33 @@ inline scalar wetBulb(const ThermoPackage& thermo, std::size_t iMoist,
         throw std::runtime_error(who + ": the air is supersaturated"
             " -- its humidity ratio Y exceeds saturation at its own"
             " temperature");
+    //  BRACKET CHECK AT BOTH ENDS (2026-11-25, third external review: dry
+    //  air at 1, 5 and 10 C returned 0.5 C, the bisection's own floor).
+    //  f(lo) >= 0 means the adiabatic-saturation root lies BELOW the floor,
+    //  i.e. at or below freezing -- no ice or supercooled treatment exists,
+    //  so the question is refused instead of answered with the floor.
+    if (fWb(lo) >= 0.0)
+        throw std::runtime_error(who + ": the wet bulb of the air at "
+            + std::to_string(T) + " K (humidity ratio Y = "
+            + std::to_string(Y) + " kg/kg) would lie below the bracket floor"
+            " " + std::to_string(lo) + " K, i.e. at or below freezing -- this"
+            " psychrometry has no ice or supercooled-water branch.  Use air"
+            " that is warmer or more humid (wet bulb above 0 C).");
+    if (fWb(hi) < 0.0)
+        throw std::runtime_error(who + ": no wet bulb is bracketed below the"
+            " air temperature " + std::to_string(T) + " K (the air is"
+            " supersaturated or hotter than the search's top)");
     for (int it = 0; it < 100 && (hi - lo) > 1.0e-7; ++it)
     { const scalar m = 0.5 * (lo + hi); (fWb(m) >= 0.0 ? hi : lo) = m; }
-    return 0.5 * (lo + hi);
+    const scalar Twb = 0.5 * (lo + hi);
+    //  FINAL RESIDUAL: the root must satisfy the equation, not only sit
+    //  inside the bracket.  Scale: the saturation humidity at the root.
+    if (std::fabs(fWb(Twb)) > 1.0e-6 * std::max(Ysat(thermo, iMoist, Mv, Mc,
+                                                      P, Twb, who), 1.0e-3))
+        throw std::runtime_error(who + ": the wet-bulb search did not"
+            " converge (residual " + std::to_string(fWb(Twb))
+            + " kg/kg at " + std::to_string(Twb) + " K)");
+    return Twb;
 }
 
 //- The wet bulb of a gas stream of mole fractions `y` (over the package's
