@@ -771,6 +771,11 @@
       "claim": "check_gibbs_duhem: OK -- 15 model/pair combination(s) satisfy x1*dln(g1)/dx1 + x2*dln(g2)/dx1 = 0 at the finite-difference floor: NRTL/ethanol/water R=6.8e-10; UNIQUAC/methanol/methylAcetate R=3.2e-10; UNIQUAC/methylAcetate/water R=1.1e-09; UNIQUAC/aceticAcid/methylAcetate R=4.3e-09; UNIQUAC/1Hexanol/nDecane R=1.1e-09; Wilson/acetone/methanol R=1.1e-10; UNIFAC/ethanol/water R=1.6e-09; UNIFAC/benzene/toluene R=2.5e-08; Wilson[inline flash03]/ethanol/water R=1.5e-09; cosmoSAC[LVPP-HFTZVP-2018]/acetone/chloroform R=8.4e-09; cosmoSAC[LVPP-HFTZVP-2018]/methanol/benzene R=9.5e-09; pitzerSalt/single salt in water R=1.3e-09; eNRTLsalt/single salt in water R=3.8e-08; eNRTLsalt 2:1 (CaCl2)/single salt in water R=3.7e-09; eNRTLsalt 1:2 (Na2SO4)/single salt in water R=3.6e-09.  The synthetic negative (gamma_2 := gamma_1) returns R = 1.000, so the residual provably detects an inconsistent pair -- ten orders of magnitude from the passes, with nothing in between.  VACUOUS, reported not counted: NRTL/benzene/toluene, ideal/ethanol/water, Wilson/ethanol/water -- gamma does not vary with composition (an ideal model, or a pair file carrying zero binary energies), so the residual is 0/0 and proves nothing.  UNTESTABLE: cosmoSAC/ethanol/water (cosmoSAC: component 'ethanol' set 'VT2005' is an EXTERNAL RE).  The Wilson[inline flash03] row is INTERNAL CONSISTENCY VERIFICATION only (ruled 2026-08-08): it proves the implemented Wilson equations satisfy Gibbs-Duhem under the pair flash03 carries -- it curates nothing, validates nothing against experiment, and does NOT satisfy the owed standards-tier Wilson pair.  THIS IS CONSISTENCY, NOT ACCURACY: a model can satisfy Gibbs-Duhem exactly and still disagree with every measurement ever made.  It does not enlarge the validation subset.  THE SALT-LEVEL electrolyte kernels are covered by the STRONGER form dln(g)/dm = dphi/dm + (phi-1)/m, which ties the water side of the model to the ion side -- on their DEFAULT parameters, so it tests the equations and not any curated salt.  Not covered: multicomponent Gibbs-Duhem; a_w against phi (PitzerSingleSalt DEFINES one from the other, so comparing them checks an identity the code asserts); and the PER-ION aqueous models (Davies, PitzerHMW, EdwardsPitzer), which work on a molality-and-charge basis this probe does not reach.",
       "seconds": 2.0
     },
+    "check_gibbs_interior_point": {
+      "exit": 0,
+      "claim": "check_gibbs_interior_point: OK -- 26 reactor solves agree with elementPotential (amounts 1e-06 of max(n, 1e-25 N), pi 1e-06, pi = -lambda 1e-08, adiabatic T 1e-05 K) in both variants of R1, the phase boundary holds at 0.84 / 0.8336 / 0.834 bar, and 7 refusals name their slice",
+      "seconds": 2.2
+    },
     "check_gibbs_real_gas": {
       "exit": 0,
       "claim": "check_gibbs_real_gas: OK -- elementPotential, reactiveFlash and directMin publish the ammonia equilibrium the package's own fugacity condition gives (700 K, 200 bar, SRK; 2e-4 in y_NH3, against an ideal-gas answer 0.024 away), and a VLLE flash on an SRK vapour publishes y/x equal to the package's own K within 1 %.  NOT checked: the liquid-onset tests of the element-potential and reactive-flash routes, which read y_i P (the liquid's phi_sat and Poynting are IN the package's K and in these routes' condensed reference since C235).",
@@ -1701,6 +1706,11 @@
       "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0144; (b) ethanol+water closes; (c) starved exhaust saturated at 310.87 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
       "seconds": 1.9
     },
+    "check_sqp_adaptive": {
+      "exit": 0,
+      "claim": "check_sqp_adaptive: OK -- 25 arms PASS (the review's failing inputs and the four invariants); default path 235 lines equal the pinned base output",
+      "seconds": 18.1
+    },
     "check_srk_h2n2_aad": {
       "exit": 0,
       "claim": "check_srk_h2n2_aad: OK -- SRK with kij = 0 reproduces 16 published (T, P, x, rho) points on the nitrogen + hydrogen binary to AAD 1.045 % in density (worst 2.24 %), RECOMPUTED here from the run's own v_molar, the case's own cited evidence file and the components' own declared molar masses -- no agreement statistic is transcribed anywhere in the tree.  The run still announces kij = 0, so the prediction is untuned, and the evidence file still carries its DOI and its composition caveat.  The case's NEGATIVE result is re-measured too, on throwaway copies: hydrogen's quantum-corrected effective critical constants make it WORSE (1.564 %), and the best kij in [-0.10, +0.20] reaches only 1.003 % -- so neither knob this tree has is the answer, and the README's own table of all three is read back and required to match.  SCOPE: density only, one binary, 240-350 K and 50-200 bar at x(N2) 0.50-0.95.  NOT CHECKED: whether that agreement is ADEQUATE for a synthesis loop (an engineering judgement), any other property (the loop's condenser turns on the ammonia dew point, which no case here tests), and the loop's own composition -- the dataset holds no point between x(N2) 0.19 and 0.31, so this says nothing about a stoichiometric synthesis gas.",
@@ -1990,11 +2000,6 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- CHECKED: HEAD 142c1f6dc7 is SYNCED with origin/integ/worktree-agent-a5c22562aa834596f (origin is an ancestor of HEAD, after a fresh fetch), and none of the recycler-overlay sentinel files has lost its sentinel.  NOT CHECKED: untracked files, the content of any tracked file beyond those sentinels, whether HEAD is the commit you meant, the recycler itself, and the window between this proof and the action it guards (git's own non-fast-forward refusal is the backstop there).",
       "seconds": 1.0
-    },
-    "check_gibbs_interior_point": {
-      "exit": 0,
-      "claim": "check_gibbs_interior_point: OK -- 26 reactor solves agree with elementPotential (amounts 1e-06 of max(n, 1e-25 N), pi 1e-06, pi = -lambda 1e-08, adiabatic T 1e-05 K) in both variants of R1, the phase boundary holds at 0.84 / 0.8336 / 0.834 bar, and 7 refusals name their slice",
-      "seconds": 2.2
     }
   }
 }
