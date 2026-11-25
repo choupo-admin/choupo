@@ -34,7 +34,7 @@ EquationOfState <thermo/equationOfState/EquationOfState>: idealGas SRK PR PengRo
 EquipmentSize <postProcessing/sizing/EquipmentSize>: stirredTank shellTubeHX evaporator crystalliser sprayDryer cyclone compressor pressureExchanger vessel distillationColumn pfr reliefValve converterShell ratedMachine membraneBank pipeHeader
 FixedPointAccelerator <solver/DominantEigenvalue>: DominantEigenvalue
 FrictionFactorCorrelation <unitOperations/hydraulics/friction/FrictionFactorCorrelation>: Blasius Colebrook Haaland Churchill
-GibbsMethod <unitOperations/reactor/gibbsMethod/GibbsMethod>: elementPotential ideal RAND reactiveFlash nonideal NRTL directMin nelderMead
+GibbsMethod <unitOperations/reactor/gibbsMethod/GibbsMethod>: elementPotential ideal RAND reactiveFlash nonideal NRTL directMin nelderMead interiorPoint
 HeatCapacityModel <thermo/heatCapacity/HeatCapacityModel>: polynomial RowlinsonBondi chemsepCp16 NASA7 NASA9 table
 HeatTransferCorrelation <unitOperations/heatTransfer/htc/HeatTransferCorrelation>: DittusBoelter Gnielinski Kern
 IsothermModel <thermo/adsorbent/IsothermModel>: henry langmuir
