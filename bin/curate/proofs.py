@@ -291,33 +291,140 @@ DECLARED_EXT = ['area', 'V_R', 'V', 'volume', 'Q', 'Qdot', 'duty', 'W_shaft', 'W
                 'cutSize', 'nTubes', 'tubeLength', 'shellDiameter', 'packedHeight', 'areaTotal', 'W_kW', 'Q_kW']
 
 
-def declared_extensive(case):
-    """-> the first declared extensive key found in system/ (non-zero), or None."""
-    pat = re.compile(r'(?m)(?<![\w.$])(%s)\s+([^;{\n]*?)\s*;' % '|'.join(re.escape(k) for k in DECLARED_EXT))
-    for f in sorted(Path(case).rglob('system/*')):
+_DECL = re.compile(r'(?m)(?<![\w.$])(%s)\s+([^;{\n]*?)\s*;' % '|'.join(re.escape(k) for k in DECLARED_EXT))
+_UNITBEARING = re.compile(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h)\s*;')
+_RECORD = re.compile(r'(?m)(?<![\w.$])(module|stack)\s+[A-Za-z][^;\s]*\s*;')
+
+# THE PER-UNIT RULE (C492 slice, item 3).  A declared size is inert for the homogeneity proof only where the
+# unit's own model makes it so; it is SCALED with the feed where it is extensive; anything not named here keeps
+# the case NOT JUDGED (the reason names the unit type and the key), so a size never silently passes unscaled.
+#   'k'     extensive: multiplied by k together with the feeds (a volume, a duty, a flow rate, an area, a count of
+#           identical parallel items);
+#   'sqrtk' a diameter whose cross-section A = pi D^2/4 is extensive: D x sqrt(k) keeps every velocity unchanged;
+#   'inert' read by the model only as an intensive quantity (a length of one stage, a pitch): left as written.
+# Each rule was read in the engine source named and checked on one case by hand (docs/audits/2026-11-25-proofs-t1-rules.md).
+UNIT_RULES = {
+    # DistillationColumn.cpp: distillateRate/bottomsRate/side-draw `rate` are molar flow specifications (extensive);
+    # hydraulics `diameter` enters only through A_T = pi D^2/4 (l.5138) and the flow path derived from it (l.5201-5205),
+    # so D x sqrt(k) keeps the vapour velocity; stage height and packing geometry are per-stage lengths (intensive).
+    'distillationColumn': {'distillateRate': 'k', 'bottomsRate': 'k', 'rate': 'k', 'diameter': 'sqrtk',
+                           'height': 'inert', 'elementHeight': 'inert', 'corrugationSide': 'inert',
+                           'corrugationHeight': 'inert', 'corrugationBase': 'inert'},
+    # CSTR.cpp:745 `UA` W/K is extensive; V_R with the feed keeps the residence time; catalystLoading is kg/m3 (intensive).
+    'cstr': {'V_R': 'k', 'UA': 'k', 'catalystLoading': 'inert'},
+    # PFR: V_R with the feed keeps the space time (nSteps is a count of slices of that volume, not of the size).
+    'pfr': {'V_R': 'k'},
+    # heater: Q is the duty in kW (a heat flow, extensive); a `target` form has no Q to scale.
+    'heater': {'Q': 'k'},
+    # SpiralWoundModule.cpp:259-267,1795-1821: `vessels` identical vessels in parallel see the same feed state and the
+    # stage outlet is the one-vessel result times nVessels, so vessels x k is exactly the plant at k times the flow;
+    # an explicit module `area` x k at a fixed `length` widens the channel (same velocity).
+    'spiralWoundModule': {'area': 'k', 'vessels': 'k', 'length': 'inert', 'channelHeight': 'inert'},
+}
+
+
+def _is_zero(t, a, b):
+    try:
+        return a >= 0 and float(t[a:b].split()[0]) == 0.0
+    except (ValueError, IndexError):
+        return False
+
+
+def unit_hits(blk):
+    """-> [(key, vstart, vend)]: where a declared size/duty/record sits in one text (value span; -1 for a record)."""
+    out, seen = [], set()
+    for m in _DECL.finditer(blk):
+        out.append((m.group(1), m.start(2), m.end(2)))
+        seen.add(m.start(1))
+    for m in _UNITBEARING.finditer(blk):
+        if m.start(1) in seen or re.match(r'(xM|x[0-9]|d[0-9]|particle|dp$|d_p)', m.group(1)) or float(m.group(2)) == 0.0:
+            continue
+        out.append((m.group(1), m.start(2), m.end(2)))
+    for m in _RECORD.finditer(blk):
+        out.append((m.group(1) + ' <record>', -1, -1))
+    for m in re.finditer(r'(?<![\w.])geometry\s*\{', blk):
+        out.append(('geometry {}', -1, -1))
+    return out
+
+
+def _num(v, f):
+    x = float(v) * f
+    return str(int(round(x))) if re.fullmatch(r'[-+]?\d+', v.strip()) and abs(x - round(x)) < 1e-9 else repr(x)
+
+
+def plan_t1(case, k):
+    """-> (edits {relative path: new text}, notes, blocker).  blocker is a string when the case stays NOT JUDGED."""
+    case = Path(case)
+    edits, notes = {}, []
+    for f in sorted(case.rglob('system/*')):
         if not f.is_file() or f.name in ('controlDict', 'postDict', 'layoutDict'):
             continue
+        rel = f.relative_to(case)
         if f.name == 'outerDict':
-            return 'outerDict present (%s)' % f.relative_to(case)
+            return {}, [], 'outerDict present (%s)' % rel
         t = strip_comments(read(f))
-        for m in pat.finditer(t):
-            v = m.group(2).split()
-            try:
-                if v and float(v[0]) == 0.0:
+        m = re.search(r'(?<![A-Za-z0-9_])units\s*\(', t) if f.name == 'flowsheetDict' else None
+        if not m:
+            for key, a, b in unit_hits(t):
+                if not _is_zero(t, a, b):
+                    return {}, [], 'declared size/duty/volume: %s in %s (outside a unit block)' % (key, rel)
+            continue
+        i = m.end() - 1
+        j = pc.match_close(t, i, '(', ')')
+        outside = t[:i] + t[j:]
+        for key, a, b in unit_hits(outside):
+            if not _is_zero(outside, a, b):
+                return {}, [], 'declared size/duty/volume: %s in %s (outside the units list)' % (key, rel)
+        reps = []              # (start, end, text) in t
+        pos = i + 1
+        while True:
+            o = t.find('{', pos, j)
+            if o < 0:
+                break
+            c = pc.match_close(t, o, '{', '}')
+            blk = t[o:c + 1]
+            pos = c + 1
+            ty = re.search(r'\btype\s+(\w+)', blk)
+            ty = ty.group(1) if ty else '?'
+            rules = UNIT_RULES.get(ty, {})
+            nm = re.search(r'\bname\s+([^;\s]+)', blk)
+            nm = nm.group(1) if nm else '?'
+            need_vessels = False
+            for key, a, b in unit_hits(blk):
+                if _is_zero(blk, a, b):
                     continue
-            except ValueError:
-                pass
-            return '%s %s in %s' % (m.group(1), m.group(2)[:30], f.relative_to(case))
-        mh = re.search(r'(?m)(?<![\w.$])(module|stack)\s+[A-Za-z][^;\s]*\s*;', t)
-        if mh:
-            return '%s <record> (a hardware record carrying its own area) in %s' % (mh.group(1), f.relative_to(case))
-        for m in re.finditer(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h)\s*;', t):
-            if re.match(r'(xM|x[0-9]|d[0-9]|particle|dp$|d_p)', m.group(1)) or float(m.group(2)) == 0.0:
-                continue
-            return '%s %s %s (a unit-bearing size/duty) in %s' % (m.group(1), m.group(2), m.group(3), f.relative_to(case))
-        if re.search(r'(?<![\w.])geometry\s*\{', t):
-            return 'geometry {} in %s' % f.relative_to(case)
-    return None
+                if key == 'module <record>' and ty == 'spiralWoundModule':
+                    need_vessels = not re.search(r'(?<![\w.])(vessels|area)\s', blk)
+                    continue
+                act = rules.get(key)
+                if act is None:
+                    return {}, [], 'declared size/duty/volume: %s in %s unit %s (%s has no rule for it)' % (key, ty, nm, rel)
+                if act == 'inert':
+                    notes.append('%s.%s inert' % (nm, key))
+                    continue
+                tok = blk[a:b].split()[0]
+                try:
+                    float(tok)
+                except ValueError:
+                    return {}, [], 'declared size %s in %s unit %s is not a plain number (%s): cannot be scaled' % (key, ty, nm, tok)
+                reps.append((o + a, o + b, _num(tok, k if act == 'k' else math.sqrt(k)) + blk[a:b][len(tok):]))
+                notes.append('%s.%s x%s' % (nm, key, 'k' if act == 'k' else 'sqrt(k)'))
+            if need_vessels:
+                op = re.search(r'\boperation\s*\{', blk)
+                if not op:
+                    return {}, [], 'spiralWoundModule %s: a module record and no operation block to carry `vessels`' % nm
+                reps.append((o + op.end(), o + op.end(), ' vessels %d; ' % int(round(k))))
+                notes.append('%s.vessels = %d (inserted)' % (nm, int(round(k))))
+        if reps:
+            for a, b, txt in sorted(reps, reverse=True):
+                t = t[:a] + txt + t[b:]
+            edits[str(rel)] = t
+    return edits, notes, None
+
+
+def declared_extensive(case):
+    """-> why a case cannot be judged by T1 (the first declared size no unit rule resolves), or None."""
+    return plan_t1(case, 2.0)[2]
 
 
 def t1(case, k=2.0):
@@ -326,9 +433,9 @@ def t1(case, k=2.0):
     p = base_problem(case, r)
     if p:
         return NOTJ, p
-    dec = declared_extensive(case)
-    if dec:
-        return NOTJ, 'declared size/duty/volume: ' + dec
+    edits, notes, blocker = plan_t1(case, k)
+    if blocker:
+        return NOTJ, blocker
     try:
         feeds = feed_files(case, r)
     except (ValueError, LookupError, KeyError, OSError) as e:
@@ -336,6 +443,8 @@ def t1(case, k=2.0):
     if not feeds:
         return NOTJ, 'no feed stream identified'
     d = fresh_copy(case, SCR / 'T1' / case.name)
+    for rel, txt in edits.items():
+        (d / rel).write_text(txt)
     scaled = []
     for f in d.joinpath('0').rglob('*'):
         if f.is_file():
@@ -353,7 +462,7 @@ def t1(case, k=2.0):
         return VIOLATES if not r['err'] else NOTJ, 'x%g run failed: %s' % (k, rr['err'])
     tol = 1e-4 if is_recycle(case) else 1e-7
     worst, wk, viol, n = compare(view(r['json']), view(rr['json']), k, tol)
-    return verdict_from(viol, worst, wk, n, ' [tol %.0e, feeds %s]' % (tol, ','.join(scaled)))
+    return verdict_from(viol, worst, wk, n, ' [tol %.0e, feeds %s%s]' % (tol, ','.join(scaled), ('; sizes: ' + ', '.join(notes[:6])) if notes else ''))
 
 
 # --------------------------------------------------------------------------- T2
@@ -612,17 +721,52 @@ def cases_fast():
     return out
 
 
-def main(argv):
+def one_case(c, ts):
+    """every requested proof on one case, in order (the base run is shared through base_of).
+    -> [(t, verdict, why, secs)].  A tool failure is never a verdict."""
+    out = []
+    for t in ts:
+        t0 = time.time()
+        try:
+            v, why = TRANSFORMATIONS[t][1](c)
+        except Exception as e:
+            v, why = NOTJ, 'tool error %s: %s' % (type(e).__name__, str(e)[:200])
+        out.append((t, v, why, round(time.time() - t0, 1)))
+    return out
+
+
+def run_corpus(cases, ts, jobs=1, quiet=False, sabotage=False):
+    """-> {t: [record, ...]} with record = dict(t, case, verdict, why, secs).  `jobs` cases at a time,
+    each case running its proofs one after the other (so a case's scratch is never shared)."""
     global SABOTAGE
+    SABOTAGE = sabotage
+    res = {t: [] for t in ts}
+    if jobs > 1:
+        import concurrent.futures as cf
+        with cf.ProcessPoolExecutor(max_workers=jobs) as ex:
+            futs = [(c, ex.submit(one_case, c, ts)) for c in cases]
+            got = [(c, f.result()) for c, f in futs]
+    else:
+        got = [(c, one_case(c, ts)) for c in cases]
+    for c, rows in got:
+        for t, v, why, secs in rows:
+            res[t].append({'t': t, 'case': str(Path(c).relative_to(WT)), 'verdict': v, 'why': why, 'secs': secs})
+            if not quiet:
+                print('%s %-11s %-48s %s' % (t, v, Path(c).name, why[:170]), flush=True)
+    return res
+
+
+def main(argv):
     args = [a for a in argv if not a.startswith('--')]
-    SABOTAGE = '--sabotage' in argv
-    scope = 'fast'
-    named = []
+    sab = '--sabotage' in argv
+    scope, named, jobs = 'fast', [], 1
     for a in argv:
         if a.startswith('--scope='):
             scope = a[8:]
         if a.startswith('--case='):
             named.append(WT / a[7:])
+        if a.startswith('--jobs='):
+            jobs = int(a[7:])
     ts = [a for a in args if a in TRANSFORMATIONS or a == 'all']
     if not ts:
         print(__doc__)
@@ -631,23 +775,17 @@ def main(argv):
         ts = [x for x in TRANSFORMATIONS if x != 'T0']
     cases = named or (cases_all() if scope == 'all' else cases_fast())
     (SCR / 'results').mkdir(parents=True, exist_ok=True)
+    res = run_corpus(cases, ts, jobs=jobs, sabotage=sab)
     for t in ts:
-        title, fn = TRANSFORMATIONS[t]
-        outp = SCR / 'results' / (t + ('-sabotage' if SABOTAGE else '') + '.%s.jsonl' % ('case' if named else scope))
+        title = TRANSFORMATIONS[t][0]
+        outp = SCR / 'results' / (t + ('-sabotage' if sab else '') + '.%s.jsonl' % ('case' if named else scope))
         counts = {HOLDS: 0, VIOLATES: 0, NOTJ: 0}
         with open(outp, 'w') as fo:
-            for c in cases:
-                t0 = time.time()
-                try:
-                    v, why = fn(c)
-                except Exception as e:              # a tool failure is never a verdict
-                    v, why = NOTJ, 'tool error %s: %s' % (type(e).__name__, str(e)[:200])
-                counts[v] += 1
-                fo.write(json.dumps({'t': t, 'case': str(c.relative_to(WT)), 'verdict': v, 'why': why, 'secs': round(time.time() - t0, 1)}) + '\n')
-                fo.flush()
-                print('%s %-11s %-48s %s' % (t, v, c.name, why[:170]), flush=True)
+            for rec in res[t]:
+                counts[rec['verdict']] += 1
+                fo.write(json.dumps(rec) + '\n')
         print('== %s %s%s: HOLDS %d  VIOLATES %d  NOT JUDGED %d  (%d cases)' % (
-            t, title, ' [SABOTAGED]' if SABOTAGE else '', counts[HOLDS], counts[VIOLATES], counts[NOTJ], len(cases)), flush=True)
+            t, title, ' [SABOTAGED]' if sab else '', counts[HOLDS], counts[VIOLATES], counts[NOTJ], len(cases)), flush=True)
     return 0
 
 
