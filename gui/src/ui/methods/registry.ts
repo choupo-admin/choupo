@@ -1258,7 +1258,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  student's, because the engine has no characteristic map (so surge itself,
   //  speed control and suction throttling are not built, and the page says why).
   {
-    id: "compressor-choice", blurb: "Duty as a volume and a ratio, the machine chart, the highest pressure, the cost of anti-surge.",
+    id: "compressor-choice", blurb: "Duty as volume and ratio, machine chart, highest pressure, anti-surge cost.",
     label: "Which compressor, and how far can I turn it down?",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
@@ -1268,7 +1268,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "can take a duty and how it breaks a tie; seven practitioner questions (authored) say what the chart does not; "
       + "a one-section ceiling shows the highest pressure a blocked discharge can reach and the relief that implies; and "
       + "two engine runs price the anti-surge recycle at part load, cooled and hot. No surge line is computed: the engine "
-      + "has no characteristic map, and the page says so.",
+      + "holds no characteristic map, and the page says so.",
     theory: "sec:compressor-choice",
   },
   //  COMMISSIONED 2026-11-25 (C509): "why does a correctly sized valve still
