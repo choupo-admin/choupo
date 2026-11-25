@@ -238,6 +238,10 @@ DOMAINS = [
     (M + "ColumnDesignTool.tsx", "capitalCharge", 0.0, 1.0,
      "the yearly charge on installed cost, a capital-recovery factor: above 1/yr the equipment would pay "
      "back in under a year; the page offers 0.05 to 0.4", False),
+    (M + "FilterPressTool.tsx", "cleaning", 0.0, None,
+     "a press's dead time (discharge and cleaning) is positive and has no upper physical bound; the engine refuses a "
+     "negative `cleaningTime` (CakeFilter.cpp, the batchPress argument check); the box runs from 5 to 90 min, the page's own choice around the case's "
+     "authored 20 min (C511)", False),
 ]
 
 

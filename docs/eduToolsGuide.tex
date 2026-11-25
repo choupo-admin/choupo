@@ -3781,6 +3781,31 @@ and evaporative dryers have no clock, and the card says so.  \emph{The humid day
 rising humidity: the floor $X_e$ rises, and a specification below it is unreachable at any time.  Theory: Section~\ref{sec:drying-three-ceilings}.
 \declaredanchor{sec:drying-three-ceilings}
 
+\subsection*{When do I open the press? \quad(\code{tool=filter-press-cycle})}\label{sec:edu-filter-press-cycle}
+A plate-and-frame press filters at constant pressure and every cycle ends with a dead time $t_d$ for discharge and
+cleaning, so the \emph{average} rate over a whole cycle, $R = V/t_c$, has a maximum, and the question is at what cake
+size to open the press and how much a wrong choice costs.  Five steps and one card, on the bundled case
+\code{filter02\_caco3\_pressWashing}, run in the browser.  Ruth's law gives the filtration time
+$t_f = K_pV^2/2 + BV$ with the engine's own $K_p$ and $B$ (\code{CakeFilter.cpp}:336--338); the cycle adds the
+engine's washing time $t_w = (w/f)\,V\,(K_pV + B)$ (the wash volume is a fixed fraction of the filtrate and is
+pushed at a quarter of the final rate, lines 361--373) and the declared dead time (line 405).  Collecting terms,
+$t_c = aV^2 + bV + t_d$ with $a = (\tfrac12 + w/f)K_p$ and $b = (1 + w/f)B$, and $dR/dV = 0$ gives
+$aV_*^2 = t_d$ and $R_* = 1/(2aV_* + b)$; for no wash and $B = 0$ this is the textbook rule, the filtration time
+equal to the dead time.  Measured as a multiple $x = V/V_*$ the rate is
+$R/R_* = (2+\beta)x/(x^2 + 1 + \beta x)$ with $\beta = b/(aV_*)$, which is unchanged by $x \to 1/x$: opening at half
+the best volume and at twice it lose exactly the same share.  The card moves the dead time (a slider, minutes) and
+draws $R$ against $V$ whole, with $V_*$, the 95~\% line, the case's own cycle, and \emph{six engine runs} of the case
+(its own cycle and five other volumes, at the slider's dead time) sitting on the curve; a table lists, for
+$V/V_*$ from $1/3$ to $3$, the filtration, wash and cycle times, the rate, its share of the maximum, the cake
+thickness and the presses the feed needs.  On the case as shipped ($t_d = 20$~min, $V = 3.37$~m$^3$) the engine's
+$K_p = 37.72$~s/m$^6$ and $B = 16.01$~s/m$^3$ give $w/f = 0.4$, a best volume of 5.95~m$^3$ per cycle and a best
+rate of 8.45~m$^3$/h against the case's 7.30~m$^3$/h (86~\% of the maximum); without washing the classical rule
+puts the best volume at 7.98~m$^3$.  Limits stated on the page: a cake of constant resistance and a cloth that does
+not clog, constant pressure, one declared dead time that does not depend on the cake, and no check of the cake's
+thickness against a frame.  References: Ruth (1935), Geankoplis, Hersel and Lepek (5th ed., Section~24.2),
+McCabe, Smith and Harriott (7th ed.).  Theory: Section~\ref{sec:cakeFilter-batchPress}.
+\declaredanchor{sec:cakeFilter-batchPress}
+
 \subsection*{Drying curve, batch tray \quad(\code{tool=drying})}
 The two classical drying plots side by side on one run --- moisture
 against time, and rate against moisture --- with the critical moisture

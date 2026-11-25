@@ -789,6 +789,14 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["methaneAssembly.test.ts"],
     stdout: true,
   },
+  //  The filter-press cycle page (C511): the engine's own run of the press,
+  //  whose K_p, B, wash and cycle the page's algebra is held to.
+  {
+    caseDir: "tutorials/steady/solids/filter02_caco3_pressWashing",
+    file: "log.choupoSolve",
+    readBy: ["filterPressCycle.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

@@ -87,7 +87,8 @@ export type MethodToolId =
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
   | "column-design"
-  | "control-valve";
+  | "control-valve"
+  | "filter-press-cycle";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2892,6 +2893,25 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "distance is a compatibility indicator, never a saturation "
       + "concentration.",
     theory: "ch:hansen-mixture",
+  },
+  //  COMMISSIONED 2026-11-25 (DEV.md 4c C511): a plate-and-frame press has a
+  //  dead time; the average rate over a whole cycle peaks, and flatly.  The
+  //  engine's own press (filter02_caco3_pressWashing) gives K_p, B, the wash
+  //  and the cycle; the curve is algebra on them (filterCycle.ts) and six more
+  //  engine runs of the same case sit on it.
+  {
+    id: "filter-press-cycle", blurb: "Find the cake size that gives a press its best rate.",
+    label: "When do I open the press?",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page"],
+    teaches: "The filter-press cycle: Ruth's constant-pressure law (t/V a straight line in V, its "
+      + "slope and intercept the engine's own K_p and B), the cycle as filtration, washing and a dead "
+      + "time, and the average rate over the whole cycle, which has a maximum where the time that "
+      + "grows as V squared equals the dead time.  The page moves the dead time and draws the average "
+      + "rate against the volume per cycle with six engine runs of the case on the curve, marks the "
+      + "optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice "
+      + "the best volume loses exactly the same share.",
+    theory: "sec:cakeFilter-batchPress",
   },
 ];
 
