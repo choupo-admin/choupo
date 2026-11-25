@@ -9704,6 +9704,25 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/debtfin.$$
 
+    # Plant-books gate (2026-11-25, DEV.md 4c C524): the economics pass's
+    # income statement, balance sheet and cash-flow statement.  Six witnesses
+    # (an unlevered loss-maker, a copy with a loan, a taxOnLoss none copy, the
+    # start-up-years case with its shipped loan, the building/royalty case and
+    # the reference plant) are rebuilt BY HAND from the published cash-flow rows
+    # and loan schedule; the engine's statements must equal them account by
+    # account, assets = liabilities + equity and the cash ties to the
+    # appraisal in every year (1e-9), and eight accounts moved by 1e-6 of the
+    # sheet are each caught.
+    if gate_exec "$ROOT/bin/curate/check_plant_books.py" > /tmp/plantbooks.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "plant-books-gate" "$(gate_claim check_plant_books /tmp/plantbooks.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_plant_books.py)\n" "plant-books-gate"
+        cat /tmp/plantbooks.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/plantbooks.$$
+
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal
     # their own design sheets, its separation shortfall recomputes and

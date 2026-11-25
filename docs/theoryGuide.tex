@@ -36417,6 +36417,84 @@ working capital built up with the ramp-up (it is invested in full at
 start-up, and the run says so), and any tax treatment of the start-up cost
 other than an expense of the first operating year.
 
+\subsection{The plant's books: income statement, balance sheet, cash-flow
+statement}\label{sec:plant-books}
+
+The appraisal above is a column of cash flows.  An accountant keeps the same
+plant in three yearly statements, and a student who can read them can check the
+appraisal against a second description of the same money.  \code{PlantBooks}
+writes them from the appraisal's own yearly rows (it adds no input and moves no
+NPV, IRR or payback): \code{incomeStatement.csv}, \code{balanceSheet.csv} and
+\code{cashFlowStatement.csv} in \code{reports/economics/}, three sheets of \code{cashFlow.ods}, and the
+\code{books} block of the result.  Years run $t=1-N_c,\dots,N$ as in the cash
+flow, year~0 the end of construction.  The design record is
+\code{docs/design/plant-books.md}.
+
+\paragraph{Income statement}, operating year $t\ge1$, with $p_t$ the production
+fraction, $F$ the fixed capital, $C_{OL}$ the operating labour and
+$C_{\mathrm{var}}=C_{RM}+C_{UT}+C_{WT}$ the variable bill:
+\begin{align}
+\text{variable cost}_t &= 1.23\,p_t\,C_{\mathrm{var}}, &
+\text{fixed cost}_t &= 0.180\,F + 2.73\,C_{OL}, \label{eq:books-cost}\\
+\text{gross margin}_t &= R_t - \text{variable cost}_t, &
+\mathrm{EBITDA}_t &= \text{gross margin}_t - \text{fixed}_t - \text{royalty}_t - S_t,\\
+\mathrm{EBIT}_t &= \mathrm{EBITDA}_t - D_t, &
+\mathrm{PBT}_t &= \mathrm{EBIT}_t - I_t, \label{eq:books-pbt}\\
+\mathrm{PAT}_t &= \mathrm{PBT}_t - T_t, &
+T_t &= \tau\,\mathrm{PBT}_t \ (\text{by the case's \code{taxOnLoss}}).
+\end{align}
+$R_t$ is the revenue, $S_t$ the start-up cost (year~1), $D_t$ the depreciation
+(the plant's $F/N_d$ over the depreciable life $N_d$, plus the depreciation of
+the interest capitalised on a declared loan), $I_t$ the interest paid, $\tau$
+the tax rate.  In the last year the plant is sold at its salvage value $V$: the
+\emph{result on disposal} is $V - B_N$ with $B_N$ the book value (cost less
+accumulated depreciation), and the tax on the sale is $\tau V$, as the
+appraisal charges it; net profit adds both to $\mathrm{PAT}_N$.  When
+$N_d\le N$ the book value is nil.
+
+\paragraph{Balance sheet}, at the end of each year:
+\begin{equation}
+\underbrace{A^{\mathrm{fixed}}_t - \textstyle\sum_{s\le t}D_s + L + \mathrm{WC}^{\mathrm{assets}} + \mathrm{cash}_t}_{\text{assets}}
+= \underbrace{\mathrm{payables} + \mathrm{loan}_t}_{\text{liabilities}}
++ \underbrace{\textstyle\sum_{s\le t}\mathrm{paid\text{-}in}_s + \sum_{s\le t}(\mathrm{net\ profit}_s-\mathrm{div}_s)}_{\text{equity}} .
+\label{eq:books-balance}
+\end{equation}
+$A^{\mathrm{fixed}}_t$ is the capital spent so far (with capitalised interest),
+$L$ the land at cost (never depreciated), $\mathrm{WC}^{\mathrm{assets}}$ the
+working capital's stocks, receivables and operating cash reserve (or one
+undivided line when the case states the working capital as a fraction of $F$),
+payables the supplier credit of the working capital.  The net
+working capital $\mathrm{WC}=\mathrm{WC}^{\mathrm{assets}}-\mathrm{payables}$ is
+the amount the NPV invests at year~0 and recovers at $N$.
+
+\paragraph{Cash-flow statement.}  Operations $=\mathrm{PAT}_t + D_t$; investing
+$= -(\text{capital}) - L - \mathrm{WC}$ in construction and, in year $N$,
+$+\mathrm{WC} + L + V - \tau V$; financing $=$ share capital paid in $+$ loan
+drawn $-$ loan repaid $-$ dividends.  Closing cash is opening cash plus the
+three.
+
+\paragraph{The identities}, each held to $10^{-9}$ of the sheet's size in every
+year and by the gate \code{check\_plant\_books}:
+(i) eq.~\eqref{eq:books-balance}; (ii) operations $+$ investing $+$ loan flows
+$=$ the appraisal's cash flow of the year (the equity cash flow when a loan is
+declared); (iii) the cash-flow statement's closing cash is the balance sheet's
+cash; (iv) $\mathrm{RE}_t=\mathrm{RE}_{t-1}+\mathrm{net\ profit}_t-\mathrm{div}_t$;
+(v) $\mathrm{EBIT}_t$ is the appraisal's taxable income (before interest);
+(vi) $\sum_t \mathrm{CF}_t = \mathrm{cash}_N + \sum\mathrm{div} - \sum\mathrm{paid\text{-}in}$.
+A failing identity means an account is missing from the appraisal; it is
+reported, not plugged.
+
+\paragraph{Accounting choices.}  No dividends (the cash stays in the plant);
+the owners pay in what the construction costs beyond the loan, so cash is nil at
+start-up; tax is paid in the year it arises (no deferred tax, no loss
+carry-forward, as the DCF has none); interest during construction is
+capitalised and depreciated with the plant; the last balance sheet is after the
+wind-up (plant sold, land and working capital turned into cash); negative cash
+is shown and flagged, never hidden by an invented credit line.  The terms
+(EBITDA, EBIT, retained earnings) follow common international usage; no
+country's chart of accounts is imposed.  Worked cases: \code{economics01\_esterification\_dcf}
+(unlevered) and \code{economics03\_startup\_years} (a loan).
+
 % ---------------------------------------------------------------------
 \section{Turton bare-module costing}\label{ch:cost-guthrie}
 

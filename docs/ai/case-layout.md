@@ -1533,6 +1533,25 @@ terms, checked by hand in its postDict); the gate
 `bin/curate/check_debt_financing.py` holds it and builds further probes from
 a loan-free copy of it and from `economics01_esterification_dcf`.
 
+**THE PLANT'S BOOKS (2026-11-25, DEV.md 4c C524) -- nothing to declare.**  Every
+case with an `economics {}` block also gets the appraisal read as an income
+statement, a balance sheet and a cash-flow statement, tied together:
+`reports/economics/{incomeStatement,balanceSheet,cashFlowStatement}.csv`
+(accounts down, years across), three more sheets in `cashFlow.ods`, the
+`economics.books` object of the result (every account with a one-line
+`help`, the identities' errors) and `kpis.books.*`
+(`totalAssets_y<t>`, `totalLiabilities_y<t>`, `totalEquity_y<t>`, a negative
+year as `ym<n>`; `worstRelativeError`, `closingCash`, `shareCapitalPaidIn`).
+They add no input and move no NPV, IRR or payback.  Choices: no dividends
+(cash accumulates), the owners pay in what construction costs beyond the loan,
+tax in the year it arises, interest during construction capitalised, the last
+balance sheet after the wind-up.  Held every year to 1e-9: assets = liabilities
++ equity; operations + investing + loan flows = the appraisal's cash flow;
+closing cash = the balance sheet's cash; retained earnings roll forward;
+EBIT = the taxable income.  A run that cannot tie says which identity and year
+(an account missing from the appraisal) and the gate fails.  Gate
+`bin/curate/check_plant_books.py`; record `docs/design/plant-books.md`.
+
 **TAX ON A LOSS (2026-11-09, DEV.md 4c C269 decision (2)).**  One opt-in word
 in the same `economics {}` block says what a loss year's tax is:
 

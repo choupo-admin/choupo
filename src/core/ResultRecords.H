@@ -895,6 +895,42 @@ struct LoanYear
     scalar cumulativeDCF    = 0.0;
 };
 
+// THE PLANT'S BOOKS (2026-11-25, DEV.md 4c C524): the same appraisal read as
+// the three yearly statements an accountant keeps -- income statement,
+// balance sheet, cash-flow statement -- tied together.  Built by
+// postProcessing/PlantBooks.cpp from the appraisal's own yearly rows; it adds
+// no number to the appraisal and moves none.  Present only with an economics
+// pass.  Money in the report currency; years t = first..N as the cash flow.
+//  ONE ACCOUNT, ALL YEARS: the unit of every table the books publish (CSV,
+//  .ods, JSON, GUI).  `help` is the one-line plain-language definition.
+struct BooksRow
+{
+    std::string         key, label, help;
+    std::vector<scalar> values;          // one per year of `PlantBooks::years`
+    bool                subtotal = false; // a sum of the rows above it
+};
+struct PlantBooks
+{
+    bool   present = false;
+    std::string basis;            // project | equity (the appraisal flow the cash ties to)
+    std::vector<int>      years;          // t = first..N
+    std::vector<BooksRow> income;         // the income statement, accounts down
+    std::vector<BooksRow> balance;        // the balance sheet (end of each year)
+    std::vector<BooksRow> cash;           // the cash-flow statement
+    std::vector<scalar>   totalAssets, totalLiabilities, totalEquity;
+    //  THE IDENTITIES, each as the worst relative error over the years.
+    scalar balanceError = 0;      // |assets - (liabilities + equity)|
+    scalar cashTieError = 0;      // statement flows vs the appraisal's cash flow
+    scalar incomeTieError = 0;    // EBIT vs the appraisal's taxable income
+    scalar retainedError = 0;     // RE(t) = RE(t-1) + profit - dividends
+    scalar ownersError = 0;       // sum of owners' flows = closing cash - paid in + dividends
+    scalar worstError = 0;
+    int    worstYear = 0;
+    std::string worstIdentity;
+    scalar closingCash = 0, paidIn = 0, netProfitTotal = 0;
+    bool   cashOverdrawn = false; // some year closes with negative cash
+};
+
 // Headline economic appraisal scalars + the year-by-year DCF table.  Populated
 // by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
 // (the table the .ods / .csv DCF spreadsheet is built from).
@@ -1005,6 +1041,10 @@ struct EconomicsSummary
     bool                      equityIrrAmbiguous = false;
     scalar                    equityDiscPayback = 0.0; // NaN if never
     std::vector<LoanYear>     loanSchedule;
+    //  THE BOOKS (C524) and the two numbers they need beside the rows.
+    scalar                    fixedOperatingCost = 0.0;   // 0.180 FCI + 2.73 C_OL, per year
+    scalar                    salvage            = 0.0;   // sale value of the plant at N
+    PlantBooks                books;
 };
 
 //  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75).  What the layout check

@@ -1586,7 +1586,53 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"discountedCF\": "   << num(cf.discountedCF)
                << ", \"cumulativeDCF\": "  << num(cf.cumulativeDCF) << " }";
         }
-        os << "\n    ]\n  }";
+        os << "\n    ]";
+        //  THE PLANT'S BOOKS (2026-11-25, DEV.md 4c C524): the income
+        //  statement, balance sheet and cash-flow statement of the SAME
+        //  appraisal, accounts down and years across, each account with its
+        //  plain-language definition, and the identities that tie them.
+        //  Computed by postProcessing/PlantBooks.cpp; the GUI draws it.
+        if (e.books.present)
+        {
+            const auto& b = e.books;
+            auto rows = [&](const char* name, const std::vector<BooksRow>& v)
+            {
+                os << "      \"" << name << "\": [";
+                for (std::size_t i = 0; i < v.size(); ++i)
+                {
+                    os << (i ? ",\n" : "\n") << "        { \"key\": " << esc(v[i].key)
+                       << ", \"label\": " << esc(v[i].label)
+                       << ", \"help\": " << esc(v[i].help)
+                       << ", \"subtotal\": " << (v[i].subtotal ? "true" : "false")
+                       << ", \"values\": [";
+                    for (std::size_t k = 0; k < v[i].values.size(); ++k)
+                        os << (k ? ", " : "") << num(v[i].values[k]);
+                    os << "] }";
+                }
+                os << "\n      ]";
+            };
+            os << ",\n    \"books\": {\n      \"basis\": " << esc(b.basis)
+               << ",\n      \"years\": [";
+            for (std::size_t k = 0; k < b.years.size(); ++k)
+                os << (k ? ", " : "") << b.years[k];
+            os << "],\n";
+            rows("incomeStatement", b.income);   os << ",\n";
+            rows("balanceSheet",    b.balance);  os << ",\n";
+            rows("cashFlowStatement", b.cash);   os << ",\n";
+            os << "      \"checks\": { \"balanceError\": " << num(b.balanceError)
+               << ", \"cashTieError\": " << num(b.cashTieError)
+               << ", \"incomeTieError\": " << num(b.incomeTieError)
+               << ", \"retainedEarningsError\": " << num(b.retainedError)
+               << ", \"ownersError\": " << num(b.ownersError)
+               << ", \"worstError\": " << num(b.worstError)
+               << ", \"worstIdentity\": " << esc(b.worstIdentity)
+               << ", \"worstYear\": " << b.worstYear
+               << ", \"closingCash\": " << num(b.closingCash)
+               << ", \"shareCapitalPaidIn\": " << num(b.paidIn)
+               << ", \"cashOverdrawn\": " << (b.cashOverdrawn ? "true" : "false")
+               << " }\n    }";
+        }
+        os << "\n  }";
     }
 
     // ---- layout: the plot plan the case declared, as the engine read it ---

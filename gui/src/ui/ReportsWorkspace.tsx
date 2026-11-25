@@ -79,6 +79,7 @@ import {
 } from "../case/equipmentSchematic.js";
 import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js";
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
+import { PlantBooksTables } from "./PlantBooksTables.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { layoutFactsOf, type LayoutFacts } from "../case/layoutFacts.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
@@ -772,6 +773,13 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
         the discounted payback row{paybackYear !== undefined ? "" : " (none — never recovered)"} is highlighted.
         Full table in <code>reports/economics/cashFlow.csv</code> / <code>.ods</code>.
       </Text>
+      {econ.books && <PlantBooksTables books={econ.books} currency={econ.currency} />}
+      {econ.sensitivity && (
+        <Text size="xs" c="dimmed" mt={8} data-testid="tornadoPointer">
+          The tornado chart below (Economic sensitivity) moves each declared input alone and
+          shows how far the NPV above swings.
+        </Text>
+      )}
     </>
   );
 }
@@ -789,7 +797,7 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
   return (
     <>
       <Text size="xs" c="dimmed" mb={6}>
-        Base NPV {fmtMoney(fig.baseNPV)} {cur}.  One bar pair per declared input, the input
+        Tornado chart of the NPV.  Base NPV {fmtMoney(fig.baseNPV)} {cur}.  One bar pair per declared input, the input
         moved alone to its low end (cyan) and its high end (amber); sorted by the engine by
         NPV swing, largest on top.
       </Text>
