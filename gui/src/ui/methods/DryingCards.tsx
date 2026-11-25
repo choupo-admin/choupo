@@ -306,7 +306,7 @@ export function HotProductCard(): JSX.Element {
   ] : [];
   const problems = sweep.errs.filter((e): e is string => !!e);
   const read = stale
-    ? "This engine build has no solid-temperature column: rebuild the browser engine (make wasm-gui)."
+    ? "The engine in this browser did not return the solid-temperature column; rebuild it (make wasm-gui)."
     : !have ? "Waiting for the run."
       : `The solid stays within ${WARM_ABOVE_WET_BULB} K of the wet bulb (${g4(Twb)} K) until t = `
         + `${warm === null ? "—" : g4(warm)} s`
