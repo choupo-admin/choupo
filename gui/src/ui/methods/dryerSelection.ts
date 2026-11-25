@@ -257,7 +257,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
     },
     feed: {
       solution: { fit: "no", why: "a direct-heat rotary dryer normally cannot process solutions, "
-        + "slurries or pastes", src: ["vtl-rotary"] },
+        + "slurries or pastes (van 't Land); Perry's wider class of continuous agitated and "
+        + "rotating dryers admits a liquid or slurry only with dry product recirculated, so a "
+        + "practitioner's 'a rotary dryer dries slurries' holds only with that back-mixing",
+        src: ["vtl-rotary", "perry-t12-11", "muj-t1.1"] },
       paste: { fit: "conditional", why: "only with dry product mixed back into the feed, so it "
         + "does not stick and can be handled", src: ["muj-feed", "perry-t12-11"] },
       granular: { fit: "yes", why: "universally applicable to particulate materials; the usual "
@@ -293,8 +296,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       paste: { fit: "conditional", why: "as for liquids: dispersion of the feed in a deep bed is "
         + "the difficulty", src: ["perry-t12-11", "muj-feed"] },
       granular: { fit: "yes", why: "suited to crystals, granules and short fibres, at high "
-        + "capacities, when the particles fluidise (about 0.1 mm and larger in van 't Land)",
-        src: ["perry-t12-11", "vtl-text"] },
+        + "capacities, when the particles fluidise (about 0.1 mm and larger in van 't Land; "
+        + "Perry admits free-flowing powders of 150 micrometres or less 'if not too dusty'; "
+        + "Towler gives 1 to 3 mm): the lower size limit is not one number across the books",
+        src: ["perry-t12-11", "vtl-text", "tow-text"] },
     },
     engine: {
       name: "steady/drying/solidDryer01_sugar",
