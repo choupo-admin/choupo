@@ -28,6 +28,7 @@ License
 
 #include "EconomicsPass.H"
 #include "EstimateClass.H"
+#include "PlantBooks.H"
 #include "costing/CostingModel.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
@@ -863,6 +864,9 @@ void writeCashFlowOds(const EconomicsSummary& e)
                std::isfinite(e.equityDiscPayback));
         metric("PROJECT NPV (the merit; first sheet)", e.NPV, 0, e.NPV > 0.0);
     }
+
+    //  THE BOOKS (C524): three more sheets beside the appraisal's.
+    addPlantBooksSheets(ods, e);
 
     ods.save(path.string());
 
@@ -4891,12 +4895,38 @@ int EconomicsPass::run(SimulationResult& result)
         summary.loanSchedule               = base.loanRows;
     }
 
+    //  THE PLANT'S BOOKS (C524), read from the rows above: they add no input
+    //  and move no appraisal number.  Built BEFORE the .ods is written so its
+    //  sheets are in it.
+    summary.fixedOperatingCost = 0.180 * FCI + 2.73 * C_OL;
+    summary.salvage            = base.salvage;
+    buildPlantBooks(summary);
+    {
+        auto& bk = result.kpis["books"];
+        const PlantBooks& pb = summary.books;
+        for (std::size_t i = 0; i < pb.years.size(); ++i)
+        {
+            const std::string k = plantBooksYearKey(pb.years[i]);
+            bk["totalAssets_" + k]      = pb.totalAssets[i];
+            bk["totalLiabilities_" + k] = pb.totalLiabilities[i];
+            bk["totalEquity_" + k]      = pb.totalEquity[i];
+        }
+        bk["worstRelativeError"] = pb.worstError;
+        bk["balanceError"]       = pb.balanceError;
+        bk["cashTieError"]       = pb.cashTieError;
+        bk["closingCash"]        = pb.closingCash;
+        bk["shareCapitalPaidIn"] = pb.paidIn;
+        bk["netProfitTotal"]     = pb.netProfitTotal;
+    }
+    std::cout << plantBooksLogLine(summary.books) << "\n";
+
     // Persist both the .csv and the coloured .ods (reports/economics/).
     writeCashFlowCsv(summary);
     writeCashFlowOds(summary);
     if (wcb.present) writeWorkingCapitalCsv(summary);
     if (!sensitivity.empty()) writeSensitivityCsv(sensitivity, base, summary.currency, fin.present);
     if (fin.present) writeFinancingCsv(summary);
+    writePlantBooksCsv(summary);
 
     return 0;
 }
