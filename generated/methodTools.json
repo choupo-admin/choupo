@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 104,
-  "registryTools": 104,
+  "liveTools": 106,
+  "registryTools": 106,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1672,6 +1672,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=solvent-mixture"
+    },
+    {
+      "id": "filter-press-cycle",
+      "label": "When do I open the press?",
+      "blurb": "Find the cake size that gives a press its best rate.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The filter-press cycle: Ruth's constant-pressure law (t/V a straight line in V, its slope and intercept the engine's own K_p and B), the cycle as filtration, washing and a dead time, and the average rate over the whole cycle, which has a maximum where the time that grows as V squared equals the dead time.  The page moves the dead time and draws the average rate against the volume per cycle with six engine runs of the case on the curve, marks the optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice the best volume loses exactly the same share.",
+      "origins": [
+        "engine",
+        "page"
+      ],
+      "href": "/app/?workspace=methods&tool=filter-press-cycle"
     }
   ]
 }

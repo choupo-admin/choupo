@@ -33,6 +33,8 @@ export interface ChartSeries {
   dots?: boolean;
   /** Dot colours, one per point, overriding `color` (e.g. by verdict). */
   dotColors?: readonly string[];
+  /** Draw only the dots, no line through them (engine runs sitting on a curve). */
+  noLine?: boolean;
 }
 
 export interface ChartGuide {
@@ -124,7 +126,7 @@ export function DryChart({
           const good = s.pts.filter((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]));
           return (
             <g key={s.id} data-series={s.id}>
-              {good.length > 1 && (
+              {good.length > 1 && !s.noLine && (
                 <polyline fill="none" stroke={s.color} strokeWidth={2}
                   strokeDasharray={s.dash ?? ""}
                   points={good.map((p) => `${toX(p[0]).toFixed(1)},${toY(p[1]).toFixed(1)}`).join(" ")} />

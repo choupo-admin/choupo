@@ -3951,6 +3951,38 @@
           }
         }
       ]
+    },
+    "filter-press-cycle": {
+      "references": [
+        {
+          "text": "Ruth, B. F. (1935). Studies in filtration III. Derivation of general filtration equations. Ind. Eng. Chem. 27(6), 708–723.",
+          "doi": "10.1021/ie50306a024",
+          "note": "The two-resistance constant-pressure law: t/V a straight line in V.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50306a024: author Ruth, title, container Industrial & Engineering Chemistry, volume 27, issue 6, pages 708-723, year 1935 matched (C511)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Geankoplis, C. J.; Hersel, A. A.; Lepek, D. H. (2018). Transport Processes and Separation Process Principles, 5th ed. Pearson (Prentice Hall). ISBN 978-0-13-418102-8.",
+          "note": "Section 24.2, eqs. 24.2-14 to 24.2-20 and Examples 24.2-1 to 24.2-3 (pp. 1083–1088): K_p, B, the filtration and washing times and the press cycle that the engine's case filter02 reproduces.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780134181028: title, author Christie John Geankoplis, 1248 pages; the equation and example numbers and pages are those the engine's case tutorials/steady/solids/filter02_caco3_pressWashing cites and holds to the printed answers (K_p 37.93, B 16.10, cycle 27.73 min; golden anchors, C361 slice 4)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "McCabe, W. L.; Smith, J. C.; Harriott, P. (2005). Unit Operations of Chemical Engineering, 7th ed. McGraw-Hill. ISBN 978-0-07-284823-6.",
+          "note": "Textbook treatment of constant-pressure filtration and of the filter cycle with its dead time (the filtration chapter; section and pages not read for this page).",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0072848235: title, '7th ed. / Warren L. McCabe, Julian C. Smith, Peter Harriott', McGraw-Hill, 2005 (re-read 2026-11-25, C511); the chapter's content is not read from the book here",
+            "date": "2026-11-25"
+          }
+        }
+      ]
     }
   }
 }

@@ -128,6 +128,8 @@ import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
 import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
 import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
+import { PRESS_QUIZ, PRESS_STEPS } from "../src/ui/methods/filterPressCycleLesson.js";
+import { FilterPressTool } from "../src/ui/methods/FilterPressTool.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
@@ -314,6 +316,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: WHY_QUIZ, quizName: "WHY_QUIZ",
     lesson: WHY_STEPS, lessonName: "WHY_STEPS",
     file: "src/ui/methods/WhyDidItNotDryTool.tsx", tool: WhyDidItNotDryTool,
+  },
+  "filter-press-cycle": {
+    quiz: PRESS_QUIZ, quizName: "PRESS_QUIZ",
+    lesson: PRESS_STEPS, lessonName: "PRESS_STEPS",
+    file: "src/ui/methods/FilterPressTool.tsx", tool: FilterPressTool,
   },
   optimizers: {
     quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",
