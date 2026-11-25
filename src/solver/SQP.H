@@ -169,6 +169,12 @@ struct SQPResult
     std::vector<bool> ineqActive;
     scalar  statBar      = std::numeric_limits<scalar>::quiet_NaN();
     scalar  statTolUsed  = 0.0;
+    //  The tolerances USED by the verdict (scaled): the worst component's residual
+    //  and its tolerance, the bar and tolerance of the component whose bar binds,
+    //  and the complementarity tolerance.  Per component: tol_j = tolStat S_j.
+    scalar  statRes      = std::numeric_limits<scalar>::quiet_NaN();
+    scalar  statResTol   = 0.0;
+    scalar  complTolUsed = 0.0;
     bool    certified    = false;
     bool    stationaryUncertified = false;
 };

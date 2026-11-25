@@ -435,6 +435,86 @@ void defineArms()
         return std::string();
     });
 
+    // ---- review 2 (docs/audits/2026-11-25-c496-opus-review-2.md): three FALSE
+    //  CERTIFICATES through the public interface.  Each arm: a certified run
+    //  must have a true gradient inside the stationarity tolerance (5e-5 here).
+    //  B1: f = 1e4 (x1 - x2^2)^2 + (x2 - .5)^2 + 1e5 x3, x3 on a bound with slope
+    //  1e5: ONE global scale S = 1e5 gave tol 1.0 to every component and certified
+    //  (0.24998, 0.49998, 0) whose true gradient is 1.46e-2 = 1458 tolStat.
+    add("rev2_B1_per_component_scale", []() -> std::string {
+        Prob p;
+        p.f = [](const sVector& x) { scalar a = x[0] - x[1] * x[1]; return 1.0e4 * a * a + (x[1] - 0.5) * (x[1] - 0.5) + 1.0e5 * x[2]; };
+        p.lo = {-2, -2, 0}; p.hi = {2, 2, 1}; p.x0 = {-1.0, 1.5, 0.0};
+        SQPOptions o = baseOpts(); o.maxIter = 200;
+        Run r = run(p, o);
+        const scalar a = r.R.x[0] - r.R.x[1] * r.R.x[1];
+        const scalar tg = std::max(std::abs(2.0e4 * a), std::abs(-4.0e4 * a * r.R.x[1] + 2.0 * (r.R.x[1] - 0.5)));
+        if (r.R.converged && tg > 5.0e-5)
+            return "certified with true gradient " + num(tg) + " at (" + num(r.R.x[0]) + ", " + num(r.R.x[1]) + ")";
+        return std::string();
+    });
+    //  B2: f = 10 (x1 - .6)^2 + 1e6 x2, x1 in [0,1], x2 in [1e6, 2e6], x0 = (.2, 1e6):
+    //  the step allowance 1e-4 max(1, ||x||inf) was 100 for x1, the QP's step-bound
+    //  multiplier entered grad L, and the component was dropped from the bar:
+    //  certified at iteration 0, x1 = 0.2, true f' = -8.
+    add("rev2_B2_step_per_component", []() -> std::string {
+        Prob p;
+        p.f = [](const sVector& x) { return 10.0 * (x[0] - 0.6) * (x[0] - 0.6) + 1.0e6 * x[1]; };
+        p.lo = {0, 1.0e6}; p.hi = {1, 2.0e6}; p.x0 = {0.2, 1.0e6};
+        Run r = run(p, baseOpts());
+        const scalar tg = std::abs(20.0 * (r.R.x[0] - 0.6));
+        if (r.R.converged && tg > 5.0e-5)
+            return "certified at x1 = " + num(r.R.x[0]) + " with true f' = " + num(tg);
+        return std::string();
+    });
+    //  B2 (b)(c) alone, x scaled as the driver scales it: x1 sits 5e-5 below its upper
+    //  bound, the objective pushes it up; the QP step reaches the bound row, whose
+    //  multiplier is NOT a bound active at x.  It must not enter grad L nor remove the
+    //  component from the bar: a certificate at 0.99995 (true f' = -10) is a lie; the
+    //  run must reach x = 1 first.
+    add("rev2_B2_step_bound_row_not_active", []() -> std::string {
+        Prob p;
+        p.f = [](const sVector& x) { return 10.0 * (x[0] - 1.5) * (x[0] - 1.5); };
+        p.lo = {0.0}; p.hi = {1.0}; p.x0 = {0.99995};
+        Run r = run(p, baseOpts());
+        if (r.R.converged && std::abs(r.R.x[0] - 1.0) > 1.0e-6)
+            return "certified at x = " + num(r.R.x[0]) + " (not on its bound, true f' = -10)";
+        return std::string();
+    });
+    //  B3: f = (x - .6)^2 + A sin(2 pi x / 5e-7), a smooth function whose wiggle period
+    //  divides both noise stencils and the first curvature probe: ECnoise reads the
+    //  rounding floor, L = 2, the forward step reads the wiggle as slope; certified at
+    //  true f' = -7.9e-4 (A = 1e-10) and -8.5e-5 (A = 1e-11).
+    add("rev2_B3_aliased_wiggle", []() -> std::string {
+        for (scalar A : {1.0e-10, 1.0e-11})
+        {
+            Prob p;
+            p.f = [A](const sVector& x) { return (x[0] - 0.6) * (x[0] - 0.6) + A * std::sin(2.0 * M_PI * x[0] / 5.0e-7); };
+            p.lo = {0}; p.hi = {1}; p.x0 = {0.1};
+            Run r = run(p, baseOpts());
+            const scalar x = r.R.x[0];
+            const scalar tg = std::abs(2.0 * (x - 0.6) + A * 2.0 * M_PI / 5.0e-7 * std::cos(2.0 * M_PI * x / 5.0e-7));
+            if (r.R.converged && tg > 5.0e-5)
+                return "A = " + num(A) + ": certified at x = " + num(x) + " with true f' = " + num(tg);
+        }
+        return std::string();
+    });
+    //  M2: HS13 (no KKT point at its optimum) was certified at (0.9998, 0) with a
+    //  multiplier 1.7e7 +- 3.3e7 (NOT RESOLVED) that scaled the tolerances.
+    add("rev2_M2_unresolved_multiplier", []() -> std::string {
+        Prob p;
+        p.f = [](const sVector& x) { return (x[0] - 2.0) * (x[0] - 2.0) + x[1] * x[1]; };
+        p.g = {[](const sVector& x) { return x[1] - std::pow(1.0 - x[0], 3); }};
+        p.lo = {0.0, 0.0}; p.hi = {5.0, 5.0}; p.x0 = {0.0, 0.5};
+        Run r = run(p, baseOpts());
+        if (r.R.converged)
+        {
+            const scalar bar = r.R.sigmaLamIneq.empty() ? kNaN : r.R.sigmaLamIneq[0];
+            if (!(std::isfinite(bar) && bar <= std::abs(r.R.lambdaIneq[0])))
+                return "certified with a NOT RESOLVED multiplier " + num(r.R.lambdaIneq[0]) + " +- " + num(bar);
+        }
+        return std::string();
+    });
     // 3. invariants ---------------------------------------------------------
     //  (b) a CONVERGED verdict needs a bar at the point that is below the
     //  tolerance.  Smooth 2-variable problem, clean: certified, bar finite.

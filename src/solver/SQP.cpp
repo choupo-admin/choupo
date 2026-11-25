@@ -272,6 +272,8 @@ SQPResult sqp(const SQPEvaluator& eval,
     sVector hFwd(n, 1.0e-6), hCen(n, 0.0);
     std::vector<char> cenWanted(n, 0), fixedJ(n, 1);
     std::vector<sVector> sigG(n, sVector(nR, kNaN));      // [j][r] error bound of the LAST gradients()
+    sVector usedW(n, 0.0);                                // width of the difference of the LAST gradients()
+    std::vector<char> usedCentral(n, 0), usedPinned(n, 0);
     std::string fdReportStr;
     bool forceCentral = false;
     const scalar hMinStep = 4.0e-9, hMaxStep = 0.05;
@@ -577,13 +579,16 @@ SQPResult sqp(const SQPEvaluator& eval,
                 if (!fdNote.empty()) fdNote += "; ";
                 fdNote += "FD x[" + std::to_string(j) + "]: PINNED (the box is narrower than the"
                           " smallest step); its derivative is not taken";
+                usedPinned[j] = 1;
                 return true;
             }
             const bool known = noiseKnown && !fixedJ[j];
+            usedW[j] = 0.0; usedCentral[j] = 0; usedPinned[j] = 0;
             const scalar fixedH = opts.fdStep * std::max(std::abs(x[j]), typX[j]);
             auto at = [&](scalar v) { sVector xx = x; xx[j] = std::min(hi[j], std::max(lo[j], v)); return xx; };
             auto bars = [&](bool central, scalar width)
             {
+                usedW[j] = width; usedCentral[j] = central ? 1 : 0;
                 if (!known) return;
                 for (std::size_t r = 0; r < nR; ++r)
                     sigG[j][r] = central ? sigCen(Mj[j][r], epsR[r], 0.5 * width)
@@ -684,6 +689,62 @@ SQPResult sqp(const SQPEvaluator& eval,
         return true;
     };
 
+    //  C496 review 2, B3: the gradient is CONFIRMED before a certificate with a
+    //  second, different step.  The first gradient was taken at the step the
+    //  noise/curvature probes chose; a response that wiggles at a period
+    //  dividing every probe (a smooth sin(2 pi x / 5e-7) of amplitude 1e-10)
+    //  reads as the rounding floor and the step read the wiggle as slope.  So
+    //  each variable is differenced again at 3.7 times its step (central if the
+    //  first was central and the box has room, else one-sided; 3.7 is not a
+    //  divisor of the first step, or of the stencils, which are 1e-3 and 2.5e-4;
+    //  1/3.7 when 3.7 h would exceed the largest step), with the error bar of
+    //  THAT step.  false = the step could not be taken (not certified).
+    auto confirmGradients = [&](const sVector& x, const SQPResponse& base,
+                                sVector& gF2, std::vector<sVector>& Jh2,
+                                std::vector<sVector>& Jg2,
+                                std::vector<sVector>& sig2) -> bool
+    {
+        gF2.assign(n, 0.0); Jh2.assign(nEq, sVector(n, 0.0)); Jg2.assign(nIneq, sVector(n, 0.0));
+        sig2.assign(n, sVector(nR, 0.0));
+        auto put = [&](std::size_t j, const SQPResponse& a, const SQPResponse& b, scalar width)
+        {
+            gF2[j] = (a.f - b.f) / width;
+            for (std::size_t i = 0; i < nEq; ++i) Jh2[i][j] = (a.h[i] - b.h[i]) / width;
+            for (std::size_t i = 0; i < nIneq; ++i) Jg2[i][j] = (a.g[i] - b.g[i]) / width;
+        };
+        for (std::size_t j = 0; j < n; ++j)
+        {
+            if (usedPinned[j]) continue;
+            if (!noiseKnown || fixedJ[j] || !(usedW[j] > 0.0)) return false;
+            const scalar up = hi[j] - x[j], dn = x[j] - lo[j];
+            const scalar h = usedCentral[j] ? 0.5 * usedW[j] : usedW[j];
+            scalar h2 = 3.7 * h;
+            if (h2 > hMaxStep) h2 = h / 3.7;
+            if (h2 < hMinStep) return false;
+            auto at = [&](scalar v) { sVector xx = x; xx[j] = std::min(hi[j], std::max(lo[j], v)); return xx; };
+            if (usedCentral[j] && std::min(up, dn) >= h2 && std::isfinite(Mj[j][0]))
+            {
+                const sVector xp = at(x[j] + h2), xm = at(x[j] - h2);
+                const SQPResponse rp = E(xp), rm = E(xm);
+                if (!usable(rp) || !usable(rm)) return false;
+                put(j, rp, rm, xp[j] - xm[j]);
+                for (std::size_t r = 0; r < nR; ++r) sig2[j][r] = sigCen(Mj[j][r], epsR[r], h2);
+            }
+            else
+            {
+                const bool fwd = up >= h2;
+                if (!fwd && dn < h2) return false;
+                const sVector x1 = at(x[j] + (fwd ? h2 : -h2));
+                const SQPResponse r1 = E(x1);
+                if (!usable(r1)) return false;
+                const scalar w = std::abs(x1[j] - x[j]);
+                if (fwd) put(j, r1, base, w); else put(j, base, r1, w);
+                for (std::size_t r = 0; r < nR; ++r) sig2[j][r] = sigFwd(Lj[j][r], epsR[r], w);
+            }
+        }
+        return true;
+    };
+
     //  The stopping record of a failed iterate: stationarity cannot be
     //  measured, the primal feasibility of the point we stop at can.
     auto stopUnmeasured = [&](const SQPResponse& at, const std::string& why)
@@ -768,7 +829,7 @@ SQPResult sqp(const SQPEvaluator& eval,
     bool gradFresh = false;
     bool gradSavedFresh = false;
     std::vector<bool> lastIneqActive;
-    scalar lastStatBar = kNaN, lastStatTol = 0.0;
+    scalar lastStatBar = kNaN, lastStatTol = 0.0, lastStatRes = kNaN, lastStatResTol = 0.0, lastComplTol = 0.0;
 
     int it = 0;
     for (; it < opts.maxIter; ++it)
@@ -967,8 +1028,21 @@ SQPResult sqp(const SQPEvaluator& eval,
         //  OMITS: the displacement of x* through H, correlations between the
         //  responses of one run, truncation being a bias, the uncertainty of
         //  the active set, and the age of the noise estimate (gradFresh).
+        //  C496 review 2, B2: a QP step-bound row is a bound ACTIVE AT x only if x
+        //  is on that bound (to the feasibility tolerance).  The QP's multiplier
+        //  of a row that only the STEP reaches belongs to the step, not to grad
+        //  L, and the component is not "absorbed": it stays in the stationarity
+        //  test and in the bar.  (Default path: every row counts, as shipped.)
+        std::vector<char> boundAtX(boundRow.size(), 1);
+        if (opts.adaptiveFd)
+            for (std::size_t r = 0; r < boundRow.size(); ++r)
+            {
+                const std::size_t jb = boundRow[r].first;
+                const scalar bnd = boundRow[r].second > 0.0 ? hi[jb] : lo[jb];
+                boundAtX[r] = std::abs(R.x[jb] - bnd) <= opts.tolFeasIneq * std::max(1.0, std::abs(bnd));
+            }
         sVector sigEq(nEq, kNaN), sigIneq(nIneq, kNaN);
-        scalar statSigma = kNaN;                 // 1 sd of ||grad L||inf over the free components
+        sVector eLsig(n, kNaN);                  // 1 sd of each component of grad L (NaN: unavailable)
         if (opts.adaptiveFd)
         {
             std::vector<sVector> Arows;
@@ -982,7 +1056,7 @@ SQPResult sqp(const SQPEvaluator& eval,
                 {
                     sVector e(n, 0.0); e[boundRow[r].first] = boundRow[r].second;
                     Arows.push_back(e); rowKind.push_back(2); rowIdx.push_back(int(r));
-                    boundActive[boundRow[r].first] = 1;
+                    if (boundAtX[r]) boundActive[boundRow[r].first] = 1;
                 }
             const std::size_t ma = Arows.size();
             //  error of each component of grad L (NaN when a contributing bar is unavailable)
@@ -999,11 +1073,7 @@ SQPResult sqp(const SQPEvaluator& eval,
                 eL2[j] = v;
             }
             if (barsOK)
-            {
-                scalar m = 0.0;
-                for (std::size_t j = 0; j < n; ++j) if (!boundActive[j]) m = std::max(m, std::sqrt(eL2[j]));
-                statSigma = m;
-            }
+                for (std::size_t j = 0; j < n; ++j) eLsig[j] = std::sqrt(eL2[j]);
             //  B-weighted multiplier map
             bool okSig = barsOK && ma > 0;
             std::vector<sVector> Y(ma);
@@ -1081,7 +1151,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         for (std::size_t r = 0; r < boundRow.size(); ++r)
         {
             const std::size_t row = mUser + r;
-            if (row < QP.lambdaIneq.size())
+            if (row < QP.lambdaIneq.size() && boundAtX[r])
                 gL[boundRow[r].first] += QP.lambdaIneq[row] * boundRow[r].second;
         }
         const scalar kktStat   = normInf(gL);
@@ -1098,36 +1168,79 @@ SQPResult sqp(const SQPEvaluator& eval,
 
         const scalar dnorm = std::sqrt(dotv(d, d));
 
-        //  C496 F11 (adaptiveFd): the stationarity tolerance is tolStat times the
-        //  size of the terms grad L cancels -- see SQPOptions::scaledStationarity.
-        scalar tolStatEff = opts.tolStat;
-        if (opts.adaptiveFd && opts.scaledStationarity)
+        //  C496 F11 + review 2 B1/B2/M2 (adaptiveFd, scaledStationarity): the
+        //  stationarity tolerance is PER COMPONENT, tol_j = tolStat S_j with
+        //  S_j = max(1, |df/dx_j|, sum_i |lambda_i dc_i/dx_j|, |lambda_b,j|) -- the
+        //  size of the terms whose cancellation component j of grad L measures.
+        //  One global S let a variable sitting on a bound with slope 1e5 loosen
+        //  the test of every other variable to 1.0.  The bound multiplier counts
+        //  only for a bound active AT x.  The step must be small PER COMPONENT, on
+        //  that variable's own scale max(1,|x_j|) limited by its box width.
+        //  Complementarity is scaled by the largest RESOLVED multiplier.
+        const bool scaledTol = opts.adaptiveFd && opts.scaledStationarity;
+        sVector tolJ(n, opts.tolStat);
+        if (scaledTol)
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                scalar S = std::max(1.0, std::abs(gradF[j]));
+                scalar sE = 0.0, sG = 0.0;
+                for (std::size_t i = 0; i < nEq; ++i) sE += std::abs(lamEqNew[i] * Jh[i][j]);
+                for (std::size_t k = 0; k < nIneq; ++k) sG += std::abs(lamIneqNew[k] * Jg[k][j]);
+                S = std::max({S, sE, sG});
+                for (std::size_t r = 0; r < boundRow.size(); ++r)
+                    if (boundRow[r].first == j && boundAtX[r] && mUser + r < QP.lambdaIneq.size())
+                        S = std::max(S, std::abs(QP.lambdaIneq[mUser + r]));
+                tolJ[j] = opts.tolStat * S;
+            }
+        //  the component that binds the verdict: the largest |gL_j| / tol_j
+        std::size_t jWorst = 0;
+        for (std::size_t j = 1; j < n; ++j)
+            if (std::abs(gL[j]) / tolJ[j] > std::abs(gL[jWorst]) / tolJ[jWorst]) jWorst = j;
+        const scalar tolStatEff = tolJ[jWorst];
+        const scalar statResWorst = std::abs(gL[jWorst]);
+        //  a multiplier that is NOT RESOLVED (bar >= its value, or none) and large enough
+        //  to move a tolerance (|lambda| max(1,||grad c||) > 1) forbids a certificate (M2)
+        std::string unresolvedWho;
+        scalar lamScale = 0.0;
+        if (scaledTol)
         {
-            scalar S = std::max(1.0, normInf(gradF));
-            for (std::size_t i = 0; i < nEq; ++i)
-                S = std::max(S, std::abs(lamEqNew[i]) * normInf(Jh[i]));
             for (std::size_t k = 0; k < nIneq; ++k)
-                S = std::max(S, std::abs(lamIneqNew[k]) * normInf(Jg[k]));
-            for (std::size_t r = 0; r < boundRow.size(); ++r)
-                if (mUser + r < QP.lambdaIneq.size())
-                    S = std::max(S, std::abs(QP.lambdaIneq[mUser + r]));
-            tolStatEff = opts.tolStat * S;
+            {
+                if (lamIneqNew[k] == 0.0) continue;
+                const bool res = k < sigIneq.size() && std::isfinite(sigIneq[k]) && sigIneq[k] <= std::abs(lamIneqNew[k]);
+                if (res) lamScale = std::max(lamScale, std::abs(lamIneqNew[k]));
+                else if (std::abs(lamIneqNew[k]) * std::max(1.0, normInf(Jg[k])) > 1.0 && unresolvedWho.empty())
+                    unresolvedWho = "inequality " + std::to_string(k);
+            }
+            for (std::size_t i = 0; i < nEq; ++i)
+            {
+                if (lamEqNew[i] == 0.0) continue;
+                const bool res = i < sigEq.size() && std::isfinite(sigEq[i]) && sigEq[i] <= std::abs(lamEqNew[i]);
+                if (!res && std::abs(lamEqNew[i]) * std::max(1.0, normInf(Jh[i])) > 1.0 && unresolvedWho.empty())
+                    unresolvedWho = "equality " + std::to_string(i);
+            }
         }
-        //  complementarity |lambda g| meets the same scaling: a multiplier of 2.4e6
-        //  times a residual inside the feasibility tolerance (1e-6) is not zero
-        const scalar tolComplEff = (opts.adaptiveFd && opts.scaledStationarity)
-            ? opts.tolCompl * std::max(1.0, normInf(lamIneqNew)) : opts.tolCompl;
+        const scalar tolComplEff = scaledTol ? opts.tolCompl * std::max(1.0, lamScale) : opts.tolCompl;
+        bool stepSmall = true;
+        if (scaledTol)
+            for (std::size_t j = 0; j < n; ++j)
+            {
+                scalar sc = std::max(1.0, std::abs(R.x[j]));
+                if (std::isfinite(hi[j] - lo[j])) sc = std::min(sc, hi[j] - lo[j]);
+                if (std::abs(d[j]) > 1.0e-4 * sc) stepSmall = false;
+            }
+        bool statOK = kktStat <= opts.tolStat;
+        if (scaledTol)
+        {
+            statOK = true;
+            for (std::size_t j = 0; j < n; ++j) if (std::abs(gL[j]) > tolJ[j]) statOK = false;
+        }
         const bool kktOK =
-               kktStat     <= tolStatEff
+               statOK
             && kktFeasEq   <= opts.tolFeasEq
             && kktFeasIneq <= opts.tolFeasIneq
             && kktCompl    <= tolComplEff
-            //  Under the scaled tolerance the QP step must be small too: at a QP
-            //  solution ||grad L||inf of the QP's own multipliers IS ||B d||inf,
-            //  so a tolerance scaled by a gradient of 1e10 would pass a step of
-            //  length 1 (measured on K = 2e10).  Ours: ||d||inf <= 1e-4 max(1,|x|).
-            && (!(opts.adaptiveFd && opts.scaledStationarity)
-                || normInf(d) <= 1.0e-4 * std::max(1.0, normInf(R.x)));
+            && stepSmall;
 
         //  C496 F2: a verdict is taken only on a gradient whose noise, curvature
         //  and steps were estimated AT THIS POINT.  A step chosen at x = 0 and
@@ -1176,25 +1289,92 @@ SQPResult sqp(const SQPEvaluator& eval,
                 if (!relaxNote.empty())  t.note += " [" + relaxNote + "]";
                 opts.onIter(t);
             }
-            //  C496 F2: with the adaptive differences the verdict also needs the
-            //  error bar (3 sd) of ||grad L|| at this point below the tolerance.
+            //  C496 F2 + review 2 (B1, B3, M2): with the adaptive differences the verdict
+            //  also needs, COMPONENT BY COMPONENT, the error bar (3 sd) of grad L at this
+            //  point below that component's tolerance; no multiplier that moves a
+            //  tolerance may be NOT RESOLVED; and the gradient must be CONFIRMED by a
+            //  second, different step (confirmGradients).
             bool certified = kktOK;
             std::string whyNot;
             if (opts.adaptiveFd)
             {
-                lastStatBar = 3.0 * statSigma; lastStatTol = tolStatEff;
-                if (kktOK && !(std::isfinite(lastStatBar) && lastStatBar <= tolStatEff))
+                std::vector<char> absorbed(n, 0);
+                for (std::size_t r = 0; r < boundRow.size(); ++r)
+                    if (boundAtX[r] && mUser + r < QP.active.size() && QP.active[mUser + r])
+                        absorbed[boundRow[r].first] = 1;
+                bool barsFinite = true;
+                std::size_t jb = 0; scalar worstRatio = -1.0;
+                for (std::size_t j = 0; j < n; ++j)
+                {
+                    if (absorbed[j]) continue;
+                    if (!std::isfinite(eLsig[j])) { barsFinite = false; continue; }
+                    const scalar ratio = 3.0 * eLsig[j] / tolJ[j];
+                    if (ratio > worstRatio) { worstRatio = ratio; jb = j; }
+                }
+                lastStatBar = barsFinite && worstRatio >= 0.0 ? 3.0 * eLsig[jb] : kNaN;
+                lastStatTol = barsFinite && worstRatio >= 0.0 ? tolJ[jb] : tolStatEff;
+                lastStatRes = statResWorst; lastStatResTol = tolStatEff; lastComplTol = tolComplEff;
+                const std::string head = "KKT residuals met (||grad L|| " + std::to_string(kktStat)
+                                       + ") but NOT CERTIFIED: ";
+                if (kktOK && !unresolvedWho.empty())
                 {
                     certified = false;
-                    R.stationaryUncertified = true;
-                    whyNot = std::isfinite(lastStatBar)
-                        ? "KKT residuals met (||grad L|| " + std::to_string(kktStat) + ") but NOT CERTIFIED:"
-                          " the gradient's error bar (3 sd) " + std::to_string(lastStatBar)
-                          + " exceeds the stationarity tolerance " + std::to_string(tolStatEff)
-                        : "KKT residuals met (||grad L|| " + std::to_string(kktStat) + ") but NOT CERTIFIED:"
-                          " the gradient's error bar is UNAVAILABLE (the noise of a response was not"
-                          " measured: " + fdReportStr + ")";
+                    whyNot = head + "the multiplier of " + unresolvedWho + " is NOT RESOLVED (its bar"
+                             " is not below its value) and is large enough to move a tolerance";
                 }
+                else if (kktOK && (!barsFinite || !(worstRatio >= 0.0 || n == 0)))
+                {
+                    certified = false;
+                    whyNot = head + "the gradient's error bar is UNAVAILABLE (the noise of a response"
+                             " was not measured: " + fdReportStr + ")";
+                }
+                else if (kktOK && lastStatBar > lastStatTol)
+                {
+                    certified = false;
+                    whyNot = head + "the gradient's error bar (3 sd) " + std::to_string(lastStatBar)
+                             + " exceeds the stationarity tolerance " + std::to_string(lastStatTol)
+                             + " of component x[" + std::to_string(jb) + "]";
+                }
+                else if (kktOK)
+                {
+                    sVector gF2; std::vector<sVector> Jh2, Jg2, sig2;
+                    if (!confirmGradients(R.x, base, gF2, Jh2, Jg2, sig2))
+                    {
+                        certified = false;
+                        whyNot = head + "the gradient could not be CONFIRMED with a second step"
+                                 " (a difference at 3.7 times the first step failed or did not fit the box)";
+                    }
+                    else
+                    {
+                        sVector gL2 = gradLagr(gF2, Jh2, Jg2, lamEqNew, lamIneqNew);
+                        for (std::size_t r = 0; r < boundRow.size(); ++r)
+                        {
+                            const std::size_t row = mUser + r;
+                            if (row < QP.lambdaIneq.size() && boundAtX[r])
+                                gL2[boundRow[r].first] += QP.lambdaIneq[row] * boundRow[r].second;
+                        }
+                        for (std::size_t j = 0; j < n && certified; ++j)
+                        {
+                            if (absorbed[j]) continue;
+                            scalar v = sig2[j][0] * sig2[j][0];
+                            for (std::size_t i = 0; i < nEq; ++i)
+                                if (lamEqNew[i] != 0.0) v += lamEqNew[i] * lamEqNew[i] * sig2[j][1 + i] * sig2[j][1 + i];
+                            for (std::size_t k = 0; k < nIneq; ++k)
+                                if (lamIneqNew[k] != 0.0) v += lamIneqNew[k] * lamIneqNew[k] * sig2[j][1 + nEq + k] * sig2[j][1 + nEq + k];
+                            const scalar allowed = 3.0 * (eLsig[j] + std::sqrt(v));
+                            const scalar diffJ = std::abs(gL2[j] - gL[j]);
+                            if (!(diffJ <= allowed) || !(std::abs(gL2[j]) <= tolJ[j]))
+                            {
+                                certified = false;
+                                whyNot = head + "the gradient is NOT CONFIRMED by a second step (component x["
+                                         + std::to_string(j) + "]: " + std::to_string(gL[j]) + " at the first step,"
+                                         + " " + std::to_string(gL2[j]) + " at 3.7 times it; they may differ by "
+                                         + std::to_string(allowed) + ")";
+                            }
+                        }
+                    }
+                }
+                if (kktOK && !certified) R.stationaryUncertified = true;
             }
             R.converged = certified;
             R.certified = certified;
@@ -1432,6 +1612,7 @@ SQPResult sqp(const SQPEvaluator& eval,
     R.sigmaLamEq = sigEqLast; R.sigmaLamIneq = sigIneqLast;
     R.ineqActive = lastIneqActive;
     R.statBar = lastStatBar; R.statTolUsed = lastStatTol;
+    R.statRes = lastStatRes; R.statResTol = lastStatResTol; R.complTolUsed = lastComplTol;
     R.f = base.f;
     R.lambdaEq = lamEq;
     R.lambdaIneq = lamIneq;

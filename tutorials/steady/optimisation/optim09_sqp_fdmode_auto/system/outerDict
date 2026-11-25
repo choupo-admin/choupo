@@ -33,6 +33,10 @@
   what make `CONVERGED` here mean something.  Run the same case with
   `fdMode central;` (optim05) and compare the printed bars.
 
+  NOTE: optim05 also varies variables.T_feed, which NOTHING in the flowsheet reads (the
+  feed's 352.5 K is in 0/feed): a variable of zero gradient.  optim09 does not carry it:
+  one variable, V_R.  See README.md.
+
   At the optimum the SQP prints the active set and the Lagrange multipliers
   (the shadow prices) plus the 5-line KKT certificate.  See the flowsheetDict
   header for how to READ those shadow prices.
@@ -47,11 +51,6 @@ variables
         path     variables.V_R;
         min      1.0;
         max      30.0;
-    }
-    {
-        path     variables.T_feed;
-        min      348.0 K;
-        max      352.5 K;        // kept below the ~353 K cliff where the flash boils the bottoms dry
     }
 );
 

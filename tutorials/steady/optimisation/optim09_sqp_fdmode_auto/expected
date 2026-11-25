@@ -20,7 +20,7 @@ kpi     heater                 Q_per_mol        1440             1e-4
 kpi     heater                 T_in             352.5            1e-4
 kpi     heater                 T_out            361.381416541    1e-4
 kpi     heater                 dT               8.88141654065    1e-4
-kpi     heater                 vf_out           0.00986699149374 1e-4
+kpi     heater                 vf_out           0.00986699149375 1e-4
 kpi     reactor                Da_kTau          5.84361895989    1e-4
 kpi     reactor                F_in_kmol_h      500              1e-4
 kpi     reactor                F_out_kmol_h     500              1e-4
@@ -73,7 +73,7 @@ equipment reactor                values.L_over_D  2.5              1e-4
 equipment reactor                values.V_R       12               1e-4
 equipment reactor                values.pressureDesign 3                1e-4
 equipment reactor                values.t_wall    0.00498989181425 1e-4
-equipment reactor                values.weight    1048.02562635    1e-4
+equipment reactor                values.weight    1048.02562636    1e-4
 equipment reactor                cost.purchased   24283.1742356    1e-4
 equipment reactor                cost.bareModule  189433.042212    1e-4
 equipment reactor                cost.totalModule 223530.98981     1e-4
@@ -98,7 +98,7 @@ kpi     economics              taxCreditOnLoss  283878612.683    1e-4
 kpi     economics              taxCreditOnLoss_NPV 174433841.075    1e-4
 source  reactor                liquidDensity    idealMixing[anchoredRackett] exact
 kpi     books                  balanceError     1.11688400678e-16 1e-4
-kpi     books                  cashTieError     1.39610500847e-17 1e-4
+kpi     books                  cashTieError     0                1e-4
 kpi     books                  closingCash      -1067338137.42   1e-4
 kpi     books                  netProfitTotal   -1067924304.85   1e-4
 kpi     books                  shareCapitalPaidIn 586167.434987    1e-4

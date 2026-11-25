@@ -1,8 +1,7 @@
 # optim09 — the problem of optim05 with `fdMode auto` (noise-aware SQP)
 
-This case is `optim05_reactor_npv` with one word changed in `system/outerDict`:
-`fdMode auto;` instead of `fdStep 2e-2; fdMode central;`.  Same flowsheet, same
-economics, same two variables and two constraints; what changes is how the
+This case is `optim05_reactor_npv` with `fdMode auto;` instead of `fdStep 2e-2; fdMode central;` and without the inert
+variable `T_feed` (below).  Same flowsheet, same economics, one variable and two constraints; what changes is how the
 SQP differences its responses and what it is allowed to call a result.
 
 * The step of each variable comes from the NOISE the engine measures in the
@@ -23,6 +22,16 @@ SQP differences its responses and what it is allowed to call a result.
   simulator runs than the default on a response that is smooth to rounding
   (52 against 16 from the tutorial start): measured in
   `docs/audits/2026-11-24-optimizer-bench-results.md`, section 8.
+
+**Finding (2026-11-25, C496 review 2): `T_feed` is INERT in optim05, so optim09 does not carry it.**
+In optim05 `variables.T_feed` is declared and the optimiser varies it, but nothing reads it: the
+feed stream's temperature is the 352.5 K of `0/feed` (the reactor and the replayed JSON show
+352.5 K while the history prints `T_feed = 350`).  Its gradient is zero, and under `fdMode auto`
+the noise bar of that component (the NPV, 6.6e8, carries 2e-4 of noise) is far above any
+tolerance a zero-gradient component can have, so the run could never be certified for a
+variable that does nothing.  optim09 therefore has ONE variable, `V_R`, against the size cap and
+the (slack) capital cap; everything else is optim05's.  The prose below, which credits `T_feed`
+with raising the conversion, describes optim05's intention, not its wiring.
 
 Original description of the problem (optim05):
 

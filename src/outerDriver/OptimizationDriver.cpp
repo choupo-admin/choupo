@@ -1269,12 +1269,17 @@ int OptimizationDriver::runSqp()
     //  C496: a multiplier with the error bar the gradient noise gives it
     //  (fdMode auto only); "not resolved" when the bar exceeds the value.
     auto lambdaBar = [](scalar lam, const sVector& sig, std::size_t i,
-                        bool active = true) -> std::string
+                        bool active = true, bool certified = true) -> std::string
     {
         if (i >= sig.size()) return "";
         std::ostringstream os;
         if (!active)
             return " (inactive: exactly 0, no error bar)";
+        //  C496 review 2, M3: a bar on a run that is not certified is not printed -- it
+        //  omits the displacement of x*, which is the dominant error of an iterate that
+        //  stopped before it reached the (noisy) optimum.
+        if (!certified)
+            return " (bar unavailable: run not certified)";
         if (!std::isfinite(sig[i]))
             return " (error bar unavailable)";
         os << std::scientific << std::setprecision(1);
@@ -1364,18 +1369,18 @@ int OptimizationDriver::runSqp()
         std::cout << "    " << constraints_[eqIdx[e]].path
                   << "  (equality)    lambda = "
                   << std::scientific << std::setprecision(4) << R.lambdaEq[e]
-                  << lambdaBar(R.lambdaEq[e], R.sigmaLamEq, e) << "\n";
+                  << lambdaBar(R.lambdaEq[e], R.sigmaLamEq, e, true, R.converged) << "\n";
     for (std::size_t q = 0; q < nIneq; ++q)
         std::cout << "    " << constraints_[ineqIdx[q]].path
                   << "  (inequality)  lambda = "
                   << std::scientific << std::setprecision(4) << R.lambdaIneq[q]
                   << lambdaBar(R.lambdaIneq[q], R.sigmaLamIneq, q,
-                               q >= R.ineqActive.size() || R.ineqActive[q])
+                               q >= R.ineqActive.size() || R.ineqActive[q], R.converged)
                   << (R.lambdaIneq[q] > 1.0e-8 ? "   <- ACTIVE" : "") << "\n";
     if (fdAuto_)
-        std::cout << "  (error bars: 2 sd of the gradient noise, first order, mapped through"
-                     " the QP's own B-weighted multiplier map; they OMIT the displacement of"
-                     " the optimum, correlations between responses, the bias of truncation"
+        std::cout << "  (error bars, printed on a certified run only: 2 sd of the gradient noise, first order, mapped through"
+                     " the QP's own B-weighted multiplier map; they OMIT the DISPLACEMENT OF x*"
+                     " (the optimum itself moves with the noise), correlations between responses, the bias of truncation"
                      " (added as if random) and the uncertainty of the active set; a rule of"
                      " our own, not a published one)\n";
 
@@ -1391,14 +1396,20 @@ int OptimizationDriver::runSqp()
     {
         std::cout << "  --- KKT certificate (N&W 18.1) ---\n"
                   << "    stationarity   ||grad L||inf = "
-                  << std::scientific << std::setprecision(3) << R.kktStat
-                  << "   (tol " << o.tolStat << ")\n"
-                  << "    primal feas eq   max|h|       = " << R.kktFeasEq
+                  << std::scientific << std::setprecision(3) << R.kktStat;
+        //  C496 review 2, M1: under fdMode auto the tolerance printed is the one USED
+        if (fdAuto_)
+            std::cout << "   (per-component tolerance tolStat*S_j; the binding component: residual "
+                      << R.statRes << " against its tolerance " << R.statResTol << ")\n";
+        else
+            std::cout << "   (tol " << o.tolStat << ")\n";
+        std::cout << "    primal feas eq   max|h|       = " << R.kktFeasEq
                   << "   (tol " << o.tolFeasEq << ")\n"
                   << "    primal feas ineq max g+       = " << R.kktFeasIneq
                   << "   (tol " << o.tolFeasIneq << ")\n"
                   << "    complementarity  max|lam g|   = " << R.kktCompl
-                  << "   (tol " << o.tolCompl << ")\n"
+                  << "   (tol " << (fdAuto_ ? R.complTolUsed : o.tolCompl)
+                  << (fdAuto_ ? ", scaled by the largest resolved multiplier" : "") << ")\n"
                   << "    dual feas        max(0,-lam)  = " << R.kktDualFeas
                   << "   (>= 0 required)\n";
     }
@@ -1420,10 +1431,10 @@ int OptimizationDriver::runSqp()
     }
     if (fdAuto_)
     {
-        std::cout << "    gradient error bar (3 sd) on ||grad L||inf = ";
+        std::cout << "    gradient error bar (3 sd), the component of grad L where it binds = ";
         if (std::isfinite(R.statBar))
             std::cout << std::scientific << std::setprecision(3) << R.statBar
-                      << "   against the tolerance used " << R.statTolUsed;
+                      << "   against that component's tolerance " << R.statTolUsed;
         else
             std::cout << "UNAVAILABLE (a verdict of CONVERGED is never given without it)";
         std::cout << "\n";

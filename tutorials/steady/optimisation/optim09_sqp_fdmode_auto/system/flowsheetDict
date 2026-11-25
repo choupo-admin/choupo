@@ -106,7 +106,6 @@
 variables
 {
     V_R        4.0;          // manipulated: reactor volume   [m^3], inside [0.3, 520]
-    T_feed     350.0 K;      // manipulated: feed / reactor temperature  [K]
 }
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
