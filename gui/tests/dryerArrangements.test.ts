@@ -217,8 +217,8 @@ describe("(d) the lesson's engine citations are held to the line", () => {
     "ConvectiveDryer.H:55": "Y = Y_in + S (X_in - X)/G; counter-current Y = Y_out - S (X_in - X)/G)",
     "ConvectiveDryer.H:85": "dX/dxi = - Wdot(X)/S,   Y_2 - Y_1 = Wdot(X)/G",
     "ConvectiveDryer.H:86": "drivingForce logMean:  G ln[(Y*-Y_1)/(Y*-Y_2)] = k_Y A f(Phi)",
-    "ConvectiveDryer.cpp:463": "return logMean ? G * (Ystar - Y_in) * (1.0 - std::exp(-ntu))",
-    "ConvectiveDryer.cpp:561": "scalar lo = Xeq_in, hi = X_in;",
+    "ConvectiveDryer.cpp:477": "return logMean ? G * (Ystar - Y_in) * (1.0 - std::exp(-ntu))",
+    "ConvectiveDryer.cpp:575": "scalar lo = Xeq_in, hi = X_in;",
   };
   const FILES: Record<string, string> = {
     "ConvectiveDryer.H": "src/unitOperations/heatTransfer/ConvectiveDryer.H",

@@ -9793,11 +9793,11 @@ if [ "$#" -eq 0 ]; then
     # a cooling tower that saw only its majority gas.  Synthetic cases with two
     # solids or two gases: order swapped, a solid split into two identical
     # halves, each specification recomputed on the published outlet.
-    if gate_exec "$ROOT/bin/curate/proofs_multicomponent.py" > /tmp/multic.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "multicomponent-proofs-gate" "$(gate_claim proofs_multicomponent /tmp/multic.$$)"
+    if gate_exec "$ROOT/bin/curate/check_multicomponent.py" > /tmp/multic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "multicomponent-proofs-gate" "$(gate_claim check_multicomponent /tmp/multic.$$)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/proofs_multicomponent.py)\n" "multicomponent-proofs-gate"
+        printf "FAIL  %-40s  (run bin/curate/check_multicomponent.py)\n" "multicomponent-proofs-gate"
         cat /tmp/multic.$$
         fail=$((fail+1))
     fi

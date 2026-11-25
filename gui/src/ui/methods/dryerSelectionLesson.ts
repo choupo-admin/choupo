@@ -202,11 +202,11 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "and grows drier, and has more room, toward the dry end of a counter-current one, "
       + "where the solid is driest and its equilibrium moisture lowest.  Counter-current flow does not know the exhaust, so the engine guesses the "
       + "outlet moisture and bisects on it until the gas arriving at the far end is the gas "
-      + "fed (ConvectiveDryer.cpp:561); co-current flow starts from known inlets.  In "
+      + "fed (ConvectiveDryer.cpp:575); co-current flow starts from known inlets.  In "
       + "cross-flow the rate of every element depends on the solid's moisture alone, because "
       + "its gas is fresh (ConvectiveDryer.H:85), and the engine takes the gas through the "
       + "element as plug flow, which gives the log-mean form (ConvectiveDryer.H:86; "
-      + "ConvectiveDryer.cpp:463).  The Theory Guide, section on continuous convective "
+      + "ConvectiveDryer.cpp:477).  The Theory Guide, section on continuous convective "
       + "dryers, carries these equations with their book equation numbers "
       + "(Mujumdar 2006, Eq. 3.12 to 3.15, p. 57; Eq. 3.66 to 3.78, pp. 65 and 66).",
     formula: String.raw`\begin{aligned}

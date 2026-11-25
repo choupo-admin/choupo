@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""proofs_multicomponent -- SYNTHETIC multi-solid / multi-gas variants of the dryers and the tower.
+"""check_multicomponent -- SYNTHETIC multi-solid / multi-gas variants of the dryers and the tower.
 
 Real defect (external review 4, 2026-11-25): the shipped corpus carries ONE solid per dryer and ONE
 dry gas per tower, so a unit that read "the first solid" or "the majority gas" passed every sweep.
@@ -18,7 +18,7 @@ edited) from its tutorial, with synthetic components whose properties are declar
                    one outlet temperature, mass closure, dry-solid moisture from the streams.
   R  refusal       an infeasible specification is REFUSED by name (exit != 0, message names it).
 
-  bin/curate/proofs_multicomponent.py [arm ...]       arms: evap tower convective   (default: all)
+  bin/curate/check_multicomponent.py [arm ...]       arms: evap tower convective   (default: all)
 Binary: $PROOFS_BIN (default build/linux64Gcc/choupoSolve).  Scratch: ~/.cache/choupo/rev4/mc.
 Exit 1 when an arm fails.  --expect-fail ARM... prints the verdict without failing (used to show
 an arm failing on the old code).
