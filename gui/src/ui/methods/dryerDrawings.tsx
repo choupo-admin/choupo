@@ -515,12 +515,13 @@ function AgitatedVacuum(): JSX.Element {
       <rect x={48} y={4} width={14} height={9} {...body} />
       <line x1={55} y1={13} x2={55} y2={100} stroke={INK} strokeWidth={2} />
       <path d="M55,96 L36,72 M55,86 L76,60" fill="none" stroke={INK} strokeWidth={2} />
-      <Label x={55} y={140} anchor="middle">jacket</Label>
-      <Label x={55} y={150} anchor="middle">(steam or hot water)</Label>
+      <Label x={4} y={118}>jacket</Label>
+      <Label x={4} y={128}>(steam or</Label>
+      <Label x={4} y={138}>hot water)</Label>
       <Arrow x1={4} y1={36} x2={26} y2={40} color={FEED_COLOR} />
       <Label x={4} y={28}>charge</Label>
       <Arrow x1={55} y1={116} x2={55} y2={130} color={PRODUCT_COLOR} />
-      <Label x={62} y={128}>discharge</Label>
+      <Label x={62} y={132}>discharge</Label>
       {/* the vapour line: dust filter, a cold condenser, the vacuum pump */}
       <Duct d="M78,30 L78,20 L108,20 L108,40" color={VAPOUR_COLOR} />
       <rect x={88} y={15} width={10} height={10} {...body} />
@@ -528,9 +529,9 @@ function AgitatedVacuum(): JSX.Element {
       <rect x={96} y={40} width={34} height={46} rx={3} {...body} />
       <path d="M102,48 L124,54 L102,60 L124,66 L102,72 L124,78" fill="none" stroke={COLD_COLOR}
         strokeWidth={1.6} />
-      <Label x={113} y={98} anchor="middle">condenser</Label>
+      <Label x={136} y={46}>condenser</Label>
       <Arrow x1={113} y1={86} x2={113} y2={104} color={COLD_COLOR} />
-      <Label x={113} y={114} anchor="middle">solvent</Label>
+      <Label x={113} y={116} anchor="middle">solvent</Label>
       <line x1={130} y1={62} x2={158} y2={62} stroke={VAPOUR_COLOR} strokeWidth={2.4} />
       <circle cx={168} cy={62} r={9} {...body} />
       <Label x={168} y={84} anchor="middle">vacuum</Label>
