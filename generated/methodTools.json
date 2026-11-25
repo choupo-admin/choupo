@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 111,
-  "registryTools": 111,
+  "liveTools": 112,
+  "registryTools": 112,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1380,6 +1380,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=optimizers"
+    },
+    {
+      "id": "interior-point",
+      "label": "How does an interior-point method find the minimum?",
+      "blurb": "See an interior-point optimizer work: cushion, filter, bowl check.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "What the engine's interior-point optimizer does at each iteration, told in pictures: a cushion (the barrier) along every wall that pushes the iterates back and slowly deflates as the run closes on a wall; a list of points the method must not be worse than (the filter) and the phase that first gets back inside the rules (restoration); a check that the ground is a bowl and not a saddle, with the stiffness added until it is (the inertia correction); the Gibbs reactor's multipliers as the element potentials; why a mixture needs no cushion on its gas species (review R1, with the table of the finishing corrections); and a published test optimum that is not the minimum.  Every number is a recorded run.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=interior-point"
     },
     {
       "id": "least-squares",

@@ -62,7 +62,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
-  | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry"
+  | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry" | "interior-point"
   | "sentence-to-decision" | "optimizers" | "why-did-it-not-dry"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
@@ -2205,6 +2205,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "for the case where one simulation is the expensive thing, with the "
       + "engine's measured comparison against sqp stated in one sentence.",
     theory: "ch:sqp",
+  },
+  {
+    //  HOW AN INTERIOR-POINT METHOD FINDS THE MINIMUM (2026-11-25): the iterations of
+    //  Choupo-IP (src/solver/ip/) as pictures for a student with weak algebra: a
+    //  cushion along the walls that deflates, a list of points never to go back to,
+    //  a check that the ground is a bowl, and the Gibbs reactor's price tags.  A
+    //  NOTES page; every number is a RECORDED engine run (the page runs nothing).
+    id: "interior-point", blurb: "See an interior-point optimizer work: cushion, filter, bowl check.",
+    label: "How does an interior-point method find the minimum?",
+    discipline: "Flowsheeting & numerics",
+    kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
+    teaches: "What the engine's interior-point optimizer does at each iteration, "
+      + "told in pictures: a cushion (the barrier) along every wall that pushes the "
+      + "iterates back and slowly deflates as the run closes on a wall; a list of "
+      + "points the method must not be worse than (the filter) and the phase that "
+      + "first gets back inside the rules (restoration); a check that the ground is "
+      + "a bowl and not a saddle, with the stiffness added until it is (the inertia "
+      + "correction); the Gibbs reactor's multipliers as the element potentials; why "
+      + "a mixture needs no cushion on its gas species (review R1, with the table of "
+      + "the finishing corrections); and a published test optimum that is not the "
+      + "minimum.  Every number is a recorded run.",
+    theory: "sec:ip-barrier",
   },
   {
     id: "least-squares", blurb: "See what a fitted parameter is worth, and when it is not.",

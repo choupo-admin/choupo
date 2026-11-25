@@ -136,6 +136,8 @@ import { GAS_QUIZ, GAS_STEPS } from "../src/ui/methods/gasLineLesson.js";
 import { GasLineTool } from "../src/ui/methods/GasLineTool.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
+import { IPM_QUIZ, IPM_STEPS } from "../src/ui/methods/interiorPointLesson.js";
+import { InteriorPointTool } from "../src/ui/methods/InteriorPointTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
 import { MethaneAssemblyTool } from "../src/ui/methods/MethaneAssemblyTool.js";
@@ -352,6 +354,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: SC_QUIZ, quizName: "SC_QUIZ",
     lesson: SC_STEPS, lessonName: "SC_STEPS",
     file: "src/ui/methods/StiffChemistryTool.tsx", tool: StiffChemistryTool,
+  },
+  "interior-point": {
+    quiz: IPM_QUIZ, quizName: "IPM_QUIZ",
+    lesson: IPM_STEPS, lessonName: "IPM_STEPS",
+    file: "src/ui/methods/InteriorPointTool.tsx", tool: InteriorPointTool,
   },
   "methane-assembly": {
     quiz: METHANE_QUIZ, quizName: "METHANE_QUIZ",

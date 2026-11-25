@@ -353,10 +353,12 @@ describe("the three tools are registered and shelved", () => {
     //  tests are its own (stiffChemistryLesson.test.ts).
     //  `optimizers` (C494, 2026-11-24) joined the shelf; its lesson and tests
     //  are its own (optimizers.test.ts).
+    //  `interior-point` (2026-11-25) joined the shelf; its lesson and tests
+    //  are its own (interiorPointLesson.test.ts).
     expect(shelf).toEqual(
       [...ids.filter((i) => i !== "least-squares"), "element-potential",
         "linear-algebra-without-pain",
-        "relaxation", "stiff-chemistry", "optimizers"].sort());
+        "relaxation", "stiff-chemistry", "optimizers", "interior-point"].sort());
   });
 
   it("each names a REAL label in the Theory Guide", () => {
