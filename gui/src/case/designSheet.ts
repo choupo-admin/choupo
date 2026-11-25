@@ -124,7 +124,26 @@ export interface ExchangerSheet {
  *  detailed design -- machine, how it was chosen, what set the stage count,
  *  which defaulted input came from which page.  Every number is in `sizing {}`
  *  under `stageN_*` / `intercoolerN_*`. */
+/** One region of the machine chart the engine selected from (Brown 2005,
+ *  Fig 1-2, p.3), as the sheet's `compressor { chart ( ... ) }` publishes it
+ *  (C510): the ONE home of the corners is the C++ table, never this file. */
+export interface ChartRegionSheet {
+  machine: string;
+  cell: string;
+  QminCfm: number;
+  QmaxCfm: number;
+  rMin: number;
+  rMaxAtQmin: number;
+  rMaxAtQmax: number;
+}
+
 export interface CompressorSheet {
+  /** The chart the selection read, in the engine's tie-break order; empty on
+   *  a sheet written before C510. */
+  chart: ChartRegionSheet[];
+  /** The duty's actual inlet flow [cfm] and its overall ratio, as the chart was asked. */
+  inletFlowCfm: number;
+  overallRatio: number;
   machine: string;
   machineBy: string;
   selection: string;
@@ -273,6 +292,11 @@ function readExchangerSide(raw: unknown): ExchangerSideSheet {
   };
 }
 
+const n2 = (v: unknown): number => {
+  const s = splitValue(v);
+  return s ? s.value : 0;
+};
+
 function readCompressor(raw: unknown): CompressorSheet | null {
   if (!isDict(raw)) return null;
   const n = (k: string): number => {
@@ -280,7 +304,17 @@ function readCompressor(raw: unknown): CompressorSheet | null {
     return s ? s.value : 0;
   };
   const src = raw["sources"];
+  const ch = raw["chart"];
   return {
+    chart: Array.isArray(ch)
+      ? ch.filter(isDict).map((d) => ({
+        machine: word(d, "machine"), cell: word(d, "cell"),
+        QminCfm: n2(d["Qmin_cfm"]), QmaxCfm: n2(d["Qmax_cfm"]), rMin: n2(d["rMin"]),
+        rMaxAtQmin: n2(d["rMaxAtQmin"]), rMaxAtQmax: n2(d["rMaxAtQmax"]),
+      }))
+      : [],
+    inletFlowCfm: n("inletFlow_cfm"),
+    overallRatio: n("overallRatio"),
     machine: word(raw, "machine"),
     machineBy: word(raw, "machineBy"),
     selection: word(raw, "selection"),
