@@ -255,6 +255,7 @@ PRE  | ISO    | bin/curate/check_marcilla_lls.py                   | ISO (privat
 PRE  | PAR    | bin/curate/check_convergence_residual.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_case_tiers.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_readme_numbers.py                 | reads README.md and expected only; writes nothing
+PRE  | PAR    | bin/curate/check_header_numbers.py                 | reads system/controlDict, system/flowsheetDict, dicts and expected only; writes nothing
 PRE  | PAR    | bin/curate/check_way_in.py                             | merged (DEV.md 4c C419) from start_here, first_path_agrees; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | ISO      | bin/curate/check_gibbs_duhem.py                    | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes build/linux64Gcc/gdProbe
 PRE  | ISO    | bin/curate/check_gibbs_solid_phase.py              | ISO (private slot tree; measured: writes tutorials/steady/gibbs/gibbs02_steam_reforming/converged (+23 more))
