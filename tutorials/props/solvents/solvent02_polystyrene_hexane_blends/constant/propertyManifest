@@ -22,7 +22,7 @@ propertyManifest
     {
         "components/acetone.dat"  "4dd7feddf8f4d9b0885fa6c01254944343d7ab96f0e0e3d6deaea74f708e7414";
         "components/nHexane.dat"  "02c70e7841ee558e774dc77802f5513f8618e442caffe5ae2d316e53da18281b";
-        "components/nitromethane.dat"  "8b42efdedd1c3dfeba6b87da0c03a46d7d45044e6e83ffa54e3afc643f67a836";
+        "components/nitromethane.dat"  "78fb756091d05ecbfc30a2e2fea5658740cd84c546806f3d69e59b53047e877c";
         "components/polystyrene.dat"  "49f1bbe9e778db69831acec0a53010e28f438de74a194cd1d8c6d744bfcbac67";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
