@@ -1085,7 +1085,7 @@ LESSON_PROSE_CITATIONS_UNMANAGED = {
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 1,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 3,
     "gui/src/ui/methods/BatchMembraneTool.tsx": 4,
-    "gui/src/ui/methods/ClausGibbsTool.tsx": 5,
+    "gui/src/ui/methods/ClausGibbsTool.tsx": 3,
     "gui/src/ui/methods/ColumnControlTool.tsx": 2,
     "gui/src/ui/methods/CosmoSacTheoryTool.tsx": 17,
     "gui/src/ui/methods/EquilibriumLandscapesTool.tsx": 4,

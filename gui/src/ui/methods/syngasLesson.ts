@@ -145,8 +145,8 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
         unit: "kmol/h" },
     ],
     note: "The elements and the allowed species are read from the unit's "
-      + "operation block, GibbsReactor.cpp:226-229; the pressure from the same "
-      + "block, GibbsReactor.cpp:181; the duty, GibbsReactor.cpp:755.",
+      + "operation block, GibbsReactor.cpp:238-241; the pressure from the same "
+      + "block, GibbsReactor.cpp:182; the duty, GibbsReactor.cpp:769.",
     leadsTo: {
       tool: "approach-to-equilibrium",
       toolLabel: "Approach to equilibrium (Gibbs reactor)",
@@ -179,7 +179,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
         + "the engine solves for", unit: "K" },
     ],
     note: "The adiabatic mode and its residual: GibbsReactor.cpp:182-185 (the "
-      + "mode word) and GibbsReactor.cpp:514 (enthalpy out minus enthalpy in, "
+      + "mode word) and GibbsReactor.cpp:528 (enthalpy out minus enthalpy in, "
       + "driven to zero by a Newton on T).  An adiabatic reactor publishes no "
       + "duty, so the Q column reads a dash.",
   },
@@ -308,7 +308,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     ],
     note: "The activity as the engine reads it off the solid-free answer: "
       + "GibbsSolidPhase.cpp:102-107; the solid appears when its logarithm is "
-      + "positive, GibbsSolidPhase.cpp:231.  The form with partial pressures "
+      + "positive, GibbsSolidPhase.cpp:245.  The form with partial pressures "
       + "is the same test written for the cracking reaction alone, as the "
       + "witness case gibbs11_carbon_deposition states in its header.  "
       + "Equilibrium carbon is graphite; the filamentary carbon that grows on "

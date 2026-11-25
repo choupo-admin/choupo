@@ -64,7 +64,7 @@ License
   composition depends on the evaluation temperature ONLY through `g_over_RT`
   and, under a real equation of state, through ln(phi_i) -- the residual in
   gibbsGasSolve is built from `g_eff`, `ln_P` and the atom matrix alone
-  (GibbsMethod.cpp:64-94).  Both witnesses run at 1 bar with
+  (GibbsMethod.cpp:66-96).  Both witnesses run at 1 bar with
   `fugacityModel idealGas`, so phi = 1, `g_eff == g_over_RT`, and shifting the
   whole solve temperature and shifting only the chemistry are the same
   arithmetic.  VERIFIED against the native binary before this file was
@@ -82,7 +82,7 @@ License
   prose and is NOT a witness here.  The divergence IS the third caveat.
 
   THE FEED TEMPERATURE MOVES WITH THE REACTOR, and that is what makes `Q_kW`
-  readable.  GibbsReactor.cpp:755 publishes `Q_kW = H_out - H_in` with H_in at
+  readable.  GibbsReactor.cpp:769 publishes `Q_kW = H_out - H_in` with H_in at
   the FEED temperature, so with a feed left behind it carries sensible heat and
   its sign stops being the thermicity (measured: the shift reactor at 1200 K
   with an 800 K feed reports +2.04 kW and is exothermic).  With both at the
@@ -206,7 +206,7 @@ export function verdictOf(
 }
 
 /** The thermicity WORD the engine's own duty carries, or null when the run
- *  published none.  Sign convention is GibbsReactor.cpp:755 — `Q_kW` is heat
+ *  published none.  Sign convention is GibbsReactor.cpp:769 — `Q_kW` is heat
  *  ADDED to the process to hold T, so a negative duty is heat removed. */
 export function thermicityOf(Q_kW: number | null):
   "exothermic" | "endothermic" | "thermally neutral" | null {
