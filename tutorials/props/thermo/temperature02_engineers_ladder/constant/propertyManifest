@@ -30,11 +30,11 @@ propertyManifest
         "components/benzene.dat"  "4867cea9c30ce24e49103b01b75373a551f9161410b53b7a0bedd4947cfcd124";
         "components/biphenyl.dat"  "41ddea0ddb998c9c638637ffeed928d487d585efae7a8f9bae3bba408aee017c";
         "components/ethylene.dat"  "aa9b77f1a729c01e3770e6416ef5650338b0e1e84090cb908239a2f78ed0b20c";
-        "components/ethyleneGlycol.dat"  "187133106d22b7c7c7cd3b31fb9d061ebdc629d0688c0986f7277ea975f20894";
-        "components/glycerol.dat"  "3e3cec148cabc43d771e5194baf86463882848e5d1d3697cedc1adc05d61eeab";
+        "components/ethyleneGlycol.dat"  "fc19b46bcddd55cbdc8d6f94142c696baf449247c95c8436514f3d4ce8f63f42";
+        "components/glycerol.dat"  "f06b22c3ab7adc7424d86d1ca7cd506b8bf2c83f8d0ec5cdc62e20ee4091705d";
         "components/naphthalene.dat"  "95142787282831a9ffd7ac4a51ba2cb28ebbfa11d38a9a671b90d6637e663fb3";
         "components/neon.dat"  "d21db22653b7d611b517bd621b94db3ed0342570b28987bdb7200b02c48888de";
-        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "components/water.dat"  "7d699205c04602ec3cc38f8a1cddad4a008d9362764e00f524610512db438804";
         "parameters/Henry/"  "relevant:b68928f53e6a06a5e597eb84b2687a1d4138b38802dfbd7d329af1da69b05a4a";
         "parameters/Henry/Ar-water.dat"  "9592cfb34c30ff2b94c3b394bbfd70a38ce25b03d36876f3577e85e17041ff50";
         "parameters/Henry/CH4-water.dat"  "6bc2d4d3828fd1d518cd72bf204a7bd3c4eb1b544bb05dd5aa8ed83202b6ea27";

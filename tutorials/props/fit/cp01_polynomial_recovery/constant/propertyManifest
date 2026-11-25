@@ -20,7 +20,7 @@ propertyManifest
 {
     pins
     {
-        "components/Dichloroethane.dat"  "0a48de29840603f2145df9cf4115b1db6d3c85a3361a045f53b8ce4d8ab4dbb5";
+        "components/Dichloroethane.dat"  "c7122010ecbcb0c802286912112a6963289599606f8f8b7f686e6eae8cbaa8e0";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
