@@ -3461,7 +3461,7 @@ Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
 (T integrated via Σ rᵢΔH/ΣnᵢCp).  Single or list of reactions
 (`reactions (A B );`).
 **Adiabatic energy basis** `operation { mode adiabatic; energy liquidDH | gasConstantV | gasConstantP; }`:
-`liquidDH` (default) = sum r V dH over liquid Cp; `gasConstantV` = closed rigid ideal gas, dU = 0,
+`liquidDH` (default) = sum r V dH(T) over liquid Cp, dH re-read at the vessel's T at every step so H = const on the canonical surface (a restart from a written instant reproduces the uninterrupted run; a declared `dH_rxn` override stays constant); `gasConstantV` = closed rigid ideal gas, dU = 0,
 dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at the holdup's FIXED P,
 dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
 declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
