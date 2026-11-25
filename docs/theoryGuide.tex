@@ -16700,6 +16700,128 @@ printed and the simulator is replayed once at the optimum with full
 verbosity, exactly as the Nelder-Mead path does.
 
 % ---------------------------------------------------------------------
+\section{Interior-point linear algebra: the symmetric indefinite $LDL^{T}$ and the inertia}\label{sec:ldlt-inertia}
+
+The interior-point optimizer of Choupo (design record
+\code{docs/design/interior-point.md}; built in stages, this is the first
+slice) solves at every iteration a linear system whose matrix is
+\emph{symmetric but not positive definite}, and it must know how many of
+that matrix's eigenvalues are positive, negative and zero before it may use
+the answer. This section is the piece of dense linear algebra that does both:
+\code{DenseLDLT} (\code{src/solver/ip/DenseLDLT.\{H,cpp\}}), behind the
+abstract \code{SymmetricIndefinite}.
+
+\paragraph{Why the inertia.} The primal-dual Newton step of a problem with
+$n$ unknowns and $m$ equality rows solves
+\begin{equation}\label{eq:ldlt-kkt}
+\begin{bmatrix} W+\Sigma & A\\ A^{T} & 0\end{bmatrix}
+\begin{bmatrix} \Delta x\\ \Delta\lambda\end{bmatrix}
+= -\begin{bmatrix} r_d\\ r_c\end{bmatrix},
+\end{equation}
+with $W$ the Hessian of the Lagrangian, $\Sigma$ the diagonal barrier
+term, $A$ the constraint Jacobian ($n\times m$), $r_d$, $r_c$ the dual and
+constraint residuals. The step $\Delta x$ is a descent direction for the
+barrier problem when the matrix has \emph{inertia} $(n,m,0)$: $n$ positive,
+$m$ negative and no zero eigenvalue, which holds when $A$ has full column
+rank and $W+\Sigma$ is positive definite on the null space of $A^{T}$
+(W\"achter \& Biegler 2006 \cite{WaechterBiegler2006}, Algorithm IC). Any
+other count means the step may point uphill, and the optimizer adds a
+multiple of the identity to $W$ and factors again. A wrong count therefore
+takes an ascent direction as a descent step, or skips a needed correction,
+without any error message: the inertia is the product of this section, and
+the gate \code{check\_ldlt\_inertia} holds it.
+
+\paragraph{The factorisation.} For a symmetric $K$ the factorisation is
+\begin{equation}\label{eq:ldlt-fact}
+P\,K\,P^{T} = L\,D\,L^{T},
+\end{equation}
+$P$ a permutation, $L$ unit lower triangular, $D$ block diagonal with $1\times1$
+and $2\times2$ blocks. Pivots are chosen by the Bunch--Kaufman partial
+pivoting strategy \cite{BunchKaufman1977} as stated by Higham
+\cite{Higham1997} (Algorithm~1; read: Sec.~1, Algorithm~1 and the remark on
+$\alpha$). With
+\begin{equation}\label{eq:ldlt-alpha}
+\alpha = \frac{1+\sqrt{17}}{8}\approx 0.6404,
+\end{equation}
+$\lambda=\max_{i>k}|a_{ik}|$ attained at row $r$, and
+$\sigma=\max_{i\ne r}|a_{ir}|$ over the remaining rows, step $k$ takes
+\begin{enumerate}
+\item a $1\times1$ pivot $a_{kk}$ if $|a_{kk}|\ge\alpha\lambda$ (this includes
+      $\lambda=0$);
+\item else a $1\times1$ pivot $a_{kk}$ if $|a_{kk}|\,\sigma\ge\alpha\lambda^{2}$;
+\item else a $1\times1$ pivot $a_{rr}$, after interchanging $k\leftrightarrow r$,
+      if $|a_{rr}|\ge\alpha\sigma$;
+\item else the $2\times2$ pivot on rows and columns $k$ and $r$, after the
+      interchange $(k{+}1)\leftrightarrow r$.
+\end{enumerate}
+The elimination is $A_{22}\leftarrow A_{22}-C\,E^{-1}C^{T}$, with $E$ the pivot
+block and $C$ the entries under it; for a $2\times2$ block
+$E=\begin{bmatrix}a&b\\ b&c\end{bmatrix}$ and
+$E^{-1}=\frac{1}{ac-b^{2}}\begin{bmatrix}c&-b\\ -b&a\end{bmatrix}$. The
+$2\times2$ block exists because $\begin{bmatrix}0&1\\1&0\end{bmatrix}$ has
+no $1\times1$ pivot: every symmetric permutation leaves the zero diagonal.
+Cost $n^{3}/3$ operations, no BLAS; the source follows the four steps
+above in order, each commented with its number.
+
+\paragraph{The inertia from $D$.} Equation \eqref{eq:ldlt-fact} is a
+congruence, so by Sylvester's law of inertia $K$ and $D$ have the same number
+of positive, negative and zero eigenvalues. A $1\times1$ block counts by its
+sign. A $2\times2$ block has two eigenvalues, whose product is
+$\det E=ac-b^{2}$: a negative determinant means one positive and one negative
+eigenvalue, a positive one means two of the sign of the trace $a+c$.
+
+\paragraph{The zero threshold, stated.} A pivot whose magnitude is at most
+$\tau=10^{-12}$ of the largest entry of its \emph{original} column is counted
+\emph{zero}. If the entries under it are not negligible too, $K$ is singular
+in a way a $1\times1$ step cannot go round and the factorisation reports a
+\emph{breakdown} (its inertia is then not to be used); if everything that
+remains of the matrix is below $\tau$ times the largest column scale, the
+remaining eigenvalues are counted zero and the matrix is singular, not
+broken. A $2\times2$ block is singular when $|\det E|\le\tau\max|E_{ij}|$
+(the larger eigenvalue is about $\max|E_{ij}|$, so the smaller is about
+$|\det E|/\max|E_{ij}|$). Whoever reports an inertia prints $\tau$
+(\code{zeroThreshold()}); it is Choupo's choice, not a published value.
+
+\paragraph{The solve, its error and its refinement.} Solving $Kx=b$ uses
+$y=Pb$, $Lz=y$, $Dw=z$, $L^{T}u=w$, $x=P^{T}u$ ($2\times2$ blocks of $D$ by
+their explicit inverse). Each solve then measures the \emph{normwise
+backward error}
+\begin{equation}\label{eq:ldlt-eta}
+\eta=\frac{\|b-Kx\|_\infty}{\|K\|_\infty\|x\|_\infty+\|b\|_\infty},
+\end{equation}
+on the matrix as given (never a scaled copy), and applies at most two steps of
+iterative refinement $x\leftarrow x+K^{-1}(b-Kx)$ with the same factors, a
+step being kept only if it lowers $\eta$. The report returns $\eta$ before and
+after. Algorithm IC treats a factorisation whose $\eta$ exceeds
+$10^{-12}$ as wrong and does not use its step: the acceptance rule that
+\code{SparseLU} already applies to its factors (\code{SparseLU.H:76--78};
+\code{Rosenbrock23.cpp:787--795}, there with $\eta=\|1-W_sx\|/(\|W_s\|\|x\|+1)$).
+
+\paragraph{Validity and what was measured.} The $LDL^{T}$ with
+Bunch--Kaufman pivoting is backward stable up to an element growth that
+Higham bounds; in the gate every honest matrix has $\eta\le3\times10^{-16}$
+(diagonal, $[[0,1],[1,0]]$, singular, KKT of HS76 with its two active rows,
+$S\,\mathrm{diag}(\pm1)\,S^{T}$ for $n=10,40,100$, badly scaled over 4 and 6
+decades), and on $4\times10^{5}$ random matrices up to nine decades of
+scaling the worst $\eta$ was $4\times10^{-13}$ and refinement in working
+precision lowered a normwise $\eta$ by a few percent at most. Refinement earns
+its place on an \emph{inexact} factorisation (a dropped tolerance, a stale
+factor, the sparse and block-tridiagonal versions of later slices): in the
+gate's stand-in with a relative error $10^{-7}$ per component of the solution,
+$\eta$ falls from $2.6\times10^{-8}$ to $5\times10^{-17}$ in two steps; at
+$0.3$ it stays near $10^{-2}$ and the limit rejects it. In-sample statement:
+the inertia is verified on matrices of known inertia by construction, not
+against another code's factorisation. Not covered: sparse storage, a
+block-tridiagonal structure, and a matrix whose smallest eigenvalue lies
+within $\tau$ of zero (reported as zero).
+
+\paragraph{What you see in Choupo.} No case selects it yet: the one caller,
+Algorithm IC, is a later slice, so there is no dictionary key, no tutorial and
+no F1 link; the piece is run and held by \code{bin/curate/check\_ldlt\_inertia.py}
+(\code{test/ldlt\_inertia.cpp}), which prints, for each matrix, the expected
+and computed inertia and $\eta$ before and after refinement.
+
+% ---------------------------------------------------------------------
 \section{Derivative-free constrained optimisation: MADS}\label{ch:mads}
 
 The SQP of §\ref{ch:sqp} needs responses that are smooth in $\xv$, and
@@ -37770,6 +37892,26 @@ Matrix Analysis and Applications} \textbf{17}(4), 886--905 (1996),
 doi:10.1137/S0895479894278952.  The quotient-graph ordering that
 \code{SparseLU}'s explicit minimum degree is compared with, and the source of
 its dense-node rule.
+
+\bibitem{Higham1997} Higham, N. J., ``Stability of the diagonal pivoting method
+with partial pivoting'', \emph{SIAM Journal on Matrix Analysis and Applications}
+\textbf{18}(1), 52--65 (1997) (MIMS EPrint 2006.165).  Read: Sec.~1 and
+Algorithm~1 (the Bunch--Kaufman partial pivoting strategy, $\alpha=(1+\sqrt{17})/8$)
+with the remark on $\alpha$; the stability analysis of the later sections was not
+read.  The pivoting rule of \code{DenseLDLT}.
+
+\bibitem{BunchKaufman1977} Bunch, J. R., \& Kaufman, L., ``Some stable methods for
+calculating inertia and solving symmetric linear systems'', \emph{Mathematics of
+Computation} \textbf{31}(137), 163--179 (1977).  NOT read: cited as the origin of
+the partial pivoting strategy by Higham~\cite{Higham1997}, whose statement of it
+Choupo implements.
+
+\bibitem{WaechterBiegler2006} W\"achter, A., \& Biegler, L. T., ``On the
+implementation of an interior-point filter line-search algorithm for large-scale
+nonlinear programming'', \emph{Mathematical Programming} \textbf{106}(1), 25--57
+(2006).  Read as the 2004 preprint (optimization-online 2004/03/836), Secs.~1--3
+and 4.1: the KKT system and Algorithm IC, whose inertia requirement this section
+serves.
 
 \bibitem{Flory1953} Flory, P. J., \emph{Principles of Polymer
 Chemistry}, Cornell University Press, 1953, Ch.~VIII--IX.  The
