@@ -103,6 +103,17 @@ surfaceTension
     Tmax  328.15;
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row S03 "Dimethyl sulfoxide":
+//  delta_d = 9.00, delta_p = 8.0, delta_h = 5.0 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    18409.3;        // Pa^0.5   = 9.00 (cal/cm3)^0.5, Table I row S03
+    dP    16363.9;        // Pa^0.5   = 8.0
+    dH    10227.4;        // Pa^0.5   = 5.0
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
     uniquac
@@ -117,6 +128,14 @@ provenance
         method        "cut from the molecular structure CS(=O)C (atom count reproduces the record's formula) into 1 Me2SO by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
         citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
         reviewStatus  interim;
+    }
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row S03 (Dimethyl sulfoxide); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row S03; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
     }
     MW
     {

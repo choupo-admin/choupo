@@ -207,6 +207,11 @@ def main() -> int:
         txt = tpp.read_text()
         for nm in REAL_TRIPLE_IN_CATALOGUE:
             txt = re.sub(r"(?m)^(components\s*\(.*?)\b" + nm + r"\b", r"\1", txt)
+        #  C428 (Hansen 1969): every component of the ladder case now carries a measured
+        #  triple, so the loop above empties the system; the state this arm is about
+        #  needs ONE component with no block, and n-pentane is one (no `hansen {}`).
+        if re.search(r"(?m)^components\s*\(\s*\)", txt):
+            txt = re.sub(r"(?m)^components\s*\(\s*\)", "components ( nPentane )", txt)
         tpp.write_text(txt)
         (absent / "constant" / "propertyManifest").unlink(missing_ok=True)
         rc, out = run(absent)
