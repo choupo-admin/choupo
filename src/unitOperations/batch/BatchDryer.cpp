@@ -30,6 +30,7 @@ License
 #include "unitOperations/heatTransfer/Psychrometry.H"
 
 #include <map>
+#include "core/RegistryRefusal.H"
 
 #include "core/Dimensions.H"
 #include "streams/Composition.H"
@@ -297,6 +298,32 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     R_c_       = kY_ * dY;                                    // kg/(m2 s)
     lambda_wb_ = moist.Hvap_latent(T_wb_) / Mv * 1000.0;      // J/kg
 
+    //  THE SOLID'S TEMPERATURE: `held` (default) or `integrated`.
+    const std::string solidTmode = op->lookupWordOrDefault("solidTemperature", "held");
+    if (solidTmode != "held" && solidTmode != "integrated")
+        throw std::runtime_error(who + ": " + registryRefusal::message(
+            "solidTemperature", solidTmode, {"held", "integrated"}, "Accepted"));
+    solidT_ = (solidTmode == "integrated");
+    if (solidT_)
+    {
+        if (!sol.hasCpSolid())
+            throw std::runtime_error(who + ": `solidTemperature integrated;` needs the solid's heat capacity --"
+                " '" + sol.name() + "' has no `solidHeatCapacity {}` block (its record or this case's"
+                " constant/components overlay)");
+        if (!moist.hasCpLiquid())
+            throw std::runtime_error(who + ": `solidTemperature integrated;` needs the liquid moisture's heat"
+                " capacity -- '" + moist.name() + "' has no `liquidHeatCapacity {}` block");
+        const scalar Tm = 0.5 * (T_wb_ + T_air_);
+        cpS_ = sol.cpSolid().Cp(Tm)    / sol.MW() * 1000.0;     // J/(kg K)
+        cpW_ = moist.cpLiquid().Cp(Tm) / Mv       * 1000.0;
+        //  h = k_Y c_H: Chilton-Colburn at Lewis = 1, the relation the wet-bulb
+        //  equation above is written in (c_H the humid heat at the air's T).
+        hConv_ = kY_ * (cpc + Y_air_ * cpv);
+        Tref_  = T_wb_;
+        Ts_ = T_wb_; Econv_ = 0.0; Eout_ = 0.0;
+        state_.T = T_wb_;
+    }
+
     tPrev_    = 0.0;
     XPrev_    = X_0_;
     havePrev_ = true;
@@ -398,10 +425,19 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
                   << " kW -- the AIR supplies it, from outside the campaign"
                      " boundary: published as a KPI, never as a ledgered"
                      " duty\n"
-                  << "  [batchDryer '" << name_ << "'] named gap: the solid's"
-                     " temperature is NOT integrated -- it is carried at its"
-                     " charged value and the falling-rate warm-up toward"
-                     " T_air is outside this model\n";
+                  << (solidT_
+                      ? "  [batchDryer '" + name_ + "'] SOLID TEMPERATURE INTEGRATED (`solidTemperature integrated;`):"
+                        " T_s = T_wb while X > X_c (hypothesis 2), then a lumped energy balance C(X) dT_s/dt = h A"
+                        " (T_air - T_s) - R A lambda(T_s); h = k_Y c_H = " + std::to_string(hConv_) + " W/(m2 K)"
+                        " (Chilton-Colburn at Lewis = 1, the wet bulb's own relation), cp_s = "
+                        + std::to_string(cpS_) + ", cp_w = " + std::to_string(cpW_) + " J/(kg K) at the mean of"
+                        " T_wb and T_air; R is the characteristic drying curve and does NOT read T_s, and the solid has"
+                        " no internal gradient (small Biot) -- announced assumptions; the charge starts AT T_wb (the"
+                        " warm-up from the charged temperature is outside)\n"
+                      : "  [batchDryer '" + name_ + "'] named gap: the solid's"
+                        " temperature is NOT integrated -- it is carried at its"
+                        " charged value and the falling-rate warm-up toward"
+                        " T_air is outside this model (`solidTemperature integrated;` adds it)\n");
         std::cout.unsetf(std::ios::floatfield);
     }
 }
@@ -421,19 +457,61 @@ scalar BatchDryer::flux_(scalar X) const
     return R_c_ * curve_.f((X - X_eq_) / (X_c_ - X_eq_));
 }
 
+scalar BatchDryer::lambdaOf_(scalar T) const
+{
+    const Component& moist = thermo_->comp(iWater_);
+    return moist.Hvap_latent(T) / moist.MW() * 1000.0;            // J/kg
+}
+
+scalar BatchDryer::heatCap_(scalar X) const
+{
+    return m_solid_ * (cpS_ + X * cpW_);                          // J/K
+}
+
+std::string BatchDryer::odeRowLabel(std::size_t i) const
+{
+    const std::size_t N = state_.n.size();
+    if (solidT_ && i == N)     return "T_solid";
+    if (solidT_ && i == N + 1) return "E_conv";
+    if (solidT_ && i == N + 2) return "E_out";
+    return i < N ? "n_" + thermo_->comp(i).name() : "row " + std::to_string(i);
+}
+
+sVector BatchDryer::odeState() const
+{
+    sVector y = state_.n;
+    if (solidT_) { y.push_back(Ts_); y.push_back(Econv_); y.push_back(Eout_); }
+    return y;
+}
+
 sVector BatchDryer::odeDerivative(const sVector& y) const
 {
+    const std::size_t N = state_.n.size();
     sVector dydt(y.size(), 0.0);
     //  R [kg/(m2 s)] * A [m2] / MW [kg/kmol] = kmol/s.  Only the moisture
     //  row moves: the dry solid is inert matter in this vessel.
-    dydt[iWater_] = -flux_(moistureOf_(y)) * area_
-                  / thermo_->comp(iWater_).MW();
+    const scalar X = moistureOf_(y);
+    const scalar R = flux_(X);
+    dydt[iWater_] = -R * area_ / thermo_->comp(iWater_).MW();
+    if (solidT_)
+    {
+        const scalar Ts   = y[N];
+        const scalar qIn  = hConv_ * area_ * (T_air_ - Ts);                 // W
+        const scalar qEv  = R * area_ * lambdaOf_(Ts);                      // W
+        //  While X > X_c the surface is HELD at the wet bulb (hypothesis 2):
+        //  dT_s/dt = 0; the heat in then equals the latent load to the
+        //  bisection's tolerance, and the ledger below books both as they are.
+        dydt[N]     = (X > X_c_) ? 0.0 : (qIn - qEv) / heatCap_(X);
+        dydt[N + 1] = qIn;
+        dydt[N + 2] = R * area_ * (cpW_ * (Ts - Tref_) + lambdaOf_(Ts));
+    }
     return dydt;
 }
 
 void BatchDryer::setOdeState(const sVector& y)
 {
-    if (y.size() != state_.n.size())
+    const std::size_t N = state_.n.size();
+    if (y.size() != N + (solidT_ ? 3u : 0u))
         throw std::runtime_error("batchDryer '" + name_ + "': the integrator"
             " returned a state of the wrong length");
     //  The falling-rate law drives the flux to ZERO at X_eq, so the
@@ -444,12 +522,17 @@ void BatchDryer::setOdeState(const sVector& y)
             " overshoot -- the moisture inventory went negative, which the"
             " falling-rate law forbids (its flux vanishes at X_eq > 0):"
             " reduce deltaT");
-    state_.n = y;
+    state_.n.assign(y.begin(), y.begin() + static_cast<std::ptrdiff_t>(N));
+    if (solidT_)
+    {
+        Ts_ = y[N]; Econv_ = y[N + 1]; Eout_ = y[N + 2];
+        state_.T = Ts_;
+    }
 }
 
 void BatchDryer::step(scalar /*t*/, scalar dt)
 {
-    //  Classical RK4 on the mole vector -- the batch corpus's default
+    //  Classical RK4 on the packed vector -- the batch corpus's default
     //  fixed-step path (the adaptive driver calls odeDerivative/setOdeState
     //  instead and never enters here).
     auto axpy = [](const sVector& a, scalar f, const sVector& b)
@@ -458,7 +541,7 @@ void BatchDryer::step(scalar /*t*/, scalar dt)
         for (std::size_t i = 0; i < a.size(); ++i) r[i] = a[i] + f * b[i];
         return r;
     };
-    sVector y = state_.n;
+    sVector y = odeState();
     const auto k1 = odeDerivative(y);
     const auto k2 = odeDerivative(axpy(y, 0.5 * dt, k1));
     const auto k3 = odeDerivative(axpy(y, 0.5 * dt, k2));
@@ -540,8 +623,12 @@ std::string BatchDryer::energyLedgerGap() const
     return "the drying duty is supplied by the DECLARED air environment,"
            " which is outside the campaign boundary: this vessel cannot"
            " price matter it never received (the latent load is published"
-           " as the latentDuty_kW / latentEnergy_kJ KPIs instead), and the"
-           " solid's own temperature history is not integrated";
+           " as the latentDuty_kW / latentEnergy_kJ KPIs instead)"
+           + std::string(solidT_
+               ? "; the solid's own temperature IS integrated, and its heat balance"
+                 " (air to solid, solid to vapour, sensible storage) closes in the"
+                 " solidEnergy_* KPIs"
+               : ", and the solid's own temperature history is not integrated");
 }
 
 // -----------------------------------------------------------------------
@@ -556,6 +643,7 @@ BatchDryer::trajectoryExtras() const
     ex.emplace_back("R_kg_m2_s", flux_(X));              // the rate curve
     ex.emplace_back("evaporated_kg",
         (X_0_ - X) * m_solid_);
+    if (solidT_) ex.emplace_back("T_solid_K", Ts_);
     return ex;
 }
 
@@ -578,6 +666,20 @@ std::map<std::string, scalar> BatchDryer::kpis() const
     //  crossing.  A run that ends inside the constant-rate period has no
     //  break time, and an absent number is not faked with a sentinel.
     if (t_crit_ >= 0.0) k["t_critical"] = t_crit_;
+    if (solidT_)
+    {
+        //  THE SOLID'S HEAT BALANCE, closed.  E_conv - E_out = DeltaH_solid,
+        //  DeltaH_solid = (m_s cp_s + m_w cp_w)(T_s - T_ref); the residual is
+        //  the integrator's, published rather than assumed zero.
+        const scalar dH = heatCap_(X) * (Ts_ - Tref_);
+        k["T_solid_final"]         = Ts_;
+        k["h_conv"]                = hConv_;
+        k["solidEnergy_conv_kJ"]   = Econv_ / 1000.0;
+        k["solidEnergy_out_kJ"]    = Eout_ / 1000.0;
+        k["solidEnergy_stored_kJ"] = dH / 1000.0;
+        k["solidEnergy_closure_rel"] = (std::fabs(Econv_) > 0.0)
+            ? (Econv_ - Eout_ - dH) / Econv_ : 0.0;
+    }
     return k;
 }
 
