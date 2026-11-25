@@ -17,7 +17,7 @@ reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
 formula     C3H4;
 CAS         74-99-7;
 
-MW          40.0600;        // kg/kmol  [CoolProp]
+MW          40.065;       // kg/kmol, = sum of the engine's atomic weights (C517; was 40.06)
 Tc          402.7011;        // K        [CoolProp EOS]
 Pc          56.57503;        // bar      [CoolProp EOS]
 omega       0.20400;        // [-]      [CoolProp EOS]

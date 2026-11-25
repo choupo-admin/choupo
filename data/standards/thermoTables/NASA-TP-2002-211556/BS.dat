@@ -9,7 +9,7 @@
 name           BS;
 formula        BS;
 CAS            n/a;
-MW             42.876;       // kg/kmol, appendix D record line
+MW             42.87;       // kg/kmol, = sum of the engine's atomic weights (C517; was 42.876)
 role           gasOnly;       // free radical (odd electron count 21)
 tags           ( gasPhase thermoTable );
 nasaEntry      "BS";

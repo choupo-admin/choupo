@@ -1935,6 +1935,11 @@
       "exit": 0,
       "claim": "check_dynamic_views: OK -- 27 time-integrated cases declare views; 40 views, 117 series, every series carries points inside its declared axis windows; a window beyond the run's end is seen; 2 case(s) with an outerDict draw nothing by design (ctrl16_williams_otto_optimal, ctrl20_bode_cstr); NOT CHECKED: that a figure answers its question or that a note's numbers equal the run's",
       "seconds": 35.6
+    },
+    "check_mw_formula": {
+      "exit": 0,
+      "claim": "check_mw_formula: OK -- 1737 records hold MW to their formula's sum within 0.0001 (engine atomic weights); 823 between 1e-05 and 0.0001 (ratchet); 72 out of scope (no formula/MW, non-molecular formula, pseudo-component)",
+      "seconds": 0.1
     }
   }
 }

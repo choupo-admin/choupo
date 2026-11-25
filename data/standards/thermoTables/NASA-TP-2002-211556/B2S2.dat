@@ -9,7 +9,7 @@
 name           B2S2;
 formula        B2S2;
 CAS            n/a;
-MW             85.752;       // kg/kmol, appendix D record line
+MW             85.74;       // kg/kmol, = sum of the engine's atomic weights (C517; was 85.752)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "B2S2";

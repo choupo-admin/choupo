@@ -9,7 +9,7 @@
 name           D2S;
 formula        D2S;
 CAS            n/a;
-MW             36.0932;       // kg/kmol, appendix D record line
+MW             36.088;       // kg/kmol, = sum of the engine's atomic weights (C517; was 36.0932)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "D2S";

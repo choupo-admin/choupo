@@ -9,7 +9,7 @@
 name           S2O;
 formula        S2O;
 CAS            n/a;
-MW             80.1294;       // kg/kmol, appendix D record line
+MW             80.119;       // kg/kmol, = sum of the engine's atomic weights (C517; was 80.1294)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "S2O";

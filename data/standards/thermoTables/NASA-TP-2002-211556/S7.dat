@@ -9,7 +9,7 @@
 name           S7;
 formula        S7;
 CAS            n/a;
-MW             224.455;       // kg/kmol, appendix D record line
+MW             224.42;       // kg/kmol, = sum of the engine's atomic weights (C517; was 224.455)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "S7";

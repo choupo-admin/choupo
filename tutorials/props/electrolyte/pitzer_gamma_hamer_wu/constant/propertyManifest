@@ -33,7 +33,7 @@ propertyManifest
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/H.dat"  "91d27f6438da14beb4022237be81f2622a3b49c053a023dbf02cc355a7dc57cb";
         "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
-        "species/Li.dat"  "2921438c1787f384cccc14a9c18ec7b6f7e62524fced29ce06f08684215cf381";
+        "species/Li.dat"  "7f4452a2060803ff0ddc380b2d9c7924d992a27e28ad122f88e15979f6ca5e71";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
         "species/OH.dat"  "98259ca11eab721d7ea066607140c389b6b7f946e6df0d7c435c6ea1ee5fd0c5";
     }

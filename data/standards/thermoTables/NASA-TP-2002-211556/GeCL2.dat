@@ -9,7 +9,7 @@
 name           GeCL2;
 formula        GeCl2;
 CAS            n/a;
-MW             143.546;       // kg/kmol, appendix D record line
+MW             143.53;       // kg/kmol, = sum of the engine's atomic weights (C517; was 143.546)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "GeCL2";

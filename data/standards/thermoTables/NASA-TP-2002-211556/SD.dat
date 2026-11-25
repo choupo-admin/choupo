@@ -9,7 +9,7 @@
 name           SD;
 formula        SD;
 CAS            n/a;
-MW             34.0791;       // kg/kmol, appendix D record line
+MW             34.074;       // kg/kmol, = sum of the engine's atomic weights (C517; was 34.0791)
 role           gasOnly;       // free radical (odd electron count 17)
 tags           ( gasPhase thermoTable );
 nasaEntry      "SD";

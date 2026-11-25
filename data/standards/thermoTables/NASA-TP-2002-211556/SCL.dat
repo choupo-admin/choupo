@@ -9,7 +9,7 @@
 name           SCL;
 formula        SCl;
 CAS            n/a;
-MW             67.518;       // kg/kmol, appendix D record line
+MW             67.51;       // kg/kmol, = sum of the engine's atomic weights (C517; was 67.518)
 role           gasOnly;       // free radical (odd electron count 33)
 tags           ( gasPhase thermoTable );
 nasaEntry      "SCL";

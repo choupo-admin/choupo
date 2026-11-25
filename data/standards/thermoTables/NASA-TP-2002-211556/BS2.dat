@@ -9,7 +9,7 @@
 name           BS2;
 formula        BS2;
 CAS            n/a;
-MW             74.941;       // kg/kmol, appendix D record line
+MW             74.93;       // kg/kmol, = sum of the engine's atomic weights (C517; was 74.941)
 role           gasOnly;       // free radical (odd electron count 37)
 tags           ( gasPhase thermoTable );
 nasaEntry      "BS2";
