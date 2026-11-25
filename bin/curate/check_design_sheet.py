@@ -1590,8 +1590,8 @@ def check_column_items(problems, notes):
         big, sml = max(dr, ds), min(dr, ds)
         #  ONLY IN DESIGN MODE.  With `diameter` declared the pass RATES the
         #  trays against the author tower, which may be narrower than a
-        #  section needs -- `column10_flooding` declares 1.1 m and floods at
-        #  114 %.  The witness is a DESIGN case, so this arm holds; a rating
+        #  section needs -- `column10_flooding` declares 1.03 m and floods at
+        #  113 %.  The witness is a DESIGN case, so this arm holds; a rating
         #  case would legitimately fail it, and the sizer says which it is in
         #  its basis rather than leaving this arm to guess.
         designed = kpi("diameterDesigned")

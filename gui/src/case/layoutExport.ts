@@ -383,6 +383,8 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
     if (reg.solids.length > 0)
       notRoutedHtml += `<p class="note">Moved as solids, not piped (in containers or by`
         + ` conveyor): ${reg.solids.map((s) => `<code>${esc(s)}</code>`).join(", ")}.</p>`;
+    for (const s of reg.insideShell)
+      notRoutedHtml += `<p class="note">${esc(s.line)}.</p>`;
     if (reg.indoor.length > 0)
       notRoutedHtml += `<h3>Inside the building (indoor piping is not routed)</h3><ul>`
         + reg.indoor.map((n) => `<li><code>${esc(n.stream)}</code>: ${esc(n.reason)}</li>`)

@@ -111,7 +111,8 @@ building { ... }                                           // §4
   lane, along the rack (plan x), down to the target's port.  Plant INLETS arrive at
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
   MATERIAL stream is routed or listed `notRouted` with its reason; an unreachable
-  end is also a `pipeNotRouted` finding, and a unit inside a placed converter
+  end that is a sized-but-unplaced or refused unit is also a `pipeNotRouted`
+  finding (an unsized unit or unattached junction is not), and a unit inside a placed converter
   shell pipes to the shell's side (`layout.insideShell` lists streams with both
   ends in one shell).  SOLIDS ARE
   NOT PIPED (powder, tablets: containers or conveyors), a unit with no placed

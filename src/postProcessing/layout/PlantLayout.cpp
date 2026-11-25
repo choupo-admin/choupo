@@ -649,6 +649,10 @@ struct End
     std::string unit;      // flowsheet unit, empty at a battery limit
     Pt          point;     // the nozzle, the junction node; empty at a limit
     std::string why;       // why it cannot be reached (kind empty)
+    //  The unreachable end is a unit the layout SHOULD have placed: its
+    //  sizer refused, or it is sized and none of its items is on the plan.
+    //  An unsized unit and an unattached junction are by-rule absences.
+    bool        placeable = false;
     //  C100: the end stands INSIDE the declared building -- an item a room
     //  lists (`room` its room), or a junction piped only to such items.
     bool        indoor = false;
@@ -1746,12 +1750,16 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         }
         auto sz = sizedOf.find(unit);
         if (refusedSizingOf(r, unit))
+        {
+            e.placeable = true;
             e.why = "unit `" + unit + "`'s sizer refused (see the sizing"
                     " table), so it has no item on the plot plan";
+        }
         else if (sz != sizedOf.end())
         {
             std::string ids;
             for (const auto& id : sz->second) ids += (ids.empty() ? "" : ", ") + id;
+            e.placeable = true;
             e.why = "unit `" + unit + "` is sized (" + ids + ") but none of"
                     " its items is placed on the plot plan";
         }
@@ -1877,12 +1885,19 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                                reach && !reach->indoor ? reach->point : Pt{} };
             n.indoor = reach && reach->indoor;   // C100: marked nowhere, as above
             rec.notRouted.push_back(n);
-            //  A process pipe the plan cannot draw is a FINDING, with its
-            //  reason: "0 findings" must never stand beside a pipe missing
-            //  from the plan (2026-11-24).  Solids, an end indoors and a
-            //  stream with two consumers are listed above by RULE, not here.
-            addFinding("pipeNotRouted", s, a.kind.empty() ? from : to, 0.0, 0.0,
-                       "warning", "stream `" + s + "` is NOT ROUTED: " + why);
+            //  A pipe to a unit the layout SHOULD have placed (sized but
+            //  unplaced, or its sizer refused) is a FINDING, with its reason:
+            //  "0 findings" must never stand beside such a pipe missing from
+            //  the plan (2026-11-24).  A stream to an UNSIZED unit (a dryer
+            //  with no sizer), a junction with no placed neighbour, solids,
+            //  an end indoors and a stream with two consumers are listed
+            //  above by RULE, not a finding (narrowed 2026-11-25).
+            const End* bad = (a.kind.empty() && a.placeable) ? &a
+                           : (b.kind.empty() && b.placeable) ? &b : nullptr;
+            if (bad)
+                addFinding("pipeNotRouted", s, bad == &a ? from : to, 0.0, 0.0,
+                           "warning", "stream `" + s + "` is NOT ROUTED: "
+                           + bad->why);
             continue;
         }
         //  ---- AN END INDOORS (DEV.md 4c C100) ---------------------------

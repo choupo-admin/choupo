@@ -51,7 +51,7 @@ License
  *    CASE              feed stage, the tray geometry.  Publishing a rating
  *                      INPUT as a design OUTPUT would be the falsest line on
  *                      the page, and a column is where that is easiest to do:
- *                      `column10_flooding` DECLARES a 1.10 m tower and has its
+ *                      `column10_flooding` DECLARES a 1.03 m tower and has its
  *                      trays rated against it, while `column09_tray_hydraulics`
  *                      declares none and the pass DESIGNS 1.3158 m.  The engine
  *                      answers that itself with the `diameterDesigned` KPI and

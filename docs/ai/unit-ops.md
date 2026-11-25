@@ -1675,8 +1675,8 @@ REFUSED (C398 A4): the hydraulics and the computed efficiency take ONE surface t
 tray.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
 `dP_column_kPa`, `downcomerBackup_max_mm`, `downcomerFloodStages`, `weepingStages`;
 profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
-Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`
-(same column at 1.10 m: identical stream table, stage 14 at 114.5 % of flood).
+Examples: `column09_tray_hydraulics` (design → D = 1.222 m) · `column10_flooding`
+(same column at 1.03 m: identical stream table, stage 7 at 112.6 % of flood).
 
 **Reactive distillation.**  An equilibrium reaction on named catalytic stages.
 Under `model simultaneous;` it is restricted to **mole-conserving (Σν = 0)**

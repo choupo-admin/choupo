@@ -1886,8 +1886,11 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   unit's height in the stack; a stream with BOTH ends inside the same shell
   is listed in `layout.insideShell`, no pipe.  A process pipe with an end
   that has no place on the plan is `notRouted` AND a `pipeNotRouted` finding
-  with the reason (solids, indoor and two-consumer streams are rules, not
-  findings).
+  with the reason ONLY when the end is a unit the layout should have placed
+  (sized but unplaced, or its sizer refused); solids, indoor, two-consumer
+  streams and a stream to an UNSIZED unit or an unattached junction are
+  rules, not findings.  The GUI's pipe register says the `insideShell`
+  streams in one line per shell.
   SOLIDS ARE NOT PIPED (C97): a stream with no fluid phase that carries a
   solid -- a powder, granules, tablets -- is listed as not routed, "solids
   only: moved in containers or by conveyor", with `solids` set and no
