@@ -2106,7 +2106,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "convergence theory for non-smooth functions.  Then the shipped "
       + "integer-stages case optim06 read row by row, the multiplier checked "
       + "against the engine by moving the limit, and a decision card with "
-      + "McKinnon's counter-example.",
+      + "McKinnon's counter-example.  A last section sketches Bayesian "
+      + "optimisation (a Gaussian-process model and expected improvement) "
+      + "for the case where one simulation is the expensive thing, with the "
+      + "engine's measured comparison against sqp stated in one sentence.",
     theory: "ch:sqp",
   },
   {
