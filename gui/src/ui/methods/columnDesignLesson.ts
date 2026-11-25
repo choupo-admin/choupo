@@ -158,7 +158,7 @@ R(N) &\longrightarrow R_\mathrm{min} \quad (N \to \infty), \qquad R(N) \longrigh
       + "every tray at the flooding fraction it is given) and costed item by "
       + "item by the Turton bare-module method for the shell, the trays, the "
       + "condenser, the reboiler and the reflux drum. The reboiler's duty is "
-      + "the column's published Q_reboiler_kW (DistillationColumn.cpp:4732). "
+      + "the column's published Q_reboiler_kW (DistillationColumn.cpp:5054). "
       + "The page adds two numbers it owns, a capital charge and the price of "
       + "the heat, and both are knobs: dearer energy moves the optimum to "
       + "more stages and less reflux, and a dearer capital charge moves it "
@@ -256,7 +256,7 @@ export const COLUMN_DESIGN_LIMITS: readonly { id: string; title: string; body: s
     title: "Constant molar overflow, ideal vapour.",
     body: "The simultaneous column the recorded points come from solves the material "
       + "and equilibrium rows with constant molar overflow and an ideal-gas vapour, "
-      + "and closes the first law on the reboiler (DistillationColumn.cpp:4732). "
+      + "and closes the first law on the reboiler (DistillationColumn.cpp:5054). "
       + "Its duties are those of that approximation.",
   },
   {

@@ -573,6 +573,14 @@ Verdict diagnose(const Facts& f, const Layout& L, const ResidualFn& residual, co
                           " property window is routine and is not by itself a cause):");
         for (const auto& l : softLines) v.lines.push_back("  " + l);
     }
+    if (!f.retryTried.empty())
+    {
+        //  C184 slice 2: the ladder's first rung was tried; the verdict above is
+        //  about the column, and it is told what the retry could not change.
+        v.lines.push_back("a retry from the thermodynamic profile (feed bubble point, relative volatilities, Fenske-like split) was tried: "
+                          + f.retryTried);
+        v.tried.push_back("a retry of the same equations from the thermodynamic starting profile");
+    }
     v.lines.push_back(stats());
     return v;
 }

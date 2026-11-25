@@ -62,11 +62,11 @@ export const EQ_RB_OPENING = "A tray never brings its vapour all the way to equi
 /** What the engine has and has not, stated before anything is run. */
 export const EQ_RB_ENGINE_SCOPE = "Choupo has the first way and not the second.  A "
   + "Wang-Henke column reads a declared Murphree efficiency "
-  + "(DistillationColumn.cpp:1664) and folds it into an effective K-value "
-  + "(DistillationColumn.cpp:1796); the simultaneous MESH method refuses one rather "
-  + "than solve ideal stages in its place (DistillationColumn.cpp:2507).  A binary "
+  + "(DistillationColumn.cpp:1799) and folds it into an effective K-value "
+  + "(DistillationColumn.cpp:1931); the simultaneous MESH method refuses one rather "
+  + "than solve ideal stages in its place (DistillationColumn.cpp:2642).  A binary "
   + "column at total reflux can compute its tray efficiency from the tray's geometry "
-  + "(DistillationColumn.cpp:5263, binary only).  The one rate-based column is a "
+  + "(DistillationColumn.cpp:5585, binary only).  The one rate-based column is a "
   + "binary packed bed at total reflux (`model rateBased;`, RateBasedSegment.cpp): no "
   + "trays, no feed, no third component.  So everything this page says about "
   + "rate-based models of tray columns, of columns with a feed and of mixtures of "
@@ -99,7 +99,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     ],
     note: "The engine applies this relation with one efficiency for every component "
       + "and every tray, the reboiler and a partial condenser excepted "
-      + "(DistillationColumn.cpp:1796).",
+      + "(DistillationColumn.cpp:1931).",
   },
   {
     n: 2,
@@ -148,7 +148,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     note: "For a binary the Murphree efficiencies of the two components are the same "
       + "number, because both the vapour and its equilibrium value sum to one; the "
       + "engine computes the efficiency for a binary only and refuses a third component "
-      + "(DistillationColumn.cpp:5263).",
+      + "(DistillationColumn.cpp:5585).",
   },
   {
     n: 4,

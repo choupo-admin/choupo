@@ -119,6 +119,16 @@
       "description": "Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4c C245) or `legacy` (monotone search, no bounds, clamped residual), declared only where the bounded one is known to stall (stripper02, a heel case). The same choice as `distillationColumn { lineSearch armijo|none; }` in system/solverDict (armijo = bounded, none = legacy): declare it once, both at once is refused. Announced when declared.",
       "default": "bounded"
     },
+    "seed": {
+      "type": "string",
+      "enum": [
+        "default",
+        "thermodynamic"
+      ],
+      "title": "MESH starting profile",
+      "description": "Starting profile of the simultaneous / full MESH Newton: `default` (the feed-temperature ramp and the feed composition on every stage) or `thermodynamic` (the feed's bubble point, relative volatilities at it, a Fenske-like split that honours distillateRate, each stage at the bubble point of its liquid -- Theory Guide sec:column-thermo-seed). With `default`, a MESH that returns NOT converged is retried once from the thermodynamic profile (same equations, announced); a declared stageProfile always wins.",
+      "default": "default"
+    },
     "feedQuality": {
       "type": "number",
       "minimum": 0,

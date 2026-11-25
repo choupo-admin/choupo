@@ -124,6 +124,9 @@ struct Facts
     std::vector<std::pair<std::string, std::string>> advisories;
     //- The constant-molal-overflow seed did not converge either.
     bool seedFailed = false;
+    //- A retry from the thermodynamic profile was tried and did not rescue the
+    //  column (DEV.md 4c C184 slice 2): what it did, one sentence; empty = none.
+    std::string retryTried;
 };
 
 struct Verdict

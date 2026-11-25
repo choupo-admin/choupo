@@ -1,0 +1,40 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0138888888889    1e-4
+stream  bottoms                T                559.653342122      1e-4
+stream  distillate             F                0.0138888888889    1e-4
+stream  distillate             T                383.773093822      1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  feed                   T                300                1e-4
+kpi     column22               B                0.0138888888889    1e-4
+kpi     column22               D                0.0138888888889    1e-4
+kpi     column22               Q_condenser_kW   -1925.34337684     1e-4
+kpi     column22               Q_reboiler_kW    4266.88117673      1e-4
+kpi     column22               Q_reboiler_ownEnvelope_kW 3224.72770038      1e-4
+kpi     column22               R                3                  1e-4
+kpi     column22               T_bottom         559.653342122      1e-4
+kpi     column22               T_top            383.773093822      1e-4
+kpi     column22               feedStage        10                 1e-4
+kpi     column22               feed_feed_T_bubble 409.962772409      1e-4
+kpi     column22               feed_feed_T_dew  530.980551597      1e-4
+kpi     column22               feed_feed_q      1.42326995278      1e-4
+kpi     column22               nFeeds           1                  1e-4
+kpi     column22               nSideDraws       0                  1e-4
+kpi     column22               nStages          20                 1e-4
+kpi     column22               x_B_HK           1                  1e-4
+kpi     column22               x_D_LK           1                  1e-4
+boundary global               H_feeds_kW       -6040.15109402     1e-4
+boundary global               Q_boundary_kW    2341.5377999       1e-4
+boundary global               H_products_kW    -3698.61329412     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 6192.22455357      1e-4
+utility column22               heating.dowthermA.duty_kW 4266.88117673      1e-4
+utility column22               heating.dowthermA.T 559.653342122      1e-4
+utility column22               heating.dowthermA.kg_s 21.7698019221      1e-4
+utility column22               heating.dowthermA.eur_h 153.607722362      1e-4
+utility column22               cooling.coolingWater.duty_kW -1925.34337684     1e-4
+utility column22               cooling.coolingWater.T 383.773093822      1e-4
+utility column22               cooling.coolingWater.kg_s 46.0608463358      1e-4
+utility column22               cooling.coolingWater.eur_h 2.77249446264      1e-4

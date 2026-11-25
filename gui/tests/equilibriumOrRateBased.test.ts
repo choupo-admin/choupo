@@ -198,10 +198,10 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? "", ...(s.where ?? []).map((w) => w.means)])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
-      "DistillationColumn.cpp:1664": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
-      "DistillationColumn.cpp:1796": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
-      "DistillationColumn.cpp:2507": "`murphreeEfficiency` is not ",
-      "DistillationColumn.cpp:5263": "tray efficiency is implemented for a BINARY",
+      "DistillationColumn.cpp:1799": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
+      "DistillationColumn.cpp:1931": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
+      "DistillationColumn.cpp:2642": "`murphreeEfficiency` is not ",
+      "DistillationColumn.cpp:5585": "tray efficiency is implemented for a BINARY",
       "PackingDelft.cpp:131": "r.HETP = (std::abs(s.lambda - 1.0) < 1.0e-9) ? r.HOG",
       "RateBasedSegment.cpp:955": "profile_.columns[\"V\"]",
       "RateBasedSegment.cpp:956": "profile_.columns[\"L\"]",
