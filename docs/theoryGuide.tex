@@ -16846,7 +16846,24 @@ at noise $10^{-8}$, $10^{-6}$ and $10^{-4}$ (tolerance $10^{-6}$) and
 nothing clean, so it is not in the code; Powell's falling penalty
 (1978) likewise moved nothing clean.  The elastic QP was not built.
 
-%BENCH%
+\paragraph{What it was measured to do.}  On the 18 Hock--Schittkowski
+problems of the judge set (clean and three noise levels,
+\code{docs/audits/2026-11-24-optimizer-bench-results.md} \S10), with the
+fraction of cells solved at $\tau=10^{-2}/10^{-4}/10^{-6}$:
+clean, \code{auto} solves $0.83/0.78/0.72$ against $0.89/0.83/0.72$ for SLSQP
+and $0.94/0.89/0.78$ for IPOPT: \emph{it trails them} where there is no noise
+to correct; at $\sigma=10^{-6}$ it solves $0.82/0.65/0.56$ against the
+default $\mathrm{sqp}$'s $0.44/0.20/0.09$ and SLSQP's $0.07/0/0$ (the other
+codes run with their default steps, which are not tuned for noise); at
+$\sigma=10^{-4}$, $0.72/0.52/0.43$, ahead of the derivative-free codes of the
+bench ($0.61/0.43/0.22$ at best).  On the four shipped flowsheets, whose noise
+is about $10^{-13}$ and where the problem it solves is absent, it finds the
+same optima with $1$ to $3.3$ times the simulator runs of the default and ends
+\code{CONVERGED} in 11 of 12 starts.  A converged verdict is a first-order
+statement to the tolerance, not a statement that $f$ is near its minimum
+(HS25's gradient is below $10^{-5}$ over a wide region around its start).
+
+
 
 \subsection{A worked self-check: Hock--Schittkowski}
 

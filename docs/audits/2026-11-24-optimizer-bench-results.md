@@ -501,3 +501,91 @@ count grows to 112 from start C.
     python bin/curate/optimizer_bench.py hs all       # set A
     python bin/curate/optimizer_bench.py flow-noise && python bin/curate/optimizer_bench.py flow && python bin/curate/optimizer_bench.py flow-own
     python bin/curate/optimizer_bench.py report $OPTBENCH_DIR $OPTBENCH_DIR/out && python bin/curate/optimizer_bench.py report-flow $OPTBENCH_DIR $OPTBENCH_DIR/out
+
+## 10. The adaptive SQP (`fdMode auto`) after the review, 2026-11-25 (addendum)
+
+Added after sections 1-9 were written and frozen; nothing above is edited.  Same protocol,
+same 18 judge problems (S[0::6]), same seeds, tolerances and budget; Choupo's `sqp` is
+`solver::sqp` as of the commit that carries this section, through the same pipe driver, with
+`CHOUPO_SQP_OPTS="fdMode=auto"` for the row `auto`; the row `default` is the shipped
+differences re-run on the same code (it reproduces section 5's `choupoSqp` row cell for cell:
+the default path did not move).  Rows of the other codes are copied from section 5, not
+re-run.  Context: the Opus review of C496 (`docs/audits/2026-11-24-c496-opus-review.md`),
+which found the first version certifying non-stationary points and printing bars it could not
+defend; its table of that first version was 0.833 / 0.778 / 0.667 clean and 0.722 / 0.519 /
+0.370 at sigma 1e-4 (tau 1e-2 / 1e-4 / 1e-6).
+
+**The judge set was read twice for the final code, and the reader should know.**  A first
+reading (0.889 / 0.833 / 0.778 clean) was taken before two changes made for the cost on the
+flowsheets, not for the judge set (the second quarter-width stencil only when the first sees
+a level above the rounding floor; no wider curvature probe for a response whose noise is at the
+floor).  The development set (24 problems, none a judge problem) was used for every other
+change; the second reading is the one in the table.
+
+Fraction of cells solved within the full budget (kappa = 100), judge set, 54 cells per
+column (18 problems; 18 clean, 54 per noise level):
+
+| tau | code | clean | sigma 1e-8 | sigma 1e-6 | sigma 1e-4 |
+|---|---|---|---|---|---|
+| 1e-2 | Choupo sqp, default | 0.667 | 0.741 | 0.444 | 0.000 |
+| 1e-2 | Choupo sqp, `fdMode auto` | 0.833 | 0.889 | 0.815 | 0.722 |
+| 1e-2 | SLSQP | 0.889 | 0.185 | 0.074 | 0.000 |
+| 1e-2 | IPOPT | 0.944 | 0.352 | 0.000 | 0.000 |
+| 1e-2 | COBYLA | 0.778 | 0.796 | 0.722 | 0.574 |
+| 1e-2 | COBYQA | 0.778 | 0.741 | 0.648 | 0.500 |
+| 1e-2 | NOMAD | 0.667 | 0.630 | 0.593 | 0.611 |
+| 1e-4 | Choupo sqp, default | 0.611 | 0.556 | 0.204 | 0.000 |
+| 1e-4 | Choupo sqp, `fdMode auto` | 0.778 | 0.778 | 0.648 | 0.519 |
+| 1e-4 | SLSQP | 0.833 | 0.056 | 0.000 | 0.000 |
+| 1e-4 | IPOPT | 0.889 | 0.148 | 0.000 | 0.000 |
+| 1e-4 | COBYLA | 0.722 | 0.685 | 0.574 | 0.426 |
+| 1e-4 | COBYQA | 0.611 | 0.593 | 0.500 | 0.370 |
+| 1e-4 | NOMAD | 0.611 | 0.537 | 0.537 | 0.370 |
+| 1e-6 | Choupo sqp, default | 0.389 | 0.481 | 0.093 | 0.000 |
+| 1e-6 | Choupo sqp, `fdMode auto` | 0.722 | 0.685 | 0.556 | 0.426 |
+| 1e-6 | SLSQP | 0.722 | 0.037 | 0.000 | 0.000 |
+| 1e-6 | IPOPT | 0.778 | 0.111 | 0.000 | 0.000 |
+| 1e-6 | COBYLA | 0.556 | 0.611 | 0.463 | 0.167 |
+| 1e-6 | COBYQA | 0.611 | 0.481 | 0.444 | 0.167 |
+| 1e-6 | NOMAD | 0.611 | 0.444 | 0.444 | 0.222 |
+
+**Where `auto` loses (the losing rows).**  Clean, it trails SLSQP and IPOPT at tau 1e-2
+(0.833 against 0.889 and 0.944) and at 1e-4 (0.778 against 0.833 and 0.889), ties SLSQP at
+1e-6 (0.722) and trails IPOPT there (0.778).  One clean cell is 1/18 = 0.056, so the clean
+gap to SLSQP is one cell at 1e-2 and 1e-4; no bootstrap interval was computed for the new
+rows, and none is claimed.  At sigma 1e-4 it solves 0.722 / 0.519 / 0.426 of the cells, ahead of every
+derivative-free code at the three tolerances (COBYLA 0.574, 0.426, 0.167; NOMAD 0.611, 0.370,
+0.222; no interval computed); it still fails a quarter to a half of the noisy cells at the
+tight tolerances.  Where it is ahead of the
+gradient codes with their default steps (sigma 1e-8 and 1e-6) that is, as section 6 already
+says, mostly the step size: the other codes were not given a noise-aware step.  A
+**converged verdict is not the same as solved**: `auto` ended CONVERGED in 31 cells; two of
+them are not solved to 1e-4 (HS25 clean, whose gradient is below tolStat over a wide region
+around its start, so the first-order test is met at iteration 0; HS13 clean, which has no KKT
+point at its optimum).  The default `sqp` has three such cells (HS25, HS31, HS68).
+
+**The four flowsheets**, through their own `outerDict` (the shipped one with `initial` and
+`method` changed), three starts each, driver's own count of simulator runs:
+
+| flowsheet | start | default: runs, objective, exit | fdMode auto: runs, objective, exit, verdict |
+|---|---|---|---|
+| optim01\_column\_reflux | A | 15 runs, 0.0361877, exit 0 | 37 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim01\_column\_reflux | B | 15 runs, 0.0361877, exit 0 | 37 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim01\_column\_reflux | C | 15 runs, 0.0361877, exit 0 | 37 runs, 0.0361877, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim02\_process\_cost | A | 37 runs, 878085, exit 0 | 75 runs, 878085, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim02\_process\_cost | B | 37 runs, 878085, exit 0 | 75 runs, 878085, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim02\_process\_cost | C | 50 runs, 878085, exit 0 | 66 runs, 878085, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim04\_membrane\_recovery\_scaling | A | 25 runs, -0.397451, exit 0 | 55 runs, -0.397451, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim04\_membrane\_recovery\_scaling | B | 34 runs, -0.397452, exit 0 | 67 runs, -0.397452, exit 1, STATIONARY, NOT CERTIFIED  (KKT re |
+| optim04\_membrane\_recovery\_scaling | C | 112 runs, -0.397452, exit 0 | 107 runs, -0.397452, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim05\_reactor\_npv | A | 16 runs, 6.56434e+08, exit 0 | 52 runs, 6.56434e+08, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim05\_reactor\_npv | B | 16 runs, 6.56434e+08, exit 0 | 52 runs, 6.56434e+08, exit 0, CONVERGED  (KKT conditions satisfi |
+| optim05\_reactor\_npv | C | 28 runs, 6.56434e+08, exit 0 | 82 runs, 6.56434e+08, exit 0, CONVERGED  (KKT conditions satisfi |
+
+Same optimum every time; `auto` costs 1 to 3.3 times the default's runs on cases whose noise
+is about 1e-13 (section 1: the problem it solves is absent there), and 11 of 12 starts end
+CONVERGED; the twelfth (`optim04`, start B) ends `STATIONARY, NOT CERTIFIED` with exit 1,
+because its error bar exceeds the scaled tolerance.  `optim05`, which the first version of
+`auto` stopped on (exit 1, stationarity 1.63e-5 against the absolute 1e-5, on an objective
+of 6.6e8 with a shadow price of 2.4e6), converges with the bar printed: 1.8 against the
+scaled tolerance 172.
