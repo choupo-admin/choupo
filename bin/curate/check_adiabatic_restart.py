@@ -39,6 +39,7 @@ import case_records   # noqa: E402  the one copy home of a shipped case (C421)
 CASE = ROOT / "tutorials/batch/reactor/batch02_adiabatic"
 SRC = ROOT / "src/unitOperations/batch/BatchReactor.cpp"
 TOL = 1.0e-7
+SCAN_ROOTS = ()   # the only walk is rglob over the gate's own scratch copy of batch02, never the tree
 
 
 def run(d):
