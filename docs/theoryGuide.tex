@@ -36836,6 +36836,26 @@ Mathematical Systems, vol.~187, Springer, 1981. Source of the analytic
 problems HS21, HS35 and HS71 used by \code{verifySQP} as the
 merge-blocking self-check of the SQP algorithm against published optima.
 
+\bibitem{WaechterBiegler2006} W\"achter, A., \& Biegler, L. T., ``On the
+implementation of an interior-point filter line-search algorithm for large-scale
+nonlinear programming'', \emph{Mathematical Programming} \textbf{106}(1), 25--57
+(2006).  Read as the 2004 preprint (optimization-online 2004/03/836), Secs.~1--3
+and 4.1: the KKT system and Algorithm IC, whose inertia requirement this section
+serves.
+
+\bibitem{BunchKaufman1977} Bunch, J. R., \& Kaufman, L., ``Some stable methods for
+calculating inertia and solving symmetric linear systems'', \emph{Mathematics of
+Computation} \textbf{31}(137), 163--179 (1977).  NOT read: cited as the origin of
+the partial pivoting strategy by Higham~\cite{Higham1997}, whose statement of it
+Choupo implements.
+
+\bibitem{Higham1997} Higham, N. J., ``Stability of the diagonal pivoting method
+with partial pivoting'', \emph{SIAM Journal on Matrix Analysis and Applications}
+\textbf{18}(1), 52--65 (1997) (MIMS EPrint 2006.165).  Read: Sec.~1 and
+Algorithm~1 (the Bunch--Kaufman partial pivoting strategy, $\alpha=(1+\sqrt{17})/8$)
+with the remark on $\alpha$; the stability analysis of the later sections was not
+read.  The pivoting rule of \code{DenseLDLT}.
+
 \bibitem{AuditNOMAD4} Audet, C., Le Digabel, S., Rochon Montplaisir, V.,
 \& Tribes, C., ``Algorithm 1027: NOMAD version 4: nonlinear optimization
 with the MADS algorithm'', \emph{ACM Trans. Math. Software} (2022),
@@ -37892,26 +37912,6 @@ Matrix Analysis and Applications} \textbf{17}(4), 886--905 (1996),
 doi:10.1137/S0895479894278952.  The quotient-graph ordering that
 \code{SparseLU}'s explicit minimum degree is compared with, and the source of
 its dense-node rule.
-
-\bibitem{Higham1997} Higham, N. J., ``Stability of the diagonal pivoting method
-with partial pivoting'', \emph{SIAM Journal on Matrix Analysis and Applications}
-\textbf{18}(1), 52--65 (1997) (MIMS EPrint 2006.165).  Read: Sec.~1 and
-Algorithm~1 (the Bunch--Kaufman partial pivoting strategy, $\alpha=(1+\sqrt{17})/8$)
-with the remark on $\alpha$; the stability analysis of the later sections was not
-read.  The pivoting rule of \code{DenseLDLT}.
-
-\bibitem{BunchKaufman1977} Bunch, J. R., \& Kaufman, L., ``Some stable methods for
-calculating inertia and solving symmetric linear systems'', \emph{Mathematics of
-Computation} \textbf{31}(137), 163--179 (1977).  NOT read: cited as the origin of
-the partial pivoting strategy by Higham~\cite{Higham1997}, whose statement of it
-Choupo implements.
-
-\bibitem{WaechterBiegler2006} W\"achter, A., \& Biegler, L. T., ``On the
-implementation of an interior-point filter line-search algorithm for large-scale
-nonlinear programming'', \emph{Mathematical Programming} \textbf{106}(1), 25--57
-(2006).  Read as the 2004 preprint (optimization-online 2004/03/836), Secs.~1--3
-and 4.1: the KKT system and Algorithm IC, whose inertia requirement this section
-serves.
 
 \bibitem{Flory1953} Flory, P. J., \emph{Principles of Polymer
 Chemistry}, Cornell University Press, 1953, Ch.~VIII--IX.  The
