@@ -217,6 +217,8 @@ import { LeastSquaresTool } from "../src/ui/methods/LeastSquaresTool.js";
 
 import { LETDOWN_QUIZ, LETDOWN_STEPS } from "../src/ui/methods/letdownLesson.js";
 import { CV_QUIZ, CV_STEPS } from "../src/ui/methods/controlValveLesson.js";
+import { CC_QUIZ, CC_STEPS } from "../src/ui/methods/compressorChoiceLesson.js";
+import { CompressorChoiceTool } from "../src/ui/methods/CompressorChoiceTool.js";
 import { ControlValveTool } from "../src/ui/methods/ControlValveTool.js";
 import { LetdownTool } from "../src/ui/methods/LetdownTool.js";
 
@@ -550,6 +552,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "control-valve": {
     quiz: CV_QUIZ, quizName: "CV_QUIZ", lesson: CV_STEPS, lessonName: "CV_STEPS",
     file: "src/ui/methods/ControlValveTool.tsx", tool: ControlValveTool,
+  },
+  "compressor-choice": {
+    quiz: CC_QUIZ, quizName: "CC_QUIZ", lesson: CC_STEPS, lessonName: "CC_STEPS",
+    file: "src/ui/methods/CompressorChoiceTool.tsx", tool: CompressorChoiceTool,
   },
   letdown: {
     quiz: LETDOWN_QUIZ, quizName: "LETDOWN_QUIZ", lesson: LETDOWN_STEPS, lessonName: "LETDOWN_STEPS",
