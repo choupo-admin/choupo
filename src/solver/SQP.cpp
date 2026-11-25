@@ -314,8 +314,26 @@ SQPResult sqp(const SQPEvaluator& eval,
         std::string unknownWhy;
         if (!(hEn > 1.0e-7))
             unknownWhy = "no room for the noise stencil inside the box";
-        else if (!stencil(hEn, valsA) || !stencil(0.25 * hEn, valsB))
+        else if (!stencil(hEn, valsA))
             unknownWhy = "a model evaluation of the noise stencil FAILED";
+        //  the second (quarter-width) stencil exists to tell noise from a signal the
+        //  first stencil cannot resolve; it is taken only when the first one saw a
+        //  level above the rounding floor of some response (8 runs saved on a
+        //  response that is smooth to rounding, which is most of them)
+        bool needB = false;
+        if (unknownWhy.empty())
+            for (std::size_t r = 0; r < nR && !needB; ++r)
+            {
+                sVector ca;
+                for (const auto& v : valsA) ca.push_back(v[r]);
+                const NoiseEst ea = ecNoise(ca);
+                const scalar floorR = 1.0e-14 * std::max(1.0, std::abs(f0[r]));
+                needB = ea.kind == NoiseKind::Undetermined
+                     || (ea.kind == NoiseKind::Level && ea.level > 100.0 * floorR);
+            }
+        if (unknownWhy.empty() && needB && !stencil(0.25 * hEn, valsB))
+            unknownWhy = "a model evaluation of the noise stencil FAILED";
+        if (unknownWhy.empty() && !needB) valsB = valsA;
         sVector eps(nR, 0.0);
         if (unknownWhy.empty())
             for (std::size_t r = 0; r < nR && unknownWhy.empty(); ++r)
@@ -403,7 +421,9 @@ SQPResult sqp(const SQPEvaluator& eval,
                 {
                     if (!resolved[r] && std::abs(D[r]) >= 100.0 * epsR[r])
                     { Lr[r] = std::max(0.1, std::abs(D[r]) / (t * t)); resolved[r] = 1; }
-                    all = all && resolved[r];
+                    //  a response whose noise is at the rounding floor needs no wider probe:
+                    //  its bound 100 eps/t^2 is already far below that of the others
+                    all = all && (resolved[r] || epsR[r] <= 1.0e-11 * std::max(1.0, std::abs(f0[r])));
                 }
                 if (all) break;
                 t *= 8.0;
