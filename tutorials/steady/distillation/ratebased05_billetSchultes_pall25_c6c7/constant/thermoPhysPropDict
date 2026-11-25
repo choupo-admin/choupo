@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- cyclohexane / n-heptane at atmospheric pressure:
+  Raoult (gamma = 1), ideal-gas vapour, the records' Antoine fits.
+
+  Transport for the packing law, every value from the package, none fitted:
+    vapour viscosity   Chung (Vc ESTIMATED from Zc(omega), announced)
+    vapour diffusion   Fuller (diffusion volumes from the formula)
+    liquid viscosity   chemsepEq101 (the records' liquid-viscosity equation)
+    liquid diffusion   Wilke-Chang at infinite dilution both ways, combined by
+                       the Anderson-Babb rule, thermodynamic factor 1 (the
+                       liquid is an ideal solution, so exact here)
+    surface tension    Brock-Bird
+  For the film heat-transfer coefficients of the rate-based segment: Eucken
+  (vapour) and Sato-Riedel (liquid) thermal conductivities, estimates from
+  data the records carry.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( cyclohexane nHeptane );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity   { model Chung; }
+        diffusivity { model Fuller; }
+        thermalConductivity { model Eucken; }
+    }
+
+    liquid
+    {
+        viscosity { model chemsepEq101; }
+
+        diffusivity
+        {
+            returns             effective;
+            composition         { rule AndersonBabb; }
+            infiniteDilution    { default { model WilkeChang; } }
+            thermodynamicFactor { take 1; }
+        }
+
+        thermalConductivity { model SatoRiedel; }
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
+}

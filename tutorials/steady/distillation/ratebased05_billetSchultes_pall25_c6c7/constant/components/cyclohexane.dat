@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  cyclohexane -- case-local PARTIAL overlay of the standard record: the Fuller
+  diffusion volume, which the catalogue record does not carry.
+  `overlayOf cyclohexane;` declares this a DELTA: everything else is the catalogue's.
+
+  Source of the value: Fuller atomic diffusion volumes, 6 C x 15.9 + 12 H x 2.31, a saturated ring (no ring correction)
+  (Poling, Prausnitz & O'Connell 5ed Table 11-1, p. 11.11): 123.12.
+\*---------------------------------------------------------------------------*/
+overlayOf cyclohexane;
+variationReason "adds diffusionVolume 123.12 (Fuller), which the catalogue record cyclohexane does not carry: Fuller: 6 C x 15.9 + 12 H x 2.31, a saturated ring (no ring correction) (Poling, Prausnitz & O'Connell 5ed Table 11-1, p. 11.11).  Added by the case (C513).";
+
+diffusionVolume 123.12;
