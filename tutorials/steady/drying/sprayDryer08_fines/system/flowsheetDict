@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  sprayDryer08_fines  --  flowsheet (one unit, two feeds, two products).
+
+  feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
+                 40 kg/h sucrose / 342.30 = 0.11686 kmol/h
+                 60 kg/h water   / 18.015 = 3.33056 kmol/h
+                 total 3.4474 kmol/h ;  z_sucrose = 0.03390
+
+  dryingAir:   50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 °C, 1 bar.
+               Dry air (no inlet humidity) for a clean wet-bulb demo.
+
+  The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+
+  THIS CASE (C512): sprayDryer01 with `carryOver { cutDiameter 20e-6 m; }`.
+  The fines -- the size classes of the powder below 20 um -- leave on the
+  exhaust stream as a solid (`exhaustAir` now carries `s` and its own
+  size distribution); the powder is the coarse remainder.  The mass,
+  element and energy balances close with the fines counted in the exhaust.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        dryer;
+        type        sprayDryer;
+        inputs      ( feed  dryingAir );
+        outputs     ( powder  exhaustAir );
+
+        operation
+        {
+            wheelDiameter    0.1 m;             // 10 cm spinning disc (HARDWARE)
+            wheelSpeed       20000;             // rpm
+            chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
+            chamberHeight    5.0 m;             // -> residence time is a RESULT (L / v_particle)
+
+            //  THE FINES (opt-in; absent, every particle is powder).  A two-point
+            //  discharge sends the coarse fraction out of the cone and the fine
+            //  fraction out with the exhaust air (Perry 9ed p. 12-74, "Product
+            //  Recovery").  The cut is the CASE's: no source read gives the
+            //  chamber exit velocity, so the share is not computed from a
+            //  terminal velocity.  The share is read on THIS dryer's own size
+            //  distribution: every size class below the cut leaves on the
+            //  exhaust's solid, carrying its size distribution; the residual
+            //  water stays on the powder.  Alternative: `fraction 0.15;` (a
+            //  share of the dry solid, the same size distribution on both).
+            carryOver { cutDiameter 20e-6 m; }
+            // flow co;  (default: co-current gas + droplets)
+            // the feed's viscosity, density and surface tension come from constant/thermoPhysPropDict (a property typed here is refused).
+        }
+        dryingCurve  sugarDrying;    // KINETICS: Xc + curve, in constant/dryingKinetics
+        // (the equilibrium GAB sorption ISOTHERM is in
+        //  constant/components/sucrose.dat --- thermodynamics, kept separate)
+    }
+);

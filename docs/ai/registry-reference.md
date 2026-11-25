@@ -785,6 +785,9 @@ spreadParameter n >0 ui=2.2
 chamberDiameter n [m] >0
 chamberHeight n [m] >0
 flow s {co|counter} ui=co
+carryOver o
+carryOver.fraction n >=0 <=1
+carryOver.cutDiameter n [m] >0
 atomiser o
 atomiser.model s {rotaryWheel|pressureNozzle}
 atomiser.wheelDiameter n [m] >0
@@ -896,6 +899,7 @@ dryingCurve.exponent n >0
 dryingCurve.phi a<n>
 dryingCurve.f a<n>
 dryingCurve.source s
+solidTemperature s {held|integrated} =held
 moisture s
 air* o
 air.T* n [K] >0

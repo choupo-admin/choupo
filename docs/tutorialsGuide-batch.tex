@@ -1706,6 +1706,50 @@ EVERY CURVE HERE IS HYPOTHETICAL. No measured characteristic curve of sucrose is
 \goldmore{80}
 \end{tutgolden}
 
+\clearpage
+\tutentry{dryer03\_solid\_temperature}{tutorials/batch/drying/dryer03\_solid\_temperature}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (dryer) at (0.0,-0.0) {\textbf{dryer}\\[-1pt]{\tiny batchDryer}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Tray drying of wet sucrose into declared 60 C air with the SOLID TEMPERATURE integrated: the surface holds the wet bulb through the constant-rate period, then the lumped solid heats toward the air (opt-in solidTemperature integrated)}
+\begin{tutnarrative}
+dryer01\_sucrose\_tray with the SOLID'S TEMPERATURE integrated (C512). Everything below about the air, the wet bulb, the break and the moisture is dryer01's, unchanged; what is new is `solidTemperature integrated;` and its KPIs (T\_solid\_final, solidEnergy\_$\ast$), the trajectory column dryer.T\_solid\_K.
+
+WHAT THE SOLID DOES (C512; Theory Guide sec:batch-dryer-solid-T): X > X\_c: T\_s IS the wet bulb, 300.52 K (dryer01's), held (hypothesis 2). h = k\_Y c\_H = 0.05 $\ast$ 1060.2 = 53.01 W/(m2 K) (Lewis = 1: the relation the wet-bulb equation is written in), so at the wet bulb h A (T\_air - T\_wb) = R\_c A lambda(T\_wb) = 0.8648 kW: the heat in equals the latent load, and the temperature leaves the wet bulb continuously at X\_c. X <= X\_c: C(X) dT\_s/dt = h A (T\_air - T\_s) - R A lambda(T\_s), C = m\_s (cp\_s + X cp\_w), cp\_s = 1243 J/(kg K) (the record's 425.5 J/(mol K)), cp\_w = 4191. The time scale of the warm-up is C/(h A) = 100-130 s, short against the falling-rate time tau = 595 s, so T\_s follows the air with a lag and T\_air - T\_s decays with the drying curve (T\_air - T\_s \textasciitilde{} 1.4 K at 3000 s). LIMIT, by hand: X $\to$ X\_eq makes R $\to$ 0 and T\_s $\to$ T\_air (333.15 K); at 3000 s X = 0.01963 against X\_eq = 0.01586, 3.6 \% of the free moisture left, and T\_s = 331.78 K, 1.37 K below the air. INDEPENDENT CHECK: the same two equations integrated outside the engine (a ten-line RK4 with the printed constants and the Watson latent heat) end at T\_s = 331.7796 K against the engine's 331.7787 K, X = 0.019628 against 0.019631. THE ENERGY LEDGER closes: E\_conv = 1470.48 kJ in from the air, E\_out = 1387.63 kJ out with the vapour (latent + its sensible), and the solid stores (m\_s cp\_s + m\_w cp\_w)(T\_s - T\_wb) = 2650.7 J/K $\ast$ 31.26 K = 82.85 kJ: 1470.48 - 1387.63 - 82.85 = 0 to 1.1e-9 of E\_conv (KPI solidEnergy\_closure\_rel). The campaign's own energy balance stays unavailable (the air is outside it), as in dryer01. Announced assumptions: R is the characteristic drying curve and does not read T\_s; one temperature for the lumped solid (small Biot); cp at the mean of T\_wb and T\_air; the charge starts at T\_wb.
+
+A tray holding 2.0 kg of dry sucrose wet to X\_0 = 0.30 kg water / kg dry solid, exposed over 0.5 m2 to air of DECLARED, CONSTANT condition: 60 C (333.15 K) and Y = 0.010 kg water / kg dry N2. Nothing about that air is integrated -- it is an ENVIRONMENT, the FixedBedAdsorber's constant-carrier posture, and the water that leaves the solid leaves the campaign across that boundary (reported as the unit's DECLARED material residual, never as a silent leak).
+
+THE HAND ESTIMATE, computed from this case's own curated records (water Antoine + Watson Hvap + the two ideal-gas Cp polynomials, the case-local GAB isotherm on sucrose) -- the run must reproduce it:
+
+air water activity p\_v = P Y/(Y + Mv/Mc) = 1551 Pa a\_w = p\_v / Psat(333.15 K) = 0.0774 GAB equilibrium K a\_w = 0.0743 X\_eq = Xm C Ka /((1-Ka)(1-Ka+C Ka)) = 0.01580 kg/kg wet bulb (Lewis = 1) T\_wb = 300.53 K (27.4 C, a 32.6 K depression) driving force Y\_sat(T\_wb) - Y = 0.014011 kg/kg constant-rate flux R\_c = k\_Y dY = 0.05 $\ast$ 0.014011 = 7.0057e-4 kg/(m2 s) R\_c A = 3.5028e-4 kg/s latent load R\_c A lambda(T\_wb) = 0.8645 kW (the AIR's, not the campaign's -- KPI only, never ledgered) break time t\_c = m\_s (X\_0 - X\_c)/(R\_c A) = 1027.7 s falling-rate constant tau = m\_s (X\_c - X\_eq)/(R\_c A) = 595.0 s end of run X(3000 s) = X\_eq + (X\_c - X\_eq) exp(-(3000-t\_c)/tau) = 0.019584 kg/kg
+
+What to look at in the output: trajectory.csv columns dryer.X\_kg\_kg and dryer.R\_kg\_m2\_s: the drying curve and the rate curve, engine columns, not a post-processing. R is FLAT at 7.0057e-4 until X falls through X\_c = 0.12, then decays linearly in (X - X\_eq) -- the textbook break, visible as a corner. The falling rate is DECLARED as the characteristic drying curve f = Phi\textasciicircum{}n with n = 1, which IS the linear law; the drying EduTool varies n (n < 1 reaches X\_eq in finite time, n > 1 an algebraic tail slower than the exponential), and dryer02\_characteristic\_curves runs four shapes side by side. the KPI t\_critical is OBSERVED (the interpolated crossing between two accepted states), not the analytic 1027.7 s above; they agree because dX/dt is exactly constant on that leg. THE CAMPAIGN MASS BALANCE CLOSES BECAUSE THE DRIED WATER IS AN OUTLET. The solid is charged with 2.600000 kg and ends with 2.039168 kg; the 0.560832 kg of difference is the DRIED WATER. It left the solid and went into the air, and the campaign books it as an external OUTLET STREAM of the dryer (the ledger record `dryer $\to$ (external boundary)`, "evaporated water leaving the solid into the drying air"): initial = final + external out, mass and element closure at round-off. The air stays a DECLARED ENVIRONMENT (a temperature and a humidity, not a vessel this campaign owns), but matter crossing the campaign boundary is a stream whatever receives it. Until 2026-11-09 this unit left the water off the books and the balance read a 21.6 \% shortfall that only the log explained; a violated balance on screen is a defect, so it is a stream now (DEV.md 4c C258).
+
+the campaign energy balance is UNAVAILABLE, and says why in one sentence: the drying heat comes from air this campaign never owned. The number is not hidden -- it is the latentDuty\_kW KPI.
+
+Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-saturation equation; the humid heat evaluated at the air's own temperature; the surface held at T\_wb while X > X\_c; the LINEAR falling-rate curve (n = 1; a modelling CHOICE, not physics, and its declared source says so); the solid's own temperature NOT integrated.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.560738660881}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{2.03926135287}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{2.60000001375}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.031126209319}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.00802224868102}
+\goldmore{29}
+\end{tutgolden}
+
 \subsection{electrodialysis}
 \grouptheory{electrodialysis}
 \clearpage

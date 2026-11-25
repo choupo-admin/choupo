@@ -19,14 +19,16 @@
         three engine runs at three loadings, X drawn against t/L;
     C5  "The last percent": the time at which the engine's own X(t) reaches a
         specification, read off its column, with the asymptote at X_eq;
-    C7  "The spray chamber": sprayDryer01 under a grid of chamber heights and
+    C6  "Where is the product hot?": the solid's temperature of the tray with
+        `solidTemperature integrated`, read off the engine's own column;
+  C7  "The spray chamber": sprayDryer01 under a grid of chamber heights and
         wheel speeds, the residence, the constant-rate time and the
         falling-rate constant side by side.
 
   ZERO PHYSICS IN TYPESCRIPT.  Each number is a KPI or a column of an engine
   run; the TypeScript divides by the loading (a ratio of the case's own
   numbers), reads a time off an emitted series, and orders.  The spray dryer's
-  axial particle temperature (SprayDryer.cpp:915) is a display interpolation of
+  axial particle temperature (SprayDryer.cpp:921) is a display interpolation of
   the engine and is NEVER shown here.
 \*---------------------------------------------------------------------------*/
 
@@ -257,6 +259,93 @@ export function LastPercentCard({ run }: { run: TrayRun }): JSX.Element {
   );
 }
 
+// ---- C6: where is the product hot? ------------------------------------------
+
+/** The tray of `dryer03_solid_temperature`: dryer01 with the solid's
+ *  temperature integrated (`solidTemperature integrated;`). */
+export const HOT_WITNESS = "batch/drying/dryer03_solid_temperature";
+
+/** The first time the series rises above `level`, interpolated between the two
+ *  samples that bracket it; null when it never does.  A reading, not a model. */
+export function firstTimeAbove(
+  t: readonly number[], y: readonly number[], level: number,
+): number | null {
+  for (let i = 1; i < y.length; ++i) {
+    const y0 = y[i - 1]!, y1 = y[i]!;
+    if (Number.isFinite(y0) && Number.isFinite(y1) && y0 <= level && y1 > level)
+      return t[i - 1]! + ((level - y0) / (y1 - y0)) * (t[i]! - t[i - 1]!);
+  }
+  return null;
+}
+
+/** How far above the wet bulb the solid must be before the page calls it warm, K. */
+export const WARM_ABOVE_WET_BULB = 1;
+
+export function HotProductCard(): JSX.Element {
+  const sets = useMemo(() => [[] as DictOverride[]], []);
+  const sweep = useMethodRunSweep(HOT_WITNESS, sets, "hot-product", "choupoBatch");
+  const r = sweep.results[0];
+  const k = r?.kpis?.["dryer"];
+  const t = r?.trajectory?.t;
+  const Ts = r?.trajectory?.vars["dryer.T_solid_K"];
+  const X = colX(r?.trajectory);
+  const Twb = k?.["T_wb"], tc = k?.["t_critical"] ?? null;
+  const Tend = k?.["T_solid_final"];
+  const closure = k?.["solidEnergy_closure_rel"];
+  const Xeq = k?.["X_equilibrium"];
+  const have = !!(t && Ts && Twb !== undefined);
+  const stale = !!(r && k && !Ts);
+  const warm = have ? firstTimeAbove(t!, Ts!, Twb! + WARM_ABOVE_WET_BULB) : null;
+  const series: ChartSeries[] = have ? [{
+    id: "Ts", label: "solid temperature (engine)", color: "#c92a2a",
+    pts: t!.map((tt, j) => [tt, Ts![j]!] as const),
+  }] : [];
+  const guides: ChartGuide[] = have ? [
+    { dir: "h", at: Twb!, label: "T_wb: the surface while it is wet", color: "#1c7ed6" },
+    ...(tc !== null ? [{ dir: "v" as const, at: tc, label: "t_critical", color: "#ef5350" }] : []),
+  ] : [];
+  const problems = sweep.errs.filter((e): e is string => !!e);
+  const read = stale
+    ? "The engine in this browser did not return the solid-temperature column; rebuild it (make wasm-gui)."
+    : !have ? "Waiting for the run."
+      : `The solid stays within ${WARM_ABOVE_WET_BULB} K of the wet bulb (${g4(Twb)} K) until t = `
+        + `${warm === null ? "—" : g4(warm)} s`
+        + `${tc !== null ? `; the engine's constant-rate period ends at ${g4(tc)} s` : ""}.  At the end of the run it is at `
+        + `${g4(Tend)} K${X && X.length ? `, with X = ${g4(X[X.length - 1])} against the floor ${g4(Xeq)}` : ""}.`;
+  return (
+    <Box px="sm" py={8} style={BOX} data-card="hot-product">
+      <Title order={5}>Where is the product hot?</Title>
+      <OriginMark of={["engine", "assumption"]}
+        note="one run of dryer03_solid_temperature (choupoBatch, solidTemperature integrated); the temperature, the wet bulb, the critical time and the energy ledger are the engine's, the 1 K that calls the solid warm is the page's" />
+      <Text size="sm" mt={4}>
+        While water covers the surface the product sits at the wet bulb, however hot the air is.
+        When the constant-rate period ends the flux falls, the evaporation no longer takes all the
+        heat, and the solid warms toward the air.  The engine integrates one temperature for the
+        solid and its water with the same film coefficient the wet bulb uses.
+      </Text>
+      <Box mt={4} data-sweep="hot-product">
+        <DryChart series={series} guides={guides} xLabel="time, s" yLabel="solid temperature, K"
+          aria="Solid temperature against time, flat at the wet bulb until the critical time and rising toward the air after it" xZero />
+        {sweep.busy && <Group gap={6}><Loader size="xs" /><Text size="xs" c="dimmed">integrating the tray</Text></Group>}
+      </Box>
+      <Text size="sm" mt={4} data-hot-read="">{read}</Text>
+      <Text size="sm" mt={4} data-hot-ledger="">
+        {closure === undefined ? "" : `The heat the air gave the tray, minus what left with the vapour, equals what the solid stored, to ${g4(Math.abs(closure))} of the heat in (the engine's own ledger).`}
+      </Text>
+      <Alert color="gray" variant="light" mt={8} p="xs" data-hot-limits="">
+        <Text size="xs">
+          One temperature for the whole tray: a thick bed has a hot top and a cool bottom, and this
+          one does not.  The flux is the declared drying curve and does not feel the temperature, so a warmer surface
+          does not dry faster here as it would in a dryer.  The charge is taken to start at the wet bulb.  The
+          spray dryer&apos;s particle temperature along the chamber is not this: the engine draws it by
+          interpolation and names the column so.
+        </Text>
+      </Alert>
+      {problems.map((e) => <Text key={e} size="xs" c="red" ff="monospace">{e}</Text>)}
+    </Box>
+  );
+}
+
 // ---- C7: the spray chamber --------------------------------------------------
 
 /** The chamber heights (m) and wheel speeds (rpm) of the grid. */
@@ -362,7 +451,7 @@ export function SprayChamberCard(): JSX.Element {
           (SprayDryer.cpp:772), so the real chamber&apos;s extra height for the coarse tail, the wall and
           the cone is not in these numbers; wall deposition and stickiness are not computed either.
           The particle temperature along the chamber is not shown: the engine&apos;s own axial profile
-          interpolates it for display (SprayDryer.cpp:915) rather than solving it.  Spray dryers are
+          interpolates it for display (SprayDryer.cpp:921) rather than solving it.  Spray dryers are
           built with the gas co-current, counter-current or mixed with the spray; the engine
           offers co-current and counter-current (<code>flow</code>), this page runs the co-current
           witness, and the other flow gives another residence time.

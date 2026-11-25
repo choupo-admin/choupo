@@ -178,6 +178,7 @@ const THEORY_DEST: Record<string, string> = {
   batchCrystalliser: "ch:crystalliser",
   sprayDryer: "ch:drying",
   solidDryer: "ch:drying",
+  batchDryer: "ch:drying",     // the tray's two periods; its solid-temperature word opens sec:batch-dryer-solid-T
   convectiveDryer: "sec:dryer-flow-arrangements",   // co-, counter- and cross-flow: the balances, the driving force, the book's equations
   // batch / control
   batchStill: "ch:rayleigh",
@@ -487,6 +488,10 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "convectiveDryer.operation.flow:crossflow":       { guide: "theory", dest: "sec:dryer-flow-arrangements" },
   "convectiveDryer.operation.drivingForce:logMean": { guide: "theory", dest: "sec:dryer-flow-arrangements" },
   "convectiveDryer.operation.drivingForce:inlet":   { guide: "theory", dest: "sec:dryer-flow-arrangements" },
+  //  The tray dryer's SOLID TEMPERATURE (C512): `held` is the wet bulb throughout,
+  //  `integrated` the lumped solid's energy balance in the falling-rate period.
+  "batchDryer.operation.solidTemperature:held":       { guide: "theory", dest: "sec:batch-dryer-solid-T" },
+  "batchDryer.operation.solidTemperature:integrated": { guide: "theory", dest: "sec:batch-dryer-solid-T" },
   //  The mill (DEV.md 4c C361): the unit's `model` word is its SELECTION
   //  function, `operation.breakage.model` its BREAKAGE function -- and both
   //  can be `austin`, two different equations.

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1943,
+  "cases": 1945,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21724,6 +21724,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/drying/dryer03_solid_temperature": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/electrodialysis/edbatch01_constant_current": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -26669,6 +26683,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/drying/sprayDryer08_fines": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/economics/economics01_esterification_dcf": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31226,6 +31254,7 @@
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/drying/dryer02_characteristic_curves",
+    "tutorials/batch/drying/dryer03_solid_temperature",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
@@ -32846,6 +32875,7 @@
     "tutorials/steady/drying/sprayDryer05_whey",
     "tutorials/steady/drying/sprayDryer06_rea",
     "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/drying/sprayDryer08_fines",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics03_startup_years",
@@ -33215,7 +33245,8 @@
    ],
    "batchDryer": [
     "tutorials/batch/drying/dryer01_sucrose_tray",
-    "tutorials/batch/drying/dryer02_characteristic_curves"
+    "tutorials/batch/drying/dryer02_characteristic_curves",
+    "tutorials/batch/drying/dryer03_solid_temperature"
    ],
    "batchElectrodialysis": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
@@ -33933,6 +33964,7 @@
     "tutorials/steady/drying/sprayDryer05_whey",
     "tutorials/steady/drying/sprayDryer06_rea",
     "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/drying/sprayDryer08_fines",
     "tutorials/steady/economics/economics04_building_royalty_breakeven"
    ],
    "staircase": [
@@ -36233,6 +36265,7 @@
     "tutorials/batch/combustion/nox03_millerbowman_large_seulex",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/drying/dryer02_characteristic_curves",
+    "tutorials/batch/drying/dryer03_solid_temperature",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
@@ -36453,6 +36486,7 @@
     "tutorials/steady/drying/sprayDryer05_whey",
     "tutorials/steady/drying/sprayDryer06_rea",
     "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/drying/sprayDryer08_fines",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics04_building_royalty_breakeven",

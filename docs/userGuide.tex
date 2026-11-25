@@ -2925,6 +2925,16 @@ $k_c$, $T_{\mathrm{out}}$, $T_{\mathrm{wetbulb}}$, the constant-rate
 droplet time and $X_{\mathrm{final}}$ --- all feeding
 sensitivity/sizing/costing.
 
+\paragraph{Fines on the exhaust.}  By default every particle leaves in the powder
+and the cyclone behind the dryer sees no solid.  \code{operation \{ carryOver \{
+cutDiameter 20e-6 m; \} \}} (or \code{fraction 0.15;}, exactly one of the two) sends the
+size classes of the powder's own distribution below the cut to the exhaust stream as a
+solid; the case declares the share, the engine does not predict it.  Mass, elements and
+energy close; the residual water stays on the powder
+(\file{sprayDryer08\_fines}; Theory Guide, \S\ref{sec:spray-dryer-fines}).  The
+particle-temperature column of the axial profile is named \code{T\_particle\_drawn}: an
+interpolation between the wet bulb and the gas, not a solved temperature.
+
 \subsubsection{Simulation vs.\ design --- the model runs both ways}\label{sec:spray-design}
 
 It can feel odd to supply a wheel speed and a chamber size just to
@@ -3857,6 +3867,13 @@ a solid without one is refused by name --- and the declared
 from outside the campaign, so it is published as \code{latentDuty\_kW}
 while the energy ledger refuses to claim a verdict
 (\file{dryer01\_sucrose\_tray}; theory: Theory Guide, drying).
+
+\code{solidTemperature integrated;} (default \code{held}) keeps the surface at the wet
+bulb through the constant-rate period and then integrates one lumped temperature for the solid and its
+water, heated by the air through $h=k_Y c_H$ (the wet bulb's own Lewis~$=1$ relation) and cooled by the
+evaporation; the solid needs a \code{solidHeatCapacity} and the moisture a \code{liquidHeatCapacity}, and
+the unit's heat balance closes in \code{solidEnergy\_closure\_rel}
+(\file{dryer03\_solid\_temperature}; theory: Theory Guide, \S\ref{sec:batch-dryer-solid-T}).
 
 %  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (schema
 %  gui/schemas/operations/batchDiafilter.schema.json); witnesses
