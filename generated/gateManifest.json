@@ -1953,8 +1953,8 @@
     },
     "check_proofs": {
       "exit": 0,
-      "claim": "check_proofs: OK -- 380 steady and plant cases, six proofs each, held to the ledger: T1: HOLDS 191, VIOLATES 2, NOT JUDGED 187; T2: HOLDS 324, VIOLATES 4, NOT JUDGED 52; T3: HOLDS 360, VIOLATES 2, NOT JUDGED 18; T4: HOLDS 251, VIOLATES 0, NOT JUDGED 129; T5: HOLDS 344, VIOLATES 0, NOT JUDGED 36; T6: HOLDS 323, VIOLATES 2, NOT JUDGED 55.  NOT checked: the time-integrated binaries (T3/T4/T6 run by hand, nothing pinned), the sabotage flip of proofs.py (run by hand when it changes)",
-      "seconds": 834.1
+      "claim": "check_proofs: OK -- 380 steady and plant cases, six proofs each, held to the ledger: T1: HOLDS 191, VIOLATES 2, NOT JUDGED 187; T2: HOLDS 326, VIOLATES 4, NOT JUDGED 50; T3: HOLDS 362, VIOLATES 2, NOT JUDGED 16; T4: HOLDS 253, VIOLATES 0, NOT JUDGED 127; T5: HOLDS 346, VIOLATES 0, NOT JUDGED 34; T6: HOLDS 325, VIOLATES 2, NOT JUDGED 53.  NOT checked: the time-integrated binaries (T3/T4/T6 run by hand, nothing pinned), the sabotage flip of proofs.py (run by hand when it changes)",
+      "seconds": 520.1
     }
   }
 }
