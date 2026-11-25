@@ -5,6 +5,7 @@
 
     bin/curate/check_proofs.py                     # NIGHTLY: runs the six proofs over every steady and plant case
     bin/curate/check_proofs.py --results DIR       # judges results already measured (proofs.py's *.jsonl); no engine
+    bin/curate/check_proofs.py --save DIR          # also keeps the measured rows (jsonl) in DIR
     bin/curate/check_proofs.py --propose           # prints the ledger rows the measured corpus would need (never writes)
     bin/curate/check_proofs.py --jobs N            # cases at a time (default CHOUPO_PROOFS_JOBS or 3)
 
@@ -50,6 +51,8 @@ import gatekit  # noqa: E402
 
 LEDGER = HERE / 'proofs_ledger.tsv'
 PROOFS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']
+# The only file walk is of the --results directory the caller names (and the tool's own scratch copies): no part of the tree.
+SCAN_ROOTS = ()
 
 # ---- the reason classes of a NOT JUDGED (the ONE place a message is turned into a pinned class) -------------------
 
@@ -206,6 +209,11 @@ def main(argv):
                 pass
             import proofs
             res = proofs.run_corpus(proofs.cases_all(), PROOFS, jobs=jobs, quiet=True)
+        if '--save' in argv:                      # keep the measured rows (proofs.py's jsonl) for --results / the ledger
+            d = Path(argv[argv.index('--save') + 1])
+            d.mkdir(parents=True, exist_ok=True)
+            for t, rows in res.items():
+                (d / (t + '.all.jsonl')).write_text(''.join(json.dumps(r) + '\n' for r in rows))
         fails, lines, prop = judge(res)
         if '--propose' in argv:
             print('\n'.join(lines))
