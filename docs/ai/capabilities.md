@@ -130,12 +130,13 @@ batch plan, sizing, clean utilities, costing and economics on top
 * Witnesses: `tutorials/batch/plant/apalutamide01_tablets` (acetone, nitrogen
   loop), `tutorials/steady/drying/sprayDryer01_sugar`.
 * Linear algebra without the pain: the EduTool `linear-algebra-without-pain` (why every Newton step is a linear solve; LU as the receipt of elimination, pivoting, conditioning, a column's block-tridiagonal Jacobian, the positive-definite bowl, steepest descent against conjugate gradient; page arithmetic on toy matrices, engine claims cited by file:line; Choupo has no conjugate-gradient solver)
-* Why a dryer left the product wet (air, clock or isotherm; wet against dry basis; the floor of humid air; tray loading, the last percent, the spray chamber): the EduTool `why-did-it-not-dry` ("Why did it not dry?") and the drying page `drying`, every number an engine run of `tutorials/steady/drying/solidDryer01_sugar`, `tutorials/steady/drying/solidDryer02_starved_air`, `tutorials/steady/drying/evapDryer02_energy_limited`, `tutorials/steady/drying/sprayDryer01_sugar`, `tutorials/steady/drying/sprayDryer06_rea` and `tutorials/batch/drying/dryer01_sucrose_tray`; the verdict only orders the engine's kpis against printed tolerances (`gui/src/ui/methods/dryingBalance.ts`).  Theory Guide `sec:drying-three-ceilings`, `sec:drying-loading-tail-chamber`.
+* Why a dryer left the product wet (air, clock or isotherm; wet against dry basis; the floor of humid air; tray loading, the last percent, the spray chamber): the EduTool `why-did-it-not-dry` ("Why did it not dry?") and the drying page `drying` (with its card "the day of a tray dryer": the engine's drying time inside a cycle of load, dry, unload and clean, three handling times declared by the reader, Theory Guide `sec:drying-tray-day`), every number an engine run of `tutorials/steady/drying/solidDryer01_sugar`, `tutorials/steady/drying/solidDryer02_starved_air`, `tutorials/steady/drying/evapDryer02_energy_limited`, `tutorials/steady/drying/sprayDryer01_sugar`, `tutorials/steady/drying/sprayDryer06_rea` and `tutorials/batch/drying/dryer01_sucrose_tray`; the verdict only orders the engine's kpis against printed tolerances (`gui/src/ui/methods/dryingBalance.ts`).  Theory Guide `sec:drying-three-ceilings`, `sec:drying-loading-tail-chamber`.
 * When to open a plate-and-frame filter press (Ruth's constant-pressure law, the cycle as filtration, washing and a dead time, the average rate over the whole cycle and its flat maximum, the loss from opening early or late): the EduTool `filter-press-cycle` ("When do I open the press?"), K_p, B, the wash and the cycle read from an engine run of `tutorials/steady/solids/filter02_caco3_pressWashing` and six more runs of it drawn on the page's curve; the optimum is the page's algebra on the engine's constants (`gui/src/ui/methods/filterCycle.ts`; engine lines `src/unitOperations/solids/CakeFilter.cpp`:336-406).  Theory Guide `sec:cakeFilter-batchPress`.
 * Choosing a dryer type: the EduTool `dryer-selection` ("Which dryer for which
-  product") draws the seven common types (spray, rotary, fluidised bed, tray,
-  belt, drum, freeze) and walks a selection tree (feed form, heat sensitivity,
-  scale, batch or continuous) to one or two types, each rule read at its page
+  product") draws the nine common types (spray, rotary, fluidised bed, tray,
+  belt, drum, freeze, flash, agitated vacuum) and walks a selection tree (feed form, heat sensitivity,
+  scale, batch or continuous, then three warnings: can it burn, is it sticky, what stands before
+  and after) to one or two or three types, each rule read at its page
   from Mujumdar, Perry, van 't Land and Towler, with "not cited" where they are
   silent; the habitual tables are transcribed and shown (Mujumdar Tables 1.1,
   1.5, 1.6, van 't Land Tables 3.1 and 3.2, Towler Table 10.7, the drum dryer in
@@ -144,7 +145,9 @@ batch plan, sizing, clean utilities, costing and economics on top
   (`tutorials/steady/drying/sprayDryer01_sugar`,
   `tutorials/steady/drying/convDryer01_sugar_curve`,
   `tutorials/steady/drying/solidDryer01_sugar`,
-  `tutorials/batch/drying/dryer01_sucrose_tray`).
+  `tutorials/batch/drying/dryer01_sucrose_tray`, and for the flash dryer
+  `tutorials/steady/drying/evapDryer01_nacl`, which has no residence time or duct; the agitated
+  vacuum dryer has no unit near it).
 
 ### Blending, milling, screening, coating, packaging
 * Balances only: blenders and coating pans are `unit:mixer`; mills, screens

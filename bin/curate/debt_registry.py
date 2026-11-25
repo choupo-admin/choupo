@@ -1193,7 +1193,7 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/LinearAlgebraFigures.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/dryerSelection.ts": 3,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/DryerArrangements.tsx": 1,  # arrived from main 2026-11-21 (C465), unclassified at seeding
-    "gui/src/ui/methods/dryerSelectionLesson.ts": 9,  # arrived from main 2026-11-21 (C459/C460/C463: 5; C465 arrangements section: +4), unclassified at seeding
+    "gui/src/ui/methods/dryerSelectionLesson.ts": 8,  # lowered 2026-11-25 (C508 reopened: two sentences rewritten); arrived from main 2026-11-21 (C459/C460/C463: 5; C465 arrangements section: +4), unclassified at seeding
     "gui/src/ui/methods/linearAlgebraLesson.ts": 8,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 8,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
