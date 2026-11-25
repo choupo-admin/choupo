@@ -76,6 +76,7 @@ Description
 #include "core/Types.H"
 
 #include <functional>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -156,6 +157,20 @@ struct SQPResult
     sVector sigmaLamEq;
     sVector sigmaLamIneq;
     int     restarts     = 0;    // BFGS restarts after a failed line search
+    //  C496 (adaptiveFd only).  ineqActive: which user inequalities were
+    //  active in the final QP (an inactive row has multiplier exactly 0 and
+    //  NO error bar: NaN).  statBar: the error bar the gradient noise puts on
+    //  ||grad L||inf at the returned point (NaN = unavailable: the noise was
+    //  not measured).  certified: the KKT test was met AND the gradient was
+    //  re-estimated AT the returned point AND statBar <= the tolerance used
+    //  (scaled tolerance, see SQPOptions::scaledStationarity).  converged is
+    //  true only when certified is.  stationaryUncertified: the residuals
+    //  met their tolerances but the bar did not allow the claim.
+    std::vector<bool> ineqActive;
+    scalar  statBar      = std::numeric_limits<scalar>::quiet_NaN();
+    scalar  statTolUsed  = 0.0;
+    bool    certified    = false;
+    bool    stationaryUncertified = false;
 };
 
 struct SQPOptions
@@ -192,6 +207,13 @@ struct SQPOptions
     //    stopping.  Sources: Shi, Xuan, Oztoprak & Nocedal (2021) eq. 2.13,
     //    2.14, 2.19, Procedure I; More & Wild (2011) for the noise estimate.
     bool    adaptiveFd   = false;
+
+    //  C496 F11 (adaptiveFd only): the stationarity tolerance is tolStat times
+    //  S = max(1, ||grad f||inf, max_i |lambda_i| ||grad c_i||inf), the size
+    //  of the terms whose cancellation grad L measures (a scaling of our own,
+    //  in the spirit of the usual relative dual-infeasibility test).  Off:
+    //  the absolute tolStat.
+    bool    scaledStationarity = true;
 
     // Per-iteration callback (logging / CSV).
     std::function<void(const SQPTrace&)> onIter;
