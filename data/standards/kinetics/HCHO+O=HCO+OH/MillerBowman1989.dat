@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction HCHO+O=HCO+OH
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 54 (p. 332)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "CH2O + O = HCO + OH";
 limitingReactant  HCHO;
 stoichiometry
 (
@@ -20,7 +21,7 @@ kinetics
     A 1.8e+13;  b 0;  Ea 3080;
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A54; MB1989_formyl A54; }
+sets { MillerBowman1989 A54; MB1989_formyl A54; MillerBowman1989_AppA A54; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";

@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Reaction set MillerBowman1989_AppB: the whole of Appendix B (73 reactions of the ammonia mechanism); where B prints other numbers than A the set draws B's.
+  Miller & Bowman 1989; the hydrogen-oxygen reactions of Appendix A are also the
+  OConaire2004 set's (a second source of the same equations).  Its members are the
+  records whose `sets {}` names it.
+\*---------------------------------------------------------------------------*/
+recordType  kineticsSet;
+citation    "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+doi         "10.1016/0360-1285(89)90017-8";
+thermochemistry
+{
+    citation "not printed in the appendices (the CHEMKIN thermodynamic data base of the period); the run reads the NASA TP-2002-211556 table";
+}

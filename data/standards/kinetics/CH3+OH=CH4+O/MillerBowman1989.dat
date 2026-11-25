@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction CH3+OH=CH4+O
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 5a (p. 331)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "CH4 + O = CH3 + OH";
 limitingReactant  CH4;
 stoichiometry
 (
@@ -20,7 +21,7 @@ kinetics
     A 1020000000;  b 1.5;  Ea 8604;
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A5a; MB1989_attack A5a; }
+sets { MillerBowman1989 A5a; MB1989_attack A5a; MillerBowman1989_AppA A5a; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";

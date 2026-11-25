@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction CH3+CH3(+M)=ethane(+M)
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 1 (p. 331)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "2CH3 (+M) = C2H6 (+M)";
 limitingReactant  CH3;
 stoichiometry
 (
@@ -21,7 +22,7 @@ kinetics
     thirdBody { H2 2.0; CO 2.0; CO2 3.0; water 5.0; }
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A1; MB1989_ethane A1; }
+sets { MillerBowman1989 A1; MB1989_ethane A1; MillerBowman1989_AppA A1; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
@@ -29,7 +30,7 @@ source
     table "Appendix A (C/H/O/N mechanism)";
     page 331;
     reaction 1;
-    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant; the review's note: Troe footnote 1: Fcent=(1-a)exp(-T/T*)+a exp(-T**/T)";
 }
 reviewStatus      interim;
 reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";

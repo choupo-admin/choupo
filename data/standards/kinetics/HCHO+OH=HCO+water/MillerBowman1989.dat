@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction HCHO+OH=HCO+water
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 51 (p. 332)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "CH2O + OH = HCO + H2O";
 limitingReactant  HCHO;
 stoichiometry
 (
@@ -20,7 +21,7 @@ kinetics
     A 3430000000;  b 1.18;  Ea -447;
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A51; MB1989_formyl A51; }
+sets { MillerBowman1989 A51; MB1989_formyl A51; MillerBowman1989_AppA A51; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";

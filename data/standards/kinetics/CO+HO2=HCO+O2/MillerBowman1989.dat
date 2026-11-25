@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction CO+HO2=HCO+O2
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 60 (p. 332)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "HCO + O2 = HO2 + CO";
 limitingReactant  HCO;
 stoichiometry
 (
@@ -20,7 +21,7 @@ kinetics
     A 3.3e+13;  b -0.4;  Ea 0;
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A60; MB1989_formyl A60; }
+sets { MillerBowman1989 A60; MB1989_formyl A60; MillerBowman1989_AppA A60; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";

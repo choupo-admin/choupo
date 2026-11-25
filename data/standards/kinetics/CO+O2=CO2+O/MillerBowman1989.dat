@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction CO+O2=CO2+O
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 63 (p. 332)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "CO + O2 = CO2 + O";
 limitingReactant  CO;
 stoichiometry
 (
@@ -20,7 +21,7 @@ kinetics
     A 1.6e+13;  b 0;  Ea 41000;
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A63; MB1989_carbonMonoxide A63; }
+sets { MillerBowman1989 A63; MB1989_carbonMonoxide A63; MillerBowman1989_AppA A63; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";

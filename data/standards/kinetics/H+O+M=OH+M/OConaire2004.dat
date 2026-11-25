@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction H+O+M=OH+M
   O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622, reaction 7 of Table I
-  Written by bin/curate/make_kinetics_seed.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_seed.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "O + H + M = OH + M";
 limitingReactant  O;
 stoichiometry
 (

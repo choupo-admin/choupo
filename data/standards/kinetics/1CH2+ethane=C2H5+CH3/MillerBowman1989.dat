@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction 1CH2+ethane=C2H5+CH3
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 108 (p. 333)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "1CH2 + C2H6 = CH3 + C2H5";
+limitingReactant  1CH2;
+stoichiometry
+(
+        { component 1CH2;    nu -1; }
+        { component C2H5;    nu  1; }
+        { component CH3;     nu  1; }
+        { component ethane;  nu -1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 1.2e+14;  b 0;  Ea 0;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989_AppA A108; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix A (C/H/O/N mechanism)";
+    page 333;
+    reaction 108;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A, reaction 108 (journal p. 333), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

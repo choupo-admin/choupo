@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction H+O2+M=HO2+M
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix B reaction 5 (p. 337)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "H + O2 + M = HO2 + M";
+limitingReactant  H;
+stoichiometry
+(
+        { component H;       nu -1; }
+        { component HO2;     nu  1; }
+        { component O2;      nu -1; }
+);
+kinetics
+{
+    type thirdBody;
+    A 3.61e+17;  b -0.72;  Ea 0;
+    thirdBody { water 18.6; H2 2.9; N2 1.3; }
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989_AppB B5; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix B (ammonia mechanism)";
+    page 337;
+    reaction 5;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant; Appendix B prints other numbers than Appendix A for this equation, this is B's";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix B in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix B, reaction 5 (journal p. 337), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

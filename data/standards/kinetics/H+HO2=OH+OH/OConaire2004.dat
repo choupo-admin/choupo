@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction H+HO2=OH+OH
   O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622, reaction 11 of Table I
-  Written by bin/curate/make_kinetics_seed.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_seed.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "HO2 + H = OH + OH";
 limitingReactant  HO2;
 stoichiometry
 (

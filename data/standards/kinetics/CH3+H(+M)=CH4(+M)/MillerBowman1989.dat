@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction CH3+H(+M)=CH4(+M)
   Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 2 (p. 331)
-  Written by bin/curate/make_kinetics_mb1989.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
+printedEquation  "CH3 + H (+M) = CH4 (+M)";
 limitingReactant  CH3;
 stoichiometry
 (
@@ -22,7 +23,7 @@ kinetics
     thirdBody { H2 2.0; CO 2.0; CO2 3.0; water 5.0; }
     units { A "cm3/mol/s"; Ea "cal/mol"; }
 }
-sets { MillerBowman1989 A2; MB1989_methyl A2; }
+sets { MillerBowman1989 A2; MB1989_methyl A2; MillerBowman1989_AppA A2; }
 source
 {
     citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
@@ -30,7 +31,7 @@ source
     table "Appendix A (C/H/O/N mechanism)";
     page 331;
     reaction 2;
-    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant; the review's note: SRI footnote 2 (a b c d e as printed: 4.50e-01 797.0 979. 1.)";
 }
 reviewStatus      interim;
 reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";

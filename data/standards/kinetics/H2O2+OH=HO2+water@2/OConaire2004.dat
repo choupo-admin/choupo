@@ -1,12 +1,13 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Elementary reaction H2O2+OH=HO2+water@2
   O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622, reaction 19 of Table I
-  Written by bin/curate/make_kinetics_seed.py; the file name is the
-  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+  Written by bin/curate/make_kinetics_seed.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
 \*---------------------------------------------------------------------------*/
 recordType        elementaryReaction;
 reversible        true;
 duplicate         2;
+printedEquation  "H2O2 + OH = H2O + HO2";
 limitingReactant  H2O2;
 stoichiometry
 (
