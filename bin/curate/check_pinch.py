@@ -684,7 +684,8 @@ Exit 1 listing failures."""
             # ---- SCHEMA + exhaustive enumeration ---------------------------
             want_hdr = ("region,hotStream,coldStream,temperatureFeasible,"
                         "pinchRule,maximumCandidateDuty_kW,limitingReason,"
-                        "recommendation")
+                        "recommendation,targetPenalty_kW,"
+                        "maximumTargetPreservingDuty_kW")
             lines = f.read_text().splitlines()
             if lines[0] != want_hdr:
                 failures.append(f"CSV header '{lines[0]}' != ratified schema")
@@ -704,8 +705,14 @@ Exit 1 listing failures."""
                 if abs(got - mine[key]) > 1e-6 * max(mine[key], 1.0):
                     failures.append(f"{key}: duty {got} != independent"
                                     f" {mine[key]}")
-                if r["recommendation"].startswith("thermodynamically"
-                                                  " admissible") \
+                #  a feasible row is either admissible (targets kept at its
+                #  full Q_max) or flagged "temperature-feasible ... NOT
+                #  compatible with maximum energy recovery" (arm pinch_mer
+                #  checks the penalty by value); an infeasible row is neither.
+                if (r["recommendation"].startswith("thermodynamically"
+                                                   " admissible")
+                        or r["recommendation"].startswith(
+                            "temperature-feasible at dTmin but NOT")) \
                    != (mine[key] > 1e-9):
                     failures.append(f"{key}: admissibility wording does not"
                                     " match the duty")
@@ -986,10 +993,163 @@ Exit 1 listing failures."""
     return main()
 
 
+def arm_pinch_mer():
+    """Pinch MER arm: SEVERAL PINCHES, and the candidate table's penalty.
+
+DEFECT IT WOULD HAVE CAUGHT (third external review, 2026-11-25): the pair
+clipping, the CP rule and the "admissible" record used the FIRST pinch only,
+so with two pinches a pair that is temperature-feasible at dTmin but crosses
+the second pinch was recorded "thermodynamically admissible" with no flag
+while it turns the targets 0/10 kW into 5/15 kW.
+
+Witness: tutorials/steady/heat/pinch02_two_pinches_mer (H1 370->340 K CP 1,
+H2 400->310 K CP 0.5, C1 280->290 K CP 0.5, C2 320->360 K CP 1.5, dTmin 20).
+ORACLE: this script's own Linnhoff-Flower problem table over the raw stream
+specs (never the engine's residual): the targets, the pinch temperatures,
+and for EVERY candidate row with Q_max > 0 the targets recomputed after the
+match (the hot piece cooled from its top, the cold piece heated from its
+bottom, by Q on both), so the claimed targetPenalty_kW is checked by value,
+and the claimed maximumTargetPreservingDuty_kW is checked by a scan (its
+penalty is zero there and positive just above).
+
+Exit 1 listing failures."""
+    import csv
+    import re
+    import shutil
+    import case_records  # noqa: E402
+    import subprocess
+    import tempfile
+    from pathlib import Path
+
+    ROOT = Path(__file__).resolve().parents[2]
+    SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+    CASE = ROOT / "tutorials" / "steady" / "heat" / "pinch02_two_pinches_mer"
+    DT = 20.0
+    # (hot?, Tlo K, Thi K, CP kW/K, unit)
+    S = [(True, 340.0, 370.0, 1.0, "coolerH1"), (True, 310.0, 400.0, 0.5, "coolerH2"),
+         (False, 280.0, 290.0, 0.5, "heaterC1"), (False, 320.0, 360.0, 1.5, "heaterC2")]
+    failures = []
+
+    def targets(segs):
+        sh = lambda h: -DT / 2 if h else DT / 2
+        B = sorted({t + sh(h) for h, lo, hi, cp, _ in segs for t in (lo, hi)}, reverse=True)
+        cas, cum = 0.0, [0.0]
+        for a, b in zip(B, B[1:]):
+            m = (a + b) / 2
+            net = sum((cp if h else -cp) for h, lo, hi, cp, _ in segs
+                      if lo + sh(h) <= m <= hi + sh(h))
+            cas += net * (a - b)
+            cum.append(cas)
+        qh = -min(cum + [0.0])
+        pin = [B[i] for i, c in enumerate(cum) if abs(c + qh) < 1e-9 and 0 < i < len(B) - 1]
+        return qh + 0.0, cas + qh, pin
+
+    def cutunit(segs, unit, a, b):
+        """remove the interval [a, b] from the segment(s) of `unit`"""
+        out = []
+        for (h, lo, hi, cp, u) in segs:
+            if u != unit:
+                out.append((h, lo, hi, cp, u))
+                continue
+            if min(hi, a) - lo > 1e-12:
+                out.append((h, lo, min(hi, a), cp, u))
+            if hi - max(lo, b) > 1e-12:
+                out.append((h, max(lo, b), hi, cp, u))
+        return out
+
+    def after(ih, ic, hc, cc, q):
+        # heat q [kW] leaves the hot piece's top and enters the cold piece's bottom
+        s = cutunit(S, S[ih][4], hc[1] - q / S[ih][3], hc[1])
+        return cutunit(s, S[ic][4], cc[0], cc[0] + q / S[ic][3])
+
+    qh0, qc0, pins = targets(S)
+    if abs(qh0) > 1e-9 or abs(qc0 - 10.0) > 1e-9 or len(pins) != 2 \
+       or abs(pins[0] - 360.0) > 1e-9 or abs(pins[1] - 330.0) > 1e-9:
+        failures.append(f"oracle itself: targets {qh0}/{qc0}, pinches {pins}")
+
+    if not SOLVE.exists():
+        print(f"check_pinch_mer: {SOLVE} missing -- build first")
+        return 1
+    with tempfile.TemporaryDirectory() as td:
+        case = Path(td) / CASE.name
+        case_records.copytree(CASE, case, ignore=shutil.ignore_patterns(
+            "expected", "log.*", "reports", "converged", "resultJson*"))
+        p = subprocess.run([str(SOLVE), "."], cwd=case, capture_output=True,
+                           text=True, timeout=600)
+        out = p.stdout + p.stderr
+        if p.returncode != 0:
+            print("check_pinch_mer: witness run failed\n" + out[-1200:])
+            return 1
+
+        def kpi(name):
+            m = re.search(r'"%s":\s*([0-9.eE+-]+)' % re.escape(name), out)
+            return float(m.group(1)) if m else None
+
+        for name, want in (("Q_H_min_kW", qh0), ("Q_C_min_kW", qc0), ("n_pinches", 2.0)):
+            got = kpi(name)
+            if got is None or abs(got - want) > 1e-6:
+                failures.append(f"{name}: engine {got} vs oracle {want}")
+
+        rows = list(csv.DictReader((case / "reports/pinch/candidateMatches.csv")
+                                   .read_text().splitlines()))
+        Tp_hot, Tp_cold = pins[0] + DT / 2, pins[0] - DT / 2   # the FIRST pinch labels the regions
+        nbad = 0
+        for r in rows:
+            above = r["region"] == "abovePinch"
+            ih = next(i for i, x in enumerate(S) if x[4] == r["hotStream"])
+            ic = next(i for i, x in enumerate(S) if x[4] == r["coldStream"])
+            _, hlo, hhi, cph, _ = S[ih]
+            _, clo, chi, cpc, _ = S[ic]
+            hc = (max(hlo, Tp_hot), hhi) if above else (hlo, min(hhi, Tp_hot))
+            cc = (max(clo, Tp_cold), chi) if above else (clo, min(chi, Tp_cold))
+            q = max(0.0, min(cph * (hc[1] - hc[0]), cpc * (cc[1] - cc[0]),
+                             min(cph, cpc) * (hc[1] - cc[0] - DT)))
+            tag = f"{r['region']} {r['hotStream']}x{r['coldStream']}"
+            if abs(q - float(r["maximumCandidateDuty_kW"])) > 1e-6:
+                failures.append(f"{tag}: duty {r['maximumCandidateDuty_kW']} vs oracle {q}")
+                continue
+            if q <= 1e-9:
+                continue
+            pen = targets(after(ih, ic, hc, cc, q))[0] - qh0
+            claimed = float(r["targetPenalty_kW"])
+            if abs(pen - claimed) > 1e-6:
+                failures.append(f"{tag}: claimed penalty {claimed} vs oracle {pen}")
+            flagged = "NOT compatible" in r["recommendation"]
+            if flagged != (pen > 1e-6):
+                failures.append(f"{tag}: flag {flagged} disagrees with penalty {pen}")
+            nbad += pen > 1e-6
+            qm = float(r["maximumTargetPreservingDuty_kW"])
+            ok_at = targets(after(ih, ic, hc, cc, qm))[0] - qh0 <= 1e-6
+            ok_above = pen <= 1e-6 or \
+                targets(after(ih, ic, hc, cc, min(q, qm + 1e-3)))[0] - qh0 > 1e-9
+            if not (ok_at and ok_above):
+                failures.append(f"{tag}: maximum target-preserving duty {qm}"
+                                " not confirmed by the oracle scan")
+        if nbad < 1:
+            failures.append("the witness must contain a feasible-but-penalised match")
+        h1c1 = [r for r in rows if r["hotStream"] == "coolerH1" and r["coldStream"] == "heaterC1"]
+        if not h1c1 or "NOT compatible" not in h1c1[0]["recommendation"] \
+           or abs(float(h1c1[0]["targetPenalty_kW"]) - 5.0) > 1e-6:
+            failures.append("H1 -> C1 must be flagged with a 5 kW penalty: " + str(h1c1))
+        if "SEVERAL PINCHES" not in out:
+            failures.append("the several-pinches note is missing from the log")
+
+    if failures:
+        print("check_pinch_mer: FAIL")
+        for m in failures:
+            print("  -", m)
+        return 1
+    print("check_pinch_mer: OK -- two pinches (360, 330 K) and targets 0/10 kW equal the"
+          " independent problem table; every feasible candidate's target penalty and"
+          " maximum target-preserving duty equal it (H1->C1: 5 kW)")
+    return 0
+
+
 ARMS = [
     ("pinch_p1", arm_pinch_p1),
     ("pinch_p2", arm_pinch_p2),
     ("pinch_utility", arm_pinch_utility),
+    ("pinch_mer", arm_pinch_mer),
 ]
 
 
