@@ -926,7 +926,7 @@ describe("(k) the three questions are in the tree as warnings, each with its pag
     expect(html).toContain("data-dryer-around");
     expect((html.match(/data-around-item/g) ?? []).length).toBe(3);
     expect(html).toContain("data-flammable");
-    expect(html).toContain("data-sticky");
+    expect(read("gui/src/ui/methods/DryerSelectionTool.tsx")).toContain("data-sticky");
   });
 });
 
