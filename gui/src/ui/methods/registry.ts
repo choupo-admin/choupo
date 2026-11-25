@@ -86,7 +86,7 @@ export type MethodToolId =
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
-  | "control-valve";
+  | "control-valve" | "calculated-to-bought";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2868,6 +2868,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "distance is a compatibility indicator, never a saturation "
       + "concentration.",
     theory: "ch:hansen-mixture",
+  },
+  //  COMMISSIONED 2026-11-24 (DEV.md 4c C503), from a reading of a practitioner's
+  //  design book: a calculation gives a minimum specification and a purchase
+  //  gives a size.  The exchanger is the engine's (a declared design margin and
+  //  a declared stock list in the shell-and-tube sizer, three areas side by
+  //  side, the cost on the bought one); the pipe's next nominal size and the
+  //  compressor driver's margin are read from the engine's line list and
+  //  sizer.  The minimum pipe bore, the rating at the student's margin and the
+  //  cover test are the page's arithmetic and say so.
+  {
+    id: "calculated-to-bought", blurb: "Round an exchanger, a pipe and a driver up to what can be bought.",
+    label: "From the calculated to the bought",
+    discipline: "Process design & economics", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "That a calculation yields a minimum specification and a purchase yields a size: "
+      + "a condenser designed by the engine with a margin you set and a stock of tube lengths "
+      + "and shells the case declares, the calculated, required and bought areas side by side "
+      + "with the cost priced on the bought one; the margin as a decision about an uncertainty "
+      + "you must name, with the cheapest swept margin that covers it; the pipe's next nominal "
+      + "size and the flow area it adds over the smallest bore the velocity window allows; and "
+      + "the compressor driver's margin with a frame ladder you declare.",
+    theory: "sec:hx-bought",
   },
 ];
 
