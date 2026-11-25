@@ -93,7 +93,7 @@
 #  re-proves what did not change.  The only list; runTests nightly_set reads it.
 NIGHTLY | - | bin/curate/check_regressed_pairs.py     | re-runs every regressed fit (about 5 minutes on a pool of eight): the catalogue records change rarely
 NIGHTLY | - | bin/curate/check_exported_case_runs_alone.py | exports one case per tutorial family and runs it with the catalogue hidden (about 80 seal-and-run pairs, many minutes); a record home the closure forgot changes with the engine, not with a case
-NIGHTLY | - | bin/curate/check_proofs.py              | the six proofs of nine (feeds x2, component order, unit writing, closures recomputed outside, admissibility, no-op restart) over every steady and plant case, held to a ledger that only shrinks; one engine run per case per proof, about 25 minutes on three processes
+NIGHTLY | - | bin/curate/check_proofs.py              | the six proofs of nine (feeds x2, component order, unit writing, closures recomputed outside, admissibility, no-op restart) over every steady and plant case, held to a ledger that only shrinks; one engine run per case per proof, about 9 minutes on three processes (measured 2026-11-25)
 NIGHTLY | - | bin/curate/check_gate_selftest.py       | tests the gates by sabotage (a gate that tests gates); minutes of builds
 NIGHTLY | - | bin/curate/check_gates_judge_tracked.py | re-proves that the gates read the tracked tree, not the disk; the claim does not move with a case or a record
 
