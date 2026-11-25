@@ -12,9 +12,10 @@ THE REAL DEFECTS IT WOULD HAVE CAUGHT (named, as the gate rule asks):
       converged and closed the first law; the phaseChanger geometry mode
       priced flux x area with no bound on the latent heat the feed has.
   (2) heatExchanger03_pure_water_plateau: the published profile was the
-      constant-C curve anchored at the eps-NTU end temperatures, so over the
-      first half of the length the hot side gave 67.6 kW while the cold side
-      received 133.6 kW, and no field of the file could say so.
+      constant-C curve anchored at the eps-NTU end temperatures, with no duty
+      or enthalpy column, so no field of the file could show whether energy
+      was conserved along it (the reviewer's 67.6 against 133.6 kW at half
+      length was NOT reproduced here: the old file carried no H to form it).
 
 WHAT IS CHECKED, FROM THE RESULT JSON ALONE (no entropy is published; the
 second law is checked in its LOCAL form, which for a heat-transfer pair is
