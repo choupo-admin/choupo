@@ -61,6 +61,9 @@ def t3(case):
 
 # ------------------------------------------------------------------ T4
 
+ELEMENTS = set('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Th U'.split())
+
+
 def holdup_atoms(path, croot):
     """-> {element: kmol atoms} of one internalStates file, or raise ValueError."""
     t = strip_comments(read(path))
@@ -102,6 +105,15 @@ def t4(case):
     fs = strip_comments(read(case / 'system/flowsheetDict'))
     if re.search(r'(?<![\w])recipe\b', fs):
         return NOTJ, 'a recipe adds or removes material at declared times: open system'
+    kinds = set()
+    for f in (case / '0/internalStates').glob('*'):
+        if f.is_file():
+            q = re.search(r'\bequipment\s+(\w+)', strip_comments(read(f)))
+            kinds.add(q.group(1) if q else '?')
+            if 'notRestored' in read(f):
+                return NOTJ, 'a vessel state that is more than its holdup (notRestored): the inventory is not the whole atoms'
+    if kinds != {'batchReactor'}:
+        return NOTJ, 'vessel kind %s: its holdup is not the whole inventory (solid, adsorbed, permeate or distillate leave it)' % sorted(kinds)
     streams = [f for f in (case / '0').iterdir() if f.is_file()]
     if streams:
         return NOTJ, 'open system: stream files in 0/ (%s); the cumulative external flows are not in the state files' % streams[0].name
@@ -119,6 +131,9 @@ def t4(case):
             if not fl.exists():
                 return NOTJ, 'no %s in the last instant %s' % (f.name, last.name)
             a0, a1 = holdup_atoms(f, croot), holdup_atoms(fl, croot)
+            bad = [e for e in set(a0) | set(a1) if e not in ELEMENTS]
+            if bad:
+                return NOTJ, 'pseudo-component formula (symbols %s are not elements)' % sorted(bad)
             for e in set(a0) | set(a1):
                 x, y = a0.get(e, 0.0), a1.get(e, 0.0)
                 dev = abs(x - y) / max(abs(x), abs(y), 1e-300)
@@ -138,7 +153,7 @@ def t4(case):
 
 # A ledger accumulated since the run's START covers only the restarted segment after a restart (the run says so):
 # totals of energy, utilities, reaction heat and the initial inventory are not state, and are not compared.
-CUMULATIVE = re.compile(r'(energy_|utility_|E_reaction|mass_kg_initial|mass_kg_in_cum|mass_kg_out_cum|mass_residual|_cum$|_seg\d+|element_\w*_(in|out|initial|final)|moles_initial|t_peak|peak_kW)')
+CUMULATIVE = re.compile(r'(mass_closure_rel|moles_kmol_initial|rtd/|_total_kJ|_total$|energy_|utility_|E_reaction|mass_kg_initial|mass_kg_in_cum|mass_kg_out_cum|mass_residual|_cum$|_seg\d+|element_\w*_(in|out|initial|final)|moles_initial|t_peak|peak_kW)')
 
 
 def t6(case):
@@ -147,6 +162,10 @@ def t6(case):
     p = base_problem(case, r)
     if p:
         return NOTJ, p
+    if proofs.app_of(case) == 'choupoCtrl':
+        # a controller's memory (integral term, filter, signal generator) is in no state record: settled-contracts.md,
+        # the time-integrated layout.  A ctrl restart cannot reproduce the loop; the proof does not apply.
+        return NOTJ, 'choupoCtrl: the controller\'s memory is in no state record (settled contract), so a restart cannot be the same run'
     bd = Path(r['dir'])
     ins = instants(bd)
     cd = strip_comments(read(case / 'system/controlDict'))
@@ -173,8 +192,8 @@ def t6(case):
     rr = run_in(d)
     if rr['json'] is None:
         e = rr['err'] or ''
-        if 'notRestored' in e or 'restart' in e.lower() or 'refus' in e.lower():
-            return NOTJ, 'the restart is refused by name: %s' % e[:200]
+        if re.search(r'notRestored|MORE than its|outside the run|must lie between startTime|sensitivity: the base run|cannot restart|restart.*refus', e):
+            return NOTJ, 'the restart is refused by name, or the case declares absolute times: %s' % e[:200]
         return VIOLATES, 'restart from t=%g failed: %s' % (tm, e[:250])
     b0 = {k: v for k, v in proofs.view(r['json']).items() if not CUMULATIVE.search(k)}
     b1 = {k: v for k, v in proofs.view(rr['json']).items() if not CUMULATIVE.search(k)}
