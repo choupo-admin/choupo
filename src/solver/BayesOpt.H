@@ -60,18 +60,22 @@ Description
         Series 34:11-25; Gardner, Kusner, Xu, Weinberger & Cunningham 2014,
         "Bayesian optimization with inequality constraints", ICML, PMLR
         32(2):937-945).  While NO feasible point is known the acquisition
-        is the probability of feasibility alone (Gardner et al.).
-    READ (the publisher's PDF, 2026-11-24): Jones et al. 1998, eq. 14
+        is the probability of feasibility alone (Choupo's choice).
+    READ (the publishers' PDFs, 2026-11-24/25): Jones et al. 1998, eq. 14
     (E[I] = E max(fmin - Y, 0)) and eq. 15 (the closed form used here,
     with Y ~ Normal(yhat, s^2)) and their stopping rule (expected
     improvement below 1 % of the best value; here the fraction is of the
-    observed range, because a duty or a recovery may sit near zero).  NOT
-    READ: Rasmussen & Williams (the equation numbers above are those of the
-    published text as recalled), Schonlau et al. 1998 and Gardner et al.
-    2014 (their bibliographic records were checked, their text was not; the
-    product EI x P(feasible) is the rule as those papers are known to state
-    it).  What is not read is held by the self-check (published optima),
-    not by a citation.
+    observed range, because a duty or a recovery may sit near zero);
+    Rasmussen & Williams chapters 2 and 5: Algorithm 2.1, eqs. 2.25, 2.26,
+    2.30 (the equation numbers above are those of the text), eq. 5.1 with
+    distance measure M2 of eq. 5.2, and the log marginal likelihood eq. 5.8;
+    Gardner et al. 2014 sections 3.1-3.2 (the expected improvement over the
+    best FEASIBLE point times the probability of feasibility, a product of
+    univariate Gaussian distribution functions for independent
+    constraints).  NOT READ: Schonlau et al. 1998 (cited from Gardner et
+    al.).  The rule "probability of feasibility alone while no feasible
+    point is known" is Choupo's choice, not the paper's.  What is not read
+    is held by the self-check (published optima), not by a citation.
 
     Choices that the papers leave open, all printed by the run:
       * inputs scaled to [0,1]^n by the box; outputs standardised;
