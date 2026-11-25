@@ -369,6 +369,9 @@ const ElectrolyteModelsTool = lazy(() =>
 const ResidueCurvesTool = lazy(() =>
   import("./methods/ResidueCurvesTool.js")
     .then((m) => ({ default: m.ResidueCurvesTool })));
+const ColumnDesignTool = lazy(() =>
+  import("./methods/ColumnDesignTool.js")
+    .then((m) => ({ default: m.ColumnDesignTool })));
 const AdsorptionIsothermsTool = lazy(() =>
   import("./methods/AdsorptionIsothermsTool.js")
     .then((m) => ({ default: m.AdsorptionIsothermsTool })));
@@ -725,6 +728,7 @@ export function MethodsWorkspace() {
             : tool === "pool-fire" ? <PoolFireTool />
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
+            : tool === "column-design" ? <ColumnDesignTool />
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
             : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />

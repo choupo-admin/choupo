@@ -32739,6 +32739,97 @@ asymptotes, and the rigorous stage ladder beside it.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Designing a column: the reflux--stage curve and its cost optimum}\label{ch:column-design}
+
+\begin{whatyoulllearn}
+Why a column design is a point on a curve $R(N)$ at a fixed specification and
+what its two asymptotes are; how the engine finds a point of that curve (a
+\code{designSpec} on the reflux ratio and the distillate rate against the two
+key purities); why the annualised cost has a minimum and what moves it; and why
+the shortcut of Section~\ref{ch:fug} agrees with the rigorous column for an
+ideal mixture and fails near an azeotrope, and by how much.
+\end{whatyoulllearn}
+
+\subsection*{The specification fixes the curve}
+
+Let a column of $N$ equilibrium stages (the reboiler the last one, a total
+condenser outside the count) be given a feed and two product specifications, the
+light-key mole fraction $x_D^{*}$ of the distillate and $x_B^{*}$ of the bottoms.
+The two unknowns that remain are the reflux ratio $R$ and the distillate rate
+$D$, and the engine's \code{designSpec} solves
+\begin{equation}\label{eq:column-design-g}
+\mathbf{g}(R,D;N)=\begin{pmatrix}x_D(R,D;N)-x_D^{*}\\ x_B(R,D;N)-x_B^{*}\end{pmatrix}=\mathbf{0}
+\end{equation}
+by a damped Newton iteration in $(R,D)$ with a finite-difference Jacobian, each
+residual evaluation being one solution of the simultaneous MESH column
+(\file{src/outerDriver/DesignSpec.cpp}, \code{solver::newtonND}; the purities are
+the column's \code{x\_D\_LK} and \code{x\_B\_HK} KPIs).  Repeated for each integer
+$N$ it gives the curve $R(N)$, every point of which is on specification.  The
+mass balance fixes only the ratio $D/F=(z-x_B^{*})/(x_D^{*}-x_B^{*})$; the
+\emph{stages} and the \emph{reflux} that deliver the split are what
+Eq.~\eqref{eq:column-design-g} finds.
+
+\subsection*{Two asymptotes}
+
+$R(N)$ falls monotonically with $N$ towards a floor, the minimum reflux
+$R_\mathrm{min}$, where a pinch forms in the column and added stages stop
+helping; and as $R\to\infty$ (total reflux) $N$ falls to a floor, the minimum
+stages $N_\mathrm{min}$.  For an ideal mixture the first is Underwood's
+(Section~\ref{ch:fug}) and the second Fenske's.  For a non-ideal mixture
+$R_\mathrm{min}$ is set by a pinch that may lie away from the feed, at the
+tangent of the operating line with the equilibrium curve in the rectifying
+section, and past an azeotrope by the boundary value construction (Levy, Van
+Dongen and Doherty 1985; Julka and Doherty 1990); that calculation is the next
+step for the engine, and the curve's own floor, the reflux at the largest
+recorded $N$, is an upper bound of it.
+
+\subsection*{The cost optimum}
+
+\begin{equation}\label{eq:column-design-cost}
+C_A(N)=f_c\,C_\mathrm{inst}(N)+h\,p_E\,Q_\mathrm{reb}(N)+C_\mathrm{cool}(N)
+\end{equation}
+with $f_c$ the capital charge (a capital-recovery factor
+$i(1+i)^n/[(1+i)^n-1]$ for an interest rate $i$ and a life $n$),
+$C_\mathrm{inst}$ the installed cost, $h$ the yearly hours, $p_E$ the price of the
+reboiler's heat and $Q_\mathrm{reb}$ its duty.  The engine supplies
+$C_\mathrm{inst}$ as the Turton total-module cost (bare module with contingency
+and fee, Turton et al.\ 2018) of the five items the tray hydraulics sized, the
+duties, and the utility prices; the page adds $f_c$, $p_E$ and $h$.  $C_\mathrm{inst}$
+rises with $N$ (a taller shell, more trays) and $Q_\mathrm{reb}$ falls with it
+(a smaller $R$), so $C_A$ has an interior minimum.  Raising $p_E$ moves it to a
+larger $N$ and a smaller $R$.
+
+\subsection*{The shortcut as a control}
+
+The shortcut freezes one relative volatility $\alpha=K_\mathrm{LK}/K_\mathrm{HK}$ at
+the feed's bubble point and returns $N_\mathrm{min}^{\mathrm{FUG}}$,
+$R_\mathrm{min}^{\mathrm{FUG}}$ and a Gilliland $N(R)$.  Its error on a mixture is
+measured by
+\begin{equation}\label{eq:column-design-ratio}
+\rho_R=\frac{R^{\mathrm{rig}}(N_\mathrm{big})}{R_\mathrm{min}^{\mathrm{FUG}}},\qquad
+\rho_N=\frac{N_\mathrm{min}^{\mathrm{rig}}}{N_\mathrm{min}^{\mathrm{FUG}}},
+\end{equation}
+both of which are near one for a mixture whose volatility is nearly constant and
+grow as the distillate is asked closer to an azeotrope, where $\alpha\to1$ and
+the frozen value is the feed's, far larger.
+
+\subsection*{Validity and what is in-sample}
+
+The recorded curves are for two binary mixtures at 1\,atm, the real one with the
+catalogue NRTL pair and an ideal-gas vapour, the column with constant molar
+overflow, the feed at a fixed fraction of the column.  The ideal control is the
+same column and the same procedure on the benzene/toluene pair with ideal
+activity; the agreement of the shortcut there is a property of that mixture, not
+a calibration.  Nothing is fitted to the recorded numbers.
+
+\begin{tutoriallink}
+\file{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water} --- one
+point of the curve, a \code{designSpec} on a rigorous column.  EduTools $\to$
+\emph{Column design (real mixture)} --- the four cards on a recorded table of the
+whole curve, its cost optimum and the shortcut beside it.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Rigorous distillation by simultaneous MESH
 Newton}\label{ch:mesh}
 

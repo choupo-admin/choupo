@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 103,
-  "registryTools": 103,
+  "liveTools": 104,
+  "registryTools": 104,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -931,6 +931,20 @@
         "reference"
       ],
       "href": "/app/?workspace=methods&tool=residue-curves"
+    },
+    {
+      "id": "column-design",
+      "label": "Column design (real mixture)",
+      "blurb": "Reflux against stages, cost optimum and the shortcut's error, real mixture.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The general case of column design with the ideal mixture as its control: what a simple column can make from a feed (the lever rule, and the azeotrope no column crosses); the rigorous curve of reflux against stage count at a fixed specification, with its two asymptotes; the cost optimum of stages against energy and how the price of heat moves it; and the shortcut set beside the rigorous result, agreeing on the ideal mixture and parting near the azeotrope.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=column-design"
     },
     {
       "id": "levenspiel",

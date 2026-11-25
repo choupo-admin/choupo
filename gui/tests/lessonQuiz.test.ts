@@ -251,6 +251,8 @@ import { ReactionEnthalpyTool } from "../src/ui/methods/ReactionEnthalpyTool.js"
 import { RELAXATION_QUIZ, RELAXATION_STEPS } from "../src/ui/methods/relaxationLesson.js";
 import { RCM_QUIZ, RCM_STEPS } from "../src/ui/methods/residueCurvesLesson.js";
 import { ResidueCurvesTool } from "../src/ui/methods/ResidueCurvesTool.js";
+import { COLUMN_DESIGN_QUIZ, COLUMN_DESIGN_STEPS } from "../src/ui/methods/columnDesignLesson.js";
+import { ColumnDesignTool } from "../src/ui/methods/ColumnDesignTool.js";
 import { SCREEN_QUIZ, SCREEN_SECTIONS } from "../src/ui/methods/routeScreeningLesson.js";
 import { RouteScreeningTool } from "../src/ui/methods/RouteScreeningTool.js";
 import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "../src/ui/methods/rulesOfThumbQuiz.js";
@@ -624,6 +626,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "residue-curves": {
     quiz: RCM_QUIZ, quizName: "RCM_QUIZ", lesson: RCM_STEPS, lessonName: "RCM_STEPS",
     file: "src/ui/methods/ResidueCurvesTool.tsx", tool: ResidueCurvesTool,
+  },
+  "column-design": {
+    quiz: COLUMN_DESIGN_QUIZ, quizName: "COLUMN_DESIGN_QUIZ",
+    lesson: COLUMN_DESIGN_STEPS, lessonName: "COLUMN_DESIGN_STEPS",
+    file: "src/ui/methods/ColumnDesignTool.tsx", tool: ColumnDesignTool,
   },
   "route-screening": {
     quiz: SCREEN_QUIZ, quizName: "SCREEN_QUIZ", lesson: SCREEN_SECTIONS, lessonName: "SCREEN_SECTIONS",

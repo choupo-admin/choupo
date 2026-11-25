@@ -194,6 +194,15 @@ DOMAINS = [
      "runs on x in [0, 1], so 0.01 to 0.5 spans a wiggle to a near-straight line", False),
     (M + "bayesOpt/BayesOptCard.tsx", "noise", 0.0, None,
      "a noise standard deviation is non-negative and has no upper bound (Rasmussen and Williams 2006, eq. 2.31)", False),
+    (M + "ColumnDesignTool.tsx", "xD", 0.0, 1.0,
+     "a distillate mole fraction lies in [0, 1]; the page deliberately lets it pass the azeotrope of the real "
+     "mixture, where the card says no column can make it", False),
+    (M + "ColumnDesignTool.tsx", "energyPrice", 0.0, None,
+     "a price of heat is non-negative and has no upper bound by physics; the page offers 0.01 to 0.2 EUR/kWh "
+     "around the engine's low-pressure steam price", False),
+    (M + "ColumnDesignTool.tsx", "capitalCharge", 0.0, 1.0,
+     "the yearly charge on installed cost, a capital-recovery factor: above 1/yr the equipment would pay "
+     "back in under a year; the page offers 0.05 to 0.4", False),
 ]
 
 
