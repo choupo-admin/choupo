@@ -245,7 +245,7 @@ that table).  `fdStep` is ignored.
     gradients, and runs the QP in robust mode (a robust QP that fails is solved again by the
     default QP before anything is concluded).
 The self-check also runs HS35/HS21/HS71 under auto, clean and with 1e-7 noise.  Theory: Theory
-Guide `sec:sqp-adaptive-fd`.  Witness case: `tutorials/steady/optimisation/optim09_noisy_fdmode_auto`.
+Guide `sec:sqp-adaptive-fd`.  Witness case: `tutorials/steady/optimisation/optim09_sqp_fdmode_auto`.
 
 ### `method mads;` (C494) — nonsmooth, constrained, integer
 
