@@ -31,7 +31,7 @@ License
   DryerSelectionTool -- "Which dryer for which product" (DEV.md 4c C460).
 
   THE TASK, in one sentence: I have a wet product; which of the common dryer
-  types should I look at first, and why?  So the page opens on the seven types
+  types should I look at first, and why?  So the page opens on the nine types
   as pictures (each drawn for this page, dryerDrawings.tsx), asks the four
   questions of the tree in the order the owner named (feed form, heat
   sensitivity, scale, batch or continuous), and answers with one or two types
@@ -61,7 +61,8 @@ import { DryerTestsCard } from "./DryerTestsCard.js";
 import { DrawingLegend, DryerDrawing } from "./dryerDrawings.js";
 import { ArrangementCards, ArrangementRuns, ArrangementUses } from "./DryerArrangements.js";
 import {
-  DEFAULT_INPUTS, DRYER_IDS, DRYERS, FEED_LABEL, HEAT_LABEL, LATENT_HEAT_KJ_PER_KG, MODE_LABEL,
+  AROUND_THE_DRYER, DEFAULT_INPUTS, DRYER_IDS, DRYERS, FEED_LABEL, FIRST_SCREEN, HEAT_LABEL,
+  LATENT_HEAT_KJ_PER_KG, MODE_LABEL,
   SCALE_LABEL, SIZE_LABEL, citeOf, comparisonRows, energyBills, recommend, waterEvaporated,
   type DryerId, type FeedForm, type Heat, type Inputs, type Mode, type Scale, type Size,
   type SourceId,
@@ -89,7 +90,13 @@ function Cell({ v }: { v: string | null }): JSX.Element {
 function OpenCase({ id }: { id: DryerId }): JSX.Element {
   const e = DRYERS[id].engine;
   if (!e) {
-    return <Text size="xs" c="dimmed">The engine has no model of this type.</Text>;
+    const gap = DRYERS[id].engineGap;
+    return (
+      <Stack gap={2} data-engine-gap={gap ? id : undefined}>
+        <Text size="xs" c="dimmed">The engine has no model of this type.</Text>
+        {gap ? <Text size="xs" c="dimmed">Nearest in the engine: {gap}.</Text> : null}
+      </Stack>
+    );
   }
   return (
     <Stack gap={2} data-engine-case={e.name}>
@@ -200,21 +207,36 @@ function Tree(): JSX.Element {
             onChange={(size) => set({ size })} />
           <Switch size="xs" label="The particles are fragile (they break if stirred)"
             checked={inp.fragile} onChange={(e) => set({ fragile: e.currentTarget.checked })} />
+          {inp.mode === "continuous" && (
+            <Switch size="xs" data-quick=""
+              label="A test shows the drying is over in about 10 s (surface moisture only)"
+              checked={inp.quick} onChange={(e) => set({ quick: e.currentTarget.checked })} />
+          )}
         </Group>
       )}
+      <Group gap="md" align="flex-end" mt={6}>
+        <Switch size="xs" data-flammable=""
+          label="5. The dust or the solvent vapour can burn or explode"
+          checked={inp.flammable} onChange={(e) => set({ flammable: e.currentTarget.checked })} />
+        {inp.feed !== "solution" && (
+          <Switch size="xs" data-sticky=""
+            label="6. The feed is sticky or lumpy (it must be mixed back or pre-formed)"
+            checked={inp.sticky} onChange={(e) => set({ sticky: e.currentTarget.checked })} />
+        )}
+      </Group>
 
       <Box mt="sm" data-dryer-result={res.rule.id}>
         <Text size="xs" c="dimmed">Rule that fired: {res.rule.label}</Text>
         {res.picks.length === 0 ? (
           <Text size="sm" fw={600} mt={4}>
-            None of the seven is the plain answer.
+            None of the nine is the plain answer.
           </Text>
         ) : (
           <SimpleGrid cols={{ base: 1, sm: res.picks.length }} spacing="md" mt={6}>
             {res.picks.map((id, k) => (
               <Box key={id} data-dryer-pick={id}>
                 <Badge size="sm" color={k === 0 ? "teal" : "gray"} variant="light">
-                  {k === 0 ? "first" : "second"}
+                  {k === 0 ? "first" : k === 1 ? "second" : "also"}
                 </Badge>
                 <Text fw={600} size="sm">{DRYERS[id].label}</Text>
                 <DryerDrawing id={id} label={DRYERS[id].label} />
@@ -224,7 +246,7 @@ function Tree(): JSX.Element {
         )}
         {res.outside && (
           <Text size="sm" mt={6} data-dryer-outside="">
-            Outside the seven: <strong>{res.outside}</strong>.
+            Outside the nine: <strong>{res.outside}</strong>.
           </Text>
         )}
         <Stack gap={4} mt={6}>
@@ -240,8 +262,34 @@ function Tree(): JSX.Element {
               <Text size="xs" c="dimmed">{citeOf(r.src)}</Text>
             </Box>
           ))}
+          <Box data-dryer-first-screen="">
+            <Text size="sm" fw={600}>{FIRST_SCREEN.text}</Text>
+            <Text size="xs" c="dimmed">{citeOf(FIRST_SCREEN.src)}</Text>
+          </Box>
         </Stack>
       </Box>
+    </Box>
+  );
+}
+
+/** What stands before and after the dryer (C508): feed handling, exhaust cleaning, cooling and
+ *  collecting the product.  Qualitative, each paragraph with the pages it was read at. */
+function AroundCard(): JSX.Element {
+  return (
+    <Box data-dryer-around="" px="sm" py={8}
+      style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 4 }}>
+      <Title order={5}>What stands before and after the dryer</Title>
+      <OriginMark of={["reference"]}
+        note="what a first screen does not size, and the books say must be sized: read at the pages shown" />
+      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md" mt={6}>
+        {AROUND_THE_DRYER.map((a) => (
+          <Box key={a.heading} data-around-item="">
+            <Text size="sm" fw={600}>{a.heading}</Text>
+            <Text size="xs" mt={2}>{a.text}</Text>
+            <Text size="xs" c="dimmed" mt={2}>Read in: {citeOf(a.src)}.</Text>
+          </Box>
+        ))}
+      </SimpleGrid>
     </Box>
   );
 }
@@ -559,7 +607,7 @@ function EnergyBench(): JSX.Element {
             </Table.Tr>
           ))}
           <Table.Tr>
-            <Table.Td>Batch tray dryer, freeze dryer</Table.Td>
+            <Table.Td>Batch tray dryer, freeze dryer, agitated vacuum dryer</Table.Td>
             <Table.Td colSpan={2}><Cell v={null} /></Table.Td>
           </Table.Tr>
         </Table.Tbody>
@@ -576,7 +624,7 @@ export function DryerSelectionTool(): JSX.Element {
         <Box>
           <Title order={3}>Which dryer for which product</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            The seven types that do most of the drying, drawn as schematics, and the rules that
+            Nine types that do most of the drying, drawn as schematics, and the rules that
             choose between them from the form of the feed, its sensitivity to heat, the scale
             and the mode, each read from Mujumdar's Handbook of Industrial Drying, Perry's
             Handbook, van 't Land's Drying in the Process Industry and Towler's Chemical
@@ -584,9 +632,12 @@ export function DryerSelectionTool(): JSX.Element {
             test must give and the engine's three flow arrangements.  A shortlist to take to a drying test, not a
             design.
           </Text>
+          <Text size="sm" fw={600} mt={6} data-dryer-first-screen-top="">{FIRST_SCREEN.text}</Text>
+          <Text size="xs" c="dimmed">{citeOf(FIRST_SCREEN.src)}</Text>
         </Box>
 
         <DryerTestsCard />
+        <AroundCard />
 
         <Title order={4} data-section="arrangements">Co-current, counter-current, cross-flow (steps 9 to 12)</Title>
         <OriginMark of={["engine"]}
@@ -621,7 +672,7 @@ export function DryerSelectionTool(): JSX.Element {
             <Tree />
             {step(5)}
             <EnergyBench />
-            <Title order={5}>The seven side by side</Title>
+            <Title order={5}>The nine side by side</Title>
             <ComparisonTable />
             {step(6)}
             <HabitualTables />
