@@ -7313,6 +7313,25 @@ PYEOF
     fi
     rm -f /tmp/exportalone.$$
 
+    # THE PROOFS OF NINE OVER THE WHOLE CORPUS (C492, 2026-11-25): six proofs no
+    # golden can see (every feed x2, the component order reversed, the units
+    # written in SI, the closures recomputed outside the engine, admissibility,
+    # a no-op restart) held to a ledger of known violations that only shrinks.
+    # Real defects it would have caught: x_B_HK 0.884 -> 0.095 by list order
+    # (C504), a restart that moved a bottoms temperature 0.7 K (C516).
+    # One engine run per case per proof -- nightly tier.
+    if nightly_defer check_proofs; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_proofs.py" > /tmp/proofs9.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "proofs-of-nine-gate" "$(head -1 /tmp/proofs9.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_proofs.py)\n" "proofs-of-nine-gate"
+        head -30 /tmp/proofs9.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/proofs9.$$
+
     # C2 solid-equilibrium spike gate (2026-08-08).  Keeps the spike's
     # architectural evidence LIVE for the review that decides migration:
     # three solid thermodynamic models behind one complementarity whose code
