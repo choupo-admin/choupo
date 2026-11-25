@@ -1378,9 +1378,9 @@ give `diameter` $\to$ RATING. How close to flood is each tray? omit `diameter` $
 
 Nothing here is guessed. The orifice coefficient C\_o is a chart in the literature (Liebson, Kelley \& Bullington 1957, against hole-area ratio and plate-thickness/hole-diameter); it is a DECLARED number you own, printed back at you. The weep-point constant K2 is a chart too -- leave it out and the column tells you the weep check was not performed rather than inventing it.
 
-Read the printed table. The feed is a saturated liquid, so it joins the liquid traffic and leaves the vapour traffic alone: L doubles across the feed (0.0278 $\to$ 0.0556 kmol/s) while V does not move (0.0417 kmol/s). The flow parameter F\_LV therefore doubles too (0.0405 on tray 7, 0.0812 on tray 8), which lowers Fair's capacity parameter and with it the flooding velocity (1.545 $\to$ 1.435 m/s). The vapour velocity does NOT fall to compensate -- it rises, 1.044 $\to$ 1.092 m/s -- so the STRIPPING trays are the tight ones here: the flood approach climbs monotonically from 63.7 \% on the top tray to 80.0 \% on stage 14, and stage 14 is the tray that sets the 1.316 m tower.
+Read the printed table. The feed enters two-phase (370 K, 1 atm, 70 \% vapour), so the vapour part joins the vapour traffic and the liquid part the liquid traffic: L rises across the feed (0.0278<!--golden: kpi column09 L\_rect-$\to$ $\to$ 0.0362<!--golden: kpi column09 L\_strip-$\to$ kmol/s) and V FALLS (0.0417<!--golden: kpi column09 V\_rect-$\to$ $\to$ 0.0223<!--golden: kpi column09 V\_strip-$\to$ kmol/s). The flow parameter F\_LV therefore jumps across the feed (0.041 on tray 7, 0.099 on tray 8), which lowers Fair's capacity parameter and with it the flooding velocity (1.53 $\to$ 1.38 m/s), but the vapour velocity falls much faster (1.22 $\to$ 0.66 m/s). So the RECTIFYING trays are the tight ones here: the flood approach climbs from 74.4 \% on the top tray to 80.0 \%<!--golden: kpi column09 floodApproach\_max $\ast$100-$\to$ on stage 7, just above the feed, and drops to 47-50 \% on the stripping trays. Stage 7 sets the 1.222 m<!--golden: kpi column09 diameter-$\to$ tower (the stripping section alone would need 0.969 m<!--golden: kpi column09 diameter\_stripping-$\to$, 20.7 \% less), with a column pressure drop of 12.59 kPa<!--golden: kpi column09 dP\_column\_kPa-$\to$ and a downcomer backup of at most 199.9 mm<!--golden: kpi column09 downcomerBackup\_max\_mm-$\to$.
 
-(This paragraph used to say the stripping trays were NOT the tight ones, "because the vapour volumetric flow falls faster than the capacity". The run's own table says otherwise on both counts, and it always did -- the vapour velocity rises across the feed and the flood approach never once falls. Corrected 2026-09-07, against the printed table rather than against the argument.)
+(Header re-read 2026-11-25 against the engine's own run. It had described a saturated-liquid feed, L doubling across it with V unchanged, a flood approach climbing to 80.0 \% on stage 14 and a 1.316 m tower; the feed file is 370 K at 70 \% vapour and the run gives the numbers above. The same stale paragraph had been "corrected" on 2026-09-07 against a printed table of the liquid-feed column, which is why it survived.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1604,7 +1604,7 @@ and, in addition to column12, the thing only a reacting stage can be asked: the 
 
 THE COST, said out loud. Every stage K-value evaluation is a full reactive flash, and the MESH Jacobian is numerical, so one Newton pass costs of the order of (stages x unknowns) reactive flashes. The column is FOUR stages for that reason and no other: this is an identity witness, not a design study. A student who wants a real sour-water stripper wants the S2 case, which does not exist yet.
 
-WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converges in 7 Newton iterations to |F| \textasciitilde{} 8e-10, and the answer is the physics: NH3 climbs from 0.0054 in the reboiler liquid to 0.30 in the overhead vapour while CO2 strips out ahead of it, and T falls from 371.5 K at the bottom to 354.6 K at the top. No gammaPhi column can produce that profile, because in a molecular world ammonia's volatility does not depend on how much carbon dioxide has left the liquid.
+WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converges in 7 Newton iterations to |F| \textasciitilde{} 3e-10, and the answer is the physics: NH3 climbs from 0.0055<!--golden: kpi tower x\_B\_NH3-$\to$ in the reboiler liquid to 0.300<!--golden: kpi tower x\_D\_NH3-$\to$ in the overhead vapour while CO2 strips out ahead of it, and T falls from 370.9 K<!--golden: kpi tower T\_bottom-$\to$ at the bottom to 354.4 K<!--golden: kpi tower T\_top-$\to$ at the top. No gammaPhi column can produce that profile, because in a molecular world ammonia's volatility does not depend on how much carbon dioxide has left the liquid.
 
 \end{tutnarrative}
 \tutreadme{What it demonstrates: a distillation column solved under an aqueous equilibrium, and the proof that the effective K-value it uses per stage is the same equilibrium a flash computes --- checked through two independent code paths, on the apparent components $\ast$and$\ast$ on the ions.}
@@ -1735,7 +1735,7 @@ Until 2026-11-09 this number was transcribed and NOT USED (the column had no suc
 
 The run reports two reboiler duties against the Table-2 10.240 MW:
 
-Q\_reboiler\_kW 9.77 MW (-4.6 \%) closes the column's overall enthalpy change Q\_reboiler\_ownEnvelope\_kW 10.46 MW (+2.1 \%) the reboiler's own envelope on the CMO traffic
+Q\_reboiler\_kW 9.76 MW<!--golden: kpi splitter Q\_reboiler\_kW $\ast$1e-3-$\to$ (-4.7 \%) closes the column's overall enthalpy change Q\_reboiler\_ownEnvelope\_kW 10.45 MW<!--golden: kpi splitter Q\_reboiler\_ownEnvelope\_kW $\ast$1e-3-$\to$ (+2.0 \%) the reboiler's own envelope on the CMO traffic
 
 (With saturated reflux, before (7), the first was 8.09 MW, -21 \%.)
 
@@ -1803,7 +1803,7 @@ column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identic
 
 quantity E\_MV 1.191 E\_MV 1.0 measured
 
-distillate i-butane, wt \% 93.904 93.831 93.5 distillate n-butane, wt \% 0.0082 0.0755 0.2 bottoms i-butane, wt \% 0.411 0.444 0.3 bottoms n-butane, wt \% 97.979 97.949 98.1 reboiler temperature, K 335.085 335.081 -- reboiler duty (overall), MW 9.767 9.761 10.24 outer iterations (last pass) 597 711 --
+distillate i-butane, wt \% 93.904 93.831 93.5 distillate n-butane, wt \% 0.0082 0.0755 0.2 bottoms i-butane, wt \% 0.411 0.444 0.3 bottoms n-butane, wt \% 97.979 97.949 98.1 reboiler temperature, K 335.085 335.081 -- reboiler duty, MW 9.762<!--golden: kpi splitter Q\_reboiler\_kW $\ast$1e-3-$\to$ 9.756<!--golden: @steady/distillation/column15\_klemola\_ideal\_trays kpi splitter Q\_reboiler\_kW $\ast$1e-3-$\to$ 10.24 outer iterations (last pass) 597 711 --
 
 WHAT THE EFFICIENCY BUYS, read off that table: the major components move by less than 0.1 wt \% and the MINOR key overhead by a factor of 9 (n-butane, 0.076 $\to$ 0.008 wt \%); i-butane in the bottoms moves by 8 \%. With the plant's internal reflux BOTH arms are cleaner overhead than the plant (0.2 wt \%). On saturated reflux the two arms bracketed that number, and the case read the bracket as support for the measured efficiency; that reading rested on a column with 18 \% too little traffic and is withdrawn. What stands: the efficiency acts on the impurity, not on the major split.
 
@@ -1868,13 +1868,17 @@ WHAT THE TWO ARMS ACTUALLY GAVE
 
 quantity E\_MV 1.191 E\_MV 1.0 measured
 
-distillate i-butane, wt \% 94.033 93.975 93.5 distillate n-butane, wt \% 0.0015 0.0144 0.2 bottoms i-butane, wt \% 0.351 0.378 0.3 bottoms n-butane, wt \% 97.984 97.977 98.1 top temperature, K 314.250 314.116 -- reboiler temperature, K 329.437 329.435 -- outer iterations 349 426 --
+distillate i-butane, wt \% 93.904 93.831 93.5 distillate n-butane, wt \% 0.0082 0.0755 0.2 bottoms i-butane, wt \% 0.411 0.444 0.3 bottoms n-butane, wt \% 97.979 97.949 98.1 top temperature, K 319.767<!--golden: @steady/distillation/column14\_klemola\_c4\_splitter kpi splitter T\_top-$\to$ 319.646<!--golden: kpi splitter T\_top-$\to$ -- reboiler temperature, K 335.085<!--golden: @steady/distillation/column14\_klemola\_c4\_splitter kpi splitter T\_bottom-$\to$ 335.081<!--golden: kpi splitter T\_bottom-$\to$ -- reboiler duty, MW 9.762<!--golden: @steady/distillation/column14\_klemola\_c4\_splitter kpi splitter Q\_reboiler\_kW $\ast$1e-3-$\to$ 9.756<!--golden: kpi splitter Q\_reboiler\_kW $\ast$1e-3-$\to$ 10.24 outer iterations (last pass) 597 711 --
 
-The efficiency moves the MAJOR components by almost nothing (i-butane overhead by 0.06 wt \%) and the MINOR key in each product by a real factor (n-butane carried overhead drops about 10x; i-butane lost to the bottoms falls 7 \%). At 74 trays and R = 11.4 the column is far past the point where separating power limits the majors, so extra power goes entirely into the impurity that is left. column14's flowsheetDict section 15 argues that at length; this is the same table so that either case can be read alone.
+(Header re-read 2026-11-25 against the engine's own run. The table had been taken before the subcooled reflux was declared and said 94.033 / 93.975 and 0.0015 / 0.0144 wt \%, 0.351 / 0.378 and 97.984 / 97.977, tops at 314.250 / 314.116 K and 349 / 426 iterations. The wt \% are read from the run's distillate and bottoms streams with the catalogue's molar masses, as in column14's own section 15, which carries the same table.)
 
-A FINDING THIS ARM IS WHAT ESTABLISHED, and it belongs here because this is the case that establishes it: at E\_MV = 1 the model ALREADY rejects n-butane overhead an order of magnitude harder than the plant measured (0.0144 wt \% against 0.2). So the anchor's one clear disagreement is not caused by the declared efficiency -- turning the efficiency off does not recover the measurement, it only halves the distance in the log. Under this model 74 ideal trays over-separate this key, which runs opposite to the paper's own conclusion that 74 real trays behave as 88 ideal ones. Recorded; not explained here and not tuned away.
+The efficiency moves the MAJOR components by almost nothing (i-butane overhead by 0.07 wt \%) and the MINOR key in each product by a real factor (n-butane carried overhead rises about 9x when the efficiency is switched off; i-butane lost to the bottoms rises 8 \%). At 74 trays and R = 11.4 the column is far past the point where separating power limits the majors, so extra power goes entirely into the impurity that is left. column14's flowsheetDict section 15 argues that at length; this is the same table so that either case can be read alone.
 
-ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These two runs produce product streams whose tabulated enthalpies agree to 0.8 kW, and their flowsheet energy audits disagree wildly: column14 closes at 98.42 \% (residual 2.96 kW) and this arm at -256.84 \% (residual 670.7 kW). A difference that large between two nearly identical states does not come from the physics of the two arms; it is in how the energy report prices the products, and this pair is a compact reproducer for anyone who goes looking. Neither case claims a duty anchor -- see column14's section 8.
+WHAT THIS ARM ESTABLISHES, and it belongs here because this is the case that establishes it: at E\_MV = 1 the model already carries 0.0755 wt \% n-butane overhead against the plant's 0.2, so both arms are CLEANER overhead than the plant, and the declared efficiency (0.0082 wt \%) moves the model further from that one number, not closer. Recorded; not explained here and not tuned away.
+
+ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. This pair used to carry two energy audits that disagreed wildly (column14 at 98.42 \%, this arm at -256.84 \%, a residual of 670.7 kW) although the product enthalpies agreed to 0.8 kW. That is gone: both runs now close their plant energy boundary with a residual of 0.000 kW. What remains is a CMO property, stated in the run: the reboiler's own envelope on the CMO traffic (10.45 MW) does not agree with the plug's duty (9.76 MW), because CMO solves no stage energy balance.
+
+Neither case claims a duty anchor -- see column14's section 8.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -2170,6 +2174,45 @@ Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, saturated liquid -- the stream of 
 \goldrow{kpi}{column}{R}{2.36711296207}
 \goldrow{kpi}{column}{T\_bottom}{370.237402007}
 \goldmore{97}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column22\_wide\_boiling\_retry}{tutorials/steady/distillation/column22\_wide\_boiling\_retry}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column22) at (0.0,-0.0) {\textbf{column22}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column22.west)+(-1.05,0.00)$) -- ($(column22.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column22.east)+(0,-0.17)$) -- ($(column22.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column22.east)+(0,0.17)$) -- ($(column22.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A wide-boiling column whose default start fails and whose retry from the thermodynamic profile converges (toluene / n-hexadecane)}
+\begin{tutnarrative}
+Toluene recovered from n-hexadecane (a solvent-from-heavy-oil split): 20 stages, feed on 10, reflux ratio 3, distillate 50 of the 100 kmol/h fed, at 1 atm, the feed a cold liquid at 300 K. Solved by `model simultaneous;`.
+
+Pedagogical point: THE STARTING PROFILE CAN DECIDE WHETHER A COLUMN SOLVES. The unit's default start is a straight line from T\_feed - 5 K at the top to T\_feed + 15 K at the bottom, here 295 $\to$ 315 K, while the column really runs from 384 K to 560 K. Newton from that start stops after 80 iterations with |F| = 0.053 (relative volatilities of about 270 between the two components leave the stage equations nearly flat far from the answer). The unit therefore retries, ANNOUNCED in the log and as an advisory, from a profile built from the package's own equilibrium (Theory Guide, `sec:column-thermo-seed`): the feed's bubble point (410 K) and dew point (531 K), relative volatilities at the bubble point, a Fenske-like split that honours the declared distillate rate, each stage at the bubble point of its own liquid (384 $\to$ 560 K). The same equations converge in 8 iterations. The verdict is the model's own residual: a retry never swaps in another model.
+
+Two ways to read it. (1) Run the case as shipped and read the `[solver] column ... did NOT converge; it was re-solved ...` line. (2) Add `seed thermodynamic;` to the operation block: the column then starts from the profile and the retry never happens.
+
+Expected: T\_top \textasciitilde{} 383.8 K, T\_bottom \textasciitilde{} 559.7 K (toluene and n-hexadecane's normal boiling points, because both products are nearly pure). The CMO reboiler duty is far above the column's own energy envelope (printed beside it): with latent heats this different, constant molal overflow is not a good model, which is what `model fullMESH;` is for.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{559.653342122}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{383.773093822}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{300}
+\goldrow{kpi}{column22}{B}{0.0138888888889}
+\goldrow{kpi}{column22}{D}{0.0138888888889}
+\goldrow{kpi}{column22}{Q\_condenser\_kW}{-1925.34337684}
+\goldrow{kpi}{column22}{Q\_reboiler\_kW}{4266.88117673}
+\goldrow{kpi}{column22}{Q\_reboiler\_ownEnvelope\_kW}{3224.72770033}
+\goldrow{kpi}{column22}{R}{3}
+\goldrow{kpi}{column22}{T\_bottom}{559.653342122}
+\goldrow{kpi}{column22}{T\_top}{383.773093822}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -9551,6 +9594,50 @@ The pipe04 case with a flow-curve record that claims to be capillary-rheometer r
 
 \end{tutnarrative}
 \tutreadme{The record claims instrument capillary and declares two of the four corrections a capillary needs; the refusal names the first one missing (the Bagley end-effect correction).}
+
+\clearpage
+\tutentry{pipe09\_isothermal\_gas\_line}{tutorials/steady/hydraulics/pipe09\_isothermal\_gas\_line}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (P1) at (0.0,-0.0) {\textbf{P1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(P1.west)+(-1.05,0.00)$) -- ($(P1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(P1.east)+(0,0.00)$) -- ($(P1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {downstream};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Compressible isothermal gas line: 45 kmol/h of nitrogen at 8 bar in 300 m of 0.05 m steel pipe}
+\begin{tutnarrative}
+The same `pipe` unit as pipe01, fed a GAS. An all-vapour inlet (V/F = 1) takes the steady ISOTHERMAL COMPRESSIBLE pipe equation instead of the incompressible liquid arithmetic (C506):
+
+P1\textasciicircum{}2 - P2\textasciicircum{}2 = c G\textasciicircum{}2 [ f L/D + SUM K + 2 ln(P1/P2) ] , c = P1/rho1
+
+The run prints the exact outlet pressure, the mean-density shortcut beside it and their difference, the isothermal choking limit G sqrt(c) and the longest line that does not choke. Adiabatic and Joule-Thomson effects are not modelled. The line is horizontal (dz 0); a rise is refused by name.
+
+feed (N2, 8 bar, 300 K, 45 kmol/h) $\to$ [P1 pipe] D, L, roughness $\to$ P\_out (result) $\to$ downstream
+
+\end{tutnarrative}
+\tutreadme{The same pipe unit as pipe01\_water\_line, fed a GAS. An all-vapour inlet (V/F = 1; here phase gas; declares it) takes the steady, horizontal, constant-area, isothermal compressible equation instead of the liquid's incompressible Darcy-Weisbach arithmetic (Theory Guide, section $\ast$An isothermal gas line$\ast$, label sec:pipe-gasline).}
+\tutreadme{Nitrogen, 45 kmol/h (0.3502 kg/s), 8 bar and 300 K, through 300 m of 50 mm commercial-steel pipe (eps = 46 um), Churchill friction, ideal gas (Z = 1), gas viscosity from the Chung model of the property dictionary (17.84 uPa s).}
+\tutreadme{With c = P1/rho1 = Z R T / M (89 042 m2/s2), the mass flux G = mdot/A (178.34 kg/m2/s) and one friction factor (Re = G D / mu = 4.997e5 is the same at every section, because the viscosity depends on T only; f = 0.019993):}
+\tutreadme{$\ast$ Exact: P1\textasciicircum{}2 - P2\textasciicircum{}2 = c G\textasciicircum{}2 [ f L/D + sum K + 2 ln(P1/P2) ], solved for P2 by a bracketed Newton (3 steps). P2 = 5.46010 bar (dP = 2.5399 bar, 31.7 \% of P1). $\ast$ Mean density: P2\textasciicircum{}2 = P1\textasciicircum{}2 - c G\textasciicircum{}2 [ f L/D + sum K ] (the gas treated as a liquid at the arithmetic-mean density). P2 = 5.47988 bar (dP = 2.5201 bar).}
+\tutreadme{The shortcut's dP is 0.78 \% low here; the run prints both and their difference. The difference is the acceleration of the gas, the 2 ln(P1/P2) term. Hand-run table (bin/curate/gasline\_reference.py, the same inputs, only L changed):}
+\tutreadme{The pressure gradient grows without bound as P $\to$ G sqrt(c): the isothermal Mach number u / sqrt(c) reaches 1. For this inlet that pressure is 0.532 bar and the longest line that carries the flow is L\_max = 549.1 m; a longer one is REFUSED by name (try L 600). Also REFUSED by name: an inlet already beyond the limit, dz != 0 (the line is horizontal), and a gas with no viscosity model in the property dictionary. Adiabatic and Joule-Thomson effects are not modelled: the wall is assumed to hold T constant. A drop above 40 \% of the inlet pressure raises a validity advisory (a flag level, not a derived bound).}
+\begin{tutgolden}
+\goldrow{stream}{downstream}{F}{0.0125}
+\goldrow{stream}{downstream}{T}{300}
+\goldrow{stream}{feed}{F}{0.0125}
+\goldrow{stream}{feed}{T}{300}
+\goldrow{kpi}{P1}{F}{0.0125}
+\goldrow{kpi}{P1}{L\_max}{549.132019304}
+\goldrow{kpi}{P1}{P\_choke}{53215.4395251}
+\goldrow{kpi}{P1}{P\_in}{800000}
+\goldrow{kpi}{P1}{P\_out}{546010.18302}
+\goldrow{kpi}{P1}{P\_out\_meanDensity}{547987.711445}
+\goldrow{kpi}{P1}{compressibilityZ}{1}
+\goldrow{kpi}{P1}{deltaP}{253989.81698}
+\goldrow{kpi}{P1}{deltaP\_meanDensity}{252012.288555}
+\goldrow{kpi}{P1}{density}{8.984505285}
+\goldmore{15}
+\end{tutgolden}
 
 \clearpage
 \tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}

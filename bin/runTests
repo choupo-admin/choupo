@@ -7484,6 +7484,20 @@ PYEOF
     fi
     rm -f /tmp/readmenum.$$
 
+    #  THE SAME TIE FOR A CASE'S HEADER (DEV.md 4c C520): column10's header
+    #  described a saturated-liquid feed and a 114.5 % flood the golden never
+    #  held, and column09 still does; a marked number is held to its row, the
+    #  unmarked ones that look like results are a pinned ratchet.
+    if gate_exec "$ROOT/bin/curate/check_header_numbers.py" > /tmp/headernum.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "header-numbers-gate" "$(head -1 /tmp/headernum.$$ | cut -c1-240)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_header_numbers.py)\n" "header-numbers-gate"
+        cat /tmp/headernum.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/headernum.$$
+
     #  ITS SIBLING, AND THE HALF THE TIER GATE DELIBERATELY DOES NOT CHECK.
     #  `check_case_tiers` states in its own blind-spot list that it does NOT
     #  check coverage -- "a gate demanding growth would defeat the doctrine",

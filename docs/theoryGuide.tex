@@ -29664,6 +29664,118 @@ holdup and the regime, and lets you compare \code{LockhartMartinelli} against
 \code{homogeneous}.
 \end{tutoriallink}
 
+\subsection{An isothermal gas line: compressible flow in a straight pipe}\label{sec:pipe-gasline}
+
+When the inlet is all vapour ($V/F=1$) the incompressible law above cannot be
+used: the pressure falls along the line, the gas expands, its velocity rises
+and the mechanical-energy balance has a term that a liquid does not have.  The
+\code{pipe} unit answers with the steady, \emph{isothermal}, horizontal,
+constant-area compressible-flow equation.  Until C506 it refused a gas by
+name; it still refuses by name wherever the equation below does not hold.
+
+\paragraph{Assumptions (all of them, so the student can break one).}
+(i) Steady flow of a single vapour phase in a straight horizontal pipe of constant
+area $A=\pi D^2/4$.  (ii) $T$ is the inlet $T$ at every section --- the wall
+supplies whatever heat that takes; \textbf{adiabatic and Joule--Thomson effects are
+not modelled.}  (iii) The gas obeys $P/\rho = c$ with $c=Z R T/M$ constant along
+the line: the package's own vapour density at the inlet gives
+$c = P_1/\rho_1$, so $Z$ is held at its inlet value ($Z=1$ for the
+\code{idealGas} model, the equation of state's $Z$ otherwise).  (iv) The
+Darcy friction factor $f$ is that of the liquid line, from the same
+correlation ($f(\mathrm{Re},\varepsilon/D)$, Churchill by default), with the
+fittings' $\sum K$ added to $f L/D$ as an equivalent resistance.
+
+\paragraph{The constant Reynolds number.}  The mass flux $G=\dot m/A$ is
+constant along a constant-area pipe (continuity), so
+$\mathrm{Re} = \rho u D/\mu = G D/\mu$.  The gas viscosity depends on $T$ only (at
+the pressures where the low-pressure transport model holds), and $T$ is
+constant, so $\mathrm{Re}$ --- and therefore $f$ --- is the same at every section.
+One friction factor, evaluated at the inlet, serves the whole line; this is
+what makes the closed forms below exact in the model's own terms.
+
+\paragraph{The equation.}  The differential mechanical-energy balance with Darcy
+friction is
+\begin{equation}
+  \frac{\mathrm{d}P}{\rho} + u\,\mathrm{d}u + \frac{f}{2D}\,u^{2}\,\mathrm{d}L = 0 ,
+  \qquad \rho=\frac{P}{c},\quad u=\frac{G}{\rho}=\frac{G c}{P}.
+\end{equation}
+Substituting $u\,\mathrm{d}u = -G^2c^2\,\mathrm{d}P/P^3$ and $\mathrm{d}P/\rho =
+c\,\mathrm{d}P/P$ and multiplying by $P^2/c^2$,
+\begin{equation}
+  \frac{P}{c}\,\mathrm{d}P - \frac{G^{2}}{P}\,\mathrm{d}P + \frac{f G^{2}}{2D}\,\mathrm{d}L = 0 .
+\end{equation}
+Integrating from the inlet ($P_1$) to the outlet ($P_2$) over a length $L$ gives
+the \textbf{exact isothermal solution}
+\begin{equation}\label{eq:gasline-exact}
+  P_1^{2}-P_2^{2} \;=\; c\,G^{2}\left[\frac{f L}{D}+\sum K+2\ln\frac{P_1}{P_2}\right]
+  \;=\; \frac{G^{2} Z R T}{M}\left[\frac{f L}{D}+\sum K+2\ln\frac{P_1}{P_2}\right].
+\end{equation}
+It is implicit in $P_2$.  The unit solves it by Newton's method on
+$g(P_2)=P_1^2-P_2^2-cG^2[K+2\ln(P_1/P_2)]$ with $K = fL/D+\sum K$, safeguarded by the
+bracket $[G\sqrt c,\,P_1]$: $g'(P_2)=-2(P_2^2-cG^2)/P_2<0$ there, so $g$ is
+monotone and has exactly one root.  The starting value is the shortcut below.
+
+\paragraph{The mean-density shortcut.}  The textbook shortcut treats the gas as
+an incompressible fluid at the arithmetic-mean density
+$\rho_m=(\rho_1+\rho_2)/2=(P_1+P_2)/(2c)$:
+$\Delta P = K\,G^2/(2\rho_m)$, which rearranges to
+\begin{equation}\label{eq:gasline-mean}
+  P_2^{2} = P_1^{2} - c\,G^{2}\left[\frac{f L}{D}+\sum K\right]
+\end{equation}
+--- the exact equation (\ref{eq:gasline-exact}) with its logarithmic term
+dropped.  That term is the \emph{acceleration} of the gas, $\int u\,\mathrm{d}u$,
+which the shortcut ignores.  The unit prints both $P_2$ and their difference:
+the shortcut is good while $\ln(P_1/P_2)$ is small against $fL/D$, that is for a
+small relative pressure drop, and the student sees where it stops being so.
+
+\paragraph{The window: choking.}  Solving the differential form for the
+gradient,
+\begin{equation}
+  \frac{\mathrm{d}P}{\mathrm{d}L} = -\frac{f G^{2}/(2D)}{P/c - G^{2}/P}
+\end{equation}
+which grows without bound as $P\to G\sqrt{c}$, i.e.\ where $u=G c/P=\sqrt{c}=\sqrt{ZRT/M}$:
+the \emph{isothermal} Mach number $\mathrm{Ma}_T=u/\sqrt c$ reaches~1.  (In
+terms of the usual adiabatic sonic speed $\sqrt{\gamma c}$ this is $\mathrm{Ma}=1/\sqrt{\gamma}$.)  A subsonic isothermal flow cannot
+pass it: the longest line that can carry the inlet state ends at
+$P_2=P_{\mathrm{ch}}=G\sqrt c$, where (\ref{eq:gasline-exact}) gives
+\begin{equation}
+  \left(\frac{fL}{D}+\sum K\right)_{\max}=\frac{P_1^{2}-P_{\mathrm{ch}}^{2}}{cG^{2}}-2\ln\frac{P_1}{P_{\mathrm{ch}}},
+  \qquad L_{\max}=\frac{(\cdot)_{\max}-\sum K}{f}\,D .
+\end{equation}
+The unit therefore \textbf{refuses by name} (i) an inlet with $P_1\le G\sqrt c$
+(choked at the entrance), (ii) a line with $fL/D+\sum K\ge(\cdot)_{\max}$ (it
+prints $L_{\max}$), (iii) a sloped line ($\Delta z\ne0$: the elevation head of a
+gas with varying density is not in (\ref{eq:gasline-exact})), (iv) a gas with no
+viscosity model in the property dictionary.  A two-phase inlet keeps its own correlations
+(\S\ref{sec:pipe-twophase}); a liquid keeps the incompressible path
+byte-identical.  Beyond choking nothing is claimed: a real line then chokes at
+the exit and the upstream state is set by the exit.  As a \emph{flag}, not a bound derived
+here, a pressure drop above 40\,\% of the inlet pressure raises a \code{validity}
+advisory: the larger the velocities, the larger the heat exchange a real wall
+cannot supply, so the isothermal assumption weakens.
+
+\paragraph{Where the equation comes from, and what is not checked against a primary source.}
+Equation (\ref{eq:gasline-exact}) is the standard isothermal compressible-flow
+result found in the chemical-engineering fluid-flow textbooks (for example the
+compressible-flow chapter of \emph{Coulson \& Richardson's Chemical
+Engineering}, Vol.~1~\cite{CoulsonRichardson1}); the derivation above is
+self-contained.  The edition and equation number of the textbook form were
+\emph{not} verified against a primary page in the session that wrote this
+section, and no textbook worked example was reproduced for the same reason;
+the evidence is instead (a) an independent hand computation
+(\file{bin/curate/gasline\_reference.py}: ideal-gas density, Churchill's $f$ and
+a plain bisection written without the engine's source) that agrees with the engine to
+better than $10^{-6}$ in $P_2$, and (b) the limiting check that for a vanishing relative
+pressure drop (\ref{eq:gasline-exact}) and (\ref{eq:gasline-mean}) both tend to the
+incompressible Darcy law with the inlet density.
+
+\begin{tutoriallink}
+\file{tutorials/steady/hydraulics/pipe09\_isothermal\_gas\_line} --- 45\,kmol/h of
+nitrogen at 8\,bar in 300\,m of 50\,mm steel pipe: the exact and mean-density
+outlet pressures, the isothermal Mach numbers and $L_{\max}$ are on the screen;
+lengthen the line toward $L_{\max}$ and watch the shortcut fail.
+\end{tutoriallink}
+
 \subsection{A valve in its line: authority, the installed flow and the gain}\label{sec:control-valve}
 
 \emph{Why does a correctly sized control valve still control badly?}  Because
@@ -33746,6 +33858,106 @@ letter it prints there is the \emph{right} one is a judgement the owner of that
 plant makes.  A column that converges prints nothing of this.
 \end{pitfall}
 
+\subsection{A starting profile from the package's own equilibrium, and the retry that uses it}\label{sec:column-thermo-seed}
+
+The stage Newton of the previous subsections needs a starting profile, and
+the one every column has always been given is deliberately crude: the feed
+composition on every stage and a straight line in temperature from
+$T_f - 5\,\mathrm{K}$ at the top to $T_f + 15\,\mathrm{K}$ at the bottom.  It
+is anchored to the \emph{feed temperature}, which says nothing about where the
+column's two ends boil: a feed that is strongly subcooled or superheated, a
+mixture whose components boil $100\,\mathrm{K}$ apart, or a column at
+$16\,\mathrm{bar}$ puts both ends of the ramp far from the temperatures the
+stages will have.  Since C184 slice~2 the unit can instead start from the
+package's \emph{own} equilibrium.  The profile is used in exactly two
+situations and in no other:
+\begin{enumerate}
+\item \textbf{As a retry.}  If the MESH from the default seed returns
+  \emph{not converged}, the same equations are solved again from the
+  thermodynamic profile.  For \code{model simultaneous} this retries the
+  constant-molal-overflow Newton (both phases of a reactive column); for
+  \code{model fullMESH} it retries the full MESH from the profile's
+  $T_j,x_{ji}$ together with the constant-molal flows $V_j,L_j$.  The verdict
+  is that model's own residual: a retry never replaces the model.  When it
+  too fails, the \emph{first} attempt's iterate is kept \emph{whichever of the
+  two ended lower}, because the diagnosis is about the run the default seed
+  produced; the diagnosis reads only that run's evidence (its refused trials and
+  advisories, not the retry's), restores the state that run left, and says a
+  retry was tried.  A retry is optional: a refusal raised while it runs is
+  announced and the first result stands, never turned into a refusal exit.
+  Every retry is announced in the log and as an advisory naming the unit, the
+  rung, the run that failed, both residuals and the outcome.  When the retry's
+  answer is the published one, the convergence history holds the first
+  attempt's trace and then the retry's, and the result's
+  \code{retryHistoryStartsAt} gives the index where the retry's begins; the
+  printed iteration count is the published run's.  A column that converges
+  from the default seed is never retried, so its output is unchanged.
+\item \textbf{On request.}  \code{seed thermodynamic;} in the column's
+  \code{operation} block starts the first attempt from the profile.  A
+  \code{stageProfile} the case declares always wins, over the retry too.
+\end{enumerate}
+
+\paragraph{The four steps.}  With $z_i$ the feed composition (all feeds
+summed), $N$ stages numbered $j=0$ (top) to $N-1$ (bottom), and $P$ the
+column pressure:
+\begin{enumerate}
+\item \emph{The feed's bubble and dew points at $P$}, $T_b$ and $T_d$, from the
+  package (the same bubble-point solve the column's total condenser uses; the
+  dew point is reported, the bubble point is the anchor).
+\item \emph{Constant relative volatilities} from the K-values at $T_b$,
+  \begin{equation}\label{eq:thermo-seed-alpha}
+    \alpha_i = \frac{K_i(T_b,P,z)}{K_{\mathrm{ref}}},\qquad
+    K_{\mathrm{ref}} = \min_{i:\,z_i>0} K_i,
+  \end{equation}
+  so the heaviest component present has $\alpha=1$.
+\item \emph{A Fenske-like split that honours the declared distillate rate.}
+  With $f_i = F z_i$ the component feed flows, the distillate and bottoms
+  flows are taken to satisfy
+  \begin{equation}\label{eq:thermo-seed-split}
+    \frac{d_i}{b_i} = c\,\alpha_i^{S},\qquad
+    S = \max\!\left(1,\tfrac{N-1}{2}\right),\qquad d_i + b_i = f_i,
+  \end{equation}
+  and the constant $c$ is found by bisection on $\ln c$ so that
+  $\sum_i d_i = \dfrac{D}{D+B}\sum_i f_i$.  The exponent is half the stage
+  count because the Fenske equation is a statement at \emph{total} reflux,
+  where a column separates about as much as a column of twice as many stages
+  does at finite reflux (Gilliland's $N_{\min}\approx N/2$): it is a seed, not
+  a prediction, and it is chosen so that the seed is not sharper than the
+  column.
+\item \emph{Stage compositions and temperatures.}  Interpolating the
+  total-reflux relation between the bottoms ($j=N-1$) and the top,
+  \begin{equation}\label{eq:thermo-seed-x}
+    x_{ji} \;\propto\; b_i\,\alpha_i^{\,S\,(N-1-j)/(N-1)},\qquad
+    \sum_i x_{ji}=1,\quad x_{ji}\ge 10^{-10}\ \text{where fed},
+  \end{equation}
+  so stage $N-1$ has the bottoms' composition and stage $0$ the distillate's,
+  and each stage temperature is the bubble temperature of its own liquid,
+  $T_j = T_{\mathrm{bub}}(x_j,P)$.  Everything is evaluated in logarithms
+  ($\ln b_i = \ln f_i - \ln(1+e^{\ell_i})$ with $\ell_i=\ln c+S\ln\alpha_i$, and
+  $\ln x_{ji}$ normalised on its largest term): with $\alpha\approx 270$ on 40
+  stages $\ell_i$ exceeds 100, where $1-1/(1+e^{-\ell_i})$ rounds to zero and the
+  light key would vanish from every stage.  Under a partial condenser stage $0$
+  is the condenser, whose liquid is in equilibrium with the distillate
+  \emph{vapour}, so its exponent is one power of $\alpha$ lower
+  ($x_{0i}\propto d_i/\alpha_i$).
+\end{enumerate}
+The flows are the constant-molal-overflow ones the column already has.  A
+reactive column uses the same blended feed composition as its default seed (so
+products are present and the equilibrium row has a logarithm), and the profile
+is the \emph{reaction-off} starting point of the existing continuation.
+
+\paragraph{Validity and what it does not do.}  The relative volatilities are
+those at one temperature (the feed's bubble point); across a wide-boiling
+column they drift, which is the reason the profile is a seed and the Newton
+moves off it.  It uses one pressure, the column's: the simultaneous MESH has
+no pressure profile.  If the package cannot build it (a bubble point that does
+not converge, a refused property) a retry is announced as not possible and the
+failure stands; with \code{seed thermodynamic;} the run is refused by name,
+because a key that was asked for is never silently ignored.  The Wang--Henke
+method has no Newton and no retry.  The profile is a heuristic of this code, not a
+published correlation: Fenske's equation and Gilliland's correlation are the
+sources of the \emph{form}, and the factor $1/2$ is a judgement.
+
 % ---------------------------------------------------------------------
 \section{The enthalpy-concentration diagram: putting energy inside the
 geometry}\label{ch:ponchon}
@@ -37363,6 +37575,13 @@ two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
 in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
 foundational gas--liquid pressure-drop correlation, developed and validated
 on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
+
+\bibitem{CoulsonRichardson1} Coulson, J. M., \& Richardson, J. F., \emph{Coulson \&
+Richardson's Chemical Engineering, Volume 1: Fluid Flow, Heat Transfer and Mass
+Transfer}, Butterworth--Heinemann (edition and equation numbers not verified
+against a primary page by the author of the section).  The compressible-flow
+chapter treats isothermal flow of an ideal gas in a pipe, whose result is
+Eq.~(\ref{eq:gasline-exact}); Choupo's gas line.
 
 \bibitem{TowlerSinnott2008} Towler, G., \& Sinnott, R. (2008). \emph{Chemical Engineering Design:
 Principles, Practice and Economics of Plant and Process Design}, 1st ed., Butterworth-Heinemann

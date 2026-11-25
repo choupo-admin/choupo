@@ -104,8 +104,17 @@ operation
 * Computed: `deltaP = dP_friction + dP_fittings + dP_elevation`, `P_out`
   (= P_in - deltaP), `velocity`, `reynolds`, `frictionFactor`, `regime`.
   The pipe never takes a `P_out` spec: pressure drop is a RESULT of D, L, flow.
-* A **gas** inlet is refused: `no compressible model` (`Pipe.cpp` single-phase
-  guard).  Size a gas line by hand outside the flowsheet and say so.
+* A **gas** inlet (V/F = 1, C506) takes the steady ISOTHERMAL compressible
+  equation `P1^2 - P2^2 = c G^2 [f L/D + sum K + 2 ln(P1/P2)]`, `c = P1/rho1`,
+  `G = mdot/A` (Theory Guide `sec:pipe-gasline`; `Pipe.cpp`, `solveGasLine`):
+  needs a gas viscosity in the property dictionary (`transport { vapour {
+  viscosity { model Chung; } } }`), is horizontal (`dz` refused), prints the
+  exact `P_out`, the mean-density shortcut and their difference, the isothermal
+  Mach numbers, the choking pressure `G sqrt(c)` and `L_max`; a choked line or
+  inlet is REFUSED naming `L_max`.  Adiabatic and Joule-Thomson effects are
+  NOT modelled.  Extra KPIs: `P_out_meanDensity`, `meanDensityError_P_out`,
+  `machIsothermal_in/out`, `P_choke`, `L_max`, `massFlux`, `compressibilityZ`.
+  Witness: `steady/hydraulics/pipe09_isothermal_gas_line`.
 * Two-phase inlet: automatic (`operation { twoPhase { model
   homogeneous|LockhartMartinelli (default)|Friedel|BeggsBrill; } }`; Friedel
   and BeggsBrill need a surface tension from the package or `twoPhase {

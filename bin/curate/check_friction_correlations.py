@@ -53,17 +53,23 @@ WHAT THIS GATE CHECKS, on `tutorials/props/hydraulics/moody01_friction_correlati
       not a refactor; the three hydraulics goldens carry that arm in the main
       suite and this gate re-asserts the KPI of pipe01 directly.
 
-  (g) AN ALL-VAPOUR INLET IS REFUSED BY NAME (C35 item 8, 2026-10-05).  The
-      pipe has no compressible model; its single-phase path prices the line
-      with a LIQUID density and viscosity, and an all-vapour feed used to fall
-      through it at exit 0 (found C34).  pipe01 is copied and its feed heated
-      to 450 K at its own 5 bar (water's Psat there is ~9.3 bar, so the feed
-      resolves V/F = 1): the run must FAIL, naming the unit, the inlet
-      stream, its resolved vapour fraction and the word REFUSED, and must
-      name both remedies.  The liquid line itself still runs: that is arm
-      (f), on the unmodified pipe01.  A TWO-PHASE inlet is NOT refused (it has
-      its own correlations and pipe02 as its witness); the source arm checks
-      the refusal is gated on V/F reaching 1, not on any vapour.
+  (g) AN ALL-VAPOUR INLET NEVER REACHES THE LIQUID ARITHMETIC (C35 item 8,
+      2026-10-05; the refusal became a gas line in C506, 2026-11-25).  The
+      single-phase path prices the line with a LIQUID density and viscosity,
+      and an all-vapour feed used to fall through it at exit 0 (found C34).
+      Since C506 a vapour takes the isothermal compressible equation, so the
+      defect this arm would catch is a gas PRICED WITH A LIQUID DENSITY.
+      Three probes: (g1) pipe01 copied with its feed heated to 450 K at its
+      own 5 bar (water's Psat there is ~9.3 bar, so V/F = 1) and its 2 m rise
+      kept: the run must FAIL, naming the unit and `gas line REFUSED` (a rise
+      is not in the isothermal equation) -- never exit 0; (g2) the same with
+      the rise removed: pipe01's property dictionary has no gas viscosity, so
+      it must FAIL naming `no gas viscosity`; (g3) the witness
+      pipe09_isothermal_gas_line run: the `density` its pipe reports must
+      equal the ideal-gas P M / (R T) at the inlet to 1e-6 (an identity the
+      liquid path cannot satisfy: ~10 kg/m3 against ~800).  A TWO-PHASE inlet
+      has its own correlations and pipe02 as its witness; the source arm
+      checks the gas branch is gated on V/F reaching 1, not on any vapour.
 
   (h) A PIPE IN THE TRANSITION BAND IS ANNOUNCED (DEV.md 4c C155,
       2026-10-25).  Between Re = 2300 and 4000 the regime is not determined
@@ -142,6 +148,12 @@ source arm could see it:
 
     arm (g): Pipe.cpp's vapour refusal is not gated on
     `fs.converged && VF >= 1.0 - eps`
+
+S7 (C506, 2026-11-25, arm g rewritten when the refusal became a gas line) -- the gas
+line's inlet density taken from `DensityPhase::Liquid` instead of the vapour: arm (g3)
+FAILED ("the gas-line witness pipe09 did not run: ... Rackett describes no liquid" --
+on an ideal-gas package the liquid route refuses a supercritical N2, which is the
+gate seeing it); restored, the gate passes.
 
 AND A DEFECT IN THIS GATE, found by running those four.  Three of the
 sabotages ALSO reported "pipe01_water_line no longer reproduces its golden"
@@ -415,48 +427,77 @@ def main():
         fails.append("pipe01_water_line no longer reproduces its golden -- a "
                      "refactor that moves an answer is not a refactor")
 
-    # ---- (g) an all-vapour inlet is refused by name ----------------------
+    # ---- (g) an all-vapour inlet never reaches the liquid arithmetic -----
     #
-    #  The probe is pipe01 with ONE line changed -- the feed's T -- so the
-    #  refusal can only be about the inlet's phase.  Built in a temporary
-    #  directory, never in the tree.
+    #  The probes are pipe01 with ONE or TWO lines changed -- the feed's T
+    #  (and the rise) -- so the refusal can only be about the inlet's phase.
+    #  Built in a temporary directory, never in the tree.
     solve = ROOT / "choupoSolve"
     tmpd = Path(tempfile.mkdtemp(prefix="choupo-pipe-vapour-"))
     try:
-        probe = tmpd / "pipe01_vapour"
-        case_records.copytree(pipe, probe,
-                        ignore=shutil.ignore_patterns("converged", "log.*",
-                                                      "reports", "iterations"))
-        feed = probe / "0" / "feed"
-        ftxt = feed.read_text()
-        ftxt2 = re.sub(r"^T\s+300 K;", "T               450 K;", ftxt,
-                       count=1, flags=re.M)
-        if ftxt2 == ftxt:
-            fails.append("arm (g) could not heat pipe01's feed (its `T 300 K;` "
-                         "line moved) -- the arm cannot run, so it must not "
-                         "pass")
-        else:
+        env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+        for tag, drop_rise, must in (
+                ("g1", False, ("Pipe 'P1'", "gas line REFUSED", "dz =")),
+                ("g2", True,  ("Pipe 'P1'", "gas line REFUSED", "no gas viscosity"))):
+            probe = tmpd / ("pipe01_vapour_" + tag)
+            case_records.copytree(pipe, probe,
+                            ignore=shutil.ignore_patterns("converged", "log.*",
+                                                          "reports", "iterations"))
+            feed = probe / "0" / "feed"
+            ftxt = feed.read_text()
+            ftxt2 = re.sub(r"^T\s+300 K;", "T               450 K;", ftxt,
+                           count=1, flags=re.M)
+            if ftxt2 == ftxt:
+                fails.append(f"arm ({tag}) could not heat pipe01's feed (its "
+                             "`T 300 K;` line moved) -- the arm cannot run, so "
+                             "it must not pass")
+                continue
             feed.write_text(ftxt2)
-            env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+            if drop_rise:
+                fsd = probe / "system" / "flowsheetDict"
+                ftxt = fsd.read_text()
+                ftxt2 = re.sub(r"^(\s*)dz\s+2\.0\s+m;[^\n]*", r"\1dz         0.0     m;", ftxt,
+                               count=1, flags=re.M)
+                if ftxt2 == ftxt:
+                    fails.append(f"arm ({tag}) could not remove pipe01's rise "
+                                 "(its `dz 2.0 m;` line moved)")
+                    continue
+                fsd.write_text(ftxt2)
             pv = subprocess.run([str(solve), "."], cwd=str(probe), env=env,
                                 capture_output=True, text=True, timeout=300)
             vout = pv.stdout + pv.stderr
             if pv.returncode == 0:
-                fails.append("arm (g): pipe01 with an all-vapour feed (450 K, "
-                             "5 bar) RAN to exit 0 -- the incompressible "
-                             "liquid path priced a gas line")
+                fails.append(f"arm ({tag}): pipe01 with an all-vapour feed "
+                             "(450 K, 5 bar) RAN to exit 0 -- a gas line that "
+                             "this property dictionary cannot price was priced")
             else:
-                for need, why in (("Pipe 'P1'", "the unit"),
-                                  ("inlet stream 'feed'", "the inlet stream"),
-                                  ("V/F = 1", "its resolved vapour fraction"),
-                                  ("REFUSED", "that it is a refusal"),
-                                  ("no compressible model", "the reason"),
-                                  ("mis-declared", "the liquid-line remedy"),
-                                  ("compressible pipe exists", "the gas-line remedy")):
+                for need in must:
                     if need not in vout:
-                        fails.append(f"arm (g): the vapour-inlet refusal does "
-                                     f"not name {why} (`{need}`): "
-                                     f"{vout[-500:]}")
+                        fails.append(f"arm ({tag}): the gas-line refusal does "
+                                     f"not contain `{need}`: {vout[-500:]}")
+
+        # (g3) the witness's density is the ideal gas's, not a liquid's
+        wit = ROOT / "tutorials/steady/hydraulics/pipe09_isothermal_gas_line"
+        probe = tmpd / "pipe09"
+        case_records.copytree(wit, probe,
+                        ignore=shutil.ignore_patterns("converged", "log.*",
+                                                      "reports", "iterations"))
+        pv = subprocess.run([str(solve), "."], cwd=str(probe), env=env,
+                            capture_output=True, text=True, timeout=300)
+        vout = pv.stdout + pv.stderr
+        md = re.search(r'"density":\s*([0-9.eE+-]+)', vout)
+        if pv.returncode != 0 or not md:
+            fails.append("arm (g3): the gas-line witness pipe09 did not run: "
+                         + vout[-400:])
+        else:
+            R_gas = 8.314462618
+            M_N2, T_in, P_in = 28.013e-3, 300.0, 8.0e5      # the witness's own inlet
+            rho_ideal = P_in * M_N2 / (R_gas * T_in)
+            rho = float(md.group(1))
+            if abs(rho - rho_ideal) > 1.0e-6 * rho_ideal:
+                fails.append(f"arm (g3): the gas line's density {rho:.6g} kg/m3 "
+                             f"is not the ideal gas's {rho_ideal:.6g} -- a gas "
+                             "priced with another density")
     finally:
         shutil.rmtree(tmpd, ignore_errors=True)
     #  The refusal must be gated on an ALL-vapour feed: a test on `VF > 0`
@@ -487,9 +528,10 @@ def main():
           "with the reason named; Pipe.cpp keeps NO private friction "
           "arithmetic and reaches the factory at both call sites; pipe01's "
           "golden is unmoved; pipe01 with an all-vapour feed (450 K, 5 bar) is "
-          "REFUSED naming the unit, the inlet, its V/F and both remedies, and "
-          "the refusal is gated on V/F reaching 1 so a two-phase line still "
-          "runs (arm g); pipe01 at 40 kmol/h (Re ~ 3000) ANNOUNCES the "
+          "REFUSED by name as a gas line (its rise, then its missing gas "
+          "viscosity), the gas witness pipe09 reports the ideal-gas density to "
+          "1e-6, and the gas branch is gated on V/F reaching 1 so a two-phase "
+          "line still runs (arm g); pipe01 at 40 kmol/h (Re ~ 3000) ANNOUNCES the "
           "transition band once, into the result's `validity` advisories, "
           "saying the regime is not determined by Re and f is an "
           "interpolation, while pipe01 itself (turbulent) and at 20 kmol/h "
@@ -501,8 +543,10 @@ def main():
           " Also not covered: any friction factor IN the transition band "
           "(none exists to check -- the regime is not a function of Re "
           "there), the two-phase path's own regimes, and Ergun/two-phase "
-          "multipliers, which are still unit-op-private; and no "
-          "compressible pipe exists to check.")
+          "multipliers, which are still unit-op-private; and the "
+          "gas line's own equation is checked by its witness's golden and the "
+          "independent hand computation bin/curate/gasline_reference.py, not "
+          "here.")
     return 0
 
 

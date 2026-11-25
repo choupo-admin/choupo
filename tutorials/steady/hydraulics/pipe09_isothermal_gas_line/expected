@@ -1,0 +1,33 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  downstream             F                0.0125             1e-4
+stream  downstream             T                300                1e-4
+stream  feed                   F                0.0125             1e-4
+stream  feed                   T                300                1e-4
+kpi     P1                     F                0.0125             1e-4
+kpi     P1                     L_max            549.132019304      1e-4
+kpi     P1                     P_choke          53215.4395251      1e-4
+kpi     P1                     P_in             800000             1e-4
+kpi     P1                     P_out            546010.18302       1e-4
+kpi     P1                     P_out_meanDensity 547987.711445      1e-4
+kpi     P1                     compressibilityZ 1                  1e-4
+kpi     P1                     deltaP           253989.81698       1e-4
+kpi     P1                     deltaP_meanDensity 252012.288555      1e-4
+kpi     P1                     density          8.984505285        1e-4
+kpi     P1                     frictionFactor   0.019993143999     1e-4
+kpi     P1                     gasLine          1                  1e-4
+kpi     P1                     machIsothermal_in 0.0665192994064    1e-4
+kpi     P1                     machIsothermal_out 0.0974623572601    1e-4
+kpi     P1                     massFlux         178.336296833      1e-4
+kpi     P1                     meanDensityError_P_out 0.00362177938667   1e-4
+kpi     P1                     regime           2                  1e-4
+kpi     P1                     reynolds         499726.666639      1e-4
+kpi     P1                     velocity         19.8493173721      1e-4
+kpi     P1                     velocity_out     29.082706498       1e-4
+kpi     P1                     viscosity        1.78433840676e-05  1e-4
+boundary global               H_feeds_kW       0.67470087214      1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    0.67470087214      1e-4
+boundary global               noBoundary       false              exact

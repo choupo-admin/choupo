@@ -2599,3 +2599,22 @@ directly after a number.  A moved golden row therefore fails the README it
 feeds.  A number that is NOT the run's (a paper's value, a hand calculation, an
 input) carries no marker and is not checked; a number the golden does not hold
 (a log line, a probe) cannot be marked and is read, not gated.
+
+### The same for a case's header (DEV.md 4c C520)
+
+The header of a case -- the `description` and comments of `system/controlDict`
+and the leading comments of `system/flowsheetDict` -- quotes the run too, and
+`column10_flooding` described a feed and a flood the golden never held.  The
+same marker works inside a dict comment:
+
+```
+//  the worst tray runs at 112.6 %<!--golden: kpi column10 floodApproach_max *100-->
+```
+
+`bin/curate/check_header_numbers.py` (gate `header-numbers-gate`, every mode)
+holds each marked header number to its row with the grammar above, and pins,
+per case, how many UNMARKED header numbers look like results and tie to no
+golden row or input (`bin/curate/header_numbers_debt.tsv`, a ratchet that may
+only shrink; `bin/curate/header_numbers.py --case <name>` lists a case's
+numbers by class).  Mark a number to silence it, or correct the header, then
+re-pin with `check_header_numbers.py --write`.

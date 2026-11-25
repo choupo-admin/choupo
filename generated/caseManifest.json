@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1945,
+  "cases": 1947,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -26104,6 +26104,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/column22_wide_boiling_retry": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/packing01_schulz_0p10bar": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28878,6 +28895,23 @@
     "expectedFail"
    ],
    "hasGolden": false
+  },
+  "tutorials/steady/hydraulics/pipe09_isothermal_gas_line": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "unitModels": [
+    "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   },
   "tutorials/steady/hydraulics/pumpSystem01_operating_point": {
    "application": "choupoSolve",
@@ -32840,6 +32874,7 @@
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
     "tutorials/steady/distillation/column21_design_curve_ethanol_water",
+    "tutorials/steady/distillation/column22_wide_boiling_retry",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -33022,6 +33057,7 @@
     "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
+    "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -33447,6 +33483,7 @@
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
     "tutorials/steady/distillation/column21_design_curve_ethanol_water",
+    "tutorials/steady/distillation/column22_wide_boiling_retry",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -33817,6 +33854,7 @@
     "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
+    "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
@@ -36453,6 +36491,7 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/column22_wide_boiling_retry",
     "tutorials/steady/distillation/packing01_schulz_0p10bar",
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
@@ -36582,6 +36621,7 @@
     "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
+    "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",

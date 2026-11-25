@@ -241,9 +241,9 @@
 
   The run reports two reboiler duties against the Table-2 10.240 MW:
 
-      Q_reboiler_kW              9.77 MW   (-4.6 %)   closes the column's
+      Q_reboiler_kW              9.76 MW<!--golden: kpi splitter Q_reboiler_kW *1e-3-->   (-4.7 %)   closes the column's
                                                       overall enthalpy change
-      Q_reboiler_ownEnvelope_kW 10.46 MW   (+2.1 %)   the reboiler's own
+      Q_reboiler_ownEnvelope_kW 10.45 MW<!--golden: kpi splitter Q_reboiler_ownEnvelope_kW *1e-3-->   (+2.0 %)   the reboiler's own
                                                       envelope on the CMO
                                                       traffic
 
@@ -458,7 +458,7 @@
       bottoms    i-butane, wt %           0.411       0.444        0.3
       bottoms    n-butane, wt %          97.979      97.949       98.1
       reboiler temperature, K           335.085     335.081        --
-      reboiler duty (overall), MW         9.767       9.761      10.24
+      reboiler duty, MW                   9.762<!--golden: kpi splitter Q_reboiler_kW *1e-3-->       9.756<!--golden: @steady/distillation/column15_klemola_ideal_trays kpi splitter Q_reboiler_kW *1e-3-->       10.24
       outer iterations (last pass)          597         711         --
 
   WHAT THE EFFICIENCY BUYS, read off that table: the major components move by

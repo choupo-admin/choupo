@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column22_wide_boiling_retry
+  ===========================
+
+  Toluene recovered from n-hexadecane (a solvent-from-heavy-oil split): 20
+  stages, feed on 10, reflux ratio 3, distillate 50 of the 100 kmol/h fed, at
+  1 atm, the feed a cold liquid at 300 K.  Solved by `model simultaneous;`.
+
+  Pedagogical point: THE STARTING PROFILE CAN DECIDE WHETHER A COLUMN SOLVES.
+  The unit's default start is a straight line from T_feed - 5 K at the top to
+  T_feed + 15 K at the bottom, here 295 -> 315 K, while the column really runs
+  from 384 K to 560 K.  Newton from that start stops after 80 iterations with
+  |F| = 0.053 (relative volatilities of about 270 between the two components
+  leave the stage equations nearly flat far from the answer).  The unit
+  therefore retries, ANNOUNCED in the log and as an advisory, from a profile
+  built from the package's own equilibrium (Theory Guide, `sec:column-thermo-seed`):
+  the feed's bubble point (410 K) and dew point (531 K), relative volatilities
+  at the bubble point, a Fenske-like split that honours the declared
+  distillate rate, each stage at the bubble point of its own liquid
+  (384 -> 560 K).  The same equations converge in 8 iterations.  The verdict is
+  the model's own residual: a retry never swaps in another model.
+
+  Two ways to read it.  (1) Run the case as shipped and read the
+  `[solver] column ... did NOT converge; it was re-solved ...` line.  (2) Add
+  `seed thermodynamic;` to the operation block: the column then starts from
+  the profile and the retry never happens.
+
+  Expected: T_top ~ 383.8 K, T_bottom ~ 559.7 K (toluene and n-hexadecane's
+  normal boiling points, because both products are nearly pure).  The CMO
+  reboiler duty is far above the column's own energy envelope (printed
+  beside it): with latent heats this different, constant molal overflow is
+  not a good model, which is what `model fullMESH;` is for.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        column22;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        20;
+            feedStage      10;
+            refluxRatio    3.0;
+            distillateRate 50.0 kmol/h;
+            // feedQuality deleted (C169): the CMO q is the stream's, from its
+            // enthalpy -- a declared 1.0 contradicted this subcooled feed.
+            P              1.01325 bar;
+        }
+    }
+);

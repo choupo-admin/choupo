@@ -46,6 +46,22 @@ WHAT THIS GATE CHECKS.
       not-converged test, and ColumnDiagnosis.cpp does not include NewtonND.H
       (the diagnosis reads the NDResult it is handed; the solver is untouched).
 
+  (f) SLICE 2, THE RETRY RUNG (DEV.md 4c C184 slice 2).  THE REAL DEFECT IT
+      WOULD HAVE CAUGHT (2026-11-25): a wide-boiling column -- toluene recovered
+      from n-hexadecane, 20 stages, a 300 K feed, 384 K and 560 K at the ends --
+      stopped NOT converged after 80 Newton iterations (|F| = 0.053) from the
+      unit's default start, a ramp from T_feed - 5 K to T_feed + 15 K that lies
+      200 K from where the stages run; the same equations converge in 8
+      iterations from a profile built on the package's own bubble points.  Arms:
+      the shipped `column22_wide_boiling_retry` converges BY the retry, announced
+      (`re-solved from the thermodynamic profile ... CONVERGED`); the same column
+      as `model fullMESH;` is rescued by the full-MESH rung; `seed thermodynamic;`
+      starts from the profile and never retries; a column that converges from the
+      default seed (column06) prints no retry; the hard 50-stage column (arm c)
+      fails after the retry and its `[diagnosis]` says a retry was tried; an
+      unknown `seed` word is refused by name; the source retries only behind a
+      not-converged test and never over a declared `stageProfile`.
+
 NOT COVERED, stated so the green line cannot imply it: that the letter is RIGHT
 for a real column beyond these constructed ones (the DME plant that started this
 is the owner's, not in the tree); a specification infeasible only through the
@@ -58,7 +74,10 @@ Wang-Henke method, which reports (A) and "could not tell" only.
 SABOTAGE-VERIFIED 2026-11-24, by hand, each restored before the next: the
 `diagnoseFailure` call removed from the full-MESH block (arm c fails); the
 singular test replaced by `false` (probe C1 gives "could not tell"); the (A)
-sentence deleted (arm b fails).
+sentence deleted (arm b fails).  Slice 2, 2026-11-25: `retryWithThermoSeed`
+forced to `false` and the engine rebuilt: arm (c) (the diagnosis no longer says a
+retry was tried) and both (f) rescues (column22 simultaneous and fullMESH, exit 2,
+"failed to converge") fail; restored and rebuilt, the gate passes.
 """
 import os
 import re
@@ -194,6 +213,9 @@ def arm_newton(tmp):
     block = block[:block.index("\n\n")] if "\n\n" in block else block
     if "stage" not in block and "could not tell" not in block:
         fails.append("(c) the diagnosis names no stage:\n" + block[:600])
+    if "a retry from the thermodynamic profile" not in block:
+        fails.append("(c) the column failed after the thermodynamic retry and the "
+                     "diagnosis does not say a retry was tried:\n" + block[:600])
     return m.group(1) or "-"
 
 
@@ -202,6 +224,56 @@ def arm_converged(tmp):
     rc, out = run(c)
     if rc != 0 or "[diagnosis]" in out:
         fails.append(f"(d) the shipped column06 exited {rc} or printed a diagnosis")
+    if "re-solved from the thermodynamic profile" in out or "[seed] thermodynamic" in out:
+        fails.append("(f) a column that converges from the default seed was retried "
+                     "or seeded thermodynamically: the default path must be untouched")
+
+
+RETRY = "did NOT converge; it was re-solved from the thermodynamic profile"
+
+
+def arm_retry(tmp):
+    case = COL + "column22_wide_boiling_retry"
+    # (f1) the shipped case converges BY the retry, and says so
+    c = copy_case(case, tmp / "f1")
+    rc, out = run(c)
+    if rc != 0 or "the MESH from the default seed " + RETRY not in out or "CONVERGED in" not in out \
+            or "retryHistoryStartsAt" not in out \
+            or not re.search(r"Converged:\s+yes", out) or "[diagnosis]" in out:
+        fails.append(f"(f) column22 was not rescued by the announced retry (exit {rc}):\n{out[-700:]}")
+    # (f2) the full-MESH rung: the same column as model fullMESH on 30 stages (at 20 the retry stops at 3e-7 in 60 iterations)
+    c = copy_case(case, tmp / "f2")
+    edit(c, "system/flowsheetDict", [(r"(?m)^(\s*)model(\s+)simultaneous;", r"\1model\2fullMESH;"),
+                                     (r"nStages\s+20;", "nStages 30;"), (r"feedStage\s+10;", "feedStage 15;")])
+    rc, out = run(c)
+    if rc != 0 or "(fullMESH): the full MESH seeded from the constant-molal-overflow profile " + RETRY not in out \
+            or "CONVERGED in" not in out:
+        fails.append(f"(f) the full-MESH rung did not rescue column22 as fullMESH (exit {rc}):\n{out[-700:]}")
+    # (f3) `seed thermodynamic;` starts from the profile and never retries
+    c = copy_case(case, tmp / "f3")
+    edit(c, "system/flowsheetDict", [(r"operation\s*\{", "operation\n        {\n            seed thermodynamic;")])
+    rc, out = run(c)
+    if rc != 0 or "[seed] thermodynamic profile at P" not in out or "re-solved from the thermodynamic" in out \
+            or not re.search(r"Converged:\s+yes", out):
+        fails.append(f"(f) `seed thermodynamic;` did not start the column from the profile "
+                     f"(exit {rc}):\n{out[-700:]}")
+    # (f5) a TALL wide-boiling column (40 stages, relative volatility 270): the profile once
+    #      rounded 1 - 1/(1 + exp(-lr)) to zero and seeded every stage pure heavy
+    #      (559.7 K at the top too); in log space it keeps the light key at the top.
+    c = copy_case(case, tmp / "f5")
+    edit(c, "system/flowsheetDict", [(r"nStages\s+20;", "nStages 40;"), (r"feedStage\s+10;", "feedStage 20;")])
+    rc, out = run(c)
+    mt = re.search(r"stage T ([0-9.]+) K \(top\) -> ([0-9.]+) K \(bottom\)", out)
+    if rc != 0 or not mt or float(mt.group(2)) - float(mt.group(1)) < 100.0 \
+            or "CONVERGED in" not in out or not re.search(r"Converged:\s+yes", out):
+        fails.append(f"(f) the 40-stage wide-boiling column was not rescued from a profile that "
+                     f"spans its two boiling points (exit {rc}, {mt.groups() if mt else None}):\n{out[-500:]}")
+    # (f4) an unknown seed word is refused by name
+    c = copy_case(case, tmp / "f4")
+    edit(c, "system/flowsheetDict", [(r"operation\s*\{", "operation\n        {\n            seed fancy;")])
+    rc, out = run(c)
+    if rc == 0 or "operation `seed` must be `default` or `thermodynamic`" not in out:
+        fails.append(f"(f) an unknown `seed` word was not refused by name (exit {rc}):\n{out[-400:]}")
 
 
 def arm_source():
@@ -215,6 +287,13 @@ def arm_source():
                      f"not-converged test (found {guarded} guarded of {len(calls)} mentions)")
     if not re.search(r"if\s*\(\s*!\s*converged\s*\)\s*\{\s*columnDiagnosis::Layout", dc):
         fails.append("(e) the Wang-Henke diagnosis is not behind `if (!converged)`")
+    # (f) the retries are behind a not-converged test, and a declared interior wins
+    if not re.search(r"if\s*\(\s*!\s*res\.converged\s*&&\s*!\s*fullMeshWord\s*&&\s*retryWithThermoSeed\s*\)", dc):
+        fails.append("(f) the simultaneous retry is not behind `!res.converged && !fullMeshWord && retryWithThermoSeed`")
+    if not re.search(r"if\s*\(\s*!\s*resF\.converged\s*&&\s*retryWithThermoSeed\s*\)", dc):
+        fails.append("(f) the full-MESH retry is not behind `!resF.converged && retryWithThermoSeed`")
+    if not re.search(r"retryWithThermoSeed\s*=\s*!\s*seedThermoAsked\s*&&\s*!\s*seedDeclared\s*;", dc):
+        fails.append("(f) a retry may override a declared stageProfile or repeat `seed thermodynamic;`")
     cd = strip_comments((SRC / "ColumnDiagnosis.cpp").read_text())
     ch = strip_comments((SRC / "ColumnDiagnosis.H").read_text())
     if re.search(r'#include\s+"[^"]*NewtonND\.H"', cd + ch):
@@ -233,6 +312,7 @@ def main():
         arm_a(tmp)
         letter = arm_newton(tmp)
         arm_converged(tmp)
+        arm_retry(tmp)
         arm_source()
     if fails:
         print("check_column_diagnosis: FAILED")
@@ -245,7 +325,9 @@ def main():
           "(D) a faulty equation, or says it could not tell and what it tried (probe "
           "holds each, no text carries a row number, extrapolation notices alone are "
           f"not a cause); a distillate equal to the feed is refused as (A); the hard "
-          f"50-stage column is diagnosed ({letter}); a converged column prints none.  "
+          f"50-stage column is diagnosed ({letter}, and says a retry was tried); a converged column prints none; "
+          "a wide-boiling column is rescued by the announced thermodynamic retry (simultaneous and full-MESH rungs), "
+          "`seed thermodynamic;` starts from the profile, a bad `seed` word is refused.  "
           "NOT covered: the letter for a real column beyond these; an infeasibility "
           "only the equilibrium reach shows; failures before the first Newton iterate")
     return 0

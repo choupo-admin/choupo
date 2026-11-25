@@ -72,39 +72,47 @@
 
       quantity                        E_MV 1.191    E_MV 1.0    measured
       -------------------------------------------------------------------
-      distillate i-butane, wt %          94.033      93.975       93.5
-      distillate n-butane, wt %           0.0015      0.0144       0.2
-      bottoms    i-butane, wt %           0.351       0.378        0.3
-      bottoms    n-butane, wt %          97.984      97.977       98.1
-      top temperature, K                314.250     314.116        --
-      reboiler temperature, K           329.437     329.435        --
-      outer iterations                      349         426         --
+      distillate i-butane, wt %          93.904      93.831       93.5
+      distillate n-butane, wt %           0.0082      0.0755       0.2
+      bottoms    i-butane, wt %           0.411       0.444        0.3
+      bottoms    n-butane, wt %          97.979      97.949       98.1
+      top temperature, K                319.767<!--golden: @steady/distillation/column14_klemola_c4_splitter kpi splitter T_top-->     319.646<!--golden: kpi splitter T_top-->       --
+      reboiler temperature, K           335.085<!--golden: @steady/distillation/column14_klemola_c4_splitter kpi splitter T_bottom-->     335.081<!--golden: kpi splitter T_bottom-->       --
+      reboiler duty, MW                   9.762<!--golden: @steady/distillation/column14_klemola_c4_splitter kpi splitter Q_reboiler_kW *1e-3-->       9.756<!--golden: kpi splitter Q_reboiler_kW *1e-3-->       10.24
+      outer iterations (last pass)          597         711         --
+
+  (Header re-read 2026-11-25 against the engine's own run.  The table had been
+  taken before the subcooled reflux was declared and said 94.033 / 93.975 and
+  0.0015 / 0.0144 wt %, 0.351 / 0.378 and 97.984 / 97.977, tops at 314.250 /
+  314.116 K and 349 / 426 iterations.  The wt % are read from the run's
+  distillate and bottoms streams with the catalogue's molar masses, as in
+  column14's own section 15, which carries the same table.)
 
   The efficiency moves the MAJOR components by almost nothing (i-butane
-  overhead by 0.06 wt %) and the MINOR key in each product by a real factor
-  (n-butane carried overhead drops about 10x; i-butane lost to the bottoms
-  falls 7 %).  At 74 trays and R = 11.4 the column is far past the point where
-  separating power limits the majors, so extra power goes entirely into the
-  impurity that is left.  column14's flowsheetDict section 15 argues that at
-  length; this is the same table so that either case can be read alone.
+  overhead by 0.07 wt %) and the MINOR key in each product by a real factor
+  (n-butane carried overhead rises about 9x when the efficiency is switched
+  off; i-butane lost to the bottoms rises 8 %).  At 74 trays and R = 11.4 the
+  column is far past the point where separating power limits the majors, so
+  extra power goes entirely into the impurity that is left.  column14's
+  flowsheetDict section 15 argues that at length; this is the same table so
+  that either case can be read alone.
 
-  A FINDING THIS ARM IS WHAT ESTABLISHED, and it belongs here because this is
-  the case that establishes it: at E_MV = 1 the model ALREADY rejects n-butane
-  overhead an order of magnitude harder than the plant measured (0.0144 wt %
-  against 0.2).  So the anchor's one clear disagreement is not caused by the
-  declared efficiency -- turning the efficiency off does not recover the
-  measurement, it only halves the distance in the log.  Under this model 74
-  ideal trays over-separate this key, which runs opposite to the paper's own
-  conclusion that 74 real trays behave as 88 ideal ones.  Recorded; not
-  explained here and not tuned away.
+  WHAT THIS ARM ESTABLISHES, and it belongs here because this is the case that
+  establishes it: at E_MV = 1 the model already carries 0.0755 wt % n-butane
+  overhead against the plant's 0.2, so both arms are CLEANER overhead than the
+  plant, and the declared efficiency (0.0082 wt %) moves the model further
+  from that one number, not closer.  Recorded; not explained here and not
+  tuned away.
 
   ONE MORE OBSERVATION, and it is about the ENGINE rather than the column.
-  These two runs produce product streams whose tabulated enthalpies agree to
-  0.8 kW, and their flowsheet energy audits disagree wildly: column14 closes at
-  98.42 % (residual 2.96 kW) and this arm at -256.84 % (residual 670.7 kW).
-  A difference that large between two nearly identical states does not come
-  from the physics of the two arms; it is in how the energy report prices the
-  products, and this pair is a compact reproducer for anyone who goes looking.
+  This pair used to carry two energy audits that disagreed wildly (column14
+  at 98.42 %, this arm at -256.84 %, a residual of 670.7 kW) although the
+  product enthalpies agreed to 0.8 kW.  That is gone: both runs now close
+  their plant energy boundary with a residual of 0.000 kW.  What remains is a
+  CMO property, stated in the run: the reboiler's own envelope on the CMO
+  traffic (10.45 MW) does not agree with the plug's duty (9.76 MW), because
+  CMO solves no stage energy balance.
+
   Neither case claims a duty anchor -- see column14's section 8.
 \*---------------------------------------------------------------------------*/
 

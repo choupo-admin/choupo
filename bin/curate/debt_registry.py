@@ -1079,7 +1079,7 @@ LESSON_PROSE_CITATIONS_UNMANAGED = {
     "gui/src/case/columnStageSheet.ts": 3,
     "gui/src/case/completeZero.ts": 4,
     "gui/src/case/dutyUtility.ts": 2,
-    "gui/src/case/electrolyteModels.ts": 7,
+    "gui/src/case/electrolyteModels.ts": 6,
     "gui/src/case/trayGeometry.ts": 1,
     "gui/src/ui/ExploreWorkspace.tsx": 3,
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 1,
@@ -1098,8 +1098,7 @@ LESSON_PROSE_CITATIONS_UNMANAGED = {
     "gui/src/ui/methods/ReactorLadderTool.tsx": 1,
     "gui/src/ui/methods/SourWaterTool.tsx": 4,
     "gui/src/ui/methods/UnifacTheoryTool.tsx": 10,
-    "gui/src/ui/methods/WhatIsEntropyTool.tsx": 2,
-    "gui/src/ui/methods/WhatIsExergyTool.tsx": 1,
+    "gui/src/ui/methods/WhatIsEntropyTool.tsx": 1,
     "gui/src/ui/methods/activeSetQpMath.ts": 4,
     "gui/src/ui/methods/approachToEquilibriumLesson.ts": 16,
     "gui/src/ui/methods/batchMembraneLesson.ts": 54,
@@ -1159,7 +1158,6 @@ LESSON_PROSE_CITATIONS_UNMANAGED = {
     "gui/tests/plantLayoutLesson.test.ts": 2,
     "gui/tests/reactionEnthalpy.test.ts": 2,
     "gui/tests/standardState.test.ts": 3,
-    "gui/tests/whatIsEntropyTool.test.ts": 1,
 }
 
 LESSON_PROSE_CITATIONS_DEBT = {

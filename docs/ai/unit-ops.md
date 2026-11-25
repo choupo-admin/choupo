@@ -1370,6 +1370,18 @@ is the package's at the vapour that stage sends up.
   infeasible trials refused; `legacy` (monotone search, no bounds, clamped
   residual) is declared only where the bounded one is known to stall --
   stripper02, a heel case -- and is announced when declared.
+  `seed default|thermodynamic;` in `operation` picks the starting profile
+  (C184 slice 2): `default` is the feed-temperature ramp every column has
+  always had; `thermodynamic` starts from the package's own equilibrium (the
+  feed's bubble point, relative volatilities at it, a Fenske-like split that
+  honours `distillateRate`, each stage at the bubble point of its liquid;
+  Theory Guide `sec:column-thermo-seed`).  Without the key the thermodynamic
+  profile is still the FIRST RUNG OF A RETRY: when the MESH from the default
+  seed returns not converged (`simultaneous`, and `fullMESH` separately), the
+  SAME equations are re-solved from it, announced in the log and as an
+  advisory, the verdict is that model's own residual, and the `[diagnosis]`
+  block says a retry was tried when it fails too.  A converged column is never
+  retried.  A declared `stageProfile` always wins.  `WangHenke` has neither.
 - `fullMESH`  (aliases `MESH`, `NaphtaliSandholm` -- they are NOT aliases of
   `simultaneous`: `DistillationColumn.cpp` runs all three names as the full
   MESH).  Converges the `simultaneous` CMO problem first, then promotes the
@@ -3392,6 +3404,24 @@ standing on the chord below the lowest measured rate); `viscosity` is the effect
 `tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution` (Example 3.1),
 `pipe05_herschelbulkley_clay_slurry` (Example 3.3).
 
+
+**A GAS LINE (C506; Theory Guide `sec:pipe-gasline`).**  An ALL-VAPOUR inlet (`V/F = 1`; a feed that
+declares `phase gas;` is not flashed) takes the steady, horizontal, constant-area, ISOTHERMAL compressible
+equation instead of the old refusal: with `c = P1/rho1` (= `Z R T / M`, `Z` held at its inlet value, from the
+package's vapour density), `G = mdot/A` and ONE Darcy `f` (Re = `G D / mu` is the same at every section: the gas
+viscosity depends on T only),
+`P1^2 - P2^2 = c G^2 [ f L/D + sum K + 2 ln(P1/P2) ]`, solved for `P2` by a bracketed Newton.  The run prints the
+exact `P_out`, the MEAN-DENSITY shortcut `P2^2 = P1^2 - c G^2 (f L/D + sum K)` beside it and the difference, the
+isothermal Mach numbers, the choking pressure `G sqrt(c)` (where `dP/dL -> infinity`) and `L_max`.  Needs a gas
+viscosity: `transport { vapour { viscosity { model Chung; } } }`.  REFUSED by name: a choked inlet
+(`P_in <= G sqrt(c)`), a line longer than `L_max` (it prints `L_max`), `dz != 0`, no gas viscosity.  A drop above
+40 % of `P_in` raises a `validity` advisory.  **Adiabatic and Joule-Thomson effects are NOT modelled.**  A liquid
+and a two-phase inlet keep their paths byte-identical.  Extra KPIs: `gasLine` (1), `massFlux`, `compressibilityZ`,
+`velocity_out`, `P_choke`, `L_max`, `machIsothermal_in`, `machIsothermal_out`, `P_out_meanDensity`,
+`deltaP_meanDensity`, `meanDensityError_P_out`.  Witness: `tutorials/steady/hydraulics/pipe09_isothermal_gas_line`;
+independent hand computation `bin/curate/gasline_reference.py`.  The EduTool `gas-line` ("How far can a gas line go?",
+`gui/src/ui/methods/GasLineTool.tsx`) draws the profile, the shortcut's error and the choking limit; its numbers equal the
+witness's golden.
 
 **Gas-liquid two-phase flow (Layer 1).**  When the feed flashes two-phase at
 `(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves;

@@ -71,10 +71,10 @@
   stripper wants the S2 case, which does not exist yet.
 
   WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile.
-  It converges in 7 Newton iterations to |F| ~ 8e-10, and the answer is
-  the physics: NH3 climbs from 0.0054 in the reboiler liquid to 0.30 in
+  It converges in 7 Newton iterations to |F| ~ 3e-10, and the answer is
+  the physics: NH3 climbs from 0.0055<!--golden: kpi tower x_B_NH3--> in the reboiler liquid to 0.300<!--golden: kpi tower x_D_NH3--> in
   the overhead vapour while CO2 strips out ahead of it, and T falls from
-  371.5 K at the bottom to 354.6 K at the top.  No gammaPhi column can
+  370.9 K<!--golden: kpi tower T_bottom--> at the bottom to 354.4 K<!--golden: kpi tower T_top--> at the top.  No gammaPhi column can
   produce that profile, because in a molecular world ammonia's volatility
   does not depend on how much carbon dioxide has left the liquid.
 \*---------------------------------------------------------------------------*/
