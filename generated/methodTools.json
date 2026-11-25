@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 104,
-  "registryTools": 104,
+  "liveTools": 106,
+  "registryTools": 106,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1672,6 +1672,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=solvent-mixture"
+    },
+    {
+      "id": "calculated-to-bought",
+      "label": "From the calculated to the bought",
+      "blurb": "Round an exchanger, pipe and driver up to what you can buy.",
+      "discipline": "Process design & economics",
+      "teaches": "That a calculation yields a minimum specification and a purchase yields a size: a condenser designed by the engine with a margin you set and a stock of tube lengths and shells the case declares, the calculated, required and bought areas side by side with the cost priced on the bought one; the margin as a decision about an uncertainty you must name, with the cheapest swept margin that covers it; the pipe's next nominal size and the flow area it adds over the smallest bore the velocity window allows; and the compressor driver's margin with a frame ladder you declare.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=calculated-to-bought"
     }
   ]
 }

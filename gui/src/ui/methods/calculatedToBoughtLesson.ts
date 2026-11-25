@@ -76,6 +76,12 @@ export const CB_STEPS: readonly LessonStep[] = [
       { sym: "A_{\\mathrm{bought}}", means: "the installed area of the bought bundle", unit: "m2" },
       { sym: "A_{\\mathrm{calc}}", means: "the calculated area of step 1", unit: "m2" },
       { sym: "u", means: "the fraction by which you believe the overall coefficient may fall below the calculated one", unit: "–" },
+      { sym: "Q_{\\mathrm{delivered}}", means: "the heat a bundle of area A delivers when the coefficient has fallen by u", unit: "W" },
+      { sym: "A", means: "the area of a candidate bundle", unit: "m2" },
+      { sym: "U", means: "the overall heat-transfer coefficient used in the calculation", unit: "W/(m2 K)" },
+      { sym: "F", means: "the correction of the log-mean temperature difference", unit: "–" },
+      { sym: "\\Delta T_{\\mathrm{lm}}", means: "the log-mean temperature difference", unit: "K" },
+      { sym: "Q", means: "the heat duty", unit: "W" },
     ],
     derivation: [
       { step: "If the true coefficient is the calculated one times one minus u, a bundle of area A delivers that fraction of the duty the calculated one would.",
@@ -113,6 +119,7 @@ export const CB_STEPS: readonly LessonStep[] = [
       { sym: "v_{\\max}", means: "the velocity window's ceiling for the service, which the knob moves", unit: "m/s" },
       { sym: "A_{\\mathrm{bought}}", means: "the flow area of the bought line", unit: "m2" },
       { sym: "A_{\\min}", means: "the flow area of the smallest line the ceiling allows", unit: "m2" },
+      { sym: "\\pi", means: "the ratio of a circle's circumference to its diameter", unit: "–" },
     ],
     derivation: [
       { step: "At a fixed flow the velocity is the flow over the flow area, which is a quarter of pi times the bore squared.",
@@ -147,7 +154,7 @@ export const CB_STEPS: readonly LessonStep[] = [
         eq: String.raw`P_{\mathrm{frame}} = s\,\left\lceil P_{\mathrm{rated}}/s \right\rceil` },
     ],
     note: "The page changes the margin and recomputes the rating by the formula the sizer uses; at the sizer's own margin the engine's printed rating and this page's agree, which the page's "
-      + "tests hold. The engine prices no driver separately, so this card has no cost.",
+      + "tests hold. The engine prices no driver separately, so this card shows no cost.",
   },
   {
     n: 6,

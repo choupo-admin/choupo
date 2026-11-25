@@ -2878,7 +2878,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  sizer.  The minimum pipe bore, the rating at the student's margin and the
   //  cover test are the page's arithmetic and say so.
   {
-    id: "calculated-to-bought", blurb: "Round an exchanger, a pipe and a driver up to what can be bought.",
+    id: "calculated-to-bought", blurb: "Round an exchanger, pipe and driver up to what you can buy.",
     label: "From the calculated to the bought",
     discipline: "Process design & economics", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],

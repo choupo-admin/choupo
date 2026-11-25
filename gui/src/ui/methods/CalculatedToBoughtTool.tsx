@@ -369,7 +369,7 @@ export function CalculatedToBoughtTool(): JSX.Element {
       )}
       <PanelNote>
         Runs tutorials/steady/rotating/{CB_COMPRESSOR_WITNESS} (choupoSolve WASM) unchanged; the engine carries no motor
-        frame list and prices no driver, so the ladder is yours and this card has no cost.
+        frame list and prices no driver, so the ladder is yours and this card shows no cost.
       </PanelNote>
     </Box>
   );
