@@ -197,7 +197,8 @@ def shipped(jobs):
             if k not in ('OK',):
                 print('%-9s %s %s' % (k, c.relative_to(ROOT), why))
                 bad += 1
-    print('check_utility_limits: %d shipped exchanger-like cases, %d not OK' % (len(cases), bad))
+    print(('check_utility_limits: OK -- %d shipped exchanger-like steady cases: no outlet beyond the stream that heats or cools it, no phase exhausted, every profile conserves energy by segment; NOT checked: entropy, batch and dynamic jackets, dryers' % len(cases)) if not bad else
+          'check_utility_limits: FAIL -- %d of %d cases' % (bad, len(cases)))
     return bad
 
 

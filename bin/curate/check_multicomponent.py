@@ -285,5 +285,6 @@ if __name__ == '__main__':
     for a in (args or list(ARMS)):
         ARMS[a]()
     bad = [r for r in RESULTS if not r[2]]
-    print('%d checks, %d FAIL' % (len(RESULTS), len(bad)))
+    print(('check_multicomponent: OK -- %d checks on synthetic two-solid and two-gas cases (order swapped, a component split in two identical halves, each specification recomputed on the published outlet); NOT checked: spray, batch and solid dryers, crystallisers' % len(RESULTS)) if not bad else
+          'check_multicomponent: FAIL -- %d of %d checks' % (len(bad), len(RESULTS)))
     sys.exit(0 if (not bad or expect_fail) else 1)
