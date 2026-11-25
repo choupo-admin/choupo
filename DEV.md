@@ -5695,6 +5695,13 @@ accepts today, and that is a policy call.
 > that cannot move them.  What leaves column14, column19, column20 and the PEQ plant unmoved goes now; what moves
 > them goes after its moved rows are listed and seen.  C501, C506, C511 to the cloud; C503, C507, C510, C513 here.
 
+> **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
+> lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
+> electrodialysis (demin_ratio), PhaseChanger (Q_latent_kW) and alpha_mean; the columns are C504.  C516:
+> `converged/` drops the feed's declared phase (stripper01/02) and the engine refuses the speciation block it
+> wrote (marcilla01/02).  C517: claus01 and ammonia01 close in atoms; the few 1e-5 of mass is the record's MW
+> against its formula (S8 256.48 against 256.52): a gate at 1e-4 and the records outside it corrected.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
