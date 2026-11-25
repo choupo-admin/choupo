@@ -40,6 +40,7 @@ Description
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <functional>
 
 namespace Choupo::solver
 {

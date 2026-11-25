@@ -41,7 +41,10 @@ Standalone test of the interior-point optimizer (slice A2, src/solver/ip/):
      the optimum f*), not copied from any code.  PASS rule: the run converges,
      |f - f*| <= 1e-6 max(1,|f*|), and the violation of the constraints and
      bounds at the returned point is <= 1e-8, from the standard start.  The
-     iteration count is pinned with a band.
+     iteration count is pinned with a band, and NO evaluation of f may be made
+     outside the variable bounds (the fraction to the boundary: the line
+     search's own rejection of a trial whose log is undefined would otherwise
+     hide its removal).
   3. TWO INFEASIBLE PROBLEMS (review R3): two inconsistent linear equalities,
      and a bound against an equality.  The run must end "locally infeasible"
      naming the violated rows, never "converged" and never an iteration limit.
@@ -143,6 +146,8 @@ public:
     scalar fStar = 0.0;
     std::size_t pinIterations = 0;     //- the pinned iteration count (0: none yet)
     bool exact = true;                 //- every function has an analytic Hessian
+    mutable std::size_t outside = 0;   //- evaluations of f at a point outside the variable bounds (the
+                                       //  fraction-to-the-boundary rule says there are none)
 
     std::string name() const override { return label; }
     std::size_t numVariables() const override { return x0.size(); }
@@ -150,7 +155,13 @@ public:
     void variableBounds(Vec& l, Vec& u) const override { l = xL; u = xU; }
     void constraintBounds(Vec& l, Vec& u) const override { l = cL; u = cU; }
     Vec startingPoint() const override { return x0; }
-    bool objective(const Vec& x, scalar& f) const override { f = obj.val(x); return std::isfinite(f); }
+    bool objective(const Vec& x, scalar& f) const override
+    {
+        for (std::size_t i = 0; i < x.size(); ++i)
+            if (x[i] < xL[i] || x[i] > xU[i]) { ++outside; break; }
+        f = obj.val(x);
+        return std::isfinite(f);
+    }
     bool objectiveGradient(const Vec& x, Vec& g) const override { obj.grad(x, g); return true; }
     bool constraints(const Vec& x, Vec& c) const override
     {
@@ -610,6 +621,7 @@ bool runHS(HSProblem& p, bool verbose)
 {
     IPOptions o;
     if (verbose) o.log = &std::cout;
+    p.outside = 0;
     const IPResult r = InteriorPoint::solve(p, o);
     const scalar fErr = std::abs(r.objective - p.fStar);
     const scalar fTol = 1e-6 * std::max(1.0, std::abs(p.fStar));
@@ -617,10 +629,10 @@ bool runHS(HSProblem& p, bool verbose)
     for (const Pin& k : kPins) if (p.label == k.name) pin = k.iterations;
     const std::size_t band = std::max<std::size_t>(3, pin / 4);
     const bool inBand = pin == 0 || (r.iterations + band >= pin && r.iterations <= pin + band);
-    const bool pass = r.converged() && fErr <= fTol && r.constraintViolation <= 1e-8 && inBand;
-    std::printf("%-6s f* %-16.10g f %-16.10g |df| %.1e viol %.1e  it %3zu (pin %3zu +-%zu)  ic %2zu  resto %zu  %s  %s\n",
+    const bool pass = r.converged() && fErr <= fTol && r.constraintViolation <= 1e-8 && inBand && p.outside == 0;
+    std::printf("%-6s f* %-16.10g f %-16.10g |df| %.1e viol %.1e  it %3zu (pin %3zu +-%zu)  ic %2zu  resto %zu  outside %zu  %s  %s\n",
                 p.label.c_str(), p.fStar, r.objective, fErr, r.constraintViolation, r.iterations, pin, band,
-                r.inertiaCorrections, r.restorations, statusName(r.status), pass ? "PASS" : "FAIL");
+                r.inertiaCorrections, r.restorations, p.outside, statusName(r.status), pass ? "PASS" : "FAIL");
     if (!pass && diagnosticFor(p.label)) std::printf("       %s\n", diagnosticFor(p.label));
     if (verbose)
     {

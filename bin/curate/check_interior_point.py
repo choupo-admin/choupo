@@ -52,12 +52,32 @@ point, so f* is reachable only to about 2 v^(1/3) = 4.3e-3 at v = 1e-8.  HS116:
 the run is feasible and 9.0e-4 BELOW the collection's f*.  The gate says so and
 fails on them until the architect rules.
 
-SABOTAGE-VERIFIED 2026-11-25 (by hand, in the source, restored; before/after
-in the slice report):
-  (i)   fraction to the boundary removed (alpha_max = 1) -- see the report.
-  (ii)  Algorithm IC disabled (dw = dc = 0 always) -- see the report.
-  (iii) restoration replaced by a stop -- see the report.
-  (r3)  the "locally infeasible" exit test sabotaged -- see the report.
+SABOTAGE-VERIFIED 2026-11-25 (by hand, in the source, restored; outputs in the
+slice report):
+  (i)   fraction to the boundary removed (alpha_max and alpha_z = 1): the line
+        search's own rejection of a trial with an undefined log HIDES it from
+        the objective (HS21, HS76, HS118 still converge, only the iteration
+        count moves), so the test counts every evaluation of f outside the
+        variable bounds -- 0 on every problem now, 9-13 on HS13, HS21, HS76,
+        HS116, HS118 with the rule removed -- FAILS (b).
+  (ii)  Algorithm IC's inertia test removed: HS7 converges to f = +1.78
+        instead of -sqrt(3), HS6 and HS38 stop in the restoration phase, and
+        the indefinite-Hessian case reports inertia (1,2,0) -- FAILS (b), (d).
+  (iii) restoration replaced by a stop: both infeasible problems end
+        "restoration failed", not "locally infeasible" -- FAILS (c).  (The
+        design named HS13 for this sabotage; HS13 never enters the restoration
+        phase in this implementation, so the gate does not hold the line
+        there.)
+  (r3)  the "locally infeasible" exit test of the restoration phase never
+        fires: both infeasible problems run to the 3000-iteration limit with
+        2999 restorations -- FAILS (c).
+  (r3b) the primal infeasibility removed from the stopping test: the
+        two-equalities problem reports "converged" and HS6 returns with a
+        violation of 1.7e-2 -- FAILS (c) and (b).
+NOT HELD by this gate: sabotage (iv) of the design (the filter corner (22)
+computed from f instead of phi_mu) -- measured: every one of the fifteen runs
+has the same iteration count and result, so the gate does NOT hold that line;
+it needs a witness that enters the filter's corner, which belongs to slice A3.
 """
 
 import re
