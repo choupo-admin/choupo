@@ -34,10 +34,14 @@ export type { LessonStep, LessonLimit };
 
 /** The sentence the card must show, whatever else changes. */
 export const ENGINE_STATUS =
-  "Choupo's engine does not yet offer this method.  An opt-in "
-  + "`method bayesian;` is being built and measured against `sqp`; this card "
-  + "will cite that measurement if the method is offered.  What you see here "
-  + "is a one-variable teaching sketch run in your browser, not the engine.";
+  "An opt-in Bayesian method was built in the engine and measured against "
+  + "`sqp` under a rule written before the runs "
+  + "(docs/audits/2026-11-24-c499-protocol.md): on the cheap problem it "
+  + "reached 1 % of the best value in a median of 15 simulations against 25 "
+  + "for `sqp`; on the expensive one (the reactive MTBE column) 23 against "
+  + "22, so by the rule it is NOT offered and stays on its branch.  What you "
+  + "see here is a one-variable teaching sketch run in your browser, not the "
+  + "engine.";
 
 export const BAYES_STEPS: readonly LessonStep[] = [
   {
@@ -246,14 +250,14 @@ u &= \frac{f_{\min} - \hat y}{s}
       + "optimisation returns a point, not multipliers, so it gives no "
       + "shadow prices, so a constraint's value at the optimum is not part of "
       + "what it tells you.",
-    note: "The comparison with the engine's own methods waits for the "
-      + "measurement that is being made.  Until then this card makes no claim "
-      + "about how the two compare in Choupo.",
+    note: "The comparison with the engine's own methods is the one in the "
+      + "status sentence at the top of this card: it was measured, and the "
+      + "sketch above makes no further claim about it.",
   },
 ];
 
 export const BAYES_LIMITS: readonly LessonLimit[] = [
-  { id: "not-in-engine", title: "The engine does not offer this method yet.",
+  { id: "not-in-engine", title: "What the engine's measurement found.",
     body: ENGINE_STATUS },
   { id: "one-variable", title: "One variable only.",
     body: "Everything is drawn on one axis so the posterior can be seen.  "
@@ -388,3 +392,15 @@ export const BAYES_REFERENCES: readonly BayesReference[] = [
       + "gradient sketch borrows.",
   },
 ];
+
+/** Where the card sits inside the `optimizers` tool: its steps follow that
+ *  tool's six, so the numbers are shifted and stay unique in one lesson. */
+export const BAYES_STEP_OFFSET = 6;
+
+export const BAYES_STEPS_IN_TOOL: readonly LessonStep[] =
+  BAYES_STEPS.map((st) => ({ ...st, n: st.n + BAYES_STEP_OFFSET }));
+
+export const BAYES_QUIZ_IN_TOOL: readonly QuizQuestion[] =
+  BAYES_QUIZ.map((q) => ({
+    ...q, id: `bayes-${q.id}`, steps: q.steps.map((n) => n + BAYES_STEP_OFFSET),
+  }));

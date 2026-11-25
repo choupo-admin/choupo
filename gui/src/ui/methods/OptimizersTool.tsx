@@ -40,8 +40,10 @@ import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool } from "./registry.js";
 import {
-  CITATIONS, DECISION_ROWS, OPT_LIMITS, OPT_QUIZ, OPT_STEPS, RUN_ROWS, SHADOW_CHECK,
+  CITATIONS, DECISION_ROWS, OPT_STEPS, RUN_ROWS, SHADOW_CHECK,
 } from "./optimizersLesson.js";
+import { OPT_LIMITS_ALL, OPT_QUIZ_ALL, OPT_STEPS_ALL } from "./bayesOpt/optimizersWithBayes.js";
+import { BayesOptCard } from "./bayesOpt/BayesOptCard.js";
 import {
   BOX, MADS_SIMPLIFICATIONS, NM_PENALTY, SPEC, START, cost, enumerateStages, landscapeGrid, limit,
   purity, refluxRequired, runMads, runMcKinnon, runNelderMead, runSqp, scorecard, smoothOptimum,
@@ -343,7 +345,10 @@ function SqpCard(): JSX.Element {
       <OriginMark of="page" note="the engine's SQP structure written again, without Powell's relaxation and the watchdog" />
       <LandPick value={land} onChange={(v) => { setLand(v); setI(0); }} />
       <Plot land={land} label={`SQP on the ${land} landscape`}>
-        {tangent && <polyline points={tangent} fill="none" stroke={ACCENT} strokeWidth="1.4" strokeDasharray="2 3" />}
+        {/* the tangent is drawn in plot pixels and its ends can lie far outside the axes: clip it to the frame */}
+        <clipPath id="sqp-tangent-clip"><rect x={ML} y={MT} width={PW} height={PH} /></clipPath>
+        {tangent && <polyline points={tangent} fill="none" stroke={ACCENT} strokeWidth="1.4" strokeDasharray="2 3"
+          clipPath="url(#sqp-tangent-clip)" data-sqp-tangent="" />}
         <polyline points={trail} fill="none" stroke={INK} strokeWidth="1.2" />
         {res.steps.slice(0, i + 1).map((s, k) => <Mark key={k} at={s.x} kind={k === i ? "square" : "dot"} />)}
         <line x1={sx(st.x[0])} y1={ry(st.x[1])} x2={sx(st.x[0] + st.d[0])} y2={ry(st.x[1] + st.d[1])}
@@ -660,8 +665,9 @@ export function OptimizersTool(): JSX.Element {
         <RunCard />
         {step(6)}
         <DecisionCard />
-        <LessonLimits limits={OPT_LIMITS} />
-        <LessonQuiz title="Check your understanding" questions={OPT_QUIZ} lesson={OPT_STEPS} />
+        <BayesOptCard inTool />
+        <LessonLimits limits={OPT_LIMITS_ALL} />
+        <LessonQuiz title="Check your understanding" questions={OPT_QUIZ_ALL} lesson={OPT_STEPS_ALL} />
         <Text size="sm">
           Related:{" "}
           <Anchor component="button" type="button" onClick={() => setActiveMethodTool("active-set-qp")}>

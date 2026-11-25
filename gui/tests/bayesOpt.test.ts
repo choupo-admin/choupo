@@ -200,8 +200,8 @@ describe("the lesson", () => {
     const ids = BAYES_LIMITS.map((l) => l.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toContain("not-in-engine");
-    expect(ENGINE_STATUS).toContain("does not yet offer this method");
-    expect(ENGINE_STATUS).toContain("method bayesian;");
+    expect(ENGINE_STATUS).toContain("15 simulations against 25");
+    expect(ENGINE_STATUS).toContain("23 against 22");
     expect(ENGINE_STATUS).toContain("sqp");
   });
   it("cites the two equations it is built on, by number", () => {
@@ -222,11 +222,32 @@ describe("the card renders", () => {
     const html = renderToStaticMarkup(
       createElement(MantineProvider, null, createElement(BayesOptCard)),
     );
-    expect(html).toContain("does not yet offer this method");
+    expect(html).toContain("15 simulations against 25");
     expect(html).toContain("Bayesian optimisation");
     expect(html).toContain("Gradient method (sketch)");
     expect(html).toContain("data-lesson-quiz");
     expect(html).not.toContain("did not render");
     for (const st of BAYES_STEPS) expect(html).toContain(st.title.replace(/&/g, "&amp;"));
+  });
+});
+
+describe("the card inside the optimizers tool", () => {
+  it("numbers its steps after the tool's six and keeps every step and question number unique", async () => {
+    const { OPT_STEPS_ALL, OPT_QUIZ_ALL, OPT_LIMITS_ALL } = await import("../src/ui/methods/bayesOpt/optimizersWithBayes.js");
+    const ns = OPT_STEPS_ALL.map((s) => s.n);
+    expect(ns).toEqual(ns.map((_, i) => i + 1));
+    expect(ns.length).toBe(12);
+    const have = new Set(ns);
+    for (const q of OPT_QUIZ_ALL) for (const n of q.steps) expect(have.has(n)).toBe(true);
+    expect(new Set(OPT_QUIZ_ALL.map((q) => q.id)).size).toBe(OPT_QUIZ_ALL.length);
+    expect(new Set(OPT_LIMITS_ALL.map((l) => l.id)).size).toBe(OPT_LIMITS_ALL.length);
+  });
+  it("draws as a section without its own quiz or references block", () => {
+    const html = renderToStaticMarkup(
+      createElement(MantineProvider, null, createElement(BayesOptCard, { inTool: true })),
+    );
+    expect(html).toContain("15 simulations against 25");
+    expect(html).not.toContain("data-lesson-quiz");
+    expect(html).not.toContain("data-lesson-references");
   });
 });
