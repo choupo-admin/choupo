@@ -390,7 +390,7 @@ C424	PARTIAL	30	Revisão externa de C423 ponderada ponto a ponto	Falta renomear 
 C425	PARTIAL	12	Componentes não convencionais (sólidos, carvão): lacuna da arquitetura	Falta construir o MATERIAL (componente sem fórmula, base mássica, análises) e o primeiro caso secador+caldeira de biomassa.	arquitetura, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-18	L	b861057a1	
 C426	DONE		Estudo de lacunas contra os manuais de referência (Pareto)			2026-11-18	L	239d26275	
 C427	DONE		Veredicto do spike das grandezas transportadas			2026-11-19	M	9ee282751	
-C428	PARTIAL	31	Lente Escolher um solvente (Hansen) no Explorer	310 de 657 componentes já têm os parâmetros de Hansen. Falta a lente do Explorer passar de Hildebrand a Hansen, a vista de solubilidade e a ferramenta Stefanis-Panayiotou.	resto, tamanho M: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-18	M	92e61c329	
+C428	PARTIAL	31	Lente Escolher um solvente (Hansen) no Explorer	Só 13 substâncias têm os três números de Hansen (o "310" contava a palavra Hansen, que é a citação da tabela UNIFAC de outro Hansen). Falta: as tabelas do Hansen 1969, o método de grupos de Stefanis e Panayiotou 2008 como estimativa assinalada, a lente do Explorer e a vista de solubilidade.	resto, tamanho M: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-18	M	92e61c329	
 C429	DONE		Verificador de regressão cego abaixo de 1e-9			2026-11-18	M	580e5ae25	
 C430	DONE		Parar a varredura e construir a arquitetura final			2026-11-19	L	cf034baa0	
 C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)			2026-11-19	L	a9642fe3b	
