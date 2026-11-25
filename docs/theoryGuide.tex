@@ -38197,7 +38197,16 @@ dependence rides in automatically through the $c_p$ integrals.  A
 \code{dH\_rxn} entry in \code{constant/reactions} is \emph{not} a
 primary input: it is an announced, cross-checked override honoured
 only when a species deliberately lacks formation data, and the engine
-warns when both exist and disagree.
+warns when both exist and disagree.  The integrator reads
+$\Delta H_r(T)$ at the \emph{current} $T$ of every right-hand-side
+evaluation (and the Jacobian's $T$ column carries $d\Delta H_r/dT$, the
+reaction's $\Delta c_p$), so \eqref{eq:batch-energy} integrates
+$H=\sum_i n_i h_i(T)=\text{const}$ on the one enthalpy surface the
+balances use.  Until 2026-11-25 $\Delta H_r$ was resolved once at the charge
+temperature: a restart from a written instant resolved it again at that
+instant's $T$ and ended 6\,mK away, and $H(\text{end})-H(\text{charge})$ was
+24\,J on \code{batch02\_adiabatic}; it is now 0.6\,J.  A declared
+\code{dH\_rxn} override has no $T$ dependence and stays constant.
 
 The full state derivative is, packed:
 \[

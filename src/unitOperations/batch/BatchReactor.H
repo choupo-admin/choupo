@@ -54,8 +54,9 @@ Description
     Each reaction supplies its own kinetic parameters (A, Ea) and an
     optional `dH_rxn` (heat of reaction at the operating temperature,
     in J per mole of limiting reactant consumed; negative ⇒ exothermic).
-    For we treat dH_rxn as constant with T --- the Cp adjustment
-    via Kirchhoff is scheduled for if needed.
+    A heat resolved from the formation datum is re-read at the current T
+    of every evaluation (liquidHeatAt_, C521), so the adiabatic liquid
+    vessel integrates H = const; a declared override stays constant.
 
     Integration: classical RK4 on the packed state vector
     (n_0,..., n_{N-1}, T), with the time step set by `controlDict.deltaT`.
@@ -205,7 +206,8 @@ private:
         scalar                   A_pre = 0;     // pre-exponential (SI, kmol-m³-s)
         scalar                   b     = 0;     // temperature exponent (ModArrhenius)
         scalar                   Ea    = 0;     // activation energy [J/mol]
-        scalar                   dH    = 0;     // heat of reaction  [J/mol of limiting reactant]
+        scalar                   dH    = 0;     // heat of reaction at the CHARGE T [J/mol of limiting reactant]
+        bool                     dHFormation = false; // dH came from the formation datum: re-resolved at the vessel's T (liquidDH adiabatic)
         bool                     reversible = false;  // k_rev = k_fwd / Kc (detailed balance)
         // Third-body / fall-off support:
         sVector                  tbEff;          // full-length efficiency vector (empty => all 1)
@@ -387,6 +389,10 @@ private:
     void buildJacobianStructure_();
     //  h_i(T) for the same species as gibbsAt_ (d ln Kc / dT).
     const sVector& enthalpyAt_(scalar T) const;
+    //  dH_j(T) and d dH_j / dT of every reaction on the canonical liquid enthalpy surface
+    //  (adiabatic liquidDH: the energy equation integrates H = const, not a frozen dH).  A reaction
+    //  whose heat is a declared override keeps it (constant) and has zero slope.  Thread-local memo.
+    void liquidHeatAt_(scalar T, const sVector*& dH, const sVector*& dCp) const;
     //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction of the vessel's
     //  own forms, accumulated into `grad` (full length; only the reaction's
     //  dependencies are touched), and d r / d T at fixed c into dT, mirroring

@@ -500,6 +500,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                                 "BatchReactor '" + name_ + "' reaction '"
                                     + rxnName + "'",
                                 verbosity_, heatSource);
+            r.dHFormation = (heatSource == "formation");
             if (heatSource == "none")
                 dutyMissing_.push_back("reaction '" + rxnName
                     + "': no formation data and no dH_rxn override");
@@ -1589,6 +1590,12 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     // liquid-ΔH basis) the per-reaction heat release.
     scalar heatRate = 0.0;   // Σ r_r · V · ΔH_r  [J·kmol / (mol·s)]
                              // (the mol/kmol factor cancels in dT/dt --- see header)
+    //  Adiabatic liquidDH: ΔH_r at the CURRENT T on the canonical surface (C521), so the
+    //  integrated energy equation is H = const and a restart at any instant ends where the
+    //  uninterrupted run does.
+    const sVector *dHT = nullptr, *dCpT = nullptr;
+    if (mode_ == Mode::Adiabatic && energy_ == Energy::LiquidDH)
+        liquidHeatAt_(T, dHT, dCpT);
     const sVector& gT = gibbsAt_(T);      // g_i(T) once per evaluation, not once per reaction
     const KinCtx& ctx = kinCtx_(T, packed, V);   // c = n/V, [M], the factory laws' c and x, once
     const sVector& n_vec = ctx.nvec;
@@ -1599,7 +1606,7 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
         const scalar r_r = rateOfReaction_(rxn, T, n_vec, V, &gT, &ctx);   // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * r_r * V;          // kmol/s
-        heatRate += rxn.dH * r_r * V;                            // J·kmol/(mol·s)
+        heatRate += (dHT ? (*dHT)[jr] : rxn.dH) * r_r * V;       // J·kmol/(mol·s)
     }
 
     if (mode_ == Mode::Adiabatic && energy_ == Energy::LiquidDH)
@@ -1985,16 +1992,14 @@ std::string BatchReactor::energyLedgerGap() const
 {
     // Isothermal: the jacket duty is ledgered per segment.
     if (mode_ == Mode::Isothermal) return "";
-    // Adiabatic liquidDH: the ODE conserves a FROZEN-dH surrogate (r.dH
-    // resolved once at the charge T drives dT/dt over Cp), not the
-    // canonical H surface -- so the vessel's end-state dH is ~dCp_rxn*
-    // dT*xi away from zero (5.4 kJ on batch02, 2.6%; surfaced by the #106
-    // golden scrutiny).  Until the adiabatic ODE integrates on the
-    // canonical surface, the balance must not claim a verdict over it.
+    // Adiabatic liquidDH integrates H = const on the canonical surface since C521
+    // (dH_j(T) at the vessel's T, liquidHeatAt_): H(end) - H(charge) is ~1e-3 kJ against
+    // the 2e-2 kJ the frozen-dH surrogate left on batch02.  No adiabatic H record is
+    // ledgered yet, and the balance says so.
     if (energy_ == Energy::LiquidDH)
-        return "adiabatic liquidDH ODE conserves a frozen-dH surrogate, not"
-               " the canonical H surface (dH_rxn pinned at the charge T);"
-               " canonical-H adiabatic integration pending";
+        return "adiabatic liquidDH vessel: the ODE integrates H = const on the"
+               " canonical surface (dH_rxn re-resolved at the vessel's T), but no"
+               " adiabatic vessel is ledgered yet; the H-based accounting is pending";
     if (energy_ == Energy::GasConstantP)
         return "constant-pressure vessel (gasConstantP): dH = 0 holds by"
                " construction (the ODE is the first law), but no adiabatic"
@@ -2554,6 +2559,42 @@ const sVector& BatchReactor::enthalpyAt_(scalar T) const
     return m.h;
 }
 
+//  See the header.  dH_j(T) = sum nu_i H_i(T) on the standard liquid leg (the SAME call reactionHeat
+//  makes, so at the charge T it equals the announced value to the bit); the slope is a central
+//  difference of that same surface, so the Jacobian's d(dH)/dT is consistent with it by construction.
+void BatchReactor::liquidHeatAt_(scalar T, const sVector*& dH, const sVector*& dCp) const
+{
+    struct Memo { std::uint64_t id = 0; scalar T = -1.0; sVector dH, dCp; };
+    static thread_local Memo m;
+    if (m.id != memoId_.v || m.T != T)
+    {
+        const std::size_t nr = reactions_.size();
+        sVector a(nr, 0.0), c(nr, 0.0);
+        const scalar hT = 0.5;
+        for (std::size_t j = 0; j < nr; ++j)
+        {
+            const auto& rxn = reactions_[j];
+            if (!rxn.dHFormation) { a[j] = rxn.dH; continue; }
+            auto at = [&](scalar Tq)
+            {
+                scalar d = 0.0;
+                for (std::size_t s = 0; s < rxn.comps.size(); ++s)
+                {
+                    if (rxn.nu[s] == 0.0) continue;
+                    d += rxn.nu[s] * thermo_->speciesPhaseEnthalpy(
+                        rxn.comps[s], Tq, 1.0e5, "liquid",
+                        ThermoPackage::ReferenceContext::StandardPhase);
+                }
+                return d;
+            };
+            a[j] = at(T);
+            c[j] = (at(T + hT) - at(T - hT)) / (2.0 * hT);
+        }
+        m.id = memoId_.v; m.T = T; m.dH = std::move(a); m.dCp = std::move(c);
+    }
+    dH = &m.dH; dCp = &m.dCp;
+}
+
 //  THE PATTERN, from the network, once.  Row i (a species) holds column m
 //  when a reaction that changes i (nu_i != 0) reads m: its forward orders,
 //  its reverse products, its colliders (every species of non-zero
@@ -2934,6 +2975,8 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
         cFloorV[k] = V > 0.0 ? 1.4901161193847656e-8 * sc[k] / V : 0.0;   // no volume, no concentration to floor
     sVector grad(n, 0.0);                    // zero outside the current deps
     scalar sumWS = 0.0, sumWE = 0.0;         // sum_j w_j s_j, sum_j w_j E_j
+    const sVector *dHT = nullptr, *dCpT = nullptr;   // liquidDH: w_j = dH_j(T) and its slope (C521)
+    if (adiab && energy_ == Energy::LiquidDH) liquidHeatAt_(T, dHT, dCpT);
     for (std::size_t j = 0; j < reactions_.size(); ++j)
     {
         if (static_cast<long>(j) == skipRxn_) continue;   // the audit's exclusion share (C468)
@@ -3012,7 +3055,12 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
         }
         if (adiab)
         {
-            if (energy_ == Energy::LiquidDH) wj = rxn.dH;
+            if (energy_ == Energy::LiquidDH)
+            {
+                wj = (*dHT)[j];
+                if ((*dCpT)[j] != 0.0)    // d w_j / dT * (r_j V): the T-T entry
+                    sumWE += (*dCpT)[j] * rateOfReaction_(rxn, T, nv, V, &gT) * V;
+            }
             for (std::size_t q = 0; q < nd; ++q)
                 J.values[jacPosTrow_[deps[q]]] += wj * grad[deps[q]];   // scaled below
             sumWS += wj * sj;
