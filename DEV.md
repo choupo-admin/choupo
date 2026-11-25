@@ -5740,6 +5740,15 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C522. CHOUPO-IP, AN IN-HOUSE PRIMAL-DUAL INTERIOR POINT (Vitor's direction to the cloud, 2026-11-25; its
+> design record is the file interior-point of the cloud branch's design folder).**  WEIGHED AND AGREED by the architect: it
+> serves inner problems with analytic derivatives (Gibbs first, then phase equilibrium, later collocation) and
+> registers no `OptimizationDriver` method, so the ruling "one optimiser, the SQP" stands for `outerDict`.  Opt-in,
+> measured against the two existing Gibbs methods, sources marked read or not read.  After the cloud's queue.
+
+> **C523. EDUTOOL: THE OPTIMAL TEMPERATURE PROFILE (Vitor to the cloud, 2026-11-25).**  A -> B -> C, one, three and ten
+> segments on the existing single shooting (ctrl16), after C522 A and B.  The fed-batch feed profile is C217.
+
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
 > electrodialysis (demin_ratio), PhaseChanger (Q_latent_kW) and alpha_mean; the columns are C504.  C516:
