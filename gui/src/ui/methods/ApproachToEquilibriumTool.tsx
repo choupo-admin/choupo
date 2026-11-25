@@ -47,7 +47,7 @@ License
 
   THE SIGN IS THE ENGINE'S (ruled 2026-09-26).  A case declares
   `temperatureApproach` as a MAGNITUDE; a negative value is refused by name
-  (GibbsReactor.cpp:338-349), and the engine assigns the direction from the
+  (GibbsReactor.cpp:350-361), and the engine assigns the direction from the
   isothermal enthalpy change between the feed and its true equilibrium at the
   physical T (`GibbsReactor::approachDirection`, :68-107).  This panel reads
   the SAME quantity the same way -- on these witnesses the feed and the
@@ -64,7 +64,7 @@ License
   composition depends on the evaluation temperature ONLY through `g_over_RT`
   and, under a real equation of state, through ln(phi_i) -- the residual in
   gibbsGasSolve is built from `g_eff`, `ln_P` and the atom matrix alone
-  (GibbsMethod.cpp:66-96).  Both witnesses run at 1 bar with
+  (GibbsMethod.cpp:68-98).  Both witnesses run at 1 bar with
   `fugacityModel idealGas`, so phi = 1, `g_eff == g_over_RT`, and shifting the
   whole solve temperature and shifting only the chemistry are the same
   arithmetic.  VERIFIED against the native binary before this file was
@@ -229,7 +229,7 @@ export function engineSignOf(
 }
 
 /** The magnitude knob.  Its floor is 0 because the engine's is: a negative
- *  `temperatureApproach` is refused by name (GibbsReactor.cpp:338-349), so a
+ *  `temperatureApproach` is refused by name (GibbsReactor.cpp:350-361), so a
  *  slider that offered one would teach a declaration the engine rejects. */
 export const DT_KNOB: PanelKnob = {
   id: "dT", label: "approach |ΔT| — a magnitude; the engine picks the direction",
@@ -445,7 +445,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           Since 2026-09-26 the author declares only a magnitude and the engine
           assigns the sign from the thermicity you see above; a negative
           <code>temperatureApproach</code> is refused by name
-          (<code>GibbsReactor.cpp:338–344</code>). A Gibbs reactor is told no
+          (<code>GibbsReactor.cpp:350–356</code>). A Gibbs reactor is told no
           reactions, so it takes its thermicity from the one extent it has —
           the transformation from its own feed to the true equilibrium at T,
           solved once more before the detuned solve

@@ -199,7 +199,7 @@ describe("what the page declines to claim", () => {
     const l = APPROACH_LIMITS.find(
       (x) => x.id === "exact-only-for-an-ideal-gas")!;
     expect(prose(l.body)).toContain("fugacityModel idealGas");
-    expect(prose(l.body)).toContain("GibbsMethod.cpp:64–94");
+    expect(prose(l.body)).toContain("GibbsMethod.cpp:66–96");
   });
 
   it("says no ΔT anywhere on the page is calibrated against anything", () => {

@@ -91,7 +91,7 @@ describe("the equilibrium-landscapes lesson", () => {
   it("says the sign is decided PER CELL from the feed's overall thermicity", () => {
     const s = all(3);
     expect(s).toContain("direction is decided per cell");
-    expect(s).toContain("GibbsReactor.cpp:68–162");
+    expect(s).toContain("GibbsReactor.cpp:69–163");
     expect(s).toContain("`deltaT_K` column");
     expect(s).toContain("crosses a thermicity boundary");
     const f = prose(step(3).formula!);
@@ -107,7 +107,7 @@ describe("the equilibrium-landscapes lesson", () => {
 
   it("draws the GLOBAL caveat on thermal NO and calls it a model limitation", () => {
     const s = all(5);
-    expect(s).toContain("GibbsReactor.cpp:415–417");  // C259: was the reversed "413–412"
+    expect(s).toContain("GibbsReactor.cpp:427–429");  // C259: was the reversed "413–412"
     expect(s).toContain("reports more NO than the true equilibrium");
     expect(s).toContain("limitation of the single-number model, not a finding about flames");
     expect(prose(step(5).formula!)).toContain(String.raw`\ce{N2 + O2 <=> 2 NO}`);
