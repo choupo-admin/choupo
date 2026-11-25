@@ -123,6 +123,17 @@ public:
     // run did not produce are simply ignored downstream.
     virtual std::vector<std::string> headline() const { return {}; }
 
+    // AN INPUT THE RUN DID NOT USE, AS A STRUCTURED FACT (DEV.md 4c C154).  A
+    // property of a RECORD (a membrane's `A_w` when the bench imposes the
+    // flux) is not in the operation's dictionary, so the unread-key audit
+    // cannot see it; the op that knows it left a value out of the physics says
+    // so here, with the record it came from and the reason.  main publishes
+    // each as `inactiveProperties` of the op's entry in `operationResults`
+    // and the GUI marks the property.  Empty (the default) means the op
+    // claims no such fact, never that every record value was used.
+    struct InactiveProperty { std::string source, key, reason; };
+    virtual std::vector<InactiveProperty> inactiveProperties() const { return {}; }
+
     // A TOP-LEVEL RESULT BLOCK OF THE OP'S OWN (2026-10-20, DEV.md 4c C118).
     // `diagnostics()` carries NUMBERS keyed by word, which is the right shape
     // for a fit statistic and the wrong one for a scan's per-point phase

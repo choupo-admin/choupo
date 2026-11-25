@@ -1,0 +1,36 @@
+#!/bin/sh
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# pre-push: a push to main is refused when the tree being pushed has no
+# recorded validation or its last recorded validation is red (backlog C485;
+# the record is bin/curate/validation_record.py, written by bin/integrate).
+# Pushes of any other branch or tag are never looked at.
+#
+# THE REAL DEFECTS IT WOULD HAVE CAUGHT: on 2026-11-24 a push to main went out
+# with a red gate; and a push went out before check_source_headers had run
+# (backlog_progress.tsv, red on main).
+#
+# Deliberate exception, announced and logged:
+#     CHOUPO_PUSH_UNVALIDATED="the reason" git push origin HEAD:main
+zero=0000000000000000000000000000000000000000
+rc=0
+while read -r lref lsha rref rsha; do
+    [ "$rref" = "refs/heads/main" ] || continue
+    [ "$lsha" = "$zero" ] && continue
+    tree=$(git rev-parse "$lsha^{tree}") || continue
+    if why=$(python3 bin/curate/validation_record.py check "$tree" 2>&1); then
+        echo "pre-push: main <- $lsha: $why"
+        continue
+    fi
+    if [ -n "$CHOUPO_PUSH_UNVALIDATED" ]; then
+        echo "pre-push: OVERRIDE for $lsha ($why) -- reason given: $CHOUPO_PUSH_UNVALIDATED" >&2
+        python3 bin/curate/validation_record.py add --tree "$tree" \
+            --verdict unvalidated --what "override: $CHOUPO_PUSH_UNVALIDATED" >/dev/null
+        continue
+    fi
+    echo "pre-push: REFUSED push of $lsha to main: $why." >&2
+    echo "pre-push: run bin/integrate, or CHOUPO_PUSH_UNVALIDATED=\"reason\" to override." >&2
+    rc=1
+done
+exit $rc

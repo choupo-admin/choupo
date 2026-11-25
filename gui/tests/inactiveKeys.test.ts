@@ -13,7 +13,7 @@
 \*---------------------------------------------------------------------------*/
 import { describe, expect, it } from "vitest";
 
-import { inactiveLines, unreadKeysFromLog } from "../src/case/inactiveKeys.js";
+import { inactiveLines, inactiveRecordLines, unreadKeysFromLog } from "../src/case/inactiveKeys.js";
 import { keyHelp } from "../src/case/keyHelp.js";
 
 const LOG = [
@@ -76,5 +76,20 @@ describe("C154: F1 on a thermoPhysPropDict key opens the Theory Guide section of
   it("a property family key opens the family's chapter", () => {
     const h = keyHelp("constant/thermoPhysPropDict", T, 12);
     expect(decodeURIComponent(h.guide?.url ?? "")).toContain("ch:viscosity");
+  });
+});
+
+describe("C154: a record value the engine reports inactive is marked in its record file", () => {
+  const rec = ["recordType membrane;", "A_w 1.2e-12;", "poreModel", "{", "    radius 3e-10;", "}"].join("\n");
+  const facts = [{ source: "membrane NanoFiltranExample", key: "A_w", reason: "J_v is imposed" }];
+
+  it("marks the key's line in the named record, with the engine's reason", () => {
+    const m = inactiveRecordLines("constant/assets/NanoFiltranExample.dat", rec, facts);
+    expect([...m.keys()]).toEqual([2]);
+    expect(m.get(2)).toContain("J_v is imposed");
+  });
+
+  it("marks nothing in another file", () => {
+    expect(inactiveRecordLines("constant/assets/Other.dat", rec, facts).size).toBe(0);
   });
 });

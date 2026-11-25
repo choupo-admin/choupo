@@ -125,7 +125,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     }
 
     solver::NDOptions ndo;
-    ndo.tolerance = 1.0e-8;
+    ndo.tolerance = 1.0e-8 * N0;   // 1e-8 of the feed's moles, not of 1 mol/s (C497, relative residual)
     ndo.maxIter   = 80;
     //  The iterates of the route in flight, kept ONLY when a log is asked
     //  for; `logRoute` (below) turns them into records once the route ends.

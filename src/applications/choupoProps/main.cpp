@@ -828,7 +828,8 @@ try
                       //  tells the RUN status from the status of the
                       //  EVIDENCE, so a non-zero rc travels per op).
                       std::map<std::string, std::string> units;
-                      int rc = 0; };
+                      int rc = 0;
+                      std::vector<PropertyOperation::InactiveProperty> inactive; };
     std::vector<OpResult> opResults;
     std::map<std::string, std::vector<std::string>> opBlocks;
 
@@ -911,7 +912,7 @@ try
             verbosity);
 
         opResults.push_back({ opName, opType, diags, opProv,
-                              op->headline(), op->curation(), {}, rc });
+                              op->headline(), op->curation(), {}, rc, op->inactiveProperties() });
         for (const auto& kv : diags)
         {
             const std::string u = op->diagnosticUnit(kv.first);
@@ -1248,6 +1249,18 @@ try
         //  one is never printed to be mistaken for one.  jsonEscape, because
         //  an acceptance ORIGIN is a curator's sentence and will contain
         //  punctuation the raw `prov` loop above would not survive.
+        //  INACTIVE PROPERTIES (DEV.md 4c C154): record values the op read
+        //  and did not use, with the record and the reason; absent when none.
+        if (!orr.inactive.empty())
+        {
+            std::cout << ", \"inactiveProperties\": [";
+            for (std::size_t q = 0; q < orr.inactive.size(); ++q)
+                std::cout << (q ? ", " : "") << "{ \"source\": "
+                          << jsonEscape(orr.inactive[q].source) << ", \"key\": "
+                          << jsonEscape(orr.inactive[q].key) << ", \"reason\": "
+                          << jsonEscape(orr.inactive[q].reason) << " }";
+            std::cout << "]";
+        }
         if (!orr.val.empty())
         {
             std::cout << ", \"curation\": {";

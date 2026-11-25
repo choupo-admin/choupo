@@ -160,7 +160,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "Gauss elimination for the step (:771), then a line search that "
       + "halves the step until |F| falls (:798; the default branch, "
       + ":926–937).  It stops when "
-      + "|F| < 10⁻⁸ mol/s, within 80 iterations (GibbsMethod.cpp:128–129).  "
+      + "|F| < 10⁻⁸ of the feed's total moles (a relative residual), within 80 iterations (GibbsMethod.cpp:128–129).  "
       + "It starts from a least-squares fit of the potentials that pretends "
       + "the feed is already the answer (GibbsMethod.cpp:100–124).  On the "
       + `shift reactor at 800 K that seed puts CO at ln n = ${Q.shiftSeedLnnCO}: `

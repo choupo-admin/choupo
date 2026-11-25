@@ -213,6 +213,10 @@ export interface OperationResult {
   /** The op's own NON-ZERO return code; absent = it ran to its end.  The run
    *  status, kept apart from the status of the evidence (`curation`). */
   rc?: number;
+  /** Record values the op read and did NOT use (DEV.md 4c C154): the record it
+   *  came from (`membrane <name>`), the key, and the engine's reason -- e.g. a
+   *  membrane's `A_w` when the bench imposes the flux.  Absent = none claimed. */
+  inactiveProperties?: { source: string; key: string; reason: string }[];
 }
 
 /** Provenance of a raw experimental dataset (B1): where the lab data came from. */

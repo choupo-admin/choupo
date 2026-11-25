@@ -60,6 +60,7 @@ int PoreTransportBench::run(const DictPtr& dict,
     using namespace membrane;
     diag_.clear();
     tables_.clear();
+    inactive_.clear();
     ions_.clear();
     poreIons_.clear();
     nPoints_ = 0;
@@ -111,6 +112,9 @@ int PoreTransportBench::run(const DictPtr& dict,
                   << " for this op only\n";
     }
     const Membrane& mem = withCharge ? *withCharge : recordMem;
+    inactive_.push_back({ "membrane " + memName, "A_w",
+        "the bench imposes J_v, so the water-flux closure J_w = A_w (dP - dpi)"
+        " is not solved and the record's A_w does not enter this run" });
 
     // ---- the feed: salt components and their molar concentrations ---------
     if (!dict->found("feedMolPerM3"))
