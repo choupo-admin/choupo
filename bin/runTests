@@ -6632,6 +6632,22 @@ PYEOF
     fi
     rm -f /tmp/ipoint.$$
 
+    # noise-aware SQP gate (2026-11-25, C496 review F1-F11).  The adaptive
+    # differences (fdMode auto) certified a non-stationary point on a stale
+    # gradient, took a jump and an oscillation for noise, evaluated outside the
+    # box, printed multiplier bars 7000 times too small, and called feasible QPs
+    # infeasible.  The review's failing inputs, the four invariants, and the
+    # default SQP pinned against its base output.
+    if gate_exec "$ROOT/bin/curate/check_sqp_adaptive.py" > /tmp/sqpad.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sqp-adaptive-gate" "$(head -1 /tmp/sqpad.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_sqp_adaptive.py)\n" "sqp-adaptive-gate"
+        cat /tmp/sqpad.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sqpad.$$
+
     # iteration-budgets gate (2026-11-21, DEV.md 4c C467 R-001/R-002/R-006).  A Newton
     # budget of zero was published as a converged solve (adiabaticFlash with
     # `maxOuterIter 0;`: a 917 kW imbalance), an exhausted newton1D returned the new x
