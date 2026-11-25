@@ -84,7 +84,7 @@ std::string pipeSubject(const LayoutPipe& p)
 //  line of the code above them moves.
 void routeUtilityLines(const Dictionary& d, const SimulationResult& r,
                        PlantLayoutRecord& rec, const FindingSink& addFinding);
-void checkUtilityLines(PlantLayoutRecord& rec, const FindingSink& addFinding);
+void checkUtilityLines(PlantLayoutRecord& rec, const FindingSink& addFinding); void checkServiceClearance(const Dictionary& d, const SimulationResult& r, PlantLayoutRecord& rec, const FindingSink& addFinding);  // C507, defined after `evaluate`
 
 std::string num(scalar v, int prec = 6)
 {
@@ -5580,7 +5580,7 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     if (d.found("roads")) checkRoads(rec, addFinding);
 
     //  ---- the pipe clash (C93): every route final, the fence legs included
-    checkPipeClashes(rec, addFinding);
+    checkPipeClashes(rec, addFinding); checkServiceClearance(d, r, rec, addFinding);   // C507
     checkUtilityLines(rec, addFinding);
 
     //  ---- the truck routes (C96): every road, access point and fence
@@ -6734,6 +6734,177 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
 //  ---- the typical trains (DEV.md 4c C272) ---------------------------------
 //  Defined after everything else in the file so that the line numbers the
 //  lessons cite stay where they were.
+//  ---- C507: THE EXCHANGER'S SERVICE CLEARANCE ------------------------------
+//  A shell-and-tube exchanger is serviced by pulling its tube bundle out of
+//  the shell, through the CHANNEL end, so that end needs free ground for the
+//  bundle's own length plus a handling extra.  Two different things, said
+//  apart: the TUBE LENGTH is a fact of the exchanger (the sizer's own
+//  `tubeLength`, read from its design sheet), and the CLEARANCE beyond it is a
+//  CONVENTION the case declares with its source and reason -- no vendor or
+//  textbook number is shipped, and none is assumed.  The zone is the item's
+//  own cross-section (its plan width and its height above its base) swept out
+//  from the channel-end face; what blocks it is read from the checker's own
+//  geometry: another placed item's plan box (a vertical cylinder by its
+//  bounding square: conservative), the fence line and the pipe rack's band
+//  where the rack's lowest tier is below the item's top.  NOT covered: a
+//  bund wall, a road kerb, a pipe leaving its own nozzle across the zone, a
+//  crane's reach, and whether the declared extra is the right one.
+//  A case that declares no `serviceClearance` is ANNOUNCED, not checked: the
+//  check needs a number the engine does not own.
+namespace
+{
+
+void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
+                           PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    struct Cand { const LayoutItem* it; scalar tube; };
+    std::vector<Cand> cands;
+    for (const auto& it : rec.items)
+    {
+        if (it.nonProcess || !it.room.empty() || it.kind != "shellTubeHX") continue;
+        const auto s = r.sizings.find(it.id);
+        if (s == r.sizings.end()) continue;
+        const auto t = s->second.values.find("tubeLength");
+        if (t == s->second.values.end() || !(t->second > 0)) continue;
+        cands.push_back({ &it, t->second });
+    }
+    if (cands.empty()) return;
+
+    if (!d.found("serviceClearance"))
+    {
+        std::string names;
+        for (const auto& c : cands) names += (names.empty() ? "" : ", ") + c.it->id;
+        announce("info", "layout",
+            std::to_string(cands.size()) + " shell-and-tube exchanger"
+            + (cands.size() == 1 ? "" : "s") + " placed (" + names + "): whether"
+            " the tube bundle can be WITHDRAWN is NOT checked, because the case"
+            " declares no `serviceClearance { clearance <m>; source; reason; items"
+            " ( { item; channelEnd; reason; } ); }` -- the extra beyond the tube"
+            " length is a convention the engine does not own");
+        return;
+    }
+
+    const auto sd = d.subDict("serviceClearance");
+    const std::string w = "serviceClearance";
+    const scalar extra = length(*sd, "clearance", w);
+    if (extra < 0) refuse(w + ": `clearance` cannot be negative");
+    const std::string source = text(*sd, "source", w);
+    text(*sd, "reason", w);
+
+    std::set<std::string> done;
+    for (const auto& e : sd->lookupDictList("items"))
+    {
+        const std::string id = e->lookupWord("item");
+        const std::string where = w + " item `" + id + "`";
+        const Cand* c = nullptr;
+        for (const auto& k : cands) if (k.it->id == id) c = &k;
+        if (!c)
+        {
+            std::string all;
+            for (const auto& k : cands) all += " " + k.it->id;
+            refuse(where + " is not a placed shell-and-tube exchanger with a tube"
+                   " length (its design sheet's `tubeLength`).  Candidates:" + all);
+        }
+        if (!done.insert(id).second) refuse(where + " is declared twice");
+        text(*e, "reason", where);
+        const LayoutItem& it = *c->it;
+        const std::string end = e->lookupWord("channelEnd");
+        scalar sgn = 0;
+        if (it.orientation == "alongX")
+        {
+            if (end == "east") sgn = 1; else if (end == "west") sgn = -1;
+        }
+        else if (it.orientation == "alongY")
+        {
+            if (end == "north") sgn = 1; else if (end == "south") sgn = -1;
+        }
+        else
+            refuse(where + " stands vertical: its bundle comes out upward or"
+                   " downward, which this check does not model -- declare it"
+                   " `orientation alongX;` or `alongY;`, or leave it out");
+        if (sgn == 0)
+            refuse(where + ": `channelEnd " + end + ";` is not an end of an item"
+                   " lying " + it.orientation + " (accepted: "
+                   + (it.orientation == "alongX" ? "east, west" : "north, south") + ")");
+
+        const bool alongX = it.orientation == "alongX";
+        //  An interval in the PULL axis (flipped so the pull runs toward +u,
+        //  the item's channel face at u = its upper edge) and in the lateral.
+        auto axisOf = [&](scalar lo, scalar hi) -> std::array<scalar, 2>
+        { return sgn > 0 ? std::array<scalar, 2>{ lo, hi }
+                         : std::array<scalar, 2>{ -hi, -lo }; };
+        const scalar hx = 0.5 * it.dx, hy = 0.5 * it.dy;
+        const auto selfA = alongX ? axisOf(it.x - hx, it.x + hx)
+                                  : axisOf(it.y - hy, it.y + hy);
+        const scalar face = selfA[1];
+        const scalar latLo = alongX ? it.y - hy : it.x - hx;
+        const scalar latHi = alongX ? it.y + hy : it.x + hx;
+        const scalar zLo = it.z, zHi = it.z + it.dz;
+        const scalar need = c->tube + extra;
+
+        scalar clear = std::numeric_limits<scalar>::infinity();
+        std::string by;
+        auto consider = [&](const std::string& name, scalar x0, scalar x1,
+                            scalar y0, scalar y1, scalar z0, scalar z1)
+        {
+            if (z1 <= zLo + kTol || z0 >= zHi - kTol) return;       // not at that height
+            const scalar l0 = alongX ? y0 : x0, l1 = alongX ? y1 : x1;
+            if (l1 <= latLo + kTol || l0 >= latHi - kTol) return;   // beside the bundle
+            const auto a = alongX ? axisOf(x0, x1) : axisOf(y0, y1);
+            if (a[1] <= face + kTol) return;                        // behind the face
+            const scalar gap = std::max(a[0] - face, 0.0);
+            if (gap < clear) { clear = gap; by = name; }
+        };
+        const scalar big = 1e9;
+        for (const auto& o : rec.items)
+        {
+            if (o.id == it.id || !o.room.empty()) continue;
+            consider(o.id, o.x - 0.5 * o.dx, o.x + 0.5 * o.dx,
+                     o.y - 0.5 * o.dy, o.y + 0.5 * o.dy, o.z, o.z + o.dz);
+        }
+        if (rec.fence.present)
+        {
+            const auto& F = rec.fence;
+            //  the fence is a line: everything beyond it is outside the plot
+            if (alongX) consider("fence", sgn > 0 ? F.xMax : -big, sgn > 0 ? big : F.xMin,
+                                 -big, big, -big, big);
+            else        consider("fence", -big, big,
+                                 sgn > 0 ? F.yMax : -big, sgn > 0 ? big : F.yMin, -big, big);
+        }
+        const auto& K = rec.pipeRack;
+        if ((K.declared || !rec.pipes.empty()) && K.elevation < zHi - kTol)
+        {
+            const scalar hw = 0.5 * K.lanesPerTier * K.laneSpacing;
+            consider("pipeRack", K.xStart, K.xEnd, K.y - hw, K.y + hw, K.elevation, big);
+        }
+
+        const std::string basis =
+            "the tube length " + num(c->tube) + " m (a fact: the sizer's `tubeLength`)"
+            " plus the declared clearance " + num(extra) + " m (a convention; source: "
+            + source + ") is " + num(need) + " m";
+        if (std::isinf(clear))
+            announce("info", "layout '" + id + "'",
+                "`" + id + "`: " + basis + ", and nothing in the checked geometry"
+                " (items, fence, pipe rack) stands " + end + " of its channel end");
+        else if (clear < need - kTol)
+            addFinding("serviceClearance", id, by, clear, need, "warning",
+                "the tube bundle of `" + id + "` cannot be withdrawn through its "
+                + end + " (channel) end: " + basis + ", and `" + by + "` leaves "
+                + num(clear) + " m clear at the height of the exchanger");
+        else
+            announce("info", "layout '" + id + "'",
+                "`" + id + "`: " + basis + "; " + num(clear) + " m is clear to `"
+                + by + "` at its " + end + " (channel) end");
+    }
+    for (const auto& c : cands)
+        if (!done.count(c.it->id))
+            announce("info", "layout '" + c.it->id + "'",
+                "`" + c.it->id + "` is a shell-and-tube exchanger the case's"
+                " `serviceClearance` does not list: its bundle withdrawal is NOT checked");
+}
+
+} // anonymous namespace
+
 namespace typical
 {
 
