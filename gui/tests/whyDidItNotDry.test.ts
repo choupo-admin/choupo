@@ -286,20 +286,27 @@ describe("the pages", () => {
     expect(h).toContain("6 · To dry faster, load less");
     expect(h).toContain("8 · The spray chamber");
   });
-  it("the selection page opens on the bill of tests and ends in a collapsed reference drawer holding the tree and every table", () => {
+  it("the selection page opens on the selector, in four named parts: choose, ask of the product (the bill of tests), the gas arrangements, the sale", () => {
     const h = html(DryerSelectionTool);
-    const card = h.indexOf('data-card="bill-of-tests"');
-    const arr = h.indexOf('data-section="arrangements"');
-    const drawer = h.indexOf('data-drawer="reference"');
-    expect(card).toBeGreaterThan(0);
-    expect(card).toBeLessThan(arr);
-    expect(arr).toBeLessThan(drawer);
-    const drawerHtml = h.slice(drawer, h.indexOf("Check your understanding"));
-    expect(drawerHtml).not.toMatch(/<details[^>]*\sopen/);
+    const at = (needle: string): number => h.indexOf(needle);
+    const parts = ["Choose: which dryers stay in the race", "What to ask of the product",
+      "Which way the gas meets the solid", "What the sale does not show"].map((t) => at(`>${t}</h4>`));
+    for (const p of parts) expect(p).toBeGreaterThan(0);
+    expect([...parts].sort((a, b) => a - b)).toEqual(parts);
+    // the selector comes before any table; the bill of tests sits in part B, the arrangements in C
+    expect(at("data-dryer-tree")).toBeGreaterThan(parts[0]!);
+    expect(at("data-dryer-tree")).toBeLessThan(at("data-dryer-comparison"));
+    expect(at("data-dryer-tree")).toBeLessThan(at("data-table=\"muj-1.1\""));
+    expect(at('data-card="bill-of-tests"')).toBeGreaterThan(parts[1]!);
+    expect(at('data-card="bill-of-tests"')).toBeLessThan(parts[2]!);
+    expect(at('data-section="arrangements"')).toBeGreaterThan(parts[1]!);
+    expect(at('data-section="arrangements"')).toBeLessThan(parts[2]!);
     for (const needle of ["Ask the tree", "data-habitual-tables", "data-dryer-energy", "The nine side by side",
       "data-checklist-table", "The drum dryer in two books"])
-      expect(drawerHtml, needle).toContain(needle);
-    expect(drawerHtml).toContain("This is what the books say; the cards above are what the engine says.");
+      expect(h.indexOf(needle), needle).toBeGreaterThan(0);
+    // no drawer: nothing the chapter menu lists is hidden in a closed <details>
+    expect(h).not.toContain('data-drawer="reference"');
+    expect(h).toContain("data-dryer-parts");
   });
 });
 

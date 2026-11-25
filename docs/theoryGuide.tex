@@ -7227,6 +7227,29 @@ component overlay serves for a pedagogical alternative; an inline
 participating component with no group decomposition is an \emph{error}
 with a remedy, never a silent $\gamma_i = 1$ (no silent crutch).
 
+\paragraph{Where a record's groups come from.}\label{sec:unifac-groups-derived}
+A decomposition is a fact of the molecule's structure, not a parameter, so it
+is \emph{computed}, not tabulated: \code{bin/curate/unifac\_groups.py} reads the
+structure of a component (a SMILES, whose atom count must reproduce the
+record's \code{formula}), cuts it into the subgroups of Hansen et~al.\ (1991)
+by fixed rules --- whole-molecule groups first (water, methanol, DMSO, \dots),
+then the carbonyl carbon (acid, ester, amide, ketone, aldehyde; the neighbouring
+\code{CH3} or \code{CH2} is absorbed into \code{CH3CO}, \code{CH2COO}, \dots),
+nitrile, nitro, halogens on carbon, alcohols, ethers and amines (one alkyl
+neighbour absorbed, \code{CH3} before \code{CH2} before \code{CH}), alkenes
+and alkynes, the aromatic ring (\code{ACH}, \code{AC}, \code{ACCH3}, \dots),
+and the remaining saturated carbons.  A molecule the rules cannot cut
+\emph{uniquely} (a saturated carbon between two rings, an epoxide, a lactone)
+stays without groups and is listed with the reason: an absent decomposition is
+refused by name, a wrong one answers without complaint.  The rules reproduce
+the decomposition of all 277 records that carried groups by hand and could be
+derived (no disagreement); each derived record says so in its
+\code{provenance} (\code{origin definition}, the structure used, the script), and
+$r$ and $q$ of UNIQUAC follow from the same groups
+(\code{bin/curate/uniquac\_rq\_from\_groups.py}).  A derived record is checked
+against the model it feeds: $\gamma_i^\infty$ in hexane and in water must be
+finite and inside $(10^{-3}, 10^{9})$ (\code{bin/curate/unifac\_gamma\_infdil.py}).
+
 \begin{example}[Decomposing acetone $+$ $n$-hexane]
 Acetone $=$ 1 \code{CH3CO} $+$ 1 \code{CH3}; $n$-hexane $=$ 2 \code{CH3}
 $+$ 4 \code{CH2}. With the tabulated $R_{\mathrm{CH3}} = 0.9011,\
@@ -20232,6 +20255,30 @@ Nusselt (1916)\cite{Nusselt1916} film condensation and
 Rohsenow (1952)\cite{Rohsenow1952} / Zuber (1959)\cite{Zuber1959}
 nucleate boiling and critical heat flux.
 
+\paragraph{The geometry mode refuses a phase it has exhausted.}\label{sec:phasechanger-exhaustion}
+In \code{model geometry;} the duty is a film flux times an area, $Q=h_\text{film}A\,\Delta T_\text{film}$
+(condensation) or $q''_\text{nucleate}A$ (boiling), with the surface held at
+$T_\text{sat}$.  Nothing in that product knows how much latent heat the feed has.  The
+unit therefore also prices the phase's capacity
+\begin{equation}
+   Q_\text{cap}^{\text{cond}}=\dot n\,(H_\text{in}-h_\text{sat,liq}),\qquad
+   Q_\text{cap}^{\text{boil}}=\dot n\,(h_\text{sat,vap}-H_\text{in}),
+\end{equation}
+the enthalpy down to the saturated liquid (up to the saturated vapour) at the held
+pressure, from the package's own dome ends; the unit refuses by name when $Q>Q_\text{cap}$,
+stating the largest duty, the area that already exhausts it ($A\,Q_\text{cap}/Q$ --- exact,
+because the wall-temperature iteration does not depend on $A$) and the remedy.  Before
+this check, 34 tubes on \file{condenser01\_film\_nusselt} published a condensate at
+$284.5$\,K against a $300$\,K coolant, and \file{reboiler\_water\_copper} at $8$\,kmol/h a vapour at
+$638.8$\,K against a $393$\,K heating medium, both at exit 0 with the first law closed.
+Why a refusal and not a desuperheat / condense / subcool path: the coolant and the
+heating medium are declared by a film coefficient and an \emph{inlet} temperature only,
+with no flow or heat capacity, so a zone beyond saturation would have an outlet bounded by
+nothing the case declared; a complete zoned solution needs the utility as a stream, which is
+what \code{heatExchanger} does.  The KPIs \code{T\_utility\_in} and \code{Q\_capacity\_kW}
+are published so that \code{check\_utility\_limits} can test the outlet against the utility
+independently of the unit.
+
 % ---------------------------------------------------------------------
 \section{Continuous stirred-tank reactor (CSTR)}\label{ch:cstr}
 
@@ -32760,6 +32807,35 @@ is announced, and its $Q$ is not a condenser's.  Tutorial
 \file{hx02\_condensing\_steam}: 8\,bar steam at 450\,K against 300\,K
 water, $Q = 5.14$\,kW, the steam leaving at $T_\text{sat} = 443.56$\,K with
 vapour fraction $0.869$ and a zero closure gap.
+
+\paragraph{The profile is computed segment by segment, and the minimum approach is read from it.}\label{sec:hx-segment-profile}
+The published profile $T_h(x), T_c(x)$ is \emph{not} an interpolation between the
+four end temperatures.  The exchanger is cut into $20$ segments of equal duty,
+$q_k = k\,Q/20$ (a monotone duty grid, so there is no marching and no unstable
+direction), and the state of each side at node $k$ is the enthalpy inversion
+above, taken at
+\begin{equation}
+   H_h^{(k)} = H_{h,\text{in}} - \frac{q_k}{\dot n_h},\qquad
+   H_c^{(k)} = H_{c,\text{in}} + \frac{q_k}{\dot n_c}\ \text{(co-current)},\quad
+   H_c^{(k)} = H_{c,\text{in}} + \frac{Q-q_k}{\dot n_c}\ \text{(counter-current)}.
+\end{equation}
+The end nodes are the published inlet and outlet states, so energy is conserved
+segment by segment to the bisection's roundoff (KPI \code{profile\_residual},
+$\approx 10^{-13}$ on \file{heatExchanger03\_pure\_water\_plateau}), and a side that
+crosses its saturation line shows its plateau --- $T=T_\text{sat}(P)$ with a
+vapour-fraction column --- instead of the eps-NTU temperature the earlier curve ran on to.
+Why this and not the constant-$C$ curve: that curve carries no enthalpy, so on a
+plateau it let the hot side give $67.6$\,kW and the cold side receive $133.6$\,kW
+over the first half of the length with nothing in the file to say so.  Why equal duty
+and not equal area: the duty grid needs only the inversion the unit already has; an
+equal-area grid would need the profile to find its own nodes.  The position axis is the
+cumulative $U\,\mathrm{d}A=\mathrm{d}q/\mathrm{LMTD}_\text{segment}$ normalised to
+one; \code{UA\_segments} is its total against the declared $UA$ (they agree only
+for constant $C$), and \code{dT\_min\_segments} $=\min_k(T_h^{(k)}-T_c^{(k)})$ is the
+minimum approach.  A negative value is an internal temperature cross --- heat flowing
+uphill, which is the second law's local form for a heat-transfer pair --- and
+\code{check\_utility\_limits} fails it.  Where a stream has no enthalpy datum the unit
+keeps the constant-$C$ curve anchored at the end temperatures and the KPIs above are absent.
 
 \paragraph{The phase it reports above every critical temperature.}\label{sec:hx-supercritical-phase}
 The outlet's phase word (\code{liquid}, \code{two-phase}, \code{vapour}) and the

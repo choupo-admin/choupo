@@ -1039,6 +1039,34 @@ int HeatExchanger::solve(const DictPtr& dict,
     const bool   pin0_out = zeroHot ? pinHotOut : pinColdOut;
     const bool   pin1_out = zeroHot ? pinColdOut : pinHotOut;
 
+    //  ---- THE SECOND LAW AT THE TERMINALS (review 5, 2026-11-25) ----------
+    //  A heat-transfer pair cannot leave its hot stream colder than the cold
+    //  stream's coldest end (its inlet in counter-current flow, its outlet in
+    //  co-current), nor its cold stream hotter than the hot inlet.  The
+    //  sensible eps-NTU forms the DUTY with the inlet phase's heat capacity;
+    //  when a side changes phase the outlet is then inverted from the
+    //  package's enthalpy, and an effectiveness near one with a latent term
+    //  the duty never carried can push that outlet 2 mK past the bound
+    //  (utility03 with U doubled: hot out 273.148 K against a cold inlet of
+    //  273.150 K, exit 0).  The answer is not a state the exchanger can
+    //  reach, so it is refused by name, with the remedy.
+    {
+        const scalar ThBound = counter ? Tc_in : Tc_out;
+        if (Th_out < ThBound - 1.0e-6 || Tc_out > Th_in + 1.0e-6)
+            throw std::runtime_error(
+                "heatExchanger('" + s0.name + "' + '" + s1.name + "'): the "
+                "answer violates the second law -- hot outlet " +
+                std::to_string(Th_out) + " K against the cold stream's " +
+                (counter ? "inlet " : "outlet ") + std::to_string(ThBound) +
+                " K, cold outlet " + std::to_string(Tc_out) + " K against the"
+                " hot inlet " + std::to_string(Th_in) + " K.  The duty is the"
+                " sensible eps-NTU's (Q = " + std::to_string(Q / 1000.0) +
+                " kW) and a side changed phase, so the outlet inverted from its"
+                " enthalpy overshoots the other stream's temperature.  Reduce"
+                " the area or U, or model the phase change with a unit that"
+                " carries the latent term (phaseChanger, evaporator).");
+    }
+
     // ---- LMTD (a posteriori, for verification / sizing) ----------------
     const scalar dT1 = counter ? (Th_in - Tc_out) : (Th_in - Tc_in);
     const scalar dT2 = counter ? (Th_out - Tc_in) : (Th_out - Tc_out);
@@ -1216,6 +1244,114 @@ int HeatExchanger::solve(const DictPtr& dict,
     for (const auto& kv : geomKpis) kpis_[kv.first] = kv.second;
 
     // ---- Profile: T_hot and T_cold along the area ----------------------
+    //  SEGMENTWISE, FROM THE PACKAGE'S ENTHALPY (review 5, 2026-11-25).
+    //  The profile below this block (kept as the fallback) is the constant-C
+    //  curve anchored at the four published end temperatures.  It carries no
+    //  enthalpy: when a side crosses its saturation line the published outlet
+    //  sits on a plateau (T = Tsat, a pinned vf) while the curve ran on to the
+    //  eps-NTU temperature, so on heatExchanger03_pure_water_plateau the two
+    //  sides exchanged different duties over the first half of the length
+    //  (hot gave 67.6 kW, cold received 133.6 kW) and nothing in the file
+    //  could say so.  Here the exchanger is cut into M-1 segments of EQUAL
+    //  DUTY (a monotone duty grid, q_k = k Q/(M-1)); each side's state at node
+    //  k is the SAME enthalpy inversion that produced the outlets, taken at
+    //  H_in -/+ q_k/n -- so energy is conserved segment by segment to the
+    //  bisection's roundoff, and the end nodes ARE the published outlets.  The
+    //  position axis is then the cumulative U.dA = dq/LMTD_segment, normalised
+    //  to 1, so a segment where the sides come close takes more of the axis;
+    //  the unit's own U.A is compared with the segment sum (`UA_segments`), and
+    //  the minimum approach (`dT_min_segments`) is the MINIMUM OVER THE NODES,
+    //  not the terminal pair the LMTD above is built from.  Why equal duty and
+    //  not equal area: the duty grid is local (an existing H(T) inversion per
+    //  node, no marching, no unstable direction) and a plateau is one segment
+    //  step in T, whereas an equal-area grid needs the profile to find its own
+    //  nodes.
+    bool segmentProfile = false;
+    scalar dTminSeg = std::numeric_limits<scalar>::quiet_NaN();
+    scalar UAseg = std::numeric_limits<scalar>::quiet_NaN();
+    scalar resSeg = std::numeric_limits<scalar>::quiet_NaN();
+    UnitProfile segProf;
+    if (std::isfinite(Hinlet(sHot)) && std::isfinite(Hinlet(sCold)) && Q != 0.0)
+    {
+        const int Ms = 21;
+        const scalar nh = sHot.F * 1000.0, nc = sCold.F * 1000.0;   // mol/s
+        std::vector<scalar> Thn(Ms), Tcn(Ms), vfh(Ms), vfc(Ms), qh(Ms), qc(Ms);
+        bool ok = true;
+        scalar gh = Th_in, gc = counter ? Tc_out : Tc_in;
+        for (int k = 0; k < Ms && ok; ++k)
+        {
+            const scalar qk = Q * k / (Ms - 1);
+            bool ph = false, pc = false; scalar vh = 0.0, vc = 0.0;
+            scalar Th_k, Tc_k;
+            if (k == 0 || k == Ms - 1)
+            {
+                //  the ends are the published states, not re-derived ones
+                const bool hotEnd = (k == Ms - 1);
+                Th_k = hotEnd ? Th_out : Th_in;
+                vh   = hotEnd ? vfHotOut : sHot.vf; ph = hotEnd ? pinHotOut : false;
+                const bool coldAtOut = counter ? (k == 0) : (k == Ms - 1);
+                Tc_k = coldAtOut ? Tc_out : Tc_in;
+                vc   = coldAtOut ? vfColdOut : sCold.vf; pc = coldAtOut ? pinColdOut : false;
+            }
+            else
+            {
+                Th_k = invert(sHot, -qk / nh, gh, vh, ph);
+                const scalar dHc = counter ? (Q - qk) / nc : qk / nc;
+                Tc_k = invert(sCold, dHc, gc, vc, pc);
+            }
+            gh = Th_k; gc = Tc_k;
+            Thn[k] = Th_k; Tcn[k] = Tc_k; vfh[k] = vh; vfc[k] = vc;
+            const scalar Hh = (k == 0) ? Hinlet(sHot) : Houtlet(sHot, Th_k, ph, vh);
+            const bool coldInletNode = (k == (counter ? Ms - 1 : 0));
+            const scalar Hc_here = coldInletNode ? Hinlet(sCold)
+                                                 : Houtlet(sCold, Tc_k, pc, vc);
+            //  duty given up by the hot side from its inlet; the cold side's
+            //  enthalpy at the same node (per segment the two are compared)
+            qh[k] = nh * (Hinlet(sHot) - Hh);
+            qc[k] = nc * Hc_here;
+            if (!std::isfinite(qh[k]) || !std::isfinite(qc[k])) ok = false;
+        }
+        if (ok)
+        {
+            scalar dmin = std::numeric_limits<scalar>::infinity(), resMax = 0.0;
+            std::vector<scalar> cumUA(Ms, 0.0);
+            bool cross = false;
+            for (int k = 0; k < Ms; ++k)
+                dmin = std::min(dmin, Thn[k] - Tcn[k]);
+            for (int k = 1; k < Ms; ++k)
+            {
+                const scalar d0 = Thn[k-1] - Tcn[k-1], d1 = Thn[k] - Tcn[k];
+                const scalar dq = Q / (Ms - 1);
+                scalar lm;
+                if (d0 > 0.0 && d1 > 0.0)
+                    lm = (std::abs(d0 - d1) < 1.0e-9 * std::max(d0, d1))
+                             ? d0 : (d0 - d1) / std::log(d0 / d1);
+                else { lm = 0.0; cross = true; }
+                cumUA[k] = cumUA[k-1] + (lm > 0.0 ? dq / lm : 0.0);
+                //  segment energy balance: the hot side gave dq_h, the cold
+                //  side took nc (H_c downstream - H_c upstream)
+                const scalar dqh = qh[k] - qh[k-1];
+                const scalar dqc = counter ? (qc[k-1] - qc[k]) : (qc[k] - qc[k-1]);
+                resMax = std::max(resMax, std::abs(dqh - dqc) / std::abs(Q));
+            }
+            std::vector<scalar> xsg(Ms);
+            for (int k = 0; k < Ms; ++k)
+                xsg[k] = (!cross && cumUA[Ms-1] > 0.0) ? cumUA[k] / cumUA[Ms-1]
+                                                       : double(k) / (Ms - 1);
+            segProf.xAxis = "position";
+            segProf.columns["position"] = xsg;
+            segProf.columns["T_hot"]    = Thn;
+            segProf.columns["T_cold"]   = Tcn;
+            segProf.columns["vf_hot"]   = vfh;
+            segProf.columns["vf_cold"]  = vfc;
+            segProf.columns["Q_cum"]    = qh;     // duty given up by the hot side, W
+            segmentProfile = true;
+            dTminSeg = dmin; resSeg = resMax;
+            UAseg = cross ? std::numeric_limits<scalar>::quiet_NaN() : cumUA[Ms-1];
+        }
+    }
+    //  The legacy shape below is computed whatever happens (cheap, and the
+    //  fallback for a package with no enthalpy datum).
     //  The exact solution of the two stream balances at constant heat
     //  capacities, ANCHORED to the four end temperatures this unit published
     //  (DEV.md 4c C478).  With dTh/dx and dTc/dx both proportional to the
@@ -1255,7 +1391,24 @@ int HeatExchanger::solve(const DictPtr& dict,
     prof.columns["position"] = xs;
     prof.columns["T_hot"]    = Thp;
     prof.columns["T_cold"]   = Tcp;
-    profile_ = prof;
+    profile_ = segmentProfile ? segProf : prof;
+    //  1 = computed segment by segment from the package's enthalpy; 0 = the
+    //  constant-C curve anchored at the end temperatures (a stream with no
+    //  enthalpy datum): ILLUSTRATIVE, carries no energy balance and no
+    //  minimum-approach verdict.
+    kpis_["profile_segmentwise"] = segmentProfile ? 1.0 : 0.0;
+    if (!segmentProfile)
+        std::cerr << "[hx] (" << s0.name << " + " << s1.name << ") the published"
+                  << " profile is ILLUSTRATIVE: a stream has no enthalpy datum, so"
+                  << " it is the constant-C curve anchored at the end temperatures"
+                  << " (no per-segment energy balance, no minimum-approach"
+                  << " verdict).\n";
+    if (segmentProfile)
+    {
+        kpis_["dT_min_segments"]    = dTminSeg;
+        kpis_["UA_segments"]        = UAseg;
+        kpis_["profile_residual"]   = resSeg;
+    }
 
     // ---- Report --------------------------------------------------------
     if (verbosity >= 2)

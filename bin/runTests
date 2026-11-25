@@ -9756,6 +9756,38 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/plantbooks.$$
 
+    # Utility-limits gate (2026-11-25, DEV.md 4c C531): no heat flows uphill in a
+    # published result.  THE REAL DEFECTS: a condenser left at 284.5 K with its
+    # coolant at 300 K and a reboiler made vapour at 638.8 K with heating at
+    # 393 K, both at exit 0 with the first law closed.  Every shipped
+    # exchanger-like steady case is judged from its published streams and
+    # profiles, and five counterexample arms must each fail.
+    if gate_exec "$ROOT/bin/curate/check_utility_limits.py" > /tmp/utillim.$$ 2>&1 \
+        && gate_exec "$ROOT/bin/curate/check_utility_limits.py" --arms >> /tmp/utillim.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "utility-limits-gate" "$(gate_claim check_utility_limits /tmp/utillim.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_utility_limits.py)\n" "utility-limits-gate"
+        cat /tmp/utillim.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/utillim.$$
+
+    # Multi-component proofs gate (2026-11-25, DEV.md 4c C529): a dryer that
+    # priced only its FIRST solid (the component order moved T_out by 19 K) and
+    # a cooling tower that saw only its majority gas.  Synthetic cases with two
+    # solids or two gases: order swapped, a solid split into two identical
+    # halves, each specification recomputed on the published outlet.
+    if gate_exec "$ROOT/bin/curate/proofs_multicomponent.py" > /tmp/multic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "multicomponent-proofs-gate" "$(gate_claim proofs_multicomponent /tmp/multic.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/proofs_multicomponent.py)\n" "multicomponent-proofs-gate"
+        cat /tmp/multic.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/multic.$$
+
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal
     # their own design sheets, its separation shortfall recomputes and

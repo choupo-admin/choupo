@@ -378,7 +378,7 @@ export interface LoanSchedule {
   idcNote: boolean;
 }
 
-/** The engine's convention (EconomicsPass.cpp:1979-2047): construction year k
+/** The engine's convention (EconomicsPass.cpp:1983-2051): construction year k
  *  draws debtFraction x FCI / Nc at the END of the year (the page spreads the
  *  outlay evenly; the engine follows the case's capital schedule); the
  *  interest on the balance already drawn is capitalised; in operation the

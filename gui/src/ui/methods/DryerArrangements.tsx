@@ -241,7 +241,7 @@ export function ArrangementRuns(): JSX.Element {
 export function ArrangementUses(): JSX.Element {
   return (
     <Box px="sm" py={8} style={BOX} data-arrangement-uses="">
-      <Title order={5}>When each is used, and why</Title>
+      <Title order={5}>Where each arrangement is used, as the books say</Title>
       <OriginMark of={["reference"]}
         note="Perry p. 12-36, van 't Land section 4.1 p. 42, Mujumdar section 3.6.2 pp. 57-66, read at their pages" />
       <Table withTableBorder withColumnBorders fz="xs" mt={4}>

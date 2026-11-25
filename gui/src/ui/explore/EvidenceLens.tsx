@@ -82,6 +82,7 @@ import { useStore } from "../../state/store.js";
 import { Plot, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import { VerdictCell } from "./ComponentInspector.js";
 import { UserPointsPanel } from "./UserPointsPanel.js";
+import { NO_CTX, refusalAdvice } from "../../case/modelApplicability.js";
 import { evidenceLink, evidenceSelectionInSearch } from "./selectionLink.js";
 
 /** The candidate colours.  NOT the shared `PLOT_COLORS.series`: that set is
@@ -496,7 +497,16 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
         </Alert>)}
       {errorLines.length > 0 && (
         <Alert color="red" variant="light" p="xs" title="The engine refused or did not finish">
-          {errorLines.map(([id, m]) => <Text key={id} size="xs"><b>{id}</b>: {m}</Text>)}
+          {errorLines.map(([id, m]) => {
+            const a = refusalAdvice(m, { activity: "ideal", eos: "idealGas", comps: [] }, NO_CTX);
+            return (
+              <Box key={id}>
+                <Text size="xs"><b>{id}</b>: {a.plain}</Text>
+                <Text size="xs"><b>Next:</b> {a.next}</Text>
+                <details><summary style={{ cursor: "pointer", fontSize: 11 }}>The engine&rsquo;s own text</summary>
+                  <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>{m}</Text></details>
+              </Box>);
+          })}
         </Alert>)}
       {haveAny ? (
         <>

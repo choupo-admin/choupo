@@ -55,6 +55,8 @@ import { useStore } from "../../state/store.js";
 import { Plot, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import type { JsonDict } from "../../dict/index.js";
 import { VerdictCell } from "./ComponentInspector.js";
+import { NO_CTX, refusalAdvice } from "../../case/modelApplicability.js";
+import { EngineRefusal } from "./EngineRefusal.js";
 
 export interface PanelCandidate {
   id: string;
@@ -234,7 +236,7 @@ export function UserPointsPanel({ subject, candidates, claimable, componentFiles
       {data && <Text size="xs" c="dimmed" data-testid="outlier-rule">Outliers: {rule.text}</Text>}
 
       {busy && <Group gap={8}><Loader size="xs" /><Text size="xs" c="dimmed">asking the engine at your points...</Text></Group>}
-      {runError && <Alert color="red" variant="light" p="xs" title="The engine refused or did not finish"><Text size="xs">{runError}</Text></Alert>}
+      {runError && <EngineRefusal advice={refusalAdvice(runError, { activity: "ideal", eos: "idealGas", comps: [] }, NO_CTX)} />}
       {figure && (
         <Box style={{ height: narrow ? 360 : 380 }}>
           <Plot data={figure.traces as never} layout={figure.layout as never}

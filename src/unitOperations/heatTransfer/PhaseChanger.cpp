@@ -867,6 +867,51 @@ int PhaseChanger::solve(const DictPtr& dict,
 //  References: Nusselt (1916); Incropera & DeWitt, Fund. of Heat & Mass
 //  Transfer, Ch. 10 (Ex. 10.3 vertical plate, Ex. 10.4 horizontal tube).
 //
+//  ---------------------------------------------------------------------------
+//  THE PHASE THE GEOMETRY MODE ASSUMES MUST STILL EXIST (review 5, 2026-11-25).
+//  Both geometry modes price the duty at ONE film coefficient on a
+//  condensing (boiling) surface held at Tsat.  That duty is a heat flux times
+//  an area: nothing in it knows how much latent heat the feed HAS.  With more
+//  area (24 -> 34 tubes on condenser01_film_nusselt, or a feed cut to 8 kmol/h
+//  on reboiler_water_copper) the flux times the area exceeded the feed's whole
+//  latent (plus sensible-to-saturation) capacity; the enthalpy inversion then
+//  walked the outlet on along the single-phase branch to 284.5 K against a
+//  300 K coolant (reboiler: vapour at 638.8 K against a 393 K heating medium)
+//  at exit 0, balance closed -- a violation of the second law the balance
+//  cannot see.
+//  WHY A REFUSAL AND NOT A ZONED SOLUTION: the unit's coolant (heating medium)
+//  is declared by a film coefficient and an INLET temperature only, with no
+//  flow and no heat capacity, so the sensible zone that follows (subcooling
+//  the condensate down toward the coolant, superheating the vapour) has no
+//  outlet temperature bounded by the utility's own energy balance: a
+//  desuperheat/condense/subcool path would invent a second coefficient and a
+//  utility rise the case never declared.  The honest answer is stated, by
+//  name, with the three numbers the user needs: the largest duty the phase
+//  can carry, the area that already exhausts it (exact: the wall-temperature
+//  iteration does not depend on the area, so Q is proportional to it) and the
+//  remedy.  A heatExchanger (eps-NTU, with the utility as a stream carrying
+//  its own flow and heat capacity) is the unit that models the zones.
+//  ---------------------------------------------------------------------------
+static void refuseExhaustedPhase(const char* mode, const char* what,
+                                 scalar Q_geometryW, scalar Q_capacityW,
+                                 scalar area, const char* utilityWord,
+                                 const char* remedy)
+{
+    if (!(Q_geometryW > Q_capacityW * (1.0 + 1.0e-9) + 1.0e-6)) return;
+    std::ostringstream m;
+    m << "phaseChanger(" << mode << "): the geometry demands "
+      << Q_geometryW / 1000.0 << " kW but the feed can give (take) at most "
+      << Q_capacityW / 1000.0 << " kW as " << what
+      << " -- the phase this model assumes is EXHAUSTED (the film flux x area"
+      << " is not bounded by the latent heat).  The area that already exhausts"
+      << " it is " << area * Q_capacityW / Q_geometryW << " m2 (given " << area
+      << " m2).  Beyond it the outlet would leave the saturated state and its"
+      << " temperature would be set by the " << utilityWord
+      << ", which this model carries only as a film coefficient and an inlet"
+      << " temperature (no flow, no heat capacity).  " << remedy;
+    throw std::runtime_error(m.str());
+}
+
 int PhaseChanger::solveGeometry(const DictPtr& operDict,
                                 const ThermoPackage& thermo,
                                 int verbosity,
@@ -1146,6 +1191,29 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     const scalar F_mol_s   = F * 1000.0;                 // kmol/s -> mol/s
     const scalar Q_per_mol = -Q_cond_W / F_mol_s;        // heat REMOVED < 0
     const scalar H_target  = H_in + Q_per_mol;
+    scalar Q_capacity_W = 0.0;   // published: the phase's whole capacity
+    {
+        //  Capacity = everything down to the SATURATED LIQUID at Tsat
+        //  (desuperheat + latent); see refuseExhaustedPhase.
+        scalar h_sat_liq;
+        const std::size_t di = dominantIndex(thermo, z);
+        if (ThermoPackage::isEffectivelyPure(z, di))
+            h_sat_liq = flashState::pureSaturationLegs(Tsat, P_out, z, thermo).hLiquid;
+        else
+        {
+            const scalar eps = 1.0e-4;
+            const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps, z);
+            const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
+            h_sat_liq = h_lo - eps * (h_hi - h_lo) / (1.0 - 2.0 * eps);
+        }
+        Q_capacity_W = std::max<scalar>(0.0, F_mol_s * (H_in - h_sat_liq));
+        refuseExhaustedPhase("geometry", "condensation to saturated liquid",
+            Q_cond_W, Q_capacity_W, area,
+            "coolant",
+            "Reduce the area (nTubes / tubeL / charLength) or raise the feed"
+            " flow; to subcool the condensate use a heatExchanger with the"
+            " coolant as a stream, or a heater after this condenser.");
+    }
 
     // Dome-aware outlet (same logic as the duty spec mode).
     const std::size_t domIdx = dominantIndex(thermo, z);
@@ -1289,6 +1357,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         : (controlling == "coolant-side")    ? 1.0 : 2.0;
     kpis_["area"]             = area;
     kpis_["vf_out"]           = vf_out;
+    kpis_["T_utility_in"]     = T_cool;      // coolant inlet T: no outlet colder
+    kpis_["Q_capacity_kW"]    = Q_capacity_W / 1000.0;
     kpis_["vf_in"]            = 1.0;   // geometry mode condenses a vapour feed
     kpis_["F"]                = F;
     kpis_["P"]                = P_out;
@@ -1640,6 +1710,29 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     const scalar F_mol_s   = F * 1000.0;
     const scalar Q_per_mol = +Q_boil_W / F_mol_s;    // heat ADDED > 0
     const scalar H_target  = H_in + Q_per_mol;
+    scalar Q_capacity_W = 0.0;   // published: the phase's whole capacity
+    {
+        //  Capacity = everything up to the SATURATED VAPOUR at Tsat
+        //  (preheat + latent); see refuseExhaustedPhase.
+        scalar h_sat_vap;
+        const std::size_t di = dominantIndex(thermo, z);
+        if (ThermoPackage::isEffectivelyPure(z, di))
+            h_sat_vap = flashState::pureSaturationLegs(Tsat, P_out, z, thermo).hVapour;
+        else
+        {
+            const scalar eps = 1.0e-4;
+            const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps, z);
+            const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
+            h_sat_vap = h_hi + eps * (h_hi - h_lo) / (1.0 - 2.0 * eps);
+        }
+        Q_capacity_W = std::max<scalar>(0.0, F_mol_s * (h_sat_vap - H_in));
+        refuseExhaustedPhase("geometry,boiling", "boiling to saturated vapour",
+            Q_boil_W, Q_capacity_W, area,
+            "heating medium",
+            "Reduce the area (nTubes / tubeL / charLength) or raise the feed"
+            " flow; to superheat the vapour use a heatExchanger with the"
+            " heating medium as a stream, or a heater after this boiler.");
+    }
 
     const std::size_t domIdx = dominantIndex(thermo, z);
     const bool pureDome = ThermoPackage::isEffectivelyPure(z, domIdx);
@@ -1768,6 +1861,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     kpis_["regime"]       = 0.0;
     kpis_["area"]         = area;
     kpis_["vf_out"]       = vf_out;
+    kpis_["T_utility_in"] = T_med;           // medium inlet T: no outlet hotter
+    kpis_["Q_capacity_kW"] = Q_capacity_W / 1000.0;
     kpis_["vf_in"]        = 0.0;            // boiling mode boils a liquid feed
     kpis_["F"]            = F;
     kpis_["P"]            = P_out;

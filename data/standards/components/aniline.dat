@@ -92,8 +92,54 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (5 ACH + 1 ACNH2), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.7165;
+    q   2.8160;
+}
+
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACNH2; count 1; } );   // derived from structure c1(N)ccccc1 by bin/curate/unifac_groups.py
+}
+
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row N09 "Aniline":
+//  delta_d = 9.53, delta_p = 2.5, delta_h = 5.0 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    19493.5;        // Pa^0.5   = 9.53 (cal/cm3)^0.5, Table I row N09
+    dP    5113.7;        // Pa^0.5   = 2.5
+    dH    10227.4;        // Pa^0.5   = 5.0
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.7165, q = sum nu_k Q_k = 2.8160 over the record's unifac groups (5 ACH + 1 ACNH2)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        definition;
+        method        "cut from the molecular structure c1(N)ccccc1 (atom count reproduces the record's formula) into 5 ACH + 1 ACNH2 by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row N09 (Aniline); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row N09; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     MW
     {
         origin        literature;

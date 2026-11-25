@@ -5740,6 +5740,46 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C535. EDUTOOLS BY FAMILY, ONE SKELETON (Vitor, 2026-11-25: "voltes a um ponto em que está simples e funciona ... O
+> EduTool Why did it not dry? é claramente um remendo").**  Weighed: the page's content is sound (four engine runs, a
+> verdict); the patch is its packaging: a new top-level tool for one day's question, the 110th of a flat list.  RULE: a
+> family per operation or concept, one front door, one fixed skeleton (the question, the engine run, what is read, the
+> diagnosis, the choice, the limits); a diagnosis is a chapter of its family, never a new tool.  No big-bang merge: the
+> drying family is the pilot (choose, curve, diagnose, chart), old links alias.  No new EduTool until Vitor has read the
+> skeleton and seen the pilot.
+
+> **C534. PSYCHROMETRIC CHARTS: ONE HOME, THREE DOORS (Vitor, 2026-11-25, for Saturday 28 November).**  The chart
+> stays in its EduTool; the Explorer gets a card (a gas and a vapour) that opens it with the pair filled; Find answers
+> "humid air", "wet bulb", "dew point"; a link carries gas, vapour and pressure; air + water is the default (N2 + water
+> today); click a point to read every property; A4 print, CSV, save as case.
+
+> **C533 (Vitor, 2026-11-25): which mixture of three solvents dissolves a solid.**  Scatchard-Hildebrand as an activity
+> model (ln gamma_2 = V_2 (delta_2 - delta_bar)^2 phi_1^2 / RT, any number of solvents), with the fusion equation giving the
+> amount; the Hansen triangle for three (today two).  Measured by a scratch run: benzene in three solvents with UNIFAC works
+> (aEq 0.503 at 240 K equals the hand value 0.503); the data that fail: a heat of fusion on the record of water only, 13
+> substances with Hansen numbers.  C226 measured the same day on 947 pairs: 0 new, 547 isothermal only, 292 present.
+
+> **C532. THE LAWS OF EVERY RUN (Vitor, 2026-11-25: "Cada operação, setor e processo global devia gerar isso em cada corrida
+> e lançar alarmes em caso de falha grosseira").**  The laws live in the engine, once per unit kind, never in a folder a
+> case can edit; the CASE holds only its declared specifications; what each run writes into the case is the VERDICT, per
+> unit, per sector and for the plant, recomputed from the published streams: closures, no outlet beyond the temperature of
+> what heats or cools it, phase availability, second law, the declared specification met, per-segment energy.  Gross failure
+> = the run does not converge; the rest is an alarm.  FIRST the 22 shipped units the second-law ledger flags (C491) are
+> separated one by one; waits for C531's class table.
+
+> **C531. EXTERNAL REVIEW 5 (Vitor, 2026-11-25).**  PhaseChanger (geometry) lets a phase run out: an outlet colder than its
+> coolant, a vapour hotter than its heating, at exit 0; HeatExchanger's two-phase profile is an interpolation that does not
+> conserve energy locally.  The robustness run of the same day moved feeds only and judged numbers one by one: it could
+> not see this, and said so.  A thermal-feasibility proof (utility limits, phase availability, per-segment energy, second
+> law from independent properties) with a geometry sweep is the remedy.
+
+> **C529, C530 (Vitor, 2026-11-25).**  C529: EXTERNAL REVIEW 4 -- EvaporativeDryer prices the first solid only (order moves
+> T_out 19 K), CoolingTower sees the majority gas only, an infeasible `maxExhaustHumidity` is accepted; the idiom (first or
+> largest component by index, bisection without a bracket) is searched in every unit; synthetic two-solid and two-gas
+> variants join the proofs because the shipped corpus cannot see it.  C530: the Explorer dead-ended on a component with no
+> UNIFAC groups (338 of 656 records have none): groups from structure, a model that cannot price is disabled with its
+> reason, a refusal carries the next step.
+
 > **C528. EDUTOOL: HOW MANY PHASES? (Vitor to the cloud, 2026-11-25.)**  The Gibbs energy of mixing and the tangent
 > plane on water + n-butanol; the three equal-fugacity solutions, the Michelsen verdict, the engine's flash.  Opt-in
 > extension (a `stability` block), binary01 byte-identical.  Accepted before the freeze if validated by noon of the 30th.

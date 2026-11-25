@@ -487,3 +487,5 @@ POST | SERIAL | bin/curate/check_pressure_exchanger.py               | C470: sta
 POST | SERIAL | bin/curate/check_tablet_machines.py                  | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
 POST | SERIAL | bin/curate/check_swro_plant.py                       | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
 POST | SERIAL | bin/curate/check_boron_split.py                      | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
+POST | ISO    | bin/curate/check_utility_limits.py                 | C531: runs 56 shipped cases in copies; reads published results only
+POST | ISO    | bin/curate/proofs_multicomponent.py                | C529: synthetic two-solid and two-gas cases in its own scratch

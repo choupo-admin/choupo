@@ -83,10 +83,23 @@ export function chapterOf(el: Element): Chapter | null {
   return { title, key: chapterSlug(title), level: el.tagName === "H4" ? 4 : 5 };
 }
 
+/** CHAPTER KEYS THAT WERE RENAMED, old -> new, so a `&step=` link written before the
+ *  rename still opens the right place.  One list for every tool (a key is the slug of a
+ *  title, and the two titles never coincide across tools by accident).  A row is added
+ *  when a heading is renamed or a part is split, and is never removed while a link to
+ *  the old key may exist; tests/chapterAliases.test.ts renders each tool and holds
+ *  every `new` to a heading the page draws. */
+export const CHAPTER_ALIASES: Readonly<Record<string, { tool: string; key: string }>> = {
+  // dryer-selection, 2026-11-25: the "steps 9 to 12" group became part C of four.
+  "co-current-counter-current-cross-flow-steps-9-to-12":
+    { tool: "dryer-selection", key: "which-way-the-gas-meets-the-solid" },
+};
+
 /** The element a chapter key names inside `root`, or null when the page does
  *  not (yet) draw it.  Resolution order: a heading whose key matches; an
  *  element anchored with that key; then the section keywords. */
 export function resolveChapter(root: ParentNode, key: string): Element | null {
+  key = CHAPTER_ALIASES[key]?.key ?? key;
   const [section, item] = key.includes("/") ? key.split("/", 2) as [string, string] : [key, ""];
   const headings = [...root.querySelectorAll(CHAPTER_SELECTOR)];
   if (!item) {

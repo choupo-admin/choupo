@@ -25,7 +25,7 @@
         inlet moisture and ends at the outlet KPI, the gas humidity rises along
         a co-current dryer and falls along a counter-current one, and the
         outlet moistures order counter-current < cross-flow < co-current, which
-        is what steps 9, 11 and the quiz say;
+        is what steps 5, 7 and the quiz say;
     (c) each unit of the page's table is the arrangement it claims: the case's
         `flow` word;
     (d) every engine file:line the lesson cites is a CLAIMS key, held to the
@@ -170,7 +170,7 @@ describe("(b) the engine's own run of the three cases, as this tree's binary wro
     expect(p!.T[p!.T.length - 1]!).toBeLessThan(p!.T[0]!);
   });
 
-  it("the outlets order as steps 9 and 11 and the quiz say: counter-current < cross-flow < co-current in X", () => {
+  it("the outlets order as steps 5 and 7 and the quiz say: counter-current < cross-flow < co-current in X", () => {
     const X = (id: ArrangementId) => run(id).o!.X;
     expect(X("countercurrent")).toBeLessThan(X("crossflow"));
     expect(X("crossflow")).toBeLessThan(X("cocurrent"));
@@ -185,7 +185,7 @@ describe("(b) the engine's own run of the three cases, as this tree's binary wro
     expect(x("crossflow")).toBeGreaterThan(x("countercurrent"));
     expect(x("countercurrent")).toBeGreaterThan(x("cocurrent"));
   });
-  it("the solid leaves at nearly one temperature in all three (the step 10 note's claim)", () => {
+  it("the solid leaves at nearly one temperature in all three (the step 6 note's claim)", () => {
     const T = ARRANGEMENT_IDS.map((id) => run(id).k["T_solid_out"]!);
     expect(Math.max(...T) - Math.min(...T)).toBeLessThan(1.0);
   });
@@ -266,8 +266,8 @@ describe("(e) the rendered section and the lesson around it", () => {
     expect(t).toContain("unsuitable for thermally sensitive solids");
     expect(ARRANGEMENT_USES.find((u) => u.id === "crossflow")!.src).toContain("3.6.2.3.1, p. 65");
   });
-  it("steps 9 to 12 exist, the quiz stays at its cap of seven, and its new questions point at them", () => {
-    expect(DRYER_SELECTION_STEPS.map((s) => s.n).slice(8)).toEqual([9, 10, 11, 12]);
+  it("steps 5 to 8 exist, the quiz stays at its cap of seven, and its new questions point at them", () => {
+    expect(DRYER_SELECTION_STEPS.map((s) => s.n).slice(4, 8)).toEqual([5, 6, 7, 8]);
     expect(DRYER_SELECTION_QUIZ.length).toBeLessThanOrEqual(7);
     const ids = DRYER_SELECTION_QUIZ.map((q) => q.id);
     expect(ids).toContain("which-end");

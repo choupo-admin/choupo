@@ -193,7 +193,7 @@ export function PlantCostTool(): JSX.Element {
             <Text size="xs" c="dimmed" mt={4} data-example-note="">{EXAMPLES[exId].note}</Text>
           ) : null}
           <Text size="xs" c="dimmed" mt={4}>
-            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:3087-3088</code>),
+            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:3091-3092</code>),
             a reconciliation line that is never fed into its fixed capital.
           </Text>
         </Box>
@@ -364,8 +364,8 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: the itemised model <code>buildWorkingCapital</code> (<code>EconomicsPass.cpp:280</code>), a day is 1/365
-            of the annual figure (<code>:255</code>), receivables are days/365 of the revenue (<code>:404</code>), payables days/365 of the
-            raw-material bill (<code>:410</code>), the fraction fallback is 0.15 of the FCI (<code>:2880</code>).  The Economics errors page,
+            of the annual figure (<code>:256</code>), receivables are days/365 of the revenue (<code>:405</code>), payables days/365 of the
+            raw-material bill (<code>:411</code>), the fraction fallback is 0.15 of the FCI (<code>:2884</code>).  The Economics errors page,
             class 5, shows the same comparison on another plant.
           </Text>
         </Box>
@@ -416,8 +416,8 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: <code>reports/economics/financing.csv</code> when the case declares <code>financing {"{ }"}</code>
-            (<code>EconomicsPass.cpp:620</code>); draws at the end of each construction year (<code>:1985</code>), the interest on the balance
-            drawn capitalised (<code>:1997</code>), interest paid on the opening balance in operation (<code>:2018</code>).  The page spreads the draws
+            (<code>EconomicsPass.cpp:620</code>); draws at the end of each construction year (<code>:1989</code>), the interest on the balance
+            drawn capitalised (<code>:2001</code>), interest paid on the opening balance in operation (<code>:2022</code>).  The page spreads the draws
             evenly; the engine follows the case&apos;s capital schedule.
           </Text>
         </Box>

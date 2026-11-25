@@ -67,7 +67,7 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "it hides everything it adds. Choupo's engine prints the same "
       + "multiplier as a cross-check line: 3.63 times the sum of the "
       + "purchased costs, labelled as not used in the fixed capital "
-      + "(EconomicsPass.cpp:3087-3088; the print is at line 3807). The "
+      + "(EconomicsPass.cpp:3091-3092; the print is at line 3811). The "
       + "factor can be declared as langFactor.",
     formula: String.raw`F_{\mathrm{L}}=K\,C_{\mathrm{Be}}`,
     where: [
@@ -121,7 +121,7 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "zero here) plus a site "
       + "factor, default 0.50, times the sum of the base-case \\(C_{\\mathrm{BM}}\\), for "
       + "the site development and the auxiliary facilities "
-      + "(EconomicsPass.cpp:3084, the default at :2928). On this page the "
+      + "(EconomicsPass.cpp:3084, the default at :2932). On this page the "
       + "items are at base conditions, so the base-case sum equals the "
       + "\\(C_{\\mathrm{BM}}\\) sum; the engine takes each item's material and pressure "
       + "factors into account and the page does not. The equipment list "
@@ -199,9 +199,9 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "table below is that schedule year by year. It is the schedule the "
       + "engine writes to reports/economics/financing.csv when a case "
       + "declares financing { } (EconomicsPass.cpp:620): draws at the end "
-      + "of each construction year (:1985), construction interest "
-      + "capitalised (:1997), interest paid on the opening balance in "
-      + "operation (:2018). One difference: the page spreads the draws "
+      + "of each construction year (:1989), construction interest "
+      + "capitalised (:2001), interest paid on the opening balance in "
+      + "operation (:2022). One difference: the page spreads the draws "
       + "evenly over the construction years, the engine follows the case's "
       + "capital schedule. With a one-year construction the whole outlay "
       + "is made at its end and no interest accrues, as in the engine. The "

@@ -21,8 +21,8 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/isopropanol.dat"  "1a2156c8e624e26eede80bd6934137831af09d8cd4443457b2fc568c622bfe4e";
-        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "components/isopropanol.dat"  "ec80100cf3dc2744647cd336da135a457fca1c868ac331ebef0fa0a30577322d";
+        "components/water.dat"  "7d699205c04602ec3cc38f8a1cddad4a008d9362764e00f524610512db438804";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/NRTL/isopropanol-water.dat"  "3e03a684d6b51c3a844d410058ee087542d7879787861b81fc2bb4c7ef63666e";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";

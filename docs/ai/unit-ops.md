@@ -865,6 +865,11 @@ film condensation) or a `boiling{}` + `heatingMedium{}` block (Rohsenow nucleate
 flux, Zuber CHF ceiling — a design above CHF is hard-refused).  Theory:
 [`theoryGuide`](../theoryGuide.tex) → "Phase changer: the dome-crossing
 boiler / condenser".
+`model geometry;` REFUSES BY NAME when the film flux x area exceeds the feed's latent
+(+ sensible-to-saturation) capacity (message gives the largest duty, the area that
+exhausts it, the remedy); it never publishes an outlet beyond the coolant's / heating
+medium's inlet temperature.  KPIs `T_utility_in`, `Q_capacity_kW`.  Theory
+`sec:phasechanger-exhaustion`.
 
 ### `heatExchanger`  (2-stream, ε-NTU rating)
 Two process streams; hardware-only (`area` + `U`).  Outputs the duty Q
@@ -881,6 +886,12 @@ has no enthalpy datum, does the outlet fall back to the ε-NTU temperature —
 announced in the caveat block, with `H_closure_gap_kW` carrying the
 difference.  The DUTY stays the sensible ε-NTU's (no latent term): a side
 that changes phase is announced, and its Q is not a condenser's.
+The published profile is computed SEGMENT BY SEGMENT (20 segments of equal duty,
+each side's state from the enthalpy inversion at H_in -/+ q_k/n; plateaus show as
+T = Tsat with a vapour-fraction column; energy closes per segment, KPI
+`profile_residual`).  KPIs `dT_min_segments` (the minimum approach over the nodes;
+negative = internal temperature cross) and `UA_segments` come from it, not from the
+terminal pair.  Theory `sec:hx-segment-profile`; gate `check_utility_limits`.
 
 ```
 inputs  (hot  cold );
@@ -3057,6 +3068,12 @@ heat), and a heat capacity it must default (a salt with no
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 operation { maxExhaustHumidity 0.95; }   // optional
 ```
+Every solid of the feed counts (mass, moisture ratio, sensible heat), in any
+component order.  A `maxExhaustHumidity` the gas cannot meet even with nothing
+evaporated is REFUSED by name with the feasible range (before, the exhaust left
+above the cap while the run announced the cap).  `convectiveDryer` dries ONE
+solid and refuses a second by name; `coolingTower` prices the whole dry-gas
+mixture (molar mass, humid heat), not its majority component.
 Use `solidDryer` when the moisture is sorbed (an isotherm governs it);
 `evaporativeDryer` when it is free surface water (a crystal loses it by
 plain evaporation).
