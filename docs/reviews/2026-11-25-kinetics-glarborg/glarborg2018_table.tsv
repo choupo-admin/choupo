@@ -1,0 +1,12 @@
+# Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, doi 10.1016/j.pecs.2018.01.002; journal PDF (Choupo-Literature/Articles/Reactors-Kinetics/glarborg2018-nitrogen-chemistry-combustion.pdf), Table 2 on journal p. 34 (PDF page 4) and Table 5 on journal p. 41 (PDF page 11), read from the page images TWICE on 2026-11-25 (130/220 dpi, then a 300/330 dpi crop of each table); the two readings agree on every digit and agree with the values nox01_zeldovich_postflame carried: no value corrected.
+# Units as printed in both captions: mol, cm, s, cal; k = A T^beta exp(-E/RT) (A in cm3 mol-1 s-1 for a bimolecular step, s-1 for the unimolecular R15 whose low-pressure limit is the second line).  R15 is printed N2O(+M) = O + N2(+M): the high-pressure line and the "Low pressure limit" line, no Troe parameters (a Lindemann fall-off).
+row	table	reaction	page	equation_as_printed	A	beta	E_cal_mol
+Z1	Table 2	1	34	N + NO = O + N2	9.4E12	0.140	0
+Z2	Table 2	2	34	N + OH = NO + H	3.8E13	0.000	0
+Z3	Table 2	3	34	N + O2 = NO + O	5.9E09	1.000	6280
+R15H	Table 5	15	41	N2O (+M) = O + N2 (+M)	9.9E10	0.000	57901
+R15L	Table 5	15 low-pressure limit	41	N2O (+M) = O + N2 (+M)	6.0E14	0.000	57444
+R16	Table 5	16	41	N2O + H = N2 + OH	6.4E07	1.835	13492
+R17	Table 5	17	41	NH + NO = N2O + H	2.7E15	-0.780	20
+R18	Table 5	18	41	N2O + O = NO + NO	9.2E13	0.000	27679
+R19	Table 5	19	41	N2O + O = N2 + O2	9.2E13	0.000	27679

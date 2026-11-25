@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction CH3+water=CH4+OH
+  Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A reaction 5 (p. 331)
+  Written by bin/curate/make_kinetics_mb1989.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "CH4 + OH = CH3 + H2O";
+limitingReactant  CH4;
+stoichiometry
+(
+        { component CH3;     nu  1; }
+        { component CH4;     nu -1; }
+        { component OH;      nu -1; }
+        { component water;   nu  1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 1600000;  b 2.1;  Ea 2460;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { MillerBowman1989 A5; MB1989_attack A5; MillerBowman1989_AppA A5; }
+source
+{
+    citation "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+    doi "10.1016/0360-1285(89)90017-8";
+    table "Appendix A (C/H/O/N mechanism)";
+    page 331;
+    reaction 5;
+    note "one mechanism's value, as printed (cm3, mol, s, cal/mol); not an evaluated constant";
+}
+reviewStatus      interim;
+reviewReason      "read from the page images of Appendix A in two passes (docs/reviews/2026-11-22-miller-bowman/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, Appendix A, reaction 5 (journal p. 331), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 15 (1989) 287";
+        uncertainty   "not given by the source";
+    }
+}

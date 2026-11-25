@@ -23,6 +23,12 @@ REPO = Path(__file__).resolve().parent.parent.parent
 KIN = REPO / "data" / "standards" / "kinetics"
 
 
+def record_files():
+    """Every record of the library, in the ENGINE'S order: a reaction is a folder, a source a file in it,
+    sorted by the name the record had when a reaction was one flat file (`<equation>.dat`), then source."""
+    return sorted((f for f in KIN.glob("*/*.dat") if f.parent.name != "sets"), key=lambda f: (f.parent.name + ".dat", f.stem))
+
+
 def words(v):
     return [t.strip('"') for t in v] if isinstance(v, list) else []
 
@@ -48,6 +54,21 @@ def stoich(blk):
     return out
 
 
+def stoich_rev(blk):
+    """{species: orderRev} of the entries that declare one (a species on both sides)."""
+    toks = words(blk.get("stoichiometry"))
+    out = {}
+    for i, t in enumerate(toks):
+        if t == "component":
+            sp = toks[i + 1]
+            j = i + 2
+            while j < len(toks) and toks[j] != "}":
+                if toks[j] == "orderRev":
+                    out[sp] = float(toks[j + 1])
+                j += 1
+    return out
+
+
 def block_text(text, key):
     m = re.search(r"^%s\s*\{" % key, text, re.M)
     i = m.end()
@@ -61,7 +82,7 @@ def block_text(text, key):
 
 def inline_text(sets_asked, present):
     out = []
-    for f in sorted(KIN.glob("*.dat")):
+    for f in record_files():
         t = f.read_text()
         b = rr.parse_file(str(f))
         sb = b.get("sets")
@@ -71,9 +92,11 @@ def inline_text(sets_asked, present):
             label = words(sb.get(s))[0]
             st = stoich(b)
             lines = []
+            rev = stoich_rev(b)
             for sp, nu, order in st:
                 o = order if order is not None else (-nu if nu < 0 else 0)
-                lines.append("        { component %snu %2d;  order %g; }" % ((sp + ";").ljust(8), nu, o))
+                orev = ("  orderRev %g;" % rev[sp]) if sp in rev else ""
+                lines.append("        { component %snu %2d;  order %g;%s }" % ((sp + ";").ljust(8), nu, o, orev))
             kin = block_text(t, "kinetics")
 
             def keep(m):

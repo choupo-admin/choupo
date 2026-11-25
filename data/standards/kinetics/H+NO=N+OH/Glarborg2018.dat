@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction H+NO=N+OH
+  Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, Table 2, reaction Z2 (p. 34)
+  Written by bin/curate/make_kinetics_seed.py; the FOLDER name is the
+  canonical equation, the file its source (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+printedEquation  "N + OH = NO + H";
+limitingReactant  N;
+stoichiometry
+(
+        { component H;       nu  1; }
+        { component N;       nu -1; }
+        { component NO;      nu  1; }
+        { component OH;      nu -1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 3.8000e+13;  b 0.0;  Ea 0.0;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { Glarborg2018 Z2_N_OH_NO_H; }
+source
+{
+    citation "Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68";
+    doi "10.1016/j.pecs.2018.01.002";
+    table "Table 2";
+    page 34;
+    reaction "Z2";
+    note "as printed (mol, cm, s, cal); the values nox01_zeldovich_postflame carried, held to the journal page image (read twice 2026-11-25, no digit differs)";
+}
+reviewStatus      interim;
+reviewReason      "typed from the case that carried it (nox01_zeldovich_postflame) and read back against the journal page image (docs/reviews/2026-11-25-kinetics-glarborg/), twice; not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, Table 2, reaction Z2 (journal p. 34), A in cm3 mol-1 s-1, Ea in cal/mol, as printed";
+        methodVersion "Prog. Energy Combust. Sci. 67 (2018) 31";
+        uncertainty   "not given by the source";
+    }
+}

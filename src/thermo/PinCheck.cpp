@@ -259,7 +259,7 @@ bool consumed(const std::string& sub, const std::set<std::string>& comps,
     if (dir == "assets" || dir == "utilities")
         return words.count(stem) > 0;
     //  C458: the kinetics library holds every set and a case asks for some.
-    if (dir == "kinetics" || dir == "kinetics/sets")
+    if (dir == "kinetics" || dir.rfind("kinetics/", 0) == 0)
         return kineticsAsked_().count(sub) > 0;
     if (startsWith(dir, "parameters/adsorption/equilibria/"))
         return words.count(fs::path(dir).filename().string()) > 0 && comps.count(stem) > 0;
