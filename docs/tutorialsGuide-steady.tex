@@ -1411,17 +1411,19 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
   \draw[->] ($(column10.east)+(0,0.17)$) -- ($(column10.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The same column, built too narrow: every tray floods -- and it still converges}
+\tutwhat{The same column, built too narrow: its seven rectifying trays flood -- and it still converges}
 \begin{tutnarrative}
-the SAME column as column09, built 1.10 m wide instead of the 1.316 m that column09 designed for it.
+the SAME column as column09, built 1.03 m wide instead of the 1.222 m that column09 designed for it.
 
-Nothing about the separation changes. The distillate is still 98.12 \% benzene, the bottoms still 98.12 \% toluene, the MESH equations converge exactly as before, and every number in the stream table is identical. The column is a perfectly good column -- on paper.
+Nothing about the separation changes. The distillate is still 95.10 \% benzene, the bottoms still 95.10 \% toluene (the feed enters two-phase, 70 \% vapour, at 370 K and 1 atm), the MESH equations converge exactly as before, and every number in the stream table is identical. The column is a perfectly good column -- on paper.
 
-It floods. The worst tray runs at 114.5 \% of its entrainment-flooding velocity: the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
+It floods. The worst tray, stage 7 just above the feed, runs at 112.6 \% of its entrainment-flooding velocity, and the other six rectifying trays are above 100 \% too (104.7 to 111.7 \%): the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. The stripping trays carry less vapour and stay at 67-71 \%. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
 
 This is the whole reason hydraulics exists as a separate pass. A converged solution is not a feasible column, and the stage equations have no way of knowing the difference. Widen it (column09), space the trays further apart, or cut the reflux -- but do not believe the stream table until a tray can pass the traffic it carries.
 
-Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
+Note the downcomer, too: the backup reaches 253.8 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
+
+(Header re-read 2026-11-25 against the engine's own run: it had said 1.10 m, 114.5 \%, 98.12 \% and 268.5 mm, numbers of a column fed as a saturated liquid and designed at 1.316 m; the golden has pinned 98.7 \% at 1.10 m since its first recording, 2026-11-18. The diameter was narrowed so that the engine's own number shows the flooding the lesson is about.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -11308,7 +11310,7 @@ Two design variables, written through \$references so the SQP can drive them and
 \goldrow{kpi}{vessel}{Gamma\_Ca\_elem5}{0.310136333516}
 \goldrow{kpi}{vessel}{Gamma\_Ca\_elem6}{0.277306770816}
 \goldrow{kpi}{vessel}{Gamma\_Ca\_elem7}{0.257981387968}
-\goldmore{114}
+\goldmore{156}
 \end{tutgolden}
 
 \clearpage

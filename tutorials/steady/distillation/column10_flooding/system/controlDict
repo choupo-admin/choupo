@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "The same column, built too narrow: every tray floods -- and it still converges";
+description   "The same column, built too narrow: its seven rectifying trays flood -- and it still converges";
 verbosity     3;

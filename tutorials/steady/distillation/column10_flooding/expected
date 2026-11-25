@@ -15,12 +15,12 @@ kpi     column10               T_bottom         381.514100345    1e-4
 kpi     column10               T_top            355.689111404    1e-4
 kpi     column10               V_rect           0.0416666666667  1e-4
 kpi     column10               V_strip          0.022298836509   1e-4
-kpi     column10               dP_column_kPa    14.5367804388    1e-4
-kpi     column10               diameter         1.1              1e-4
-kpi     column10               downcomerBackup_max_mm 228.918370864    1e-4
+kpi     column10               dP_column_kPa    16.2121084814    1e-4
+kpi     column10               diameter         1.03             1e-4
+kpi     column10               downcomerBackup_max_mm 253.769422033    1e-4
 kpi     column10               downcomerFloodStages 0                1e-4
 kpi     column10               feedStage        8                1e-4
-kpi     column10               floodApproach_max 0.987181647806   1e-4
+kpi     column10               floodApproach_max 1.12592119361    1e-4
 kpi     column10               floodStage       7                1e-4
 kpi     column10               nStages          15               1e-4
 kpi     column10               weepingStages    0                1e-4

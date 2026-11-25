@@ -458,6 +458,14 @@ strengthened):
   S54 the `pipeNotRouted` finding not raised                             -> (g), (h)
       the refused separator's streams and every notRouted stream that is no
       rule (solids, indoor, two consumers) with no finding saying so.
+  The NARROWER rule, 2026-11-25 (a pipeNotRouted finding only for an end that
+  is a sized-but-unplaced or a refused unit), by hand, PlantLayout.cpp restored
+  by copy and rebuilt after, both CAUGHT:
+  S55 every unreachable end is a finding (the broad rule of 23f9168014)    -> (h)
+      aceticAcid02 methanolStored / methanolToProcess, apalutamide01
+      coatingAir ... "not routed BY RULE and must not be a finding".
+  S56 no end is ever a finding                                              -> (g)
+      the refused separator's streams are not each a pipeNotRouted finding.
   The real defect: the plan said "0 findings" beside six unrouted process
   pipes of the converter, because only rule violations were counted.
   S53 a pipe through a wall tested ABOVE its top                        -> (p)
@@ -1665,15 +1673,25 @@ def arm_pipes(work):
         overrides = re.search(r"^pipes\s*\n\{", (case / "system" / "layoutDict").read_text(),
                               re.M) is not None
         total += check_routes(tag, lay, require_rack_route=not overrides)
-        #  A process pipe the plan lacks is a finding: every notRouted stream
-        #  that is no rule (solids, indoor, two consumers) has one.
+        #  A pipe to a unit the layout SHOULD have placed is a finding: every
+        #  notRouted stream whose reason says "sizer refused" or "is sized ...
+        #  but none of its items is placed" has one.  A stream to an UNSIZED
+        #  unit or an unattached junction stays by rule, and has NONE (the
+        #  narrower rule of 2026-11-25).
         fnd = {f["a"] for f in lay.get("findings", []) if f["kind"] == "pipeNotRouted"}
         for nr in lay.get("notRouted", []):
+            why = nr.get("reason", "")
+            placeable = ("sizer refused" in why
+                         or ("is sized (" in why and "is placed on the plot plan" in why))
             by_rule = (nr.get("solids") or nr.get("indoor")
-                       or "a pipe has two ends" in nr.get("reason", ""))
+                       or "a pipe has two ends" in why or not placeable)
             if not by_rule and nr["stream"] not in fnd:
                 fail(f"(h) {tag}: {nr['stream']} is not routed and no pipeNotRouted"
                      " finding says so")
+            if by_rule and nr["stream"] in fnd:
+                fail(f"(h) {tag}: {nr['stream']} is not routed BY RULE (solids, indoor,"
+                     " two consumers, an unsized unit, an unattached junction) and"
+                     " must not be a pipeNotRouted finding")
         if tag == "greenAmmoniaPEQ":
             #  THE SIX CONVERTER PIPES (2026-11-24): the beds and inter-bed
             #  coolers live inside the placed shell; the two outer pipes land

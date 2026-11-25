@@ -53,7 +53,7 @@ License
   AND A NUMBER THE CASE DECLARED MUST NOT LOOK LIKE A NUMBER CHOUPO COMPUTED.
   Every dimension on a drawing here carries its provenance in TWO channels at
   once -- the ink colour and the word in brackets -- because colour alone is
-  not a label a reader can quote.  `column10_flooding` declares its 1.10 m
+  not a label a reader can quote.  `column10_flooding` declares its 1.03 m
   tower and the trays are RATED against it; `column09_tray_hydraulics` declares
   none and the pass DESIGNS 1.3158 m.  Publishing the first as though it were
   the second would be the falsest thing on the page, and the engine already

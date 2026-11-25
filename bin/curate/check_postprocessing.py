@@ -1126,6 +1126,36 @@ views
     return n
 
 
+def arm_k(tmp):
+    """A PROFILE COLUMN'S UNIT IS READ WHOLE (C477, 2026-11-25).  The reader took
+    the part after the LAST underscore, so `extent_kmol_h` published `h` and
+    `r_mol_gcat_s` published `s`: a stage profile of kilomoles per hour drawn
+    in hours.  test/profile_units.cpp is built here (RunPublications.cpp and
+    Units.cpp alone) and holds the keys: a compound suffix whole, a non-unit
+    word before the unit kept, a compound the registry lacks published as NO
+    unit.  Sabotaged by hand by restoring the last-underscore read: the test
+    prints PROFILE_UNITS_FAIL for extent_kmol_h and r_mol_gcat_s."""
+    cxx = shutil.which("g++") or shutil.which("clang++")
+    if not cxx:
+        fails.append("(k) no C++ compiler to build test/profile_units.cpp")
+        return 0
+    exe = tmp / "profile_units"
+    r = subprocess.run([cxx, "-std=c++17", "-O0", "-I", str(ROOT / "src"),
+                        str(ROOT / "test/profile_units.cpp"),
+                        str(ROOT / "src/postProcessing/views/RunPublications.cpp"),
+                        str(ROOT / "src/core/Units.cpp"), "-o", str(exe)],
+                       capture_output=True, text=True, timeout=600)
+    if r.returncode != 0:
+        fails.append("(k) test/profile_units.cpp did not compile: " + r.stderr[-400:])
+        return 0
+    r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=60)
+    m = re.search(r"PROFILE_UNITS_OK (\d+) keys", r.stdout)
+    if r.returncode != 0 or not m:
+        fails.append("(k) the profile-column unit reader is wrong:\n" + r.stdout[-800:])
+        return 0
+    return int(m.group(1))
+
+
 def main():
     if not PROPS.exists():
         print("check_postprocessing: FAILED -- no choupoProps binary (build first)")
@@ -1139,6 +1169,7 @@ def main():
         hh = arm_h(tmp)
         ii = arm_i(tmp)
         jj = arm_j(tmp)
+        kk = arm_k(tmp)
     if fails or any(g is None for g in got):
         print("check_postprocessing: FAILED")
         for f in fails:
@@ -1169,6 +1200,8 @@ def main():
           " run, differences recomputed) equal; %d refusals fire by name (an unknown stream,"
           " unit operation, diagnostic; an unknown reference column BEFORE the solve)."
           % (hh["views"], hh["numbers"], hh["refusals"]))
+    print("check_postprocessing (k): a profile column's unit is read whole -- %d keys held"
+          " (extent_kmol_h is kmol/h, not h; r_mol_gcat_s publishes no unit, not s)." % kk)
     print("check_postprocessing (i): a KPI's unit is its unit's to declare -- shortcut01's N_min and"
           " R_min (%d cells) equal the run's and publish '-'; %d declarations in minutes are refused"
           " naming it (the name-suffix read called them minutes, T_in inches)."

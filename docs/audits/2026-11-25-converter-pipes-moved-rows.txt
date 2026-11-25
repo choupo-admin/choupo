@@ -1,64 +1,148 @@
-# Golden rows moved by the converter-pipes slice (commits 23f9168014, f4f4e2ef4a), NOT re-recorded
-# bin/runTests --scope on the merged cloud branch, build of 2026-11-25 00:26 UTC; every moved row is a layout.* row; 18 other cases in the same pass PASS.
-FAIL  apalutamide01_tablets                     (KPI mismatch)
-    layout.summary.findings: got 8 expected 3 (reltol 1e-4)
-FAIL  donepezil01_tablets                       (KPI mismatch)
-    layout.summary.findings: got 9 expected 0 (reltol 1e-4)
-FAIL  donepezil02_two_strengths                 (KPI mismatch)
-    layout.summary.findings: got 9 expected 0 (reltol 1e-4)
-FAIL  aceticAcid02_plant                        (KPI mismatch)
-    layout.summary.findings: got 7 expected 5 (reltol 1e-4)
-FAIL  greenAmmoniaPEQ_baseCase                  (KPI mismatch)
-    layout.pipe:CooledEffluent.length: got 48.1818117 expected 50.5818117 (reltol 1e-4)
-    layout.pipe:WaterCooledEffluent.length: got 38.6597382422 expected 41.0597382422 (reltol 1e-4)
-    layout.pipe:ChilledEffluent.length: got 41.6630784833 expected 44.0630784833 (reltol 1e-4)
-    layout.pipe:RawLiquid.length: got 60.4012 expected 62.8012 (reltol 1e-4)
-    layout.pipe:UnreactedGas.length: got 33.0991038823 expected 29.1008961177 (reltol 1e-4)
-    layout.pipe:Purge.length: got 72.9 expected 69.9 (reltol 1e-4)
-    layout.pipe:LetdownLiquid.length: got 76.95696 expected 79.35696 (reltol 1e-4)
-    layout.pipe:ProductNH3.length: got 232.50544 expected 231.30544 (reltol 1e-4)
-    layout.line:CooledEffluent.length: got 48.1818117 expected 50.5818117 (reltol 1e-4)
-    layout.line:CooledEffluent.lineDropFriction: got 27512.2728342 expected 28101.184085 (reltol 1e-4)
-    layout.line:CooledEffluent.lineDrop: got 27802.7934571 expected 28391.7047079 (reltol 1e-4)
-    layout.line:WaterCooledEffluent.length: got 38.6597382422 expected 41.0597382422 (reltol 1e-4)
-    layout.line:ChilledEffluent.length: got 41.6630784833 expected 44.0630784833 (reltol 1e-4)
-    layout.line:RawLiquid.length: got 60.4012 expected 62.8012 (reltol 1e-4)
-    layout.line:RawLiquid.lineDropFriction: got 39470.4157447 expected 40576.1831583 (reltol 1e-4)
-    layout.line:RawLiquid.lineDrop: got 54547.4938852 expected 55653.2612987 (reltol 1e-4)
-    layout.line:UnreactedGas.length: got 33.0991038823 expected 29.1008961177 (reltol 1e-4)
-    layout.line:UnreactedGas.lineDropFriction: got 39687.4810077 expected 37744.7117546 (reltol 1e-4)
-    layout.line:UnreactedGas.lineDrop: got 38698.27694 expected 36755.5076869 (reltol 1e-4)
-    layout.line:Purge.length: got 72.9 expected 69.9 (reltol 1e-4)
-    layout.line:Purge.lineDropFriction: got 1060820.94895 expected 1017710.11904 (reltol 1e-4)
-    layout.line:Purge.lineDropStatic: got 1695.05508322 expected 1130.03672214 (reltol 1e-4)
-    layout.line:Purge.lineDrop: got 1062516.00403 expected 1018840.15576 (reltol 1e-4)
-    layout.line:LetdownLiquid.length: got 76.95696 expected 79.35696 (reltol 1e-4)
-    layout.line:LetdownLiquid.lineDropFriction: got 36869.6283014 expected 37724.2074222 (reltol 1e-4)
-    layout.line:LetdownLiquid.lineDrop: got 52795.3814818 expected 53649.9606026 (reltol 1e-4)
-    layout.line:ProductNH3.length: got 232.50544 expected 231.30544 (reltol 1e-4)
-    layout.line:ProductNH3.lineDropFriction: got 91217.5088715 expected 90806.3898233 (reltol 1e-4)
-    layout.line:ProductNH3.lineDrop: got 162288.967863 expected 161877.848815 (reltol 1e-4)
-    layout.nozzle:CONVERTER/shell:M1.nozzleDesignP: got 16600000 expected 0 (reltol 1e-4)
-    layout.nozzle:CONVERTER/shell:M1.nozzleDesignT: got 760.557679703 expected 0 (reltol 1e-4)
-    layout.nozzle:CONVERTER/shell:M2.nozzleDesignP: got 16600000 expected 0 (reltol 1e-4)
-    layout.nozzle:CONVERTER/shell:M2.nozzleDesignT: got 760.557679703 expected 0 (reltol 1e-4)
-    layout.nozzle:FEHE:N1.nozzleClass: MISSING (expected '1500') -- the run published no such word
-    layout.nozzle:FEHE:N1.nozzleFacing: MISSING (expected 'RTJ') -- the run published no such word
-    layout.nozzle:FEHE:N1.nozzleDesignT: got 760.557679703 expected 363.716127783 (reltol 1e-4)
-    layout.nozzle:FEHE:N2.nozzleService: got 'tubeOutlet' expected 'shellOutlet'
-    layout.nozzle:FEHE:N2.nozzleStream: got 'PreheatedFeed' expected 'CooledEffluent'
-    layout.nozzle:FEHE:N2.nozzleLine: got 'line:PreheatedFeed' expected 'line:CooledEffluent'
-    layout.nozzle:FEHE:N2.nozzleSize: got '16' expected '14'
-    layout.nozzle:FEHE:N2.nozzleClass: MISSING (expected '1500') -- the run published no such word
-    layout.nozzle:FEHE:N2.nozzleFacing: MISSING (expected 'RTJ') -- the run published no such word
-    layout.nozzle:FEHE:N2.nozzleDesignT: got 760.557679703 expected 363.716127783 (reltol 1e-4)
-    layout.fenceCrossing:Purge.z: got 10.6 expected 9.4 (reltol 1e-4)
-    layout.fenceCrossing:ProductNH3.y: got -1.1 expected -2.3 (reltol 1e-4)
-    layout.summary.unplaced: got 0 expected 2 (reltol 1e-4)
-    layout.summary.internal: got 8 expected 6 (reltol 1e-4)
-    layout.summary.pipes: got 36 expected 34 (reltol 1e-4)
-    layout.summary.notRouted: got 0 expected 6 (reltol 1e-4)
-    layout.summary.pipeLength: got 1486.82370181 expected 1387.17419743 (reltol 1e-4)
-FAIL  swro01_campoDalias                        (KPI mismatch)
-    layout.summary.findings: got 9 expected 6 (reltol 1e-4)
+# Golden rows moved by the converter-pipes slice, greenAmmoniaPEQ_baseCase ONLY (2026-11-25)
+# Rule 2 of the coordinator, the NARROWER rule: a pipeNotRouted finding only for a pipe whose end is a sized-but-unplaced or refused unit.
+# bin/runTests --scope on the 9 layout cases: aceticAcid02_plant, swro01_campoDalias, donepezil01_tablets, donepezil02_two_strengths, apalutamide01_tablets,
+# ammonia02_full_plant, line01_pumped_drum, economics04_building_royalty_breakeven all PASS against their goldens UNCHANGED (byte-identical rows).
+# The PEQ was re-recorded; rows whose value string did not change keep their old line (platform noise is not re-recorded).
+# 46 rows moved (old -> new), 84 rows added (the six converter pipes' new rows: pipe/line/nozzle/insideShell of the shell), 4 dropped.
+# Why: the converter's beds and inter-bed coolers are inside ONE placed shell (shellHostOf); PreheatedFeed and CONVERTER.HotEffluent now land on the shell,
+# the four streams between the beds are listed layout.insideShell (no pipe); the PEQ's closures (mass, elements, energy) are unchanged.
 
+== MOVED (old -> new) ==
+layout pipe:CooledEffluent length: 50.5818117 -> 48.1818117
+layout pipe:WaterCooledEffluent length: 41.0597382422 -> 38.6597382422
+layout pipe:ChilledEffluent length: 44.0630784833 -> 41.6630784833
+layout pipe:RawLiquid length: 62.8012 -> 60.4012
+layout pipe:UnreactedGas length: 29.1008961177 -> 33.0991038823
+layout pipe:Purge length: 69.9 -> 72.9
+layout pipe:LetdownLiquid length: 79.35696 -> 76.95696
+layout pipe:ProductNH3 length: 231.30544 -> 232.50544
+layout line:CooledEffluent length: 50.5818117 -> 48.1818117
+layout line:CooledEffluent lineDropFriction: 28101.184085 -> 27512.2728342
+layout line:CooledEffluent lineDrop: 28391.7047079 -> 27802.7934571
+layout line:WaterCooledEffluent length: 41.0597382422 -> 38.6597382422
+layout line:ChilledEffluent length: 44.0630784833 -> 41.6630784833
+layout line:RawLiquid length: 62.8012 -> 60.4012
+layout line:RawLiquid lineDropFriction: 40576.1831583 -> 39470.4157447
+layout line:RawLiquid lineDrop: 55653.2612987 -> 54547.4938852
+layout line:UnreactedGas length: 29.1008961177 -> 33.0991038823
+layout line:UnreactedGas lineDropFriction: 37744.7117546 -> 39687.4810077
+layout line:UnreactedGas lineDrop: 36755.5076869 -> 38698.27694
+layout line:Purge length: 69.9 -> 72.9
+layout line:Purge lineDropFriction: 1017710.11904 -> 1060820.94895
+layout line:Purge lineDropStatic: 1130.03672214 -> 1695.05508322
+layout line:Purge lineDrop: 1018840.15576 -> 1062516.00403
+layout line:LetdownLiquid length: 79.35696 -> 76.95696
+layout line:LetdownLiquid lineDropFriction: 37724.2074222 -> 36869.6283014
+layout line:LetdownLiquid lineDrop: 53649.9606026 -> 52795.3814818
+layout line:ProductNH3 length: 231.30544 -> 232.50544
+layout line:ProductNH3 lineDropFriction: 90806.3898233 -> 91217.5088715
+layout line:ProductNH3 lineDrop: 161877.848815 -> 162288.967863
+layout nozzle:CONVERTER/shell:M1 nozzleDesignP: 0 -> 16600000
+layout nozzle:CONVERTER/shell:M1 nozzleDesignT: 0 -> 760.557679703
+layout nozzle:CONVERTER/shell:M2 nozzleDesignP: 0 -> 16600000
+layout nozzle:CONVERTER/shell:M2 nozzleDesignT: 0 -> 760.557679703
+layout nozzle:FEHE:N1 nozzleDesignT: 363.716127783 -> 760.557679703
+layout nozzle:FEHE:N2 nozzleService: shellOutlet -> tubeOutlet
+layout nozzle:FEHE:N2 nozzleStream: CooledEffluent -> PreheatedFeed
+layout nozzle:FEHE:N2 nozzleLine: line:CooledEffluent -> line:PreheatedFeed
+layout nozzle:FEHE:N2 nozzleSize: 14 -> 16
+layout nozzle:FEHE:N2 nozzleDesignT: 363.716127783 -> 760.557679703
+layout fenceCrossing:Purge z: 9.4 -> 10.6
+layout fenceCrossing:ProductNH3 y: -2.3 -> -1.1
+layout summary unplaced: 2 -> 0
+layout summary internal: 6 -> 8
+layout summary pipes: 34 -> 36
+layout summary notRouted: 6 -> 0
+layout summary pipeLength: 1387.17419743 -> 1486.82370181
+
+== DROPPED (the run no longer publishes the word: the FEHE nozzles now take the tube side's design condition, 166 bar at 760.6 K, and the engine's own reason is `flange class: 2407.63 psig is above the highest class of the SS316 table`; before, the nozzle N2 was the shell outlet CooledEffluent at 363.7 K and rated class 1500.  The PreheatedFeed pipe now exists, so the tube outlet is a nozzle) ==
+layout nozzle:FEHE:N1 nozzleClass: 1500 -> (not published)
+layout nozzle:FEHE:N1 nozzleFacing: RTJ -> (not published)
+layout nozzle:FEHE:N2 nozzleClass: 1500 -> (not published)
+layout nozzle:FEHE:N2 nozzleFacing: RTJ -> (not published)
+
+== ADDED (84 new rows) ==
+layout pipe:PreheatedFeed from: FEHE
+layout pipe:PreheatedFeed to: CONVERTER/shell
+layout pipe:PreheatedFeed length: 55.2484208737
+layout pipe:CONVERTER.HotEffluent from: CONVERTER/shell
+layout pipe:CONVERTER.HotEffluent to: FEHE
+layout pipe:CONVERTER.HotEffluent length: 48.2028757435
+layout line:PreheatedFeed from: FEHE
+layout line:PreheatedFeed to: CONVERTER/shell
+layout line:PreheatedFeed service: gas
+layout line:PreheatedFeed sizeState: sized
+layout line:PreheatedFeed length: 55.2484208737
+layout line:PreheatedFeed lineBends: 6
+layout line:PreheatedFeed lineNps: 16
+layout line:PreheatedFeed lineSchedule: 160
+layout line:PreheatedFeed lineOutsideDiameter: 0.4064
+layout line:PreheatedFeed lineWall: 0.0404876
+layout line:PreheatedFeed lineWallRequired: 0.0243367534433
+layout line:PreheatedFeed lineInsideDiameter: 0.3254248
+layout line:PreheatedFeed lineDesignPressure: 16474586.1561
+layout line:PreheatedFeed lineScheduleNumber: 117.675615401
+layout line:PreheatedFeed lineFlow: 44.9372239155
+layout line:PreheatedFeed lineDensity: 21.0101420262
+layout line:PreheatedFeed lineVelocity: 25.7149732414
+layout line:PreheatedFeed lineVelocityMax: 26.7196727886
+layout line:PreheatedFeed lineReynolds: 7320711.08777
+layout line:PreheatedFeed lineFriction: 0.0130473594038
+layout line:PreheatedFeed lineEquivalentLength: 73.22058
+layout line:PreheatedFeed lineDropFriction: 35780.0935403
+layout line:PreheatedFeed lineDropStatic: 4507.26372797
+layout line:PreheatedFeed lineDrop: 40287.3572683
+layout line:PreheatedFeed lineRhoV2: 13893.1633397
+layout line:CONVERTER.HotEffluent from: CONVERTER/shell
+layout line:CONVERTER.HotEffluent to: FEHE
+layout line:CONVERTER.HotEffluent service: gas
+layout line:CONVERTER.HotEffluent sizeState: sized
+layout line:CONVERTER.HotEffluent length: 48.2028757435
+layout line:CONVERTER.HotEffluent lineBends: 7
+layout line:CONVERTER.HotEffluent lineNps: 16
+layout line:CONVERTER.HotEffluent lineSchedule: 160
+layout line:CONVERTER.HotEffluent lineOutsideDiameter: 0.4064
+layout line:CONVERTER.HotEffluent lineWall: 0.0404876
+layout line:CONVERTER.HotEffluent lineWallRequired: 0.0240028727201
+layout line:CONVERTER.HotEffluent lineInsideDiameter: 0.3254248
+layout line:CONVERTER.HotEffluent lineDesignPressure: 16222558.3005
+layout line:CONVERTER.HotEffluent lineScheduleNumber: 115.875416432
+layout line:CONVERTER.HotEffluent lineFlow: 44.9368173425
+layout line:CONVERTER.HotEffluent lineDensity: 21.5668323314
+layout line:CONVERTER.HotEffluent lineVelocity: 25.0509830798
+layout line:CONVERTER.HotEffluent lineVelocityMax: 26.3725696842
+layout line:CONVERTER.HotEffluent lineReynolds: 7224208.57416
+layout line:CONVERTER.HotEffluent lineFriction: 0.013050191197
+layout line:CONVERTER.HotEffluent lineEquivalentLength: 84.610448
+layout line:CONVERTER.HotEffluent lineDropFriction: 36042.4070253
+layout line:CONVERTER.HotEffluent lineDropStatic: 291.914869157
+layout line:CONVERTER.HotEffluent lineDrop: 36334.3218945
+layout line:CONVERTER.HotEffluent lineRhoV2: 13534.303442
+layout nozzle:CONVERTER/shell:N1 nozzleService: shell
+layout nozzle:CONVERTER/shell:N1 nozzleStream: PreheatedFeed
+layout nozzle:CONVERTER/shell:N1 nozzleLine: line:PreheatedFeed
+layout nozzle:CONVERTER/shell:N1 nozzleSizeFrom: line
+layout nozzle:CONVERTER/shell:N1 nozzleSize: 16
+layout nozzle:CONVERTER/shell:N1 nozzleDesignP: 16600000
+layout nozzle:CONVERTER/shell:N1 nozzleDesignT: 760.557679703
+layout nozzle:CONVERTER/shell:N2 nozzleService: shell
+layout nozzle:CONVERTER/shell:N2 nozzleStream: CONVERTER.HotEffluent
+layout nozzle:CONVERTER/shell:N2 nozzleLine: line:CONVERTER.HotEffluent
+layout nozzle:CONVERTER/shell:N2 nozzleSizeFrom: line
+layout nozzle:CONVERTER/shell:N2 nozzleSize: 16
+layout nozzle:CONVERTER/shell:N2 nozzleDesignP: 16600000
+layout nozzle:CONVERTER/shell:N2 nozzleDesignT: 760.557679703
+layout nozzle:FEHE:N3 nozzleService: shellInlet
+layout nozzle:FEHE:N3 nozzleStream: CONVERTER.HotEffluent
+layout nozzle:FEHE:N3 nozzleLine: line:CONVERTER.HotEffluent
+layout nozzle:FEHE:N3 nozzleSizeFrom: line
+layout nozzle:FEHE:N3 nozzleSize: 16
+layout nozzle:FEHE:N3 nozzleDesignP: 16600000
+layout nozzle:FEHE:N3 nozzleDesignT: 760.557679703
+layout nozzle:FEHE:N4 nozzleService: shellOutlet
+layout nozzle:FEHE:N4 nozzleStream: CooledEffluent
+layout nozzle:FEHE:N4 nozzleLine: line:CooledEffluent
+layout nozzle:FEHE:N4 nozzleSizeFrom: line
+layout nozzle:FEHE:N4 nozzleSize: 14
+layout nozzle:FEHE:N4 nozzleDesignP: 16600000
+layout nozzle:FEHE:N4 nozzleDesignT: 760.557679703
