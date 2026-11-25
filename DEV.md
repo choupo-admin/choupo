@@ -5740,6 +5740,13 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C527. EXTERNAL REVIEW 3 (Vitor, 2026-11-25).**  Five claims against d51d651dab, checked at HEAD by the architect:
+> the CSTR's inadmissible outlet is C498, done (his counterexample now refuses by name); the wet bulb returns about
+> 0.5 C for dry air at 1, 5 and 10 C (no sign test at the bracket, no residual check); the pinch pairs are clipped by the
+> first pinch only, so a candidate across a second pinch is called admissible; psychrometricChart's schema bounds
+> relative humidity to 1 where the engine reads percent; `wetBulb (20.1 20.9)` makes two curves named 20.  The review's
+> harness idea (an independent oracle on raw inputs and outputs) goes to C492.
+
 > **C524, C525, C526 (Vitor, 2026-11-25: "andar por casos que dão prejuízo é muito mau! ... balanços anuais,
 > demonstração de resultados, mapa de cashflow, storm graphic com análise de sensibilidade, fundo de maneio e
 > capitais circulantes! E um EduTool a explicar as partes da análise económica que são difíceis ... O que é um capital
