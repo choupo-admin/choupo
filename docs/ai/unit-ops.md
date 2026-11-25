@@ -2269,7 +2269,10 @@ each channel node):
   charge FITTED as a function of the feed) and `profile <file>.csv;` (the
   solved c_i(x) and psi(x)), and publishes `dPsi_m_V_p<p>`, the potential
   difference across the membrane (permeate against the feed-side solution
-  at the wall, both Donnan jumps included).  It publishes two named TABLES
+  at the wall, both Donnan jumps included).  Because J_v is imposed the record's
+  `A_w` is never used: the op publishes it as `inactiveProperties` (source
+  `membrane <name>`, key, reason) in its `operationResults` entry, and the case
+  tab dims that line in the record (a structured fact, not a log line).  It publishes two named TABLES
   a view draws (`points`: one row per J_v; `pore`: the solved profile), and
   its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
   `nanofiltran_geraldesAlves2008`: part A code to code, part B Bowen &

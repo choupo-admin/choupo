@@ -373,6 +373,7 @@ PRE  | ISO    | bin/curate/check_dynamic_cstr_level.py               | C470 (202
 PRE  | ISO    | bin/curate/check_dynamic_views.py                    | C487 slice 2 (2026-11-23): runs each case in a private copy (gatekit.probe_copy) and writes nothing else in the tree; ISO to match its neighbours that run cases
 PRE  | ISO    | bin/curate/check_dynamic_tank.py                     | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_gibbs_scale_invariance.py            | C497 (2026-11-25): runs two cases x3 scales in private copies (gatekit.probe_copy), 0.3 s, writes nothing else in the tree
+PRE  | ISO    | bin/curate/check_inactive_properties.py              | C154 (2026-11-25): runs two props cases in private copies (gatekit.probe_copy), 2 s, writes nothing else in the tree
 PRE  | ISO    | bin/curate/check_elementary_rates.py                 | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_extractor_validation.py             | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_flash_specification.py              | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier

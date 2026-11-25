@@ -613,6 +613,10 @@ export function extractStructured(log: string,
         if (typeof v === "string" && k in clean) units[k] = v;
       }
       const rc = typeof orr.rc === "number" && Number.isFinite(orr.rc) && orr.rc !== 0 ? orr.rc : undefined;
+      const inactiveProperties = Array.isArray(orr.inactiveProperties)
+        ? orr.inactiveProperties.filter((q: { source?: unknown; key?: unknown; reason?: unknown }) =>
+            typeof q?.source === "string" && typeof q.key === "string" && typeof q.reason === "string")
+        : [];
       const head = Array.isArray(orr.headline)
         ? orr.headline.filter((h: unknown): h is string => typeof h === "string")
         : [];
@@ -623,6 +627,7 @@ export function extractStructured(log: string,
         ...(Object.keys(cur).length > 0 ? { curation: cur } : {}),
         ...(Object.keys(units).length > 0 ? { units: units } : {}),
         ...(rc !== undefined ? { rc: rc } : {}),
+        ...(inactiveProperties.length > 0 ? { inactiveProperties: inactiveProperties } : {}),
       });
     }
     if (rows.length > 0) operationResults = rows;

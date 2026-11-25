@@ -151,6 +151,9 @@ public:
     { return { "n_points", "permeateCharge_max" }; }
     std::vector<PublishedTable> publishedTables() const override { return tables_; }
     std::string diagnosticUnit(const std::string& key) const override;
+    //  The record's `A_w` is read and never used: J_v is IMPOSED, so there is
+    //  no closure J_w = A_w (dP - dpi) (DSPM_DE.cpp, `imposed` branch).
+    std::vector<InactiveProperty> inactiveProperties() const override { return inactive_; }
     //  DEFAULT VIEWS (DEV.md 4c C149): the observed rejection of every ion
     //  against J_v where the op ran two points or more, and -- for EVERY op
     //  that solved a pore since C165 (until then only one writing its
@@ -162,6 +165,7 @@ private:
     inline static const std::string type_ = "poreTransport";
     std::map<std::string, scalar> diag_;
     std::vector<PublishedTable> tables_;
+    std::vector<InactiveProperty> inactive_;
     std::vector<std::string> ions_;          // the ion species, first-appearance order
     std::vector<std::string> poreIons_;      // those the pore carries (an excluded one does not)
     std::size_t nPoints_ = 0;

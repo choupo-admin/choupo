@@ -6384,6 +6384,19 @@ PYEOF
     fi
     rm -f /tmp/gibbsscale.$$
 
+    # inactive-properties gate (2026-11-25, backlog C154).  A record value the
+    # op left out of the physics (a membrane's A_w when the bench imposes J_v)
+    # is published as `inactiveProperties`, true to the record it names.
+    if gate_exec "$ROOT/bin/curate/check_inactive_properties.py" > /tmp/inactprop.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "inactive-properties-gate" "$(head -1 /tmp/inactprop.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_inactive_properties.py)\n" "inactive-properties-gate"
+        cat /tmp/inactprop.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/inactprop.$$
+
     # plog gate (2026-11-20).  `type plog` (CHEMKIN-II PLOG) interpolates ln k
     # linearly in ln P between tabulated pressures, clamps outside them and sums
     # lines at one pressure.  Four pfr witnesses whose tables all give the
