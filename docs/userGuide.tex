@@ -3636,6 +3636,7 @@ the stream population from the units that carry a duty, and reports:
 \code{pinch.T\_pinch\_hot\_K} / \code{\_cold\_K} & and on the real one \\
 \code{pinch.Q\_heat\_current\_kW} / \code{Q\_cool\_current\_kW} & what you consume today \\
 \code{pinch.candidates\_admissible} / \code{\_total} & the match table's tally \\
+\code{pinch.candidates\_mer\_compatible} & how many keep the energy targets at their full duty \\
 \code{pinch.violation\_heat\_below\_pinch\_kW} & heating on the wrong side \\
 \code{pinch.violation\_cool\_above\_pinch\_kW} & cooling on the wrong side \\
 \hline
@@ -3697,8 +3698,10 @@ assuming the other followed is how the two come to disagree silently.
 \item \textbf{It never rewrites your flowsheet.}  The candidate table says
       what the physics admits; which candidates become exchangers is
       yours to decide, with plot plan, control and startup in view.
-\item \textbf{It never says ``optimal''.}  Every feasible row is a
-      \emph{thermodynamically admissible candidate} --- and that wording
+\item \textbf{It never says ``optimal''.}  Every feasible row whose full duty keeps the energy targets is a
+      \emph{thermodynamically admissible candidate}; a row that is
+      temperature-feasible but raises the targets (typically across a second
+      pinch) says so, with \code{targetPenalty\_kW} --- and that wording
       is enforced by a regression gate, not just by good intentions.
 \item \textbf{It targets energy, not area or capital.}  The area-target
       and capital-versus-energy phase is not implemented; nothing in the

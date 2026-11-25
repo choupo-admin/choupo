@@ -31905,6 +31905,16 @@ $d_{32}$ shrinking to the powder $d_p$) gives the particle PSD; the
 evaporated; the \textbf{wet-bulb} temperature (a Newton-1D) is the
 wet-surface temperature during constant-rate drying; and the
 \textbf{Ranz--Marshall}\cite{RanzMarshall1952} transfer coefficients set the drying-rate curve.
+The wet bulb is the root of the adiabatic-saturation equation
+$Y_{\mathrm{sat}}(T_{wb}) - Y = (c_{p,c} + Y c_{p,v})(T - T_{wb})/\lambda(T_{wb})$,
+searched between $0.5\,^{\circ}$C and the air temperature.  Air so dry and
+cold that the root would lie below that floor (dry air at 5~$^{\circ}$C has
+$T_{wb}\approx -3\,^{\circ}$C) is \emph{refused by name} by every caller
+--- the dryers, the cooling tower --- instead of being answered with the
+floor: there is no ice or supercooled-water branch, and the bracket's sign
+and the final residual are checked (gate \texttt{check\_dryer\_arrangements},
+section~f, against an independent Wagner--Pruss root and the psychrometer
+equation).
 They converge on the \emph{residual moisture} --- and here is the
 lesson: the endpoint is \emph{not} ``everything evaporates''.  The GAB
 sorption isotherm pins the equilibrium moisture $X_e$ to the air's
@@ -32731,6 +32741,38 @@ It also applies the classical $CP$ rule --- above the pinch $CP_h \le
 CP_c$, below it $CP_h \ge CP_c$ --- and reports, per row, whether the pair
 obeys it.
 
+\paragraph{Feasible at $\Delta T_{\min}$ is not the same as compatible with
+maximum energy recovery.}\label{par:pinch-penalty}
+$Q_{\max}$ is the bound of one pair \emph{alone}: it guarantees the
+approach, not the targets.  A match that is feasible at $\Delta T_{\min}$
+can still turn the hot and cold utility targets into larger numbers --- most
+plainly when the problem has \emph{several} pinches (the problem table's
+corrected cascade touches zero at more than one interior boundary) and the
+match carries heat across one of them, but also in a single-pinch problem
+when a match uses up the stream's pinch-end.  Choupo therefore recomputes
+the problem table after each candidate: the hot piece is cooled from its
+top and the cold piece heated from its bottom by $Q_{\max}$ (the
+counter-current arrangement the bound assumes), the targets $Q_{H,\min}'$
+are rebuilt from the whole remaining population, and the row carries
+\begin{equation}\label{eq:pinch-penalty}
+  \Delta Q_{\mathrm{pen}} \;=\; Q_{H,\min}' - Q_{H,\min}\;\ge 0
+\end{equation}
+(the cold-utility target rises by the same amount, since the enthalpy
+balance is unchanged), in \texttt{targetPenalty\_kW}, together with the
+largest duty that leaves both targets alone
+(\texttt{maximumTargetPreservingDuty\_kW}, found by bisection on the
+penalty).  A row with $\Delta Q_{\mathrm{pen}}=0$ is a ``thermodynamically
+admissible candidate''; a row with a positive penalty is reported as
+``temperature-feasible at dTmin but NOT compatible with maximum energy
+recovery'', with the penalty in kW.  The \texttt{abovePinch} /
+\texttt{belowPinch} labels and the $CP$ rule refer to the hottest pinch; the
+penalty needs no such choice, because it is measured by the targets
+themselves.  Classic four-stream problem: the below-pinch pair H2--C1 is
+feasible for 125~kW, but made in full it raises both targets by
+15.6~kW; at most the duty in \texttt{maximumTargetPreservingDuty\_kW} keeps
+them.  The check is an independent problem table in the pinch gate
+(\texttt{check\_pinch}, arm \texttt{pinch\_mer}).
+
 \begin{pitfall}
 \textbf{The $CP$ rule binds only \emph{at} the pinch.}  A match that
 violates it is not thereby forbidden: it simply cannot be the match that
@@ -32743,8 +32785,9 @@ striking it out.
 The candidate table is an \textbf{analysis}, never a synthesis.  Choupo
 does not draw your network, does not rewrite your flowsheet, and ---
 deliberately, and checked by a gate --- \emph{never uses the word
-``optimal''}.  Every feasible row is a ``thermodynamically admissible
-candidate''.  Which candidates become exchangers is the engineer's
+``optimal''}.  Every feasible row whose full duty keeps the energy
+targets is a ``thermodynamically admissible candidate''; one that raises
+them is flagged with the penalty (Eq.~\eqref{eq:pinch-penalty}).  Which candidates become exchangers is the engineer's
 decision, and it involves plot plans, control, startup and safety that no
 temperature table knows about.
 \end{keyidea}

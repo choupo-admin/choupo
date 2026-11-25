@@ -1731,8 +1731,8 @@ TminC n
 TmaxC n
 grid o
 grid.n i >=2
-relativeHumidity a<n>
-wetBulb a<n>
+relativeHumidity a<n> [%]
+wetBulb a<n> [degC]
 output o
 output.file* s
 ```
