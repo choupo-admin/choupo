@@ -5690,6 +5690,10 @@ accepts today, and that is a policy call.
 > **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
 > packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
 > from primaries, one correlation (Onda or Billet-Schultes) measured against published data.  Meets C319.
+> THE LANDING RULE RE-RULED (Vitor, 2026-11-25: "'Fica para depois da demonstração.' Não fica nada!!!  Porque
+> temos muito tempo até lá!!!").  AGREED: my reason was the demonstration's numbers, and it does not cover work
+> that cannot move them.  What leaves column14, column19, column20 and the PEQ plant unmoved goes now; what moves
+> them goes after its moved rows are listed and seen.  C501, C506, C511 to the cloud; C503, C507, C510, C513 here.
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
