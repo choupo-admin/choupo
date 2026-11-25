@@ -390,7 +390,7 @@ certificate only.
 | HS76 | 4 | 3 linear inequalities, x >= 0 | -4.68181818182 | QP, a bound active at x* |
 | HS100 | 7 | 4 nonlinear inequalities | 680.630057275 | nonconvex |
 | HS113 | 10 | 8 inequalities | 24.3062090641 | ten variables |
-| HS116 | 13 | 15 inequalities, bounds | 97.5884089805 | badly scaled |
+| HS116 | 13 | 15 inequalities, bounds | 97.5875096 (the collection publishes 97.5884089805, which is NOT the minimum: its x* sits 2.3e-7 inside all eleven active rows, PROB.FOR flags it LEX=.FALSE.; evidence in test/interior_point_hs.cpp and the Theory Guide, independent review 2026-11-25) | badly scaled |
 | HS118 | 15 | 29 linear inequalities, bounds | 664.820449993 | many bounds |
 
 Written in C++ from the MATHEMATICAL statement (as `verifySQP` does), never

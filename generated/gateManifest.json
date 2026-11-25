@@ -374,7 +374,7 @@
     "check_debt_financing": {
       "exit": 0,
       "claim": "check_debt_financing: OK -- the gate's loan helper reproduces a schedule written out by hand (annuity, linear, capitalisation); on economics03_startup_years with an annuity loan (0.5 x FCI, 6 %, two grace years, eight repayments, equity at 12 %) and a linear one (0.6 x FCI + WC, no grace, the equity rate defaulted and announced), every draw, capitalised interest, interest, principal, balance, tax and equity cash flow recomputes by hand from the project's published cash flow, the loan clears, the equity NPV, IRR and payback recompute; the project's cashFlow.csv is byte-identical and its every KPI and result field unmoved with the loan; a one-year construction accrues no interest during construction and says why; `financing.rate` and `financing.debtFraction` leave the project NPV exactly where it was and their equity NPVs recompute; 14 malformed declarations refuse by name; economics01 as shipped and economics03 with its loan removed print, publish and write nothing of a loan; every financing scalar is a pinned KPI and financing.csv, the .ods equity sheet and the printed schedule equal the JSON schedule; the shipped witness economics03_startup_years recomputes against the loan it declares, its every project KPI equals that of a copy of it with the loan removed, and its golden pins all 28 financing KPIs it publishes; and the loan's arithmetic lives inside appraise().  NOT COVERED: whether the terms are sensible, a country's tax law on capitalised interest, the equity multiple-IRR guard firing (no case has an ambiguous equity IRR), and byte identity against the previous build (measured, not gated).",
-      "seconds": 1.3
+      "seconds": 6.4
     },
     "check_debt_registry": {
       "exit": 0,
@@ -776,6 +776,11 @@
       "claim": "check_gibbs_real_gas: OK -- elementPotential, reactiveFlash and directMin publish the ammonia equilibrium the package's own fugacity condition gives (700 K, 200 bar, SRK; 2e-4 in y_NH3, against an ideal-gas answer 0.024 away), and a VLLE flash on an SRK vapour publishes y/x equal to the package's own K within 1 %.  NOT checked: the liquid-onset tests of the element-potential and reactive-flash routes, which read y_i P (the liquid's phi_sat and Poynting are IN the package's K and in these routes' condensed reference since C235).",
       "seconds": 1.7
     },
+    "check_gibbs_scale_invariance": {
+      "exit": 0,
+      "claim": "check_gibbs_scale_invariance: OK -- 2 Gibbs case(s) at feed scale 1e6 and 1e-6 reproduce the shipped composition of every stream (88 fractions compared, worst above 1e-6: 4.4e-07 relative).  NOT CHECKED: extensive results, and cases with a declared size or duty.",
+      "seconds": 0.4
+    },
     "check_gibbs_solid_phase": {
       "exit": 0,
       "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law, and graphite fed as a solid phase or in the fluid composition refuses by name.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
@@ -881,6 +886,11 @@
       "claim": "check_impossible_phase_pins: OK -- 0 shipped steady case(s) print IMPOSSIBLE INLET PHASE, exactly the pinned set, and none has grown past its band.  0 carry a MATERIAL energy residual beside the label (), and 0 are numerically clean -- the label is impossible and the duty it would distort is zero ().  Every number here is measured from the runs, never read back from the pin table.  PINNED, NOT FIXED: correcting these changes what each case DECLARES about its streams, and so changes published answers in tutorials with recorded goldens -- a curation decision, reserved.  NOT COVERED: whether any label SHOULD be corrected and how (a per-case thermodynamic judgement), the Rachford-Rice test itself (the energy report owns it), and batch/ctrl/props cases (the check lives in the steady report).",
       "seconds": 218.7
     },
+    "check_inactive_properties": {
+      "exit": 0,
+      "claim": "check_inactive_properties: OK -- 3 inactive record propert(ies) published by poreTransport at imposed J_v, each in a record that declares the key; an op that imposes nothing publishes none.  NOT CHECKED: that the numerics never read A_w, and the GUI mark.",
+      "seconds": 2.8
+    },
     "check_inlet_resolution": {
       "exit": 0,
       "claim": "check_inlet_resolution: OK -- a flash at its feed's own (T, P) costs nothing on 3 case(s) (|Q| < 0.5 kW, R-E1), flash19's unit duty and balance report agree at 100 +- 0.5 % (R-E5), a feed pinned `phase liquid;` is priced as declared AND announced (R-E2), and the vacuum-flash control keeps its genuine pressure-drop duty.  THE PHASE PASS IS NOT GATED ON THE CONSUMER (source) and DOES NOT ACCUSE a supercritical vapour: ammonia02's converter outlet at 839.6 K -- 434 K above the highest pure Tc present -- draws no accusation, and neither do the two saturated separator outlets.  THE FLASH DUTY DISCARDS THE SAME SUPERCRITICAL ROOT THE REPORT DISCARDS, through ONE home (`flashState::supercriticalSplitDiscarded`, source-checked): ammoniaReactor04's separator, fed at 844.86 K, announces the discard at its site and ONCE on AdvisoryLog and closes at 100 +- 0.5 % beside the report's own discard line.  AN AUTHORED INLET IS READ AS WHAT IT MEANS DURING THE SOLVE: 17 units read it through `resolvedInletVaporFraction` (source), and the witness's undeclared superheated vapours leave the valve at their own T, the mixer and the splitter as vapours, with the plant's first law closed.  EVERY OUTLET SEARCH DISCARDS THE SAME ROOT: 4 searchers through `flashDiscardingSupercriticalSplit` (source), and a drum operated at 844.86 K publishes no liquid.  A PINNED PURE TWO-PHASE INLET IS READ AT ITS PIN BY EVERY UNIT: the one home asks `pinnedPureQuality` (source, no second home in the three units that used to), and an authored wet-steam inlet split in two leaves on both branches at its declared quality.  A DECLARED PURE-FLUID METHOD OWNS ITS COMPONENT'S SATURATION CURVE: `saturationPressure` is the one home (source; the package and both phases call it, and 7 named files alone read a record's curve), and under condenser01's IF97 package pure water at 1 bar is a liquid at 372.4 K and a vapour at 372.95 K, first law closed.  A CONVERSION REACTOR'S OUTLET IS ITS OWN EQUILIBRIUM: resolved through ONE home (`reactor/ReactorOutlet.cpp`, one `equilibriumAt`; no reactor resolves its own) and published on both paths of the conversion reactor, the cstr and the pfr (source); liquid water split to H2 + O2 leaves as a gas from all three and from both kinetic paths, H2 + O2 burnt to water leaves as a liquid, a `phase gas;` inlet is not carried to its liquid product and the departure is said once, first law closed on both fixtures.  THE CSTR'S AND THE PFR'S ENERGY SOLVES ARE ON THE PUBLISHED SURFACE (C77): an adiabatic cstr and pfr whose product boils at 1 atm publish a two-phase outlet and |Q_kW| <= 1e-6 kW, a jacketed cstr exactly its jacket's UA (T_c - T_out), the 1 atm multiplicity case keeps its three steady states, with no inlet-rung enthalpy left in either source.  A LIQUID BELOW ITS BUBBLE PRESSURE IS FOUND TWO-PHASE: the flash's phase test iterates the incipient phase through ONE home that BubblePoint::pressure also reads (source), and ammonia02's let-down liquid flashed 1 % either side of its own bubble pressure splits below and not above (P_bubble 20.000000 bar; V/F 7.926e-06 at -1 %, 0 at +1 %).  A LIQUID DENSITY THAT CANNOT BE PRICED REFUSES BY NAME: no NaN-blind guard in ThermoPackage::density (source), and a pipe carrying liquid ammonia with dissolved H2/N2/Ar names the supercritical component instead of printing -nan (the pipe exits 2 naming 'N2').  A COMPRESSOR REFUSES LIQUID IN ITS SUCTION: it reads the suction through `resolvedInletVaporFraction` (source), and compressor01 fed air two-phase and all liquid refuses quoting V/F and both remedies while the shipped vapour runs (80 K V/F = 0.549924, exit 2; 70 K V/F = 0, exit 2; as shipped exit 0).  NOT CHECKED: whether a NON-zero duty is right (only the identity has a closed form); the multi-condition cases' duties, which ride their goldens; whether the 1e-3 incipient band is the right number (it is a stated choice); the valve's, the adiabatic flash's and the pipe's discard by OUTPUT (no corpus state reaches them -- source only); any vapourless package, which the test skips by hasEos(); and the IF97 saturation curve OUTSIDE its window (273.15 .. 647.096 K), where the record answers announced -- no output arm reaches it; a pfr's heatExchange march by output (source only); and a PURE product on its own saturation jump, which the reactors announce and no fixture reaches.",
@@ -890,6 +900,11 @@
       "exit": 0,
       "claim": "check_inline_pair_announced: OK inline ethanol-water NRTL announced once per run (stderr + result JSON), catalogue pair silent, gammas identical; arms (a)-(d); NOT checked: correctness of typed numbers, Wilson/UNIQUAC inline (same code path, not exercised)",
       "seconds": 0.1
+    },
+    "check_interior_point": {
+      "exit": 0,
+      "claim": "check_interior_point: OK -- 21 of 21 HS problems to 1e-6 (iterations 0-312), 2 infeasible problems ended locally infeasible, 6 inertia-correction checks, 22 derivative checks",
+      "seconds": 8.3
     },
     "check_internal_states": {
       "exit": 0,
@@ -945,6 +960,11 @@
       "exit": 0,
       "claim": "check_layering: OK -- 82 subsystem edge(s) measured across all 16 declared subsystems.",
       "seconds": 0.1
+    },
+    "check_ldlt_inertia": {
+      "exit": 0,
+      "claim": "check_ldlt_inertia: OK -- 13 matrices of known inertia exact, worst eta 1.0e-16; refinement of an inexact factorisation 2.63e-08 -> 4.99e-17 accepted, eps 0.3 rejected",
+      "seconds": 1.4
     },
     "check_lee_kesler_ploecker": {
       "exit": 0,
@@ -1240,6 +1260,11 @@
       "exit": 0,
       "claim": "check_pipe_ports: OK -- a column's feed on stage 8 at z = 4.350 m of 9.2 m (recomputed from the sheet), its bottoms at the base, its distillate out of the reflux drum -- one unit, four placed items; the feed-effluent exchanger's four nozzles (tube ends, shell over/under at +/-0.35 L) and the separator's side inlet, top vapour and bottom liquid, recomputed from the published extents; no two of 39 port ends coincide on an item; a horizontal tank's outlet and fill each take the axis end nearer their pipe's other end (the bullet's outlet south, fill north, on its header branches) and the product pipe runs 28.0 m straight from its 69 m main to the fence, not 143.6 m by way of the rack; a declared side and elevation honoured (`origin declared`); two streams on one declared port stand off each other by the published slot offset; 6 port refusals fired through the real reader and named; the convention said on stderr, in the advisories and in layout.portConvention; all 36 item ends of the witness publish a port.  NOT COVERED: that a nozzle position is right for a real vessel (it is a convention, no vendor schedule exists), a unit type with no port rule (it keeps the top centre and the run says which), a pipe's clash with another item (check_plant_layout), the GUI drawing of the nozzles (a vitest).",
       "seconds": 1.2
+    },
+    "check_plant_books": {
+      "exit": 0,
+      "claim": "check_plant_books: OK -- 6 witnesses: the hand-built statements equal the engine's, assets = liabilities + equity and cash ties to the appraisal in every year to 1e-9, and eight moved accounts are each caught",
+      "seconds": 16.3
     },
     "check_plant_layout": {
       "exit": 0,

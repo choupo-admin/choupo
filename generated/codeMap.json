@@ -170,6 +170,9 @@
   "BalanceSnapshot": [
    "src/unitOperations/dynamic/BalanceSnapshot.H"
   ],
+  "BarrierUpdate": [
+   "src/solver/ip/BarrierUpdate.H"
+  ],
   "Barth": [
    "src/unitOperations/separation/cycloneModel/Barth.H"
   ],
@@ -608,6 +611,9 @@
   "CurationDossier": [
    "src/propertyOps/CurationDossier.H"
   ],
+  "Current": [
+   "src/solver/ip/Globalization.H"
+  ],
   "Curve": [
    "src/unitOperations/rotating/PumpSelection.H"
   ],
@@ -646,6 +652,9 @@
   ],
   "DemandSample": [
    "src/unitOperations/batch/BatchUnitOperation.H"
+  ],
+  "DenseLDLT": [
+   "src/solver/ip/DenseLDLT.H"
   ],
   "DensityAnswer": [
    "src/thermo/liquidProperty/DensityMethod.H"
@@ -875,6 +884,9 @@
   "Entry": [
    "src/unitOperations/UnitAcceptance.H"
   ],
+  "EqualityForm": [
+   "src/solver/ip/NLPProblem.H"
+  ],
   "EquationOfState": [
    "src/thermo/equationOfState/EquationOfState.H"
   ],
@@ -974,6 +986,9 @@
   "File": [
    "src/thermo/liquidProperty/ExperimentsFile.H"
   ],
+  "FilterGlobalization": [
+   "src/solver/ip/Globalization.H"
+  ],
   "Finding": [
    "src/core/DictAudit.H"
   ],
@@ -991,6 +1006,9 @@
   ],
   "FixedPointAccelerator": [
    "src/solver/DominantEigenvalue.H"
+  ],
+  "FixedVariables": [
+   "src/solver/ip/NLPProblem.H"
   ],
   "FlashInput": [
    "src/unitOperations/flash/IsothermalFlash.H"
@@ -1201,6 +1219,21 @@
   "IF97WaterFluid": [
    "src/thermo/pureFluid/IF97WaterFluid.H"
   ],
+  "IPIterationRecord": [
+   "src/solver/ip/IPTrace.H"
+  ],
+  "IPOptions": [
+   "src/solver/ip/InteriorPoint.H"
+  ],
+  "IPParameters": [
+   "src/solver/ip/IPParameters.H"
+  ],
+  "IPResult": [
+   "src/solver/ip/InteriorPoint.H"
+  ],
+  "IPTrace": [
+   "src/solver/ip/IPTrace.H"
+  ],
   "IdealGas": [
    "src/thermo/equationOfState/IdealGas.H"
   ],
@@ -1216,6 +1249,15 @@
   "IndoorPlace": [
    "src/postProcessing/layout/BuildingLayout.H"
   ],
+  "Inertia": [
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "InertiaCorrection": [
+   "src/solver/ip/InertiaCorrection.H"
+  ],
+  "InertiaCorrectionResult": [
+   "src/solver/ip/InertiaCorrection.H"
+  ],
   "InfeasibleTrial": [
    "src/core/InfeasibleTrial.H"
   ],
@@ -1227,6 +1269,9 @@
   ],
   "IntegrationFailure": [
    "src/solver/ODE/AdaptiveTimeStep.H"
+  ],
+  "InteriorPoint": [
+   "src/solver/ip/InteriorPoint.H"
   ],
   "Ion": [
    "src/unitOperations/electrochem/LimitingCurrent.H"
@@ -1408,6 +1453,9 @@
   ],
   "LimitingCurrent": [
    "src/unitOperations/electrochem/EDCell.H"
+  ],
+  "LineSearchResult": [
+   "src/solver/ip/LineSearch.H"
   ],
   "LineSheet": [
    "src/core/ResultRecords.H"
@@ -1592,6 +1640,9 @@
   "MolecularActivity": [
    "src/propertyOps/MolecularActivity.H"
   ],
+  "MonotoneBarrierUpdate": [
+   "src/solver/ip/BarrierUpdate.H"
+  ],
   "MultiStreamHX": [
    "src/unitOperations/heatTransfer/MultiStreamHX.H"
   ],
@@ -1612,6 +1663,9 @@
   ],
   "NDTrace": [
    "src/solver/NewtonND.H"
+  ],
+  "NLPProblem": [
+   "src/solver/ip/NLPProblem.H"
   ],
   "NMOptions": [
    "src/solver/NelderMead.H"
@@ -2201,6 +2255,9 @@
   "ResolvedComponentDict": [
    "src/thermo/Database.H"
   ],
+  "RestorationOutcome": [
+   "src/solver/ip/Restoration.H"
+  ],
   "Result": [
    "src/postProcessing/sizing/DrumSize.H",
    "src/thermo/LiquidPropertyDoor.H",
@@ -2291,6 +2348,9 @@
   ],
   "SaturationProximity": [
    "src/unitOperations/flash/StreamEquilibrium.H"
+  ],
+  "ScaledProblem": [
+   "src/solver/ip/NLPProblem.H"
   ],
   "ScalingIndexResult": [
    "src/thermo/electrolyte/ScalingIndices.H"
@@ -2436,6 +2496,9 @@
   ],
   "SolutionWriter": [
    "src/io/SolutionWriter.H"
+  ],
+  "SolveReport": [
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "Solvent": [
    "src/unitOperations/UnitAcceptance.H"
@@ -2589,6 +2652,9 @@
   ],
   "Symbolic": [
    "src/solver/SparseLU.H"
+  ],
+  "SymmetricIndefinite": [
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "SystemClassification": [
    "src/thermo/SystemClassifier.H"
@@ -10296,6 +10362,61 @@
   "src/solver/Wegstein.cpp": [
    "src/core/Types.H",
    "src/solver/Wegstein.H"
+  ],
+  "src/solver/ip/BarrierUpdate.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/BarrierUpdate.H",
+   "src/solver/ip/IPParameters.H"
+  ],
+  "src/solver/ip/DenseLDLT.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/Globalization.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H"
+  ],
+  "src/solver/ip/InertiaCorrection.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/InertiaCorrection.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/InteriorPoint.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/BarrierUpdate.H",
+   "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/IPTrace.H",
+   "src/solver/ip/InertiaCorrection.H",
+   "src/solver/ip/InteriorPoint.H",
+   "src/solver/ip/LineSearch.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/Restoration.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/LineSearch.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/LineSearch.H"
+  ],
+  "src/solver/ip/NLPProblem.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/NLPProblem.H"
+  ],
+  "src/solver/ip/Restoration.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/IPTrace.H",
+   "src/solver/ip/InteriorPoint.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/Restoration.H",
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "src/streams/AnalysisReconciler.cpp": [
    "src/core/Types.H",
@@ -21196,6 +21317,14 @@
    "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
    "src/solver/Wegstein.cpp",
+   "src/solver/ip/BarrierUpdate.cpp",
+   "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp",
+   "src/solver/ip/NLPProblem.cpp",
+   "src/solver/ip/Restoration.cpp",
    "src/streams/AnalysisReconciler.cpp",
    "src/streams/Carried.cpp",
    "src/streams/Composition.cpp",
@@ -23635,6 +23764,59 @@
    "src/solver/Wegstein.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/solver/ip/BarrierUpdate.H": [
+   "src/solver/ip/BarrierUpdate.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
+  "src/solver/ip/DenseLDLT.H": [
+   "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
+  "src/solver/ip/Globalization.H": [
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp"
+  ],
+  "src/solver/ip/IPParameters.H": [
+   "src/solver/ip/BarrierUpdate.cpp",
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/IPTrace.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/InertiaCorrection.H": [
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
+  "src/solver/ip/InteriorPoint.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/LineSearch.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp"
+  ],
+  "src/solver/ip/NLPProblem.H": [
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/NLPProblem.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/Restoration.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/SymmetricIndefinite.H": [
+   "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
   ],
   "src/streams/AnalysisReconciler.H": [
    "src/propertyOps/DataReconciliation.cpp",

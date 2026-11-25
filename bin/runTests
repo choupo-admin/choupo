@@ -6599,6 +6599,39 @@ PYEOF
     fi
     rm -f /tmp/kinjac.$$
 
+    # ldlt-inertia gate (2026-11-25, interior-point slice A1, docs/design/
+    # interior-point.md sec. 2.10).  The dense Bunch-Kaufman LDL^T that will
+    # give Algorithm IC the inertia of the KKT matrix: a wrong count takes an
+    # ascent direction as a descent step with no error message.  Matrices of
+    # known inertia (a 2x2 block, singular, KKT, random congruences), the
+    # backward error of the refined solve, the acceptance limit.
+    if gate_exec "$ROOT/bin/curate/check_ldlt_inertia.py" > /tmp/ldltin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ldlt-inertia-gate" "$(head -1 /tmp/ldltin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ldlt_inertia.py)\n" "ldlt-inertia-gate"
+        cat /tmp/ldltin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ldltin.$$
+
+    # interior-point gate (2026-11-25, interior-point slice A2, docs/design/
+    # interior-point.md sec. 4.1 and review R3).  The safeguards of the primal-
+    # dual optimizer fail silently: no fraction to the boundary (a log of a
+    # negative number), no inertia correction (ascent steps, a stationary point
+    # that is not a minimiser), no restoration, no "locally infeasible" verdict
+    # (an infeasible model reported converged).  Fifteen Hock-Schittkowski
+    # problems to 1e-6, two infeasible problems, the inertia-correction cases.
+    if gate_exec "$ROOT/bin/curate/check_interior_point.py" > /tmp/ipoint.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "interior-point-gate" "$(head -1 /tmp/ipoint.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_interior_point.py)\n" "interior-point-gate"
+        cat /tmp/ipoint.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ipoint.$$
+
     # iteration-budgets gate (2026-11-21, DEV.md 4c C467 R-001/R-002/R-006).  A Newton
     # budget of zero was published as a converged solve (adiabaticFlash with
     # `maxOuterIter 0;`: a 917 kW imbalance), an exhausted newton1D returned the new x
