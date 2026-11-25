@@ -1054,14 +1054,19 @@ int OptimizationDriver::runSqp()
     }
     if (fdAuto_)
         std::cout << "  fd gradients:  AUTO -- the step of each variable from the response's"
-                     " own noise and curvature (ECnoise, Shi et al. 2021), forward or"
-                     " central per variable, never across a bound; each step is printed"
-                     " with its reason; multipliers carry error bars\n";
+                     " own noise and curvature (noise: ECnoise, More & Wild 2011 as used by"
+                     " Shi et al. 2021, with a second stencil of our own; steps: Shi et al."
+                     " eq. 2.13/2.14), forward or central per variable, fitted to the box"
+                     " at every evaluation (no evaluation leaves it); each step is printed"
+                     " with its reason; a verdict of CONVERGED needs the gradient"
+                     " re-estimated at the point with its error bar below the tolerance"
+                     " (the tolerance is scaled by the size of the gradient terms);"
+                     " multipliers carry error bars (2 sd, first order)\n";
     else
-    std::cout << "  fd gradients:  " << (fdCentral_ ? "central (2n/iter)"
-                                                    : "forward (n+1/iter)")
-              << "   step " << fdStep_ << "\n"
-              << "  maxIter:       " << maxIter_ << "\n"
+        std::cout << "  fd gradients:  " << (fdCentral_ ? "central (2n/iter)"
+                                                        : "forward (n+1/iter)")
+                  << "   step " << fdStep_ << "\n";
+    std::cout << "  maxIter:       " << maxIter_ << "\n"
               << "  history file:  " << reportFile_ << "\n"
               << "====================================================================\n";
 
@@ -1263,10 +1268,13 @@ int OptimizationDriver::runSqp()
 
     //  C496: a multiplier with the error bar the gradient noise gives it
     //  (fdMode auto only); "not resolved" when the bar exceeds the value.
-    auto lambdaBar = [](scalar lam, const sVector& sig, std::size_t i) -> std::string
+    auto lambdaBar = [](scalar lam, const sVector& sig, std::size_t i,
+                        bool active = true) -> std::string
     {
         if (i >= sig.size()) return "";
         std::ostringstream os;
+        if (!active)
+            return " (inactive: exactly 0, no error bar)";
         if (!std::isfinite(sig[i]))
             return " (error bar unavailable)";
         os << std::scientific << std::setprecision(1);
@@ -1318,7 +1326,9 @@ int OptimizationDriver::runSqp()
     //  Final report + the 5-line KKT certificate.
     // ----------------------------------------------------------------------
     std::cout << "\n=========================  Optimum (SQP)  ==========================\n"
-              << "  status:        " << (R.converged ? "CONVERGED" : "stopped")
+              << "  status:        "
+              << (R.converged ? "CONVERGED"
+                  : R.stationaryUncertified ? "STATIONARY, NOT CERTIFIED" : "stopped")
               << "  (" << R.reason << ")\n"
               << "  iterations:    " << R.iterations
               << "   simulator runs: " << ledger_.total << "\n";
@@ -1359,8 +1369,15 @@ int OptimizationDriver::runSqp()
         std::cout << "    " << constraints_[ineqIdx[q]].path
                   << "  (inequality)  lambda = "
                   << std::scientific << std::setprecision(4) << R.lambdaIneq[q]
-                  << lambdaBar(R.lambdaIneq[q], R.sigmaLamIneq, q)
+                  << lambdaBar(R.lambdaIneq[q], R.sigmaLamIneq, q,
+                               q >= R.ineqActive.size() || R.ineqActive[q])
                   << (R.lambdaIneq[q] > 1.0e-8 ? "   <- ACTIVE" : "") << "\n";
+    if (fdAuto_)
+        std::cout << "  (error bars: 2 sd of the gradient noise, first order, mapped through"
+                     " the QP's own B-weighted multiplier map; they OMIT the displacement of"
+                     " the optimum, correlations between responses, the bias of truncation"
+                     " (added as if random) and the uncertainty of the active set; a rule of"
+                     " our own, not a published one)\n";
 
     // ----------------------------------------------------------------------
     //  A KKT *certificate* is only valid when the SQP actually converged.
@@ -1400,6 +1417,16 @@ int OptimizationDriver::runSqp()
                   << "   (tol " << o.tolFeasEq << ")\n"
                   << "    primal feas ineq max g+       = " << R.kktFeasIneq
                   << "   (tol " << o.tolFeasIneq << ")\n";
+    }
+    if (fdAuto_)
+    {
+        std::cout << "    gradient error bar (3 sd) on ||grad L||inf = ";
+        if (std::isfinite(R.statBar))
+            std::cout << std::scientific << std::setprecision(3) << R.statBar
+                      << "   against the tolerance used " << R.statTolUsed;
+        else
+            std::cout << "UNAVAILABLE (a verdict of CONVERGED is never given without it)";
+        std::cout << "\n";
     }
     std::cout << "  history:       " << reportFile_
               << "\n====================================================================\n";

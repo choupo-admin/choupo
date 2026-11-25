@@ -35,6 +35,7 @@ Description
 #include "solver/ActiveSetQP.H"
 #include "solver/SQP.H"
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -50,7 +51,8 @@ namespace {
 
 const scalar kNaN = std::numeric_limits<scalar>::quiet_NaN();
 const scalar kInf = std::numeric_limits<scalar>::infinity();
-int gOutside = 0;   // invariant (a): evaluations outside the declared box, all arms
+int gOutside = 0;
+std::string gInfo;   // one-line summary of the last run, printed beside PASS   // invariant (a): evaluations outside the declared box, all arms
 
 struct Prob
 {
@@ -103,6 +105,17 @@ Run run(const Prob& p, SQPOptions o, bool adaptive = true)
         out.notes.push_back(t.note);
     };
     out.R = sqp(eval, p.x0, p.lo, p.hi, p.h.size(), p.g.size(), o);
+    {
+        std::ostringstream os;
+        os << (out.R.converged ? "converged" : "stopped") << " x=" << out.R.x[0] << " f=" << out.R.f
+           << " evals=" << out.evals << " statBar=" << out.R.statBar << "/" << out.R.statTolUsed;
+        if (!out.R.lambdaIneq.empty()) os << " lamI=" << out.R.lambdaIneq[0] << "+-"
+            << (out.R.sigmaLamIneq.empty() ? kNaN : out.R.sigmaLamIneq[0]);
+        if (!out.R.lambdaEq.empty()) os << " lamE=" << out.R.lambdaEq[0] << "+-"
+            << (out.R.sigmaLamEq.empty() ? kNaN : out.R.sigmaLamEq[0]);
+        os << " [" << out.R.reason.substr(0, 60) << "]";
+        gInfo = os.str();
+    }
     return out;
 }
 
@@ -277,20 +290,30 @@ void defineArms()
             p.g = {[](const sVector& x) { return x[0] - 0.3; }};
             p.lo = {-10.0, -10.0}; p.hi = {10.0, 10.0}; p.x0 = {0.0, 0.0};
             p.noise = 1.0e-6; p.seed = 1000ULL + 7919ULL * s;
-            Run r = run(p, baseOpts());
-            if (r.R.lambdaIneq.empty()) continue;
+            SQPOptions oo = baseOpts(); oo.maxIter = 300;
+            Run r = run(p, oo);
+            //  only a run that reached stationarity says what the bar is a bar OF;
+            //  one stopped on maxIter or a line search carries a non-convergence error
+            if (!(r.R.converged || r.R.stationaryUncertified) || r.R.lambdaIneq.empty()) continue;
             const scalar bar = r.R.sigmaLamIneq.empty() ? kNaN : r.R.sigmaLamIneq[0];
             if (!std::isfinite(bar)) continue;
             lams.push_back(r.R.lambdaIneq[0]); bars.push_back(bar);
         }
-        if (lams.size() < 8) return std::string();      // bars unavailable: honest
+        if (lams.size() < 8) return "only " + std::to_string(lams.size()) + " of 40 runs reached stationarity with a bar";
         scalar m = 0.0, mb = 0.0;
         for (std::size_t i = 0; i < lams.size(); ++i) { m += lams[i]; mb += bars[i]; }
         m /= lams.size(); mb /= lams.size();
-        scalar v = 0.0;
-        for (scalar l : lams) v += (l - m) * (l - m);
-        const scalar sd = std::sqrt(v / (lams.size() - 1));
-        const scalar ratio = mb / std::max(sd, 1.0e-300);
+        //  robust spread (1.4826 MAD): one run that stopped in the flat valley
+        //  would otherwise stand for the whole set
+        std::vector<scalar> dev;
+        std::vector<scalar> sorted = lams; std::sort(sorted.begin(), sorted.end());
+        const scalar med = sorted[sorted.size() / 2];
+        for (scalar l : lams) dev.push_back(std::abs(l - med));
+        std::sort(dev.begin(), dev.end());
+        const scalar sd = 1.4826 * dev[dev.size() / 2];
+        (void)m;
+        //  the printed bar is 2 sd, so the bar and 2 sd of the runs are compared
+        const scalar ratio = mb / std::max(2.0 * sd, 1.0e-300);
         if (ratio < 0.5 || ratio > 2.0)
             return "mean bar " + num(mb) + " vs actual sd " + num(sd) + " (ratio " + num(ratio) + ") over "
                  + std::to_string(lams.size()) + " seeds";
@@ -432,6 +455,8 @@ int main(int argc, char** argv)
             msg = "invariant (a): " + std::to_string(gOutside - out0) + " evaluations outside the box";
         std::cout << (msg.empty() ? "PASS " : "FAIL ") << name;
         if (!msg.empty()) { std::cout << "  -- " << msg; ++fails; }
+        else if (!gInfo.empty()) std::cout << "  (" << gInfo << ")";
+        gInfo.clear();
         std::cout << "\n";
     }
     std::cout << (fails == 0 ? "ALL PASS" : "FAILURES: " + std::to_string(fails)) << "\n";

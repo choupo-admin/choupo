@@ -205,7 +205,13 @@ struct SQPOptions
     //    for the BFGS update are reused by the next iteration, and a failed
     //    line search restarts once from B = I with central differences before
     //    stopping.  Sources: Shi, Xuan, Oztoprak & Nocedal (2021) eq. 2.13,
-    //    2.14, 2.19, Procedure I; More & Wild (2011) for the noise estimate.
+    //    2.14 and Procedure I; More & Wild (2011) for the noise estimate.
+    //    The relaxed Armijo test is our simplified form, NOT their eq. 2.19.
+    //    The agreement factor 4 and the sign-change rule of the noise estimate,
+    //    the second (quarter-width) stencil, the bounds for responses whose
+    //    curvature the noise hides, the multiplier bars and the certificate
+    //    rule are OUR OWN rules.  A verdict `converged` needs the gradient
+    //    re-estimated at the point and its error bar below the tolerance.
     bool    adaptiveFd   = false;
 
     //  C496 F11 (adaptiveFd only): the stationarity tolerance is tolStat times

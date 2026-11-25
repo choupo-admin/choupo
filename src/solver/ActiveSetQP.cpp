@@ -117,9 +117,11 @@ void solveKKT(const std::vector<sVector>& B,
 
 } // anonymous namespace
 
-QPResult activeSetQP(const QPProblem&         qp,
-                     const std::vector<bool>& warmStart,
-                     int                      maxIter)
+namespace {
+
+QPResult solveActiveSet(const QPProblem&         qp,
+                        const std::vector<bool>& warmStart,
+                        int                      maxIter)
 {
     const std::size_t n  = qp.g.size();
     const std::size_t me = qp.Aeq.size();
@@ -328,6 +330,13 @@ QPResult activeSetQP(const QPProblem&         qp,
             : 1.0e-12;
         if (pnorm < stepZero)
         {
+            //  C496 F6 (robust only): a step below the "zero" threshold is
+            //  still a step.  It is APPLIED before feasibility is judged, so a
+            //  row such as 1e3 d + 1e-7 = 0 (d = -1e-10) is satisfied rather
+            //  than called infeasible because its repair was discarded.  The
+            //  multipliers below belong to this same solve.
+            if (qp.robust)
+                for (std::size_t i = 0; i < n; ++i) x[i] += p[i];
             // p == 0: x minimises over the current working set.  Check the
             // inequality multipliers.  Rows are eq first then active ineqs.
             scalar      mostNeg = -lamTol;
@@ -441,6 +450,35 @@ QPResult activeSetQP(const QPProblem&         qp,
     throw std::runtime_error(
         "activeSetQP: active-set did not settle within " + std::to_string(maxIter)
         + " working-set changes (possible cycling or ill-conditioned QP).");
+}
+
+} // anonymous namespace
+
+//  C496 F6: the robust mode is an OPT-IN aid and never the last word.  A QP it
+//  calls INFEASIBLE, or cannot settle, is solved again by the default solver
+//  (the shipped behaviour) before anyone concludes anything: the 1e-5
+//  dependence test has dropped rows that were not implied by the others
+//  (HS13, HS68, a pair 1e-6 apart in angle), and a "local infeasibility" that
+//  the default solver does not share is the robust mode's, not the problem's.
+QPResult activeSetQP(const QPProblem&         qp,
+                     const std::vector<bool>& warmStart,
+                     int                      maxIter)
+{
+    if (!qp.robust) return solveActiveSet(qp, warmStart, maxIter);
+    std::string why;
+    try
+    {
+        QPResult R = solveActiveSet(qp, warmStart, maxIter);
+        if (R.converged) return R;
+        why = R.reason;
+    }
+    catch (const std::exception& e) { why = e.what(); }
+    QPProblem plain = qp;
+    plain.robust = false;
+    QPResult R = solveActiveSet(plain, warmStart, maxIter);
+    if (R.converged)
+        R.reason += " [default solver; the robust one said: " + why + "]";
+    return R;
 }
 
 // ---------------------------------------------------------------------------
