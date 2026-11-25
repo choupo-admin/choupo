@@ -3994,6 +3994,37 @@ was specified by a fixed pressure rise and the curve is therefore the
 specification echoed back.
 \declaredanchor{ch:rotating}
 
+\subsection*{Why does a correctly sized valve still control badly? \quad(\code{tool=control-valve})}\label{sec:edu-control-valve}
+A control valve is sized once, at one flow, and then asked to work over all of
+them.  The page runs the engine's pump and pipe
+(\code{pumpSystem01\_operating\_point}, swept over the flow, in the browser) and
+reads the pump's rise and the line's drop at a rated flow you choose; the
+valve's \emph{authority} $a$, the share of the available pressure it holds wide
+open, comes from those two numbers and is never typed.  Seven cards.
+(1)~\emph{A valve is a resistance in series}: the pump's rise stacked as static
+elevation, line and valve, re-split as you move the opening; the engine's pump
+rise and line loss at the rated and the minimum flow are in a table, with the
+constant-power pump's rise at the minimum flow printed against the constant
+source head the toy assumes.  (2)~\emph{The inherent characteristic}: linear,
+equal percentage ($R$ declared) and quick opening, drawn as conventions of valve
+makers, with no source cited.  (3)~\emph{Installed}: the installed flow
+$q=f/\sqrt{a+(1-a)f^2}$, derived in four lines on the page, over the inherent
+promise, with the opening below which it is more than a tenth above it.
+(4)~\emph{The loop gain}: $\mathrm{d}q/\mathrm{d}x$ for the three shapes, the
+largest and smallest gain and their ratio printed (the page ranks nothing), and
+the gain margin that ratio leaves.  (5)~\emph{Rangeability}: one big valve
+against a running plus a starting valve, with the opening each sits at at the
+minimum load and the installed turndown; the two opposed pieces of advice are
+put as a question.  (6)~\emph{Choking and cavitation at small flow}: the valve
+drop against the flow, largest where the flow is smallest, with the letdown
+page's own choked drop and cavitation index and the water's vapour pressure
+from a \code{choupoProps} run at your temperature.  (7)~\emph{Which way it
+fails}: six services, authored consequences for fail open, closed and in place,
+marked \emph{authored, not computed}.  The characteristics, $R$, the lowest
+controlling opening, $F_L$ and the starting valve's size are the student's or
+the page's declared values, marked as such.
+\declaredanchor{sec:control-valve}
+
 \subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
 Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
 of a staged machine come out equal, and what the real gas adds, worked on the
