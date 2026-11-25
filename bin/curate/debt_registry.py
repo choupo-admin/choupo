@@ -995,7 +995,6 @@ SCAN_ROOTS_UNRESOLVED = {
     'check_panel': "bin/curate/check_panel.py:151 d.rglob('*')",
     'check_petroleum_cuts': "bin/curate/check_petroleum_cuts.py:275 (dst / 'constant/components').glob('*.estimated.dat')",
     'check_phase_envelope': "bin/curate/check_phase_envelope.py:194 case.rglob('envelope.csv')",
-    'check_phase_speciation': 'bin/curate/check_phase_speciation.py:524 os.listdir(conv)',
     'check_postprocessing': "bin/curate/check_postprocessing.py:535 pp.rglob('*')",
     'check_pressure_exchanger': "bin/curate/check_pressure_exchanger.py:284 (dst / '0').iterdir()",
     'check_promoted_pair_record': "bin/curate/check_promoted_pair_record.py:134 work.glob('*.proposal.dat')",
