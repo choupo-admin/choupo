@@ -2128,6 +2128,30 @@ orbit, walk and drone cameras, a minimap, a click card on every item and
 pipe, and colour by phase, temperature, pressure or the mole fraction of
 a chosen component, all read from the published result.
 
+\textbf{Can the tube bundle be pulled?} A shell-and-tube exchanger is
+serviced by sliding its bundle out of the shell through the \emph{channel}
+end, so that end needs free ground in line with the shell for the
+bundle's own length plus a handling extra. Two things are said apart. The
+\textbf{tube length} is a fact of the exchanger: the sizer's own
+\texttt{tubeLength}, read from its design sheet. The \textbf{extra} is a
+convention: it depends on the extractor, the head and the site's practice,
+and no vendor or textbook value is shipped, so a case declares it in a
+\texttt{serviceClearance} block (the extra, its \texttt{source} and
+\texttt{reason}, and for each exchanger the channel end, west, east, north
+or south) with its source (``author-set assumption'' is an honest one). The
+check sweeps the item's own cross-section from the channel face out to the
+tube length plus the extra and reports the nearest thing that stands in it
+at that height --- another item's plan box (a vertical cylinder by its
+bounding square), the fence line, or the pipe rack when its lowest tier is
+below the exchanger's top --- as a \texttt{serviceClearance} finding with
+the clear length and the length needed. A case that declares nothing is
+told that the withdrawal is \emph{not checked}; it is not given a default.
+Not covered: bund walls and kerbs, a pipe leaving its own nozzle across the
+zone, a crane's reach, and whether the declared extra is the right one. On
+the reference plant the water cooler stood 5.45~m from the feed-effluent
+exchanger and 3.9~m from the chiller, with 7.6~m needed; moving the
+feed-effluent exchanger 2.2~m west cleared it.
+
 \textbf{A store, and any bank of identical items, is piped by a header.}
 A unit realised by several identical items in parallel --- the vessels
 of a gas buffer, the tanks of a product store, the trains of a trained
