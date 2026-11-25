@@ -5691,6 +5691,12 @@ accepts today, and that is a policy call.
 > drying page grown (loading, the last percent, the spray chamber), the selection tables last; evapDryer02's and
 > the sugar plant's sentences corrected.  C509: `control-valve`, seven cards, the authority from an engine run,
 > gains checked by hand; the speed-control card not built.  Seen by the architect in screenshots, not by Vítor.
+> C508 REOPENED 2026-11-25 (Vitor, asking whether our dryer types and heuristics agree with the book or whether its
+> author would call us academics).  READ SIDE BY SIDE (chapter 29 against dryerSelection.ts and
+> docs/design-heuristics.md): the types agree; the book's rotary "for slurries" is looser than our cited rule.  WE
+> LACK the flash (pneumatic) and the agitated vacuum dryer as types, the dust / solvent / upstream-downstream
+> questions, the tray's working day; and design-heuristics' uncited dryer table disagrees with the page (tray
+> 2-24 h against 1-6 h, fluid bed from 50 um against 0.1 mm, solidDryer01 called through-circulation).
 
 > **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
 > packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
@@ -5718,6 +5724,63 @@ accepts today, and that is a policy call.
 > **C520. CASE HEADERS WHOSE NUMBERS ARE NO LONGER THE RUN'S (from column10, 2026-11-25).**  column09 still carries
 > a liquid feed and old tray numbers; measure every case header's numbers against its golden (the README gate's
 > idea, for headers).
+
+> **C521. A RESTARTED ADIABATIC BATCH VESSEL IS ANOTHER VESSEL (C492's time proofs, 2026-11-25).**  The vessel
+> integrates a frozen-dH surrogate resolved at the charge temperature (BatchReactor.cpp:499); a restart from
+> t = 300 of 600 resolves it again at that instant's T (-2.416 against -2.428 kJ/mol), so the remaining rise is
+> 0.53 % smaller: batch02, batch04, batch06 end 6 mK apart.  Either the datum temperature enters the state, or
+> the vessel integrates on the canonical H surface (the code's own open item).
+> THE BACKLOG GROWS BY FINDINGS (Vitor, 2026-11-25: "Como já fizeste tantas tasks e o número por fazer está a
+> aumentar?").  MEASURED: 61 open on 23 November, 70 today; 56 of the 70 are older than C490 and 39 of them
+> PARTIAL; of 24 items opened since the evening of the 24th, 10 are closed.  RULED: a small defect found is a line
+> of the item it belongs to, or is fixed where it was found; one old item closed per new one; half the generals
+> on PARTIAL items at 70 % or more; the open count may not rise between two daily reports without the reason
+> in the report's first line.  C518 folded into C513; C517 closed (its 1e-5 rung is held by the gate's ratchet).
+> AUDIT OF THE 56 OLD ITEMS (docs/audits/2026-11-25-backlog-audit.md): 0 closable unseen, 6 folded (C110 into C306,
+> C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
+> Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
+
+> **C527. EXTERNAL REVIEW 3 (Vitor, 2026-11-25).**  Five claims against d51d651dab, checked at HEAD by the architect:
+> the CSTR's inadmissible outlet is C498, done (his counterexample now refuses by name); the wet bulb returns about
+> 0.5 C for dry air at 1, 5 and 10 C (no sign test at the bracket, no residual check); the pinch pairs are clipped by the
+> first pinch only, so a candidate across a second pinch is called admissible; psychrometricChart's schema bounds
+> relative humidity to 1 where the engine reads percent; `wetBulb (20.1 20.9)` makes two curves named 20.  The review's
+> harness idea (an independent oracle on raw inputs and outputs) goes to C492.
+
+> **C524, C525, C526 (Vitor, 2026-11-25: "andar por casos que dão prejuízo é muito mau! ... balanços anuais,
+> demonstração de resultados, mapa de cashflow, storm graphic com análise de sensibilidade, fundo de maneio e
+> capitais circulantes! E um EduTool a explicar as partes da análise económica que são difíceis ... O que é um capital
+> circulante? O que é um balanço? ... Devia ser tão fácil de entender que no final o aluno já domina aquilo como se
+> fosse um engenheiro com 50 anos de experiência!").**  C524, the books: income statement and balance sheet per
+> year, the identity assets = liabilities + equity checked every year, tied to the cash flow and the working
+> capital the engine already computes.  C525, the tool for a student with no experience.  C526, the classic process
+> (natural gas) and the PEQ priced consistently: today it buys renewable hydrogen at 8 EUR/kg and sells ammonia at
+> the CONVENTIONAL price, the architect's oversight.  MEASURED: at 1.5 EUR/kg NPV +96 MEUR, IRR 20.1 %, payback
+> 6.6 y; at 1.0, +356 MEUR; break-even 1.685; ACER's data item 972 gives 0.74 to 4.07 EUR2024/kg for natural gas
+> without capture (regions not stated).
+
+> **C525. EDUTOOL: THE ECONOMIC ANALYSIS FROM ZERO (Vitor, 2026-11-25).**  See C524 above: working capital, balance
+> sheet, income statement, cash flow, depreciation, tax, NPV, IRR, payback, sensitivity; numbers from engine runs.
+
+> **C526. THE CLASSIC AMMONIA PLANT, AND THE PEQ PRICED TO PAY (Vitor, 2026-11-25).**  See C524 above.  The site
+> rebuild of the PEQ is in build (the ammonia02 site); reforming, shift, CO2 removal and methanation are the large part.
+
+> C238, 2026-11-25 (Vitor: "E garante que eu não vou passar vergonhas no dia 2!!!").  THE REHEARSAL: a FREEZE on
+> 2026-11-30 at 20:00 (from then only a fix of a demonstration defect lands, with its own rehearsal); every step of
+> docs/demo/demonstration-path-december.md driven on the published site by a script on the laptop's browser
+> (the run, the clicks, a screenshot per step, the numbers read off the screen against the document), on
+> 28, 30 November and 1 December morning; a second run on a machine without a GPU; an offline copy (the local
+> site build) and a screenshot booklet, for a room with no network; the list of questions a colleague asks and
+> the answer; and Vítor sees the list on the 30th.
+
+> **C522. CHOUPO-IP, AN IN-HOUSE PRIMAL-DUAL INTERIOR POINT (Vitor's direction to the cloud, 2026-11-25; its
+> design record is the file interior-point of the cloud branch's design folder).**  WEIGHED AND AGREED by the architect: it
+> serves inner problems with analytic derivatives (Gibbs first, then phase equilibrium, later collocation) and
+> registers no `OptimizationDriver` method, so the ruling "one optimiser, the SQP" stands for `outerDict`.  Opt-in,
+> measured against the two existing Gibbs methods, sources marked read or not read.  After the cloud's queue.
+
+> **C523. EDUTOOL: THE OPTIMAL TEMPERATURE PROFILE (Vitor to the cloud, 2026-11-25).**  A -> B -> C, one, three and ten
+> segments on the existing single shooting (ctrl16), after C522 A and B.  The fed-batch feed profile is C217.
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
@@ -9761,6 +9824,13 @@ accepts today, and that is a policy call.
 > (C217); Butler-Volmer for the electrolyser (C214 W7); a kinetic-parameter
 > fit from rate data.  NOT planned: package activities or fugacities as
 > formula symbols (C67's decision stands).
+> THE REACTION IS A FOLDER, THE SOURCE IS A FILE (Vitor and the architect, 2026-11-25).  One equation could hold one
+> record, so two published constants could not stand side by side and Miller & Bowman's H2/O2 half was skipped.
+> `kinetics/<canonical equation>/<source>.dat`; a set names its source; a case that names none where several exist is
+> refused.  Names of species stay the catalogue's and the printed equation is kept.  Then Appendix A (235) and B (73),
+> Glarborg's pages, later Baulch 2005, 1992, 1994 and Tsang 1986.  THE ARCHIVE COUNTED (2327 pairs of two catalogue
+> components in the NIST index, 1501 with no gamma record; 475 with >= 8 bubble points never curated, C226; 193 with a
+> gas, C135).
 
 > **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
 > "severe" to 29 % and asked whether that is reasonable for a process

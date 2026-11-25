@@ -5,7 +5,6 @@
 # branch and not landed counts, capped at 90; 0 = nothing built.  Where the parts cannot be
 # counted it is a judgement.  Only the laptop's items: the cloud session keeps the progress of its own
 # (C184, C477, C499 on 2026-11-24; Vitor: "não ponhas da outra porque ele é que gere").  It moves in the commit that moves the item's row.
-C110	75	faltam três peças
 C124	70	faltam permutadores laterais e pumparounds
 C135	0	nada construído
 C154	75	falta um ponto
@@ -20,7 +19,6 @@ C226	65	6 das 9 propostas
 C227	35	1 das 3 partes
 C238	60	planta e caminho em curso; falta ensaiar
 C240	50	meio caminho, pelo desenho da planta
-C241	75	falta a dieta do CLAUDE.md
 C245	45	faltam cerca de metade das 12 fatias
 C261	10	só o desenho
 C263	45	tipo e andares feitos
@@ -32,8 +30,6 @@ C288	25	1 das 4 fatias
 C296	25	só o gate sem symlinks
 C306	30	faltam três partes
 C308	0	nada construído
-C309	40	lotes restantes bloqueados por dados
-C319	0	nada construído
 C323	0	nada construído
 C329	65	falta a coluna de crude completa
 C339	25	falta a pelota nos reatores e o ajuste
@@ -41,7 +37,6 @@ C403	80	faltam os aniões orgânicos e tampões
 C405	0	as leis por rever
 C406	0	nada construído
 C408	65	faltam cinco peças
-C409	50	auditoria feita; faltam as correções
 C411	0	seis defeitos por corrigir
 C415	40	piloto feito; falta alargar a todas as lições
 C416	0	nada construído
@@ -51,12 +46,9 @@ C428	30	falta a lente no Explorer
 C437	15	diagnosticado
 C445	40	2 dos 5 pontos
 C452	0	nada construído
-C454	35	cerca de 6 das 18 famílias
 C456	60	4 fatias no main, 5 seguem
-C457	0	depois do C456
 C473	85	falta passar à frente
 C475	0	nada construído
-C479	85	falta o enquadramento económico
 C482	35	1 das 3 partes
 C485	75	faltam três das máquinas
 C491	40	2 das 5 provas medidas
@@ -68,7 +60,13 @@ C506	0	nada construído
 C507	0	nada construído
 C512	0	nada construído
 C513	60	uma lei e cinco registos no main
-C517	60	o degrau de 1e-4 no main
-C518	0	nada construído
 C519	0	nada construído
 C520	0	nada construído
+C521	5	causa encontrada
+C309	40	lotes restantes bloqueados por dados
+C454	35	cerca de 6 das 18 famílias
+C508	70	páginas no main; faltam dois tipos e a tabela
+C524	20	fluxo de caixa, fundo de maneio e tornado já existem
+C525	0	nada construído
+C526	5	cenários corridos
+C527	10	confirmados; um general em curso
