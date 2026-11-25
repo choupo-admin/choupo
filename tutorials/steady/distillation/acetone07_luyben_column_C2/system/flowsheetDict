@@ -58,6 +58,8 @@ units
 
         operation
         {
+            //  Keys (C504): the two keys of Luyben's split: isopropanol to the recycle, water in the bottoms
+            lightKey isopropanol;  heavyKey water;
             nStages        19;
             feedStage      16;
             refluxRatio    0.849;

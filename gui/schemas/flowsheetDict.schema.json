@@ -149,6 +149,11 @@
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
         },
+        "supplies": {
+          "type": "array",
+          "description": "Streams in `outputs` that the unit computes but that ENTER the plant (reports read them as feeds): the sodium an ionExchanger's resin releases (C500).",
+          "items": { "type": "string", "minLength": 1 }
+        },
         "operation": {
           "type": "object",
           "description": "Type-specific operating parameters.",

@@ -118,8 +118,11 @@ a correlation that reads a field the record lacks is refused naming the field
 not Rocha-Bravo-Fair).  The `surface` is the product's and belongs to the
 record alone; F_SE may be borrowed but never installed.  A record's `name` is
 its file name (the seal copies it by that name), and every value is
-range-checked wherever it is written.  No random-packing correlation is implemented yet; the
-kind admits one.  Theory Guide: sec:packing-record.
+range-checked wherever it is written.  The five RANDOM packings shipped (`PallRing-metal-50`, `PallRing-metal-25`,
+`PallRing-plastic-50`, `PallRing-plastic-25`, `Raschig-ceramic-25`; `arrangement random;`) state, under
+`correlations { BilletSchultes { CS CFl Ch CP0 CL CV } }`, the six constants of Billet & Schultes 1999 Table 2a
+(their source, in-sample for that law) and serve `model BilletSchultes;` alone.  Theory Guide: sec:packing-record,
+sec:billetSchultes.
 
 ## `kind catalyst` — why this folder holds none yet
 

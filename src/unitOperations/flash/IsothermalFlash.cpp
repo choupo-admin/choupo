@@ -1365,6 +1365,34 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             }
         }
 
+        //  POLISH THE BEST START (C514).  The multi-start simplexes stop at
+        //  tolX 1e-5 / tolF 1e-7, i.e. at a Gibbs energy within 1e-7 of the
+        //  minimum, which on a flat minimum is a composition within ~4e-4:
+        //  vlle03 published F_alpha 0.011308 or 0.011306 (K of A in the
+        //  alpha liquid 0.04978 or 0.04965) according to the ORDER of the
+        //  component list, which only decides how the same starts are packed.
+        //  The winning start is restarted from its own point at the tight
+        //  tolerances the trace-component branch below already uses, so the
+        //  published split is the minimum, not where one simplex tired.
+        if (!bestV.empty())
+        {
+            solver::NMOptions np = nmo;
+            np.maxIter           = 4000;
+            np.tolX              = 1.0e-10;
+            np.tolF              = 1.0e-14;
+            np.simplexInitFactor = 0.01;
+            sVector x0 = bestV;
+            scalar  g0 = bestG;
+            for (int rep = 0; rep < 5; ++rep)
+            {
+                auto res = solver::nelderMead(vlleObjective, x0, lo, hi, np);
+                totalEvals += res.evaluations;
+                if (res.f <= g0) { x0 = res.x; g0 = res.f; }
+            }
+            bestV = x0;
+            bestG = g0;
+        }
+
         if (opts.verbosity >= 3)
         {
             std::cout << "VLLE flash via Gibbs minimisation (Nelder-Mead, "

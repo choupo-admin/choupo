@@ -634,7 +634,7 @@ level up.)
 | `propionitrile` | 55.0785 | (volatile) | 342-504 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `propylene` | 42.081 | (volatile) | 165-242 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `propyleneCarbonate` | 102.0886 | (volatile) | 472-691 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `propyne` | 40.0600 | (volatile) | 274-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `propyne` | 40.065 | (volatile) | 274-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `pToluicAcid` | 136.1479 | (volatile) | 470-689 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pXylene` | 106.1650 | (volatile) | 287-604 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pyrene` | 202.2506 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -713,10 +713,10 @@ level up.)
 | `CH4` | 16.043 | solute | 91-190 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `Cl2` | 70.906 | solute | 176-256 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `CO2` | 44.010 | solute | 154-204 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
-| `H2S` | 34.082 | solute | 186-227 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `H2S` | 34.076 | solute | 186-227 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `HCl` | 36.461 | solute | 160-201 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `NH3` | 17.030 | solute | 195-371 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `SO2` | 64.065 | solute | 199-263 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `SO2` | 64.058 | solute | 199-263 | ✓ | — | ✓ | — | — | — | ✓ |   |
 
 ### Non-volatile solute
 
@@ -1426,11 +1426,16 @@ Named by an element record (`feedSpacer <name>;`) or, with the explicit `area` +
 | `Spacer-28mil` |
 ## Column packings (the bed a packed column is filled with)
 
-Named by a column's `packing { record <name>; model RochaBravoFair|Delft; diameter; height; ... }` instead of typing the geometry inline -- and typing a geometry key beside the name REFUSES.  The record carries the NOMINAL geometry its source prints (area, void fraction, corrugation angle, side, base, height, element height, hole fraction, surface) and a per-correlation constant (F_SE of a sheet-metal packing under RochaBravoFair).  A value measured on the installed bed goes in the case under `installed { ...; source; }`, another packing's value under `borrowed { <field> { from <record>; reason; } }`; the run prints each value as nominal, installed or borrowed, and a field the correlation reads and nothing supplies is refused by name.  SulzerBX serves RochaBravoFair, MontzB1-250 serves Delft.
+Named by a column's `packing { record <name>; model RochaBravoFair|Delft|BilletSchultes; diameter; height; ... }` instead of typing the geometry inline -- and typing a geometry key beside the name REFUSES.  The record carries the NOMINAL geometry its source prints (area, void fraction, corrugation angle, side, base, height, element height, hole fraction, surface) and a per-correlation constant (F_SE of a sheet-metal packing under RochaBravoFair; the six constants CS CFl Ch CP0 CL CV of a random packing under BilletSchultes).  A value measured on the installed bed goes in the case under `installed { ...; source; }`, another packing's value under `borrowed { <field> { from <record>; reason; } }`; the run prints each value as nominal, installed or borrowed, and a field the correlation reads and nothing supplies is refused by name.  SulzerBX serves RochaBravoFair, MontzB1-250 serves Delft; the five random-packing records (Pall rings, ceramic Raschig ring) serve BilletSchultes, in the rate-based segments.
 
 | Name |
 |---|
 | `MontzB1-250` |
+| `PallRing-metal-25` |
+| `PallRing-metal-50` |
+| `PallRing-plastic-25` |
+| `PallRing-plastic-50` |
+| `Raschig-ceramic-25` |
 | `SulzerBX` |
 ## Adsorbents and resins
 

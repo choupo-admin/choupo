@@ -611,6 +611,68 @@ void announceUnconvergedVapour(const std::string& unit)
         " of '" + unit + "'; its K-values are the last iterate's.");
 }
 
+//  THE TWO KEY PURITIES ARE PUBLISHED FOR THE KEYS, NEVER FOR A POSITION (C504).
+//  `x_D_LK` / `x_B_HK` used to read component 0 of the distillate and the LAST
+//  component of the bottoms: right only for a binary written light to heavy.
+//  Reversing `components` left every physical result equal to 4e-9 and moved
+//  x_B_HK from 0.884 to 0.095 (found by the component-order proof, C492 T2).
+//    1. `lightKey` + `heavyKey` in `operation {}` (the grammar the shortcut
+//       column and the tray-efficiency block already use): published for them.
+//    2. A binary with no declaration: the light component is the one with the
+//       larger K, summed as ln(K_a/K_b) over ALL stages (an azeotrope inside
+//       the column makes K cross 1 at one stage, the sum judges the column);
+//       independent of list order.  A tie falls back to list order, announced.
+//    3. Three or more components, no declaration: the two names are NOT
+//       published (they would mean nothing); `x_D_<name>` and `x_B_<name>` are,
+//       for every component, and one line says how to declare the keys.
+template <class Kpis>
+void publishKeyKpis(Kpis& kpis, const ThermoPackage& thermo, const DictPtr& operDict,
+                    const std::string& unit, const sVector& xD, const sVector& xB,
+                    const std::vector<sVector>& Kst)
+{
+    const std::size_t n = xD.size();
+    if (n == 1) { kpis["x_D_LK"] = xD[0]; kpis["x_B_HK"] = 0.0; return; }
+    const bool hasL = operDict->found("lightKey"), hasH = operDict->found("heavyKey");
+    if (hasL != hasH)
+        throw std::runtime_error("DistillationColumn '" + unit + "': declare BOTH"
+            " `lightKey` and `heavyKey` in operation {} (got only one).");
+    if (hasL)
+    {
+        const std::size_t lk = thermo.indexOf(operDict->lookupWord("lightKey"));
+        const std::size_t hk = thermo.indexOf(operDict->lookupWord("heavyKey"));
+        if (lk == hk)
+            throw std::runtime_error("DistillationColumn '" + unit
+                + "': `lightKey` and `heavyKey` name the same component.");
+        kpis["x_D_LK"] = xD[lk];
+        kpis["x_B_HK"] = xB[hk];
+        return;
+    }
+    if (n == 2)
+    {
+        scalar sum = 0.0;
+        for (const auto& K : Kst)
+            if (K.size() == 2 && K[0] > 0.0 && K[1] > 0.0) sum += std::log(K[0] / K[1]);
+        std::size_t lk = 0;
+        if (sum < 0.0) lk = 1;
+        else if (sum == 0.0)
+            std::cout << "  [column] " << unit << ": the two components have the same"
+                         " K on every stage; light key taken as the first in the list."
+                         "  Declare `lightKey` and `heavyKey` in operation {}.\n";
+        kpis["x_D_LK"] = xD[lk];
+        kpis["x_B_HK"] = xB[1 - lk];
+        return;
+    }
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        kpis["x_D_" + thermo.comp(i).name()] = xD[i];
+        kpis["x_B_" + thermo.comp(i).name()] = xB[i];
+    }
+    std::cout << "  [column] " << unit << ": " << n << " components and no keys declared:"
+                 " x_D_LK / x_B_HK are not published; x_D_<component> and x_B_<component>"
+                 " are.  Declare `lightKey <name>; heavyKey <name>;` in operation {} to"
+                 " publish them.\n";
+}
+
 //  THE DISTILLATE LEAVES AT ITS OWN BUBBLE POINT, not at the top tray's
 //  temperature -- and this lives in ONE function because the column has TWO
 //  solver paths (Wang-Henke and the simultaneous MESH) that each used to build
@@ -1997,8 +2059,15 @@ int DistillationColumn::solve(const DictPtr& dict,
     kpis_["L_strip"]    = Lp;
     // Light-key purity in distillate, heavy-key purity in bottoms
     // (component 0 = light by convention for binary feed)
-    kpis_["x_D_LK"]     = xD[0];
-    kpis_["x_B_HK"]     = (n > 1) ? x[N-1][n - 1] : 0.0;
+    {
+        std::vector<sVector> Kk(N);
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            bool okk = true;
+            Kk[j] = stageVapourK(thermo, T[j], P, x[j], nullptr, &okk);
+        }
+        publishKeyKpis(kpis_, thermo, operDict, dict->name(), xD, x[N-1], Kk);
+    }
     kpis_["iterations"] = static_cast<scalar>(outerIt);
     //  Published whenever the trays are REAL, on either side of 1 -- the guard
     //  used to read `< 1.0`, so a column carrying a measured E_MV above unity
@@ -2194,9 +2263,14 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     //  real things: the geometry is validated BEFORE the search spends dozens
     //  of full MESH solves on a column that cannot run, and the announcement
     //  says which column is being searched.
+    //  The keys the inner solves publish their KPIs for (C504): read on the
+    //  case's own dict as well, so a declared pair is not "dead" (the inner
+    //  solves run on a deepCopy) and a misspelt name is refused up front.
+    for (const char* kw : {"lightKey", "heavyKey"})
+        if (operDict->found(kw)) (void)thermo.indexOf(operDict->lookupWord(kw));
     const int nSt = static_cast<int>(operDict->lookupScalar("nStages"));
     const int nFd = static_cast<int>(operDict->lookupScalar("feedStage"));
-    const scalar RR = operDict->lookupScalar("refluxRatio");
+    const scalar RR =operDict->lookupScalar("refluxRatio");
     const scalar Pc = operDict->lookupScalarOrDefault("P", 0.0, Dims::pressure);
     //  The condenser type too: read (and refused, if misspelled) here on the
     //  case's own dict, for the same reason as the geometry above.
@@ -4528,8 +4602,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     kpis_["B"]          = Bf;
     kpis_["T_top"]      = T[0];
     kpis_["T_bottom"]   = T[N-1];
-    kpis_["x_D_LK"]     = xD[0];
-    kpis_["x_B_HK"]     = (n > 1) ? x[N-1][n-1] : 0.0;
+    publishKeyKpis(kpis_, thermo, operDict, dict->name(), xD, x[N-1], Kfin);
     kpis_["iterations"] = static_cast<scalar>(res.iterations);
 
     // Reactive distillation: total extent + conversion of the limiting reactant.
@@ -5980,7 +6053,8 @@ int DistillationColumn::solvePackedReadingRecord(const DictPtr& dict,
         auto pk = resolved->subDict("operation")->subDict("packing");
         kpis_["packing_specificArea_m2_m3"]  = pk->lookupScalar("specificArea");
         kpis_["packing_voidFraction"]        = pk->lookupScalar("voidFraction");
-        kpis_["packing_corrugationAngle_deg"] = packingRecord::angleDegrees(*pk);
+        if (pk->found("corrugationAngle"))      // a Billet-Schultes bed has none
+            kpis_["packing_corrugationAngle_deg"] = packingRecord::angleDegrees(*pk);
         packingRecord::transferReads(*resolved, *dict);
     }
     return rc;

@@ -9,7 +9,7 @@
 name           S;
 formula        S;
 CAS            n/a;
-MW             32.065;       // kg/kmol, appendix D record line
+MW             32.06;       // kg/kmol, = sum of the engine's atomic weights (C517; was 32.065)
 role           gasOnly;       // free atom
 tags           ( gasPhase thermoTable );
 nasaEntry      "S";

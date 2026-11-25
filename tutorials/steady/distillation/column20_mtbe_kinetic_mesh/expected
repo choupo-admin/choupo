@@ -23,8 +23,8 @@ kpi     mtbeColumn             nFeeds           1                1e-4
 kpi     mtbeColumn             nSideDraws       0                1e-4
 kpi     mtbeColumn             nStages          15               1e-4
 kpi     mtbeColumn             reactionExtent   0.00469480365769 1e-4
-kpi     mtbeColumn             x_B_HK           0.00286420465089 1e-4
-kpi     mtbeColumn             x_D_LK           0.0622786739859  1e-4
+kpi     mtbeColumn             x_B_HK           0.0704158938837  1e-4
+kpi     mtbeColumn             x_D_LK           0.373781938417   1e-4
 boundary global                 H_feeds_kW       -30983.5597938   1e-4
 boundary global                 Q_boundary_kW    2758.38000011    1e-4
 boundary global                 H_products_kW    -28225.1797937   1e-4

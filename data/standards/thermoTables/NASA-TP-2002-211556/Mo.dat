@@ -9,7 +9,7 @@
 name           Mo;
 formula        Mo;
 CAS            n/a;
-MW             95.94;       // kg/kmol, appendix D record line
+MW             95.95;       // kg/kmol, = sum of the engine's atomic weights (C517; was 95.94)
 role           gasData;       // free metal atom: a liquid or solid metal exists, no liquid model here
 tags           ( gasPhase thermoTable );
 nasaEntry      "Mo";

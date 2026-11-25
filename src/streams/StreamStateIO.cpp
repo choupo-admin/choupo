@@ -446,6 +446,16 @@ void writeStreamState(const ProcessStream&  s,
             out << "phase           gas;\n";       // sub-critical vapour: needs the pin
         // else permanent gas: the Tc screen recovers vf=1, write no phase field
     }
+    else if (s.phasePinned)
+    {
+        //  A DECLARED LIQUID IS WRITTEN BACK (C516).  "Liquid is the resolver
+        //  default: nothing" holds for an UNPINNED stream; a stream that carried
+        //  `phase liquid;` is a declaration the engine prices as that phase
+        //  (R-E2), and a converged/ copy without it restarts as an unpinned
+        //  stream that re-flashes to its own equilibrium: stripper01's feed
+        //  went from vf 0 to 0.0173 and the bottoms from 369.97 to 369.26 K.
+        out << "phase           liquid;\n";
+    }
     // Utility category (a stream ATTRIBUTE, not a state variable): marks this as
     // a utility stream (steam / hot-oil / cooling water), so the energy balance
     // and utility reports treat it as a utility loop, not a process boundary.

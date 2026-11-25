@@ -5699,6 +5699,9 @@ accepts today, and that is a policy call.
 > temos muito tempo até lá!!!").  AGREED: my reason was the demonstration's numbers, and it does not cover work
 > that cannot move them.  What leaves column14, column19, column20 and the PEQ plant unmoved goes now; what moves
 > them goes after its moved rows are listed and seen.  C501, C506, C511 to the cloud; C503, C507, C510, C513 here.
+> FIRST SLICE LANDED 2026-11-25: Billet-Schultes (PackingBS), five records, ratebased05; law equal to a second
+> transcription to 7e-16; no measured set in hand.  OPEN: Onda + Bravo-Fair as the cross-check, the 0.03 N/m floor
+> on surface tension (as printed on p. 500, it binds on every organic liquid; announced), C518 the packing pin.
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
@@ -5706,6 +5709,14 @@ accepts today, and that is a policy call.
 > `converged/` drops the feed's declared phase (stripper01/02) and the engine refuses the speciation block it
 > wrote (marcilla01/02).  C517: claus01 and ammonia01 close in atoms; the few 1e-5 of mass is the record's MW
 > against its formula (S8 256.48 against 256.52): a gate at 1e-4 and the records outside it corrected.
+> LANDED 2026-11-25 (batch 1125b, full sweep alone 03:40-04:36: every case passed, 2031 PASS / 6 FAIL, all six of
+> prose and counts, fixed and re-run), with C500, C504 and C513's first slice.  MOVED GOLDENS: column keys (x_D_LK,
+> x_B_HK: the declared pair; 3+ components without keys publish x_D_<name>, x_B_<name>); membranes rename
+> c_ret_elem to c_ret_<solute>_elem, same values; vlle03, vlle05, decanter01 move up to 3e-4 because the
+> three-phase flash now reaches its minimum (it stopped at tolF 1e-7 and left two symmetric liquids unequal).  C517:
+> MW of 47 records to the engine's atomic weights (S 32.06 against the 32.065 they carried).  LEFT: PhaseChanger's
+> latent split still uses the dominant component's pure Tsat; totalReflux01's alpha_mean takes component 0; batch
+> electrodialysis still names the first cation.
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão

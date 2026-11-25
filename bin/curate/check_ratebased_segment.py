@@ -270,7 +270,7 @@ def main():
                                      "condenser      { type total; }\n            nStages        10;"), "slice B2"),
             ("a packing with no correlation", lambda c: edit(c, "system/flowsheetDict",
                                                              "model             RochaBravoFair;",
-                                                             "model             BilletSchultes;"),
+                                                             "model             NoSuchLaw;"),   # BilletSchultes became real (C513)
              "no mass-transfer correlation"),
             ("a zero component (RB-01)", lambda c: edit(c, "system/flowsheetDict",
                                                         "pXylene    0.2;", "pXylene    0.0;"),

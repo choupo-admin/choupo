@@ -9,7 +9,7 @@
 name           Ge2;
 formula        Ge2;
 CAS            n/a;
-MW             145.28;       // kg/kmol, appendix D record line
+MW             145.26;       // kg/kmol, = sum of the engine's atomic weights (C517; was 145.28)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "Ge2";

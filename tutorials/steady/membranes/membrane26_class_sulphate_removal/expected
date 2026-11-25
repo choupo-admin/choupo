@@ -29,9 +29,9 @@ kpi     NF                     Re_in_elem3      181.031769697    1e-4
 kpi     NF                     Re_inlet         234.302966901    1e-4
 kpi     NF                     Re_max           234.302966901    1e-4
 kpi     NF                     Re_min           158.675158581    1e-4
-kpi     NF                     c_ret_elem1      0.0535873640067  1e-4
-kpi     NF                     c_ret_elem2      0.0559196886262  1e-4
-kpi     NF                     c_ret_elem3      0.0583866287645  1e-4
+kpi     NF                     c_ret_NaCl_elem1      0.0535873640067  1e-4
+kpi     NF                     c_ret_NaCl_elem2      0.0559196886262  1e-4
+kpi     NF                     c_ret_NaCl_elem3      0.0583866287645  1e-4
 kpi     NF                     dP_elem1         23316.9378889    1e-4
 kpi     NF                     dP_elem2         18724.8126736    1e-4
 kpi     NF                     dP_elem3         14984.816313     1e-4

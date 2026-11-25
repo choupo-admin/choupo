@@ -26,6 +26,9 @@ answer at exit 0 on the day a case does (DEV.md §5 A7):
        std::pow, which is 0 at 0 for a positive exponent on both legs.
 
 WHAT IT CHECKS
+  A9  (C504) reversing `components` changes no published KPI (but the
+      iteration count): a binary and a three-component column.  The defect:
+      x_D_LK / x_B_HK were the FIRST and the LAST name of the list.
   A1  a ONE-STAGE absorber is a flash of the combined feeds.  The probe is a
       copy of absorber01_NH3_water with `stages 1`, the heat of absorption
       zeroed (so the stage sits at the feed temperature and K is the unit's
@@ -221,6 +224,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "choupoSolve"
 sys.path.insert(0, str(ROOT / "bin/curate"))
+import gatekit  # noqa: E402  (probe copies that keep the case's property manifest)
 import suite_cache  # noqa: E402  (the suite's single-pass output cache)
 
 ABSORBER = ROOT / "tutorials/steady/absorption/absorber01_NH3_water"
@@ -862,9 +866,9 @@ def _compare_tiny(label, model, unit, ins, outs, nu, js_f, js_t,
     factor = TINY if factor is None else factor
     kt, kf = _kpis(js_t, unit), _kpis(js_f, unit)
     compared = 0
-    for key in SCALE_KPIS:
-        if key not in kf:
-            continue
+    #  C504: a 3+-component column with no declared keys publishes x_D_<name> /
+    #  x_B_<name> instead of x_D_LK / x_B_HK; the same intensive compositions.
+    for key in [k for k in kf if k in SCALE_KPIS or k.startswith(("x_D_", "x_B_"))]:
         compared += 1
         a, b = kt.get(key), kf[key]
         if a is None or abs(a - b) > SCALE_TOL * max(abs(b), 1e-30):
@@ -990,6 +994,143 @@ def scale_invariance_arm(runs):
     return seen
 
 
+#  A9 -- C504: a published number must not depend on the ORDER of `components`.
+#  `x_D_LK` / `x_B_HK` were component 0 of the distillate and the LAST of the
+#  bottoms, so reversing the list of acetone06 left every physical result equal
+#  and moved x_B_HK from 0.884 to 0.095.  Probes: one binary (no keys declared:
+#  the engine judges the light one by K) and one three-component column (keys
+#  declared in the case).  Every KPI both runs publish must agree to ORDER_TOL.
+ORDER_PROBES = ("tutorials/steady/distillation/column01_benzene_toluene",
+                "tutorials/steady/distillation/acetone06_luyben_column_C1")
+ORDER_TOL = 1.0e-7
+
+
+def component_order_arm():
+    seen = []
+    for rel in ORDER_PROBES:
+        src = ROOT / rel
+        outs = {}
+        with tempfile.TemporaryDirectory() as td:
+            for tag in ("asShipped", "reversed"):
+                probe = Path(td) / tag
+                copy_case(src, probe)
+                if tag == "reversed":
+                    tp = probe / "constant/thermoPhysPropDict"
+                    m = re.search(r"(?m)^(\s*components\s*)\(([^)]*)\)", tp.read_text())
+                    if not m or len(m.group(2).split()) < 2:
+                        failures.append(f"A9: {rel} carries no `components ( ... );` of"
+                                        " two or more names to reverse")
+                        break
+                    names = m.group(2).split()
+                    tp.write_text(tp.read_text()[:m.start()] + m.group(1) + "( "
+                                  + "  ".join(reversed(names)) + " )"
+                                  + tp.read_text()[m.end():])
+                rc, out = run(probe)
+                if rc != 0:
+                    failures.append(f"A9: {rel} ({tag}) did not converge (exit {rc})")
+                    break
+                outs[tag] = result_json(out)
+        if len(outs) != 2:
+            continue
+        worst, n = 0.0, 0
+        for unit, kp in outs["asShipped"].get("kpis", {}).items():
+            kr = outs["reversed"].get("kpis", {}).get(unit, {})
+            for k, a in kp.items():
+                #  `iterations` counts the solver's steps, which the order of
+                #  the unknowns legitimately changes; it is no physical result.
+                if k == "iterations" or k not in kr \
+                        or not isinstance(a, (int, float)):
+                    continue
+                b = kr[k]
+                n += 1
+                err = abs(a - b) / max(abs(a), abs(b), 1.0e-9)
+                worst = max(worst, err)
+                if err > ORDER_TOL and abs(a - b) > 1.0e-9:
+                    failures.append(f"A9: {rel} {unit}.{k}: {a!r} as shipped vs"
+                                    f" {b!r} with `components` reversed -- a"
+                                    " published number depends on list order")
+        keys = [k for u in outs["asShipped"].get("kpis", {}).values() for k in u]
+        if "x_D_LK" not in keys or "x_B_HK" not in keys:
+            failures.append(f"A9: {rel} no longer publishes x_D_LK / x_B_HK -- the"
+                            " probe's subject is gone")
+        seen.append((Path(rel).name, n, worst))
+    return seen
+
+
+#  A10 (C514, 2026-11-25): THE ORDER OF `components` IS NOT PHYSICS.  Four published
+#  numbers moved when the list was reversed and nothing else changed (the proofs
+#  of C492, T2): a membrane's `c_ret_elem<n>` was the FIRST solute's, an
+#  electrodialysis stack's `demin_ratio` was the first cation's, a phaseChanger's
+#  latent/sensible split took the first of two equally abundant components'
+#  saturation temperature, and a three-phase flash's published split depended on
+#  which way its simplexes were packed (4e-3).  Each probe is the shipped case
+#  with the list reversed; every KPI of every unit must equal the original's.
+#  The three-phase flash stops at a Gibbs energy within 1e-14, so 1e-6 holds it.
+ORDER_CASES = (
+    ("tutorials/steady/membranes/membrane07_scaling_si", 1.0e-6),
+    ("tutorials/steady/electrodialysis/ed09_wine_multiionic", 1.0e-6),
+    ("tutorials/steady/heat/phasechange01_partial_condenser", 1.0e-6),
+    ("tutorials/steady/flash/vlle03_audit_artificial", 1.0e-6),
+)
+
+
+def _reverse_components(path: Path) -> bool:
+    txt = path.read_text()
+    m = re.search(r"^components\s*\(([^)]*)\)\s*;", txt, re.M)
+    if not m:
+        return False
+    names = m.group(1).split()
+    path.write_text(txt[:m.start()] + "components ( "
+                    + " ".join(reversed(names)) + " );" + txt[m.end():])
+    return True
+
+
+def order_arm():
+    seen = []
+    for rel, tol in ORDER_CASES:
+        src = ROOT / rel
+        with gatekit.probe_copy(src) as a, gatekit.probe_copy(src) as b:
+            if not _reverse_components(b / "constant/thermoPhysPropDict"):
+                failures.append(f"A10: {src.name} has no `components ( ... );`"
+                                " line to reverse -- the arm tests nothing")
+                continue
+            ra, oa = gatekit.run(SOLVE, a)
+            rb, ob = gatekit.run(SOLVE, b)
+            if ra != 0 or rb != 0:
+                failures.append(f"A10: {src.name} exits {ra} and {rb} (original,"
+                                " reversed list): a component order that"
+                                " changes whether the case runs")
+                continue
+            ka = result_json(oa).get("kpis", {})
+            kb = result_json(ob).get("kpis", {})
+            worst, where, n = 0.0, "", 0
+            for unit, kv in ka.items():
+                for key, va in kv.items():
+                    if not isinstance(va, (int, float)):
+                        continue
+                    vb = kb.get(unit, {}).get(key)
+                    if not isinstance(vb, (int, float)):
+                        failures.append(f"A10: {src.name} {unit}.{key} is"
+                                        " published with the original order"
+                                        " and not with the reversed one")
+                        continue
+                    n += 1
+                    d = abs(va - vb) / max(abs(va), abs(vb), 1e-30)
+                    if abs(va - vb) < 1e-12:
+                        d = 0.0
+                    if d > worst:
+                        worst, where = d, f"{unit}.{key} {va:.9g} vs {vb:.9g}"
+            if n == 0:
+                failures.append(f"A10: {src.name} published no KPI to compare")
+            elif worst > tol:
+                failures.append(f"A10: {src.name}: reversing `components` moves"
+                                f" {where} by {worst:.2e} (tolerance {tol:g})")
+            else:
+                seen.append(f"{src.name} ({n} KPIs, worst {worst:.1e})")
+    return seen
+
+
+
 def main() -> int:
     if not SOLVE.exists():
         print("check_degenerate_limits: choupoSolve missing -- build first")
@@ -1003,6 +1144,8 @@ def main() -> int:
     conv = kinetic_closure_arm(rx[1]) if rx else None
     a7 = mesh_closure_arm()
     a8 = scale_invariance_arm(a7[0]) if a7 else []
+    a9 = component_order_arm()
+    a10 = order_arm()
 
     if failures:
         print("check_degenerate_limits: FAIL")
@@ -1033,14 +1176,18 @@ def main() -> int:
           " that a kinetic profile is RIGHT (nothing measured is reproduced),"
           " that a Wang-Henke stop is REACHED within maxOuterIter on a case"
           " the corpus does not ship, or a Newton trial crossing a zero"
-          " activity."
+          " activity.  With `components` REVERSED, %s publish every KPI"
+          " they share to %.0e (A9, C504: x_D_LK / x_B_HK are the keys', never"
+          " a position's); and %s give the same KPIs with `components` reversed (A10)."
           % (a1[0] * 3600, a1[1], a2[0] * 3600, a2[1], REL_TOL, CAT_MASS,
              rx[0], CAT_MASS, CAT_MASS_HIGH, conv[CAT_MASS],
              conv[CAT_MASS_HIGH], CLOSURE_TOL, a7[1], a7[2], CLOSURE_TOL,
              a7[3][0], a7[3][1], a7[3][2], a7[4]["cols"], a7[4]["cases"],
              CLOSURE_TOL, a7[4]["worst"][0], a7[4]["worst"][1],
              a7[4]["stage"][0], a7[4]["stage"][1], ", ".join(a8), TINY,
-             HUGE, SCALE_TOL))
+             HUGE, SCALE_TOL,
+             ", ".join("%s (%d KPIs, worst %.1e)" % t for t in a9), ORDER_TOL,
+             ", ".join(a10)))
     return 0
 
 

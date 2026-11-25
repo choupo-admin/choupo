@@ -37,9 +37,9 @@ kpi     Stage                  Re_in_elem3      148.949784975    1e-4
 kpi     Stage                  Re_inlet         212.139759778    1e-4
 kpi     Stage                  Re_max           212.139759778    1e-4
 kpi     Stage                  Re_min           123.667547441    1e-4
-kpi     Stage                  c_ret_elem1      0.0110457161175  1e-4
-kpi     Stage                  c_ret_elem2      0.0121185793956  1e-4
-kpi     Stage                  c_ret_elem3      0.0132336741633  1e-4
+kpi     Stage                  c_ret_NaCl_elem1      0.0110457161175  1e-4
+kpi     Stage                  c_ret_NaCl_elem2      0.0121185793956  1e-4
+kpi     Stage                  c_ret_NaCl_elem3      0.0132336741633  1e-4
 kpi     Stage                  dP_elem1         23831.6061342    1e-4
 kpi     Stage                  dP_elem2         17652.9192184    1e-4
 kpi     Stage                  dP_elem3         12956.9061985    1e-4

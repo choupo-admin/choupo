@@ -89,6 +89,14 @@ struct FlatUnit
     //  report, and inventing one for it would make every flat report differ
     //  from what it printed the day before.
     std::string              sector;
+
+    //  STREAMS THE UNIT PUBLISHES THAT ENTER THE PLANT (C500).  A subset of
+    //  `outs`, declared by the case (`supplies ( resinIn );`): matter a unit
+    //  computes and takes from outside the plant boundary -- the sodium a
+    //  softener's resin releases.  The reports read such a stream as a FEED
+    //  and as an input of this unit (reporting/Topology.H); everything else
+    //  keeps reading `outs` as written.
+    std::vector<std::string> supplies;
 };
 
 //  THE TOP-LEVEL SECTOR of a stamped chain -- its FIRST segment, empty when

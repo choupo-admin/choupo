@@ -9,7 +9,7 @@
 name           S5;
 formula        S5;
 CAS            n/a;
-MW             160.325;       // kg/kmol, appendix D record line
+MW             160.3;       // kg/kmol, = sum of the engine's atomic weights (C517; was 160.325)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "S5";

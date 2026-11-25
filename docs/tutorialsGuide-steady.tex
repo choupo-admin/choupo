@@ -677,7 +677,7 @@ Basis (per kg water): 55.5 water, 3.0 KCl (below the 5 C saturation \textasciiti
 \goldrow{kpi}{cryst1}{c\_sat}{0.0034013435}
 \goldrow{kpi}{cryst1}{cakeLiquidFlow}{2.54671494088e-05}
 \goldrow{kpi}{cryst1}{cakeMoisture}{0.1}
-\goldmore{70}
+\goldmore{76}
 \end{tutgolden}
 
 \clearpage
@@ -1198,7 +1198,7 @@ Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side dr
 \goldrow{kpi}{radfracLite}{feedStage}{5}
 \goldrow{kpi}{radfracLite}{nFeeds}{2}
 \goldrow{kpi}{radfracLite}{nSideDraws}{1}
-\goldmore{30}
+\goldmore{34}
 \end{tutgolden}
 
 \clearpage
@@ -1238,7 +1238,7 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \goldrow{kpi}{rdColumn}{feedStage}{20}
 \goldrow{kpi}{rdColumn}{nFeeds}{2}
 \goldrow{kpi}{rdColumn}{nSideDraws}{0}
-\goldmore{30}
+\goldmore{36}
 \end{tutgolden}
 
 \clearpage
@@ -1314,9 +1314,9 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column07}{nFeeds}{1}
 \goldrow{kpi}{column07}{nSideDraws}{0}
 \goldrow{kpi}{column07}{nStages}{20}
-\goldrow{kpi}{column07}{x\_B\_HK}{0.416665671398}
-\goldrow{kpi}{column07}{x\_D\_LK}{0.999871625084}
-\goldmore{23}
+\goldrow{kpi}{column07}{x\_B\_isopentane}{0.416635568207}
+\goldrow{kpi}{column07}{x\_B\_nButane}{0.166698760396}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -1353,7 +1353,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{radfrac}{T\_bottom}{450.046937595}
 \goldrow{kpi}{radfrac}{T\_top}{326.384554449}
 \goldrow{kpi}{radfrac}{feedStage}{10}
-\goldmore{32}
+\goldmore{38}
 \end{tutgolden}
 
 \clearpage
@@ -1626,7 +1626,7 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{0}
 \goldrow{kpi}{restage}{F\_in}{0.000555555555556}
-\goldmore{43}
+\goldmore{47}
 \end{tutgolden}
 
 \clearpage
@@ -2535,6 +2535,42 @@ THE SWEEP moves the boil-up F-factor exactly as packing04\_schulz\_delft\_0p02ba
 \end{tutgolden}
 
 \clearpage
+\tutentry{ratebased05\_billetSchultes\_pall25\_c6c7}{tutorials/steady/distillation/ratebased05\_billetSchultes\_pall25\_c6c7}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Rate-based packed bed at total reflux on a RANDOM packing: 25 mm metal Pall rings, cyclohexane / n-heptane at 1 atm, Billet-Schultes hydraulics and film coefficients; golden only, no measurement behind it}
+\begin{tutnarrative}
+THE FIRST RANDOM PACKING: a packed bed of 25 mm metal Pall rings at total reflux, solved as rate-based segments with the Billet \& Schultes (1999) law (DEV.md C513; Theory Guide sec:billetSchultes; design record docs/design/random-packings.md).
+
+WHAT THIS CASE IS. The cyclohexane / n-heptane pair of the Fractionation Research tests (the system Bravo \& Fair 1982 correlate), 1 atm at the top, a 0.5 m column with 3 m of packing, the boil-up declared as an F-factor. The packing is the catalogue record PallRing-metal-25 (Billet \& Schultes Table 2a: a 223.5 m2/m3, eps 0.954 and the six constants of the packing), read by `model BilletSchultes;`. The run prints the loading and flooding points, the holdup, the pressure drop, the interfacial area and the HETP.
+
+WHAT IT IS NOT. A VALIDATION. No measured HETP or pressure drop of a random packing is in the tree, and the six constants are the authors' own fit to their database, so this packing is in-sample for the law. The golden pins what the engine prints; it is not an `anchor`. The law itself is held to a hand point computed outside the engine by bin/curate/check\_billet\_schultes.py.
+
+INPUTS: column diameter and height, the top pressure and the F-factor are chosen for the case (not a published bed); the reboiler composition 50 / 50 mol \%. MEASURED: nothing. ESTIMATED: every transport property of the package (see constant/thermoPhysPropDict). FITTED: nothing here (the packing's constants are the paper's).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.465889690922}
+\goldrow{kpi}{column}{HETP\_halfSegments}{0.465759707829}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.505458837018}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-107.675064786}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{107.675064786}
+\goldrow{kpi}{column}{Q\_reboiler\_ownEnvelope\_kW}{107.675064786}
+\goldrow{kpi}{column}{TI\_minus\_TV\_maxAbs}{1.89504017926}
+\goldrow{kpi}{column}{TL\_minus\_TI\_maxAbs}{0.113853129756}
+\goldrow{kpi}{column}{T\_bottom}{340.020607299}
+\goldrow{kpi}{column}{T\_top}{332.389310353}
+\goldrow{kpi}{column}{V\_boilup}{0.00332327112161}
+\goldrow{kpi}{column}{V\_top\_over\_V\_bottom}{1.03416915699}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.347940824921}
+\goldrow{kpi}{column}{alpha\_mean}{1.83806261475}
+\goldmore{40}
+\end{tutgolden}
+
+\clearpage
 \tutentry{shortcut01\_benzene\_toluene}{tutorials/steady/distillation/shortcut01\_benzene\_toluene}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -2622,7 +2658,7 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{kpi}{tower}{nFeeds}{1}
 \goldrow{kpi}{tower}{nSideDraws}{0}
 \goldrow{kpi}{tower}{nStages}{8}
-\goldmore{20}
+\goldmore{24}
 \end{tutgolden}
 
 \clearpage
@@ -2670,7 +2706,7 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{kpi}{tower}{nFeeds}{1}
 \goldrow{kpi}{tower}{nSideDraws}{0}
 \goldrow{kpi}{tower}{nStages}{8}
-\goldmore{30}
+\goldmore{36}
 \end{tutgolden}
 
 \clearpage
@@ -6340,18 +6376,18 @@ Equimolar feed (1/3, 1/3, 1/3). This case is the litmus test for the VLLE solver
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{liquidA}{F}{0.011307571384}
+\goldrow{stream}{liquidA}{F}{0.0113076145125}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{liquidB}{F}{0.0113091924076}
-\goldrow{stream}{vapor}{F}{0.00516101398624}
-\goldrow{kpi}{decanter01}{F\_alpha}{0.011307571384}
-\goldrow{kpi}{decanter01}{F\_beta}{0.0113091924076}
+\goldrow{stream}{liquidB}{F}{0.0113111804692}
+\goldrow{stream}{vapor}{F}{0.00515898279611}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.0113076145125}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0113111804692}
 \goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
-\goldrow{kpi}{decanter01}{F\_vapor}{0.00516101398624}
+\goldrow{kpi}{decanter01}{F\_vapor}{0.00515898279611}
 \goldrow{kpi}{decanter01}{P}{100000}
 \goldrow{kpi}{decanter01}{T}{350}
-\goldrow{kpi}{decanter01}{V\_over\_F}{0.185796503505}
-\goldrow{kpi}{decanter01}{beta\_vapor}{0.185796503505}
+\goldrow{kpi}{decanter01}{V\_over\_F}{0.18572338066}
+\goldrow{kpi}{decanter01}{beta\_vapor}{0.18572338066}
 \goldrow{kpi}{decanter01}{phaseSet}{2}
 \goldrow{stream}{feed}{T}{350}
 \goldmore{11}
@@ -6435,17 +6471,17 @@ What to read: the energy balance by unit (both rows close) and the plant first l
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{feed}{T}{340}
 \goldrow{stream}{heated}{F}{0.0277777777778}
-\goldrow{stream}{heated}{T}{352.322796838}
-\goldrow{stream}{liquidA}{F}{0.011307571384}
+\goldrow{stream}{heated}{T}{352.322796834}
+\goldrow{stream}{liquidA}{F}{0.0113076145125}
 \goldrow{stream}{liquidA}{T}{350}
-\goldrow{stream}{liquidB}{F}{0.0113091924076}
+\goldrow{stream}{liquidB}{F}{0.0113111804692}
 \goldrow{stream}{liquidB}{T}{350}
-\goldrow{stream}{vapor}{F}{0.00516101398624}
+\goldrow{stream}{vapor}{F}{0.00515898279611}
 \goldrow{stream}{vapor}{T}{350}
-\goldrow{kpi}{decanter01}{F\_alpha}{0.011307571384}
-\goldrow{kpi}{decanter01}{F\_beta}{0.0113091924076}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.0113076145125}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0113111804692}
 \goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
-\goldrow{kpi}{decanter01}{F\_vapor}{0.00516101398624}
+\goldrow{kpi}{decanter01}{F\_vapor}{0.00515898279611}
 \goldmore{35}
 \end{tutgolden}
 
@@ -9659,13 +9695,13 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \begin{tutnarrative}
 a MULTI-ELEMENT TRAIN: 3 SW30HR spiral-wound elements in series, seawater RO (the same feed + per-element geometry as membrane04, which is the single element). `elements 3;` chains them: the retentate of element 1 is the feed of element 2, and so on; the permeate is collected over the whole train. Both the spacer k\_film and the spacer pressure drop (Schock-Miquel) are computed from the local hydraulics, so they fall element by element as the flow drops.
 
-The pedagogical point is the per-element DEGRADATION reported in the KPIs (recovery\_elemK, c\_ret\_elemK): element 1 sees fresh feed (high P, low c) and recovers the most; the last element sees concentrated, lower-pressure brine (P dropped by friction + the inter-element connector loss) and recovers far less. The train recovery is the cumulative sum --- higher than a single element, but with diminishing returns down the train.
+The pedagogical point is the per-element DEGRADATION reported in the KPIs (recovery\_elemK, c\_ret\_<solute>\_elemK): element 1 sees fresh feed (high P, low c) and recovers the most; the last element sees concentrated, lower-pressure brine (P dropped by friction + the inter-element connector loss) and recovers far less. The train recovery is the cumulative sum --- higher than a single element, but with diminishing returns down the train.
 
 Feed: 35 g/L NaCl seawater, z\_NaCl = 0.01040, F = 575 kmol/h (\textasciitilde{}10 m$^3$/h), 55 bar, 298.15 K --- the same feed as membrane01/04. Each of the 3 elements is 35 m$^2$ / 1 m, SW30HR, permeate at 1 bar, with a 0.2 bar inter-element connector loss.
 
 What this run produces (golden master; re-read 2026-11-15 after C402, when the feed density became the NaCl-water solution law's 1020 kg/m3 and the viscosity the ASSUMED seawater value 0.966 mPa s, which the CRC p. 14-12 only cross-checks): train water recovery 35.7 \% (3 elements, cumulative) observed NaCl rejection 99.69 \% train-average water flux 35.34 LMH (9.82e-6 m/s) total feed-side $\Delta$P \textasciitilde{}1.00 bar (Schock-Miquel friction + 2 connector losses)
 
-The per-element DEGRADATION (the teaching point) reads off the KPIs: recovery\_elem1 17.4 \% c\_ret\_elem1 0.697 (fresh feed) recovery\_elem2 28.7 \% c\_ret\_elem2 0.807 (cumulative) recovery\_elem3 35.7 \% c\_ret\_elem3 0.894 (cumulative) The retentate concentration climbs element to element while each successive element adds less recovery: a single SW30HR element at this feed recovers \textasciitilde{}17.4 \%, the second adds \textasciitilde{}11.3 \%, the third only \textasciitilde{}7 \% --- the diminishing return of stacking elements in series at fixed feed.
+The per-element DEGRADATION (the teaching point) reads off the KPIs: recovery\_elem1 17.4 \% c\_ret\_NaCl\_elem1 0.697 (fresh feed) recovery\_elem2 28.7 \% c\_ret\_NaCl\_elem2 0.807 (cumulative) recovery\_elem3 35.7 \% c\_ret\_NaCl\_elem3 0.894 (cumulative) The retentate concentration climbs element to element while each successive element adds less recovery: a single SW30HR element at this feed recovers \textasciitilde{}17.4 \%, the second adds \textasciitilde{}11.3 \%, the third only \textasciitilde{}7 \% --- the diminishing return of stacking elements in series at fixed feed.
 
 The material balance CLOSES, per solute, to round-off (the module refuses otherwise). Until 2026-09-29 it did not: the element balance lost 0.07 \% of the chlorine, because the axial march advanced the concentration rather than the solute flow -- see membrane02's element balance for the same defect, and DEV.md C27. The figures above are this run's, rounded (the header had drifted from its own golden before the repair: 35.3 \% against 36.2 \%).
 
@@ -9676,9 +9712,9 @@ The material balance CLOSES, per solute, to round-off (the module refuses otherw
 \goldrow{stream}{retentate}{F}{0.101361424157}
 \goldrow{kpi}{ROunit}{J\_w\_avg}{9.81587254791e-06}
 \goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.996882910332}
-\goldrow{kpi}{ROunit}{c\_ret\_elem1}{0.696906126375}
-\goldrow{kpi}{ROunit}{c\_ret\_elem2}{0.806974036201}
-\goldrow{kpi}{ROunit}{c\_ret\_elem3}{0.894147607637}
+\goldrow{kpi}{ROunit}{c\_ret\_NaCl\_elem1}{0.696906126375}
+\goldrow{kpi}{ROunit}{c\_ret\_NaCl\_elem2}{0.806974036201}
+\goldrow{kpi}{ROunit}{c\_ret\_NaCl\_elem3}{0.894147607637}
 \goldrow{kpi}{ROunit}{dP\_feed}{99527.5416912}
 \goldrow{kpi}{ROunit}{elements}{3}
 \goldrow{kpi}{ROunit}{recovery\_elem1}{0.174478446035}
@@ -9788,6 +9824,8 @@ Expected story (KPIs locked by the golden master; recovery 55 \%): calcite WALL 
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (2.9,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(softener.west)+(-1.05,0.00)$) -- ($(softener.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] (softener) -- (vessel) node[midway, above, font=\tiny] {softened};
+  \draw[->] ($(softener.east)+(0,-0.17)$) -- ($(softener.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {resinTaken};
+  \draw[->] ($(softener.east)+(0,0.17)$) -- ($(softener.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {resinReleased};
   \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
   \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
@@ -9803,6 +9841,8 @@ membrane07 the SAME brackish groundwater (\textasciitilde{}1500 mg/L TDS, Ca 84 
 membrane08 here a cation-exchange SOFTENER (`ionExchanger`, SAC resin in the Na form, Gaines-Thomas) sits UPSTREAM of the SAME vessel. Ca and Mg drop \textasciitilde{}99\% onto the resin (Na rises eq-for-eq -- the salt penalty), so the water entering the vessel is essentially hardness-free. With Ca gone the calcite IAP collapses and the per-module WALL SI\_calcite stays NEGATIVE through ALL 6 modules -- the scaling driver is removed at source.
 
 ZERO change to the membrane. The spiralWoundModule is byte-for-byte the membrane07 vessel (module Generic-8040; elements 6; the same scaling\{\} audit); it simply receives a BETTER feed. Removing the hardness, not chasing the supersaturation in the vessel, is the cure -- the engineering lesson.
+
+THE RESIN IS TWO NAMED STREAMS (C500): `resinTaken` carries the Ca, Mg, K the resin takes up and `resinReleased` the Na it gives back (declared `supplies`: computed by the softener, entering the plant), equal in equivalents, so the plant closes mass and every element at 100.000 \%.
 
 HONESTY (printed, non-suppressible): the softener returns the LIMITING (fully-equilibrated) effluent -- the best a fresh / fully-loaded contactor does per pass, NOT a bed in service (breakthrough / regeneration are TRANSIENT and not modelled). See the banner on every run.
 

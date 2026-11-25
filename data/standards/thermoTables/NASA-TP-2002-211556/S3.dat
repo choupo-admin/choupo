@@ -9,7 +9,7 @@
 name           S3;
 formula        S3;
 CAS            n/a;
-MW             96.195;       // kg/kmol, appendix D record line
+MW             96.18;       // kg/kmol, = sum of the engine's atomic weights (C517; was 96.195)
 role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "S3";

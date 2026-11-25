@@ -17,8 +17,8 @@ kpi     splitter               V_rect           0.589523689828   1e-4
 kpi     splitter               V_strip          0.575191109688   1e-4
 kpi     splitter               feedStage        37               1e-4
 kpi     splitter               nStages          75               1e-4
-kpi     splitter               x_B_HK           0.00116916875087 1e-4
-kpi     splitter               x_D_LK           0.0627714459642  1e-4
+kpi     splitter               x_B_HK           0.982193108639   1e-4
+kpi     splitter               x_D_LK           0.923673874972   1e-4
 utility splitter               heating.steamLP.duty_kW 9756.2677712     1e-4
 utility splitter               heating.steamLP.T 335.080771465    1e-4
 utility splitter               heating.steamLP.kg_s 4.46306851381    1e-4

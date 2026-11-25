@@ -172,6 +172,7 @@ PRE  | PAR    | bin/curate/check_unit_duty_allocation.py           | traced: wri
 PRE  | ISO    | bin/curate/check_cp_range_announced.py             | ISO (private slot tree; measured: writes tutorials/steady/distillation/column01_benzene_toluene/converged (+41 more))
 PRE  | PAR    | bin/curate/check_record_self_consistency.py        | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_tb_antoine.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_mw_formula.py                     | reads tracked data/standards only; writes nothing; no make, no node, no pool
 PRE  | PAR    | bin/curate/check_refusal_probes.py                 | merged (DEV.md 4c C420) from pid_refusals, pump_liquid_inlet, shortcut_column_refusals, membrane_feed_scope, restricted_network, solverdict_lint; every probe runs in a private gatekit.probe_copy under /tmp: writes nothing in the tree (checked: no file in the tree newer than the run)
 PRE  | ISO    | bin/curate/check_costing_refusals.py               | ISO (private slot tree; measured: writes reports/economics/cashFlow.csv (+1 more))
 PRE  | PAR    | bin/curate/check_species_citation.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

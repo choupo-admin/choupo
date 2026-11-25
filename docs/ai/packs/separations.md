@@ -78,7 +78,7 @@ Models: `WangHenke` = bubble-point sweep, cheap per pass, hundreds of passes (33
 
 DOF: feed, P, nStages, feedStage fixed; `refluxRatio` + (`distillateRate` or `distillateRecovery`) = exactly specified. Both `distillateRate` and `distillateRecovery` → refused. `distillateRecovery` (single feed only) is the fraction of that component's feed flow reaching the distillate; the engine searches the rate. Use it inside recycles, where the feed moves.
 
-Published (KPIs, kW): `Q_condenser_kW` (negative), `Q_reboiler_kW`, `D`, `B`, `T_top`, `T_bottom`, `L_rect`, `V_rect`, `L_strip`, `V_strip`, `x_D_LK`, `x_B_HK`, `iterations`, plus `profile` (T and x,y per stage). The reboiler duty is the remainder of the column's energy balance (not an independent check) — judge the condenser duty against `(R+1)·D·λ`.
+Published (KPIs, kW): `Q_condenser_kW` (negative), `Q_reboiler_kW`, `D`, `B`, `T_top`, `T_bottom`, `L_rect`, `V_rect`, `L_strip`, `V_strip`, `x_D_LK`, `x_B_HK` (purities of the KEYS: declare `lightKey <name>; heavyKey <name>;` in `operation`; a binary without them gets the component with the larger K; THREE OR MORE components without them publish `x_D_<component>` and `x_B_<component>` instead, never the two LK/HK names), `iterations`, plus `profile` (T and x,y per stage). The reboiler duty is the remainder of the column's energy balance (not an independent check) — judge the condenser duty against `(R+1)·D·λ`.
 
 Feed state: a stream is read for what it means (subcooled liquid q>1, two-phase q = 1−vf, vapour q<0); announced as `[column] … CMO q = …`. Never also write `feedQuality`; if you do and it disagrees with the stream it is refused.
 
@@ -156,7 +156,7 @@ Decanter (two liquids, no vapour): needs a `gammaGamma` package as in §5 (or a 
 6. FUG → rigorous: take `nStages = ceil(N_theoretical)`, `feedStage = round(feed_stage)`, `refluxRatio = R`, `distillateRate = recoveryLK·F·z_LK + recoveryHK·F·z_HK`. The rigorous purity differs slightly (FUG is approximate); iterate on `refluxRatio` or `nStages` until the specification is met.
 7. Sanity: `Q_condenser ≈ (R+1)·D·λ`; distillate T ≈ pure-LK boiling point at P; bottoms T ≈ HK's. Check `massBalance` closes (it does; the energy plug in the reboiler is not a check).
 8. Real trays: ideal stages / overall efficiency (50–80 %); or declare `murphreeEfficiency` (WangHenke) and `nStages` counts real trays.
-9. To predict efficiency, pressure drop and flooding from the internals of a test column (binary, total reflux): `model totalReflux;` with `efficiency { model AIChE|ChanFair|SyedaChuang; }` on trays or `packing { model RochaBravoFair|Delft; }` for a packed bed -- `docs/ai/unit-ops.md`, witnesses `trayEfficiency01_yanagi14`, `packing03_schulz_delft_0p10bar`.
+9. To predict efficiency, pressure drop and flooding from the internals of a test column (binary, total reflux): `model totalReflux;` with `efficiency { model AIChE|ChanFair|SyedaChuang; }` on trays or `packing { model RochaBravoFair|Delft; }` for a packed bed (a RANDOM packing: `model rateBased;` with `packing { record PallRing-metal-25; model BilletSchultes; }`) -- `docs/ai/unit-ops.md`, witnesses `trayEfficiency01_yanagi14`, `packing03_schulz_delft_0p10bar`, `ratebased05_billetSchultes_pall25_c6c7`.
 
 ## 8. Example: benzene/toluene, shortcut then rigorous
 

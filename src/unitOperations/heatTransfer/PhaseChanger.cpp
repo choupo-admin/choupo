@@ -83,6 +83,27 @@ namespace {
 //  (N2 at 1 bar: 77 K) instead of a "no dome" that is false.  For Tc >= 375 K
 //  the bracket is the old 150 K and the bisection is the old one, bit for bit.
 //  The caller learns WHY there is no value (`DomeWhy`), so its sentence is true.
+//  THE DOMINANT COMPONENT, ORDER-FREE (C514).  The largest mole fraction;
+//  components within 1e-9 (relative) of it are TIED and the tie goes to the
+//  lowest species NAME, never to the list position.  It was `z[i] > z[dom]`
+//  from index 0, so an equimolar benzene/toluene feed took whichever was
+//  listed first: Tsat 352.8 K or 383.3 K, and the published latent/sensible
+//  split moved with the list (phasechange01: Q_latent -556.4 against -541.7
+//  kW, total Q equal to 1e-8).
+std::size_t dominantIndex(const ThermoPackage& thermo, const sVector& z)
+{
+    std::size_t dom = 0;
+    for (std::size_t i = 1; i < thermo.n(); ++i)
+    {
+        const scalar tol = 1.0e-9 * std::max(z[dom], z[i]);
+        if (z[i] > z[dom] + tol
+            || (std::abs(z[i] - z[dom]) <= tol
+                && thermo.comp(i).name() < thermo.comp(dom).name()))
+            dom = i;
+    }
+    return dom;
+}
+
 enum class DomeWhy { Dome, AboveCritical, BelowBracket };
 
 std::optional<scalar> saturationT(const ThermoPackage& thermo, scalar P_Pa,
@@ -90,9 +111,7 @@ std::optional<scalar> saturationT(const ThermoPackage& thermo, scalar P_Pa,
 {
     if (why) *why = DomeWhy::Dome;
     // Dominant component.
-    std::size_t dom = 0;
-    for (std::size_t i = 1; i < thermo.n(); ++i)
-        if (z[i] > z[dom]) dom = i;
+    const std::size_t dom = dominantIndex(thermo, z);
 
     if (thermo.hasPureFluid(dom) && ThermoPackage::isEffectivelyPure(z, dom))
         return thermo.pureFluid(dom).T_sat(P_Pa);
@@ -137,9 +156,7 @@ std::optional<scalar> saturationT(const ThermoPackage& thermo, scalar P_Pa,
 std::string noDomeSentence(const ThermoPackage& thermo, const sVector& z,
                            scalar P_Pa)
 {
-    std::size_t dom = 0;
-    for (std::size_t i = 1; i < thermo.n(); ++i)
-        if (z[i] > z[dom]) dom = i;
+    const std::size_t dom = dominantIndex(thermo, z);
     DomeWhy why = DomeWhy::Dome;
     saturationT(thermo, P_Pa, z, &why);
     std::ostringstream m;
@@ -290,8 +307,7 @@ int PhaseChanger::solve(const DictPtr& dict,
     // coordinate (H spans [h_f, h_g] at constant T).  A multicomponent dome has
     // WIDTH in T (bubble..dew), so vf(T) is smooth there.  The two need
     // different solves for the duty and vapour-fraction targets.
-    std::size_t domIdx = 0;
-    for (std::size_t i = 1; i < n; ++i) if (z[i] > z[domIdx]) domIdx = i;
+    const std::size_t domIdx = dominantIndex(thermo, z);
     const bool pureDome = ThermoPackage::isEffectivelyPure(z, domIdx);
 
     // Temperature floor for the outer Newton.  A pure-fluid kernel (IF97) has a
@@ -1132,8 +1148,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     const scalar H_target  = H_in + Q_per_mol;
 
     // Dome-aware outlet (same logic as the duty spec mode).
-    std::size_t domIdx = 0;
-    for (std::size_t i = 1; i < n; ++i) if (z[i] > z[domIdx]) domIdx = i;
+    const std::size_t domIdx = dominantIndex(thermo, z);
     const bool pureDome = ThermoPackage::isEffectivelyPure(z, domIdx);
 
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;
@@ -1492,8 +1507,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     // refuse loudly if neither source is available.
     scalar cp_l = 0.0;
     {
-        std::size_t dom = 0;
-        for (std::size_t i = 1; i < n; ++i) if (z[i] > z[dom]) dom = i;
+        const std::size_t dom = dominantIndex(thermo, z);
         if (thermo.hasPureFluid(dom)
             && ThermoPackage::isEffectivelyPure(z, dom))
         {
@@ -1627,8 +1641,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     const scalar Q_per_mol = +Q_boil_W / F_mol_s;    // heat ADDED > 0
     const scalar H_target  = H_in + Q_per_mol;
 
-    std::size_t domIdx = 0;
-    for (std::size_t i = 1; i < n; ++i) if (z[i] > z[domIdx]) domIdx = i;
+    const std::size_t domIdx = dominantIndex(thermo, z);
     const bool pureDome = ThermoPackage::isEffectivelyPure(z, domIdx);
 
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;

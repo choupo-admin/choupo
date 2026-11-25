@@ -1551,7 +1551,8 @@ scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
     const scalar Q_feed = Q_b;          // for per-element recovery
     int   globalNode = 0;
     bool  dry = false;
-    std::vector<scalar> elemRecovery, elemRetConc;   // per-element diagnostics
+    std::vector<scalar> elemRecovery;                 // per-element diagnostics
+    std::vector<std::vector<scalar>> elemRetConc;     // [element][solute], kmol/m3
     //  C146: what each element of the vessel does -- its own flux, its own
     //  friction drop, the Reynolds number it is fed at, the feed it receives,
     //  and the polarisation modulus of each solute.
@@ -1617,7 +1618,7 @@ scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
         // Per-element diagnostics: cumulative recovery through element e+1,
         // and the retentate concentration leaving it (shows the buildup).
         elemRecovery.push_back((Q_feed > 0.0) ? Q_perm / Q_feed : 0.0);
-        elemRetConc.push_back(Ns > 0 ? c_b[0] : 0.0);   // first solute [kmol/m³]
+        elemRetConc.push_back(c_b);   // every solute [kmol/m³]; named by solute below, never by list position (C514)
         {
             const scalar Ae = A_membrane * elemFrac;
             elemJw.push_back(Ae > 0.0 ? (Q_perm - Qperm0) / Ae : 0.0);
@@ -2125,14 +2126,16 @@ scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
         {
             const std::string ee = std::to_string(e + 1);
             kpis_["recovery_elem" + ee] = elemRecovery[e];
-            kpis_["c_ret_elem"   + ee] = elemRetConc[e];
             kpis_["J_w_avg_elem" + ee] = elemJw[e];
             kpis_["dP_elem"      + ee] = elemDP[e];
             kpis_["feedFlow_elem" + ee] = elemFeed[e];
             if (readsDh) kpis_["Re_in_elem" + ee] = elemReIn[e];
             for (std::size_t s = 0; s < Ns; ++s)
-                kpis_["Gamma_" + thermo.comp(soluteIdx[s]).name() + "_elem" + ee]
-                    = elemGamma[e][s];
+            {
+                const std::string nm = thermo.comp(soluteIdx[s]).name();
+                kpis_["Gamma_" + nm + "_elem" + ee] = elemGamma[e][s];
+                kpis_["c_ret_" + nm + "_elem" + ee] = elemRetConc[e][s];
+            }
         }
     }
     for (std::size_t s = 0; s < Ns; ++s)

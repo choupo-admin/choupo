@@ -595,9 +595,27 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         bool      capBound   = false;
         scalar    removedRef = 0.0, refInflow = 0.0;
         scalar    eqCation   = 0.0;      // cation equivalents moved [mol/s]
-        SpeciesId refIon;                // the FIRST cation in component order
+        SpeciesId refIon;                // the DOMINANT cation of the diluate feed (C514)
         edCell::CounterIonSplit split;   // per channel row
     };
+    //  THE REFERENCE CATION (C514), one home: the cation with the largest
+    //  mole inflow in the diluate feed (ties: the lower species key).  It was
+    //  the FIRST cation in the component list, so listing the components in
+    //  another order changed `demin_ratio` and the cation `targetDemin` was
+    //  asked of (ed09: 0.224 against 0.700 with the list reversed).  The
+    //  choice reads the feed, never the list; the run names the ion.
+    std::size_t refCationK = chD.ion.size();
+    for (std::size_t k = 0; k < chD.ion.size(); ++k)
+    {
+        if (!(chD.z[k] > 0)) continue;
+        const scalar nk = diluateIonInflow(chD.compIdx[k]);
+        const scalar nb = (refCationK < chD.ion.size())
+                          ? diluateIonInflow(chD.compIdx[refCationK]) : -1.0;
+        if (nk > nb * (1.0 + 1e-12)
+            || (std::abs(nk - nb) <= 1e-12 * std::abs(nb)
+                && chD.ion[k].key < chD.ion[refCationK].key))
+            refCationK = k;
+    }
     auto faradaySplit = [&](scalar Icur) -> FaradaySplit
     {
         FaradaySplit s;
@@ -621,7 +639,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
             s.FzD[i] -= dn_kmol;
             s.FzC[i] += dn_kmol;
             if (chD.z[k] > 0) s.eqCation += dn * std::abs(chD.z[k]);
-            if (s.refIon.key.empty() && chD.z[k] > 0)
+            if (k == refCationK)
             { s.refIon = chD.ion[k]; s.removedRef = dn; s.refInflow = avail[k]; }
         }
         return s;
@@ -706,11 +724,10 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         if (target <= 0.0 || target >= 1.0)
             throw std::runtime_error("electrodialysisStack: targetDemin must be "
                 "in (0, 1); got " + std::to_string(target));
-        // Use the FIRST cation as the reference counter-ion for the demin target.
-        SpeciesId refIon = chD.ion.front();
-        std::size_t refK = 0;
-        for (std::size_t k = 0; k < chD.ion.size(); ++k)
-            if (chD.z[k] > 0) { refIon = chD.ion[k]; refK = k; break; }
+        // The reference counter-ion of the demin target: the dominant cation
+        // of the diluate feed (refCationK above), never the first listed.
+        std::size_t refK = (refCationK < chD.ion.size()) ? refCationK : 0;
+        SpeciesId refIon = chD.ion[refK];
         const scalar z_ref = static_cast<scalar>(electrolyte::ionCharge(refIon));
         const scalar n_in  = diluateIonInflow(chD.compIdx[refK]);   // mol/s
         // demin(I) = (xi I N)/(|z| F) / n_in - target = 0  (linear -> direct, but

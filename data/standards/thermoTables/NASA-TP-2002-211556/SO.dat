@@ -9,7 +9,7 @@
 name           SO;
 formula        SO;
 CAS            n/a;
-MW             48.0644;       // kg/kmol, appendix D record line
+MW             48.059;       // kg/kmol, = sum of the engine's atomic weights (C517; was 48.0644)
 role           gasOnly;       // listed (biradical or transient): sulfur monoxide, triplet ground state, a transient that disproportionates when condensed
 tags           ( gasPhase thermoTable );
 nasaEntry      "SO";

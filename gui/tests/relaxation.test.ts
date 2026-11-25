@@ -264,11 +264,11 @@ describe("step 8: inexact inner solves", () => {
 
   it("cites the engine at lines that say what the card claims", () => {
     const CLAIMS: Record<string, string> = {
-      "RateBasedSegment.cpp:653": "const scalar kInexactFactor = 1.0e-3;",
-      "RateBasedSegment.cpp:654": "const scalar kInexactCap    = 1.0e-6;",
-      "RateBasedSegment.cpp:728": "o.tolerance = std::min(kInexactCap, std::max(newtonTol, kInexactFactor * lastChange));",
-      "RateBasedSegment.cpp:729": "const bool fullTol = (o.tolerance <= newtonTol);",
-      "RateBasedSegment.cpp:780": "if (ch < 1.0e-10 && fullTol) break;",
+      "RateBasedSegment.cpp:701": "const scalar kInexactFactor = 1.0e-3;",
+      "RateBasedSegment.cpp:702": "const scalar kInexactCap    = 1.0e-6;",
+      "RateBasedSegment.cpp:776": "o.tolerance = std::min(kInexactCap, std::max(newtonTol, kInexactFactor * lastChange));",
+      "RateBasedSegment.cpp:777": "const bool fullTol = (o.tolerance <= newtonTol);",
+      "RateBasedSegment.cpp:828": "if (ch < 1.0e-10 && fullTol) break;",
       "NewtonND.cpp:163": "return std::sqrt(std::numeric_limits<scalar>::epsilon())",
       "NewtonND.cpp:769": "auto J = fdJacobian(F, x, Fx, rule, opts.parallel);",
       "Flowsheet.cpp:4129": "res = solver::newtonND(residual, x0, ndo);",

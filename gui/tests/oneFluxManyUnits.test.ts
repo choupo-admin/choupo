@@ -407,18 +407,18 @@ describe("one-flux-many-units: the lesson", () => {
       "PackingRBF.cpp:127": "r.kG = 0.054 * (s.DG / S)",
       "PackingRBF.cpp:129": "r.kL = 2.0 * std::sqrt(s.DL",
       "PackingRBF.cpp:133": "r.ae = beta * g.ap;",
-      "RateBasedSegment.cpp:469": "const scalar cG = rhoG / MV, cL = rhoL / ML;",
-      "RateBasedSegment.cpp:470": "c.betaV = cG * r.kG * r.ae * A_T * dz / Vref;",
-      "RateBasedSegment.cpp:471": "c.betaL = cL * r.kL * r.ae * A_T * dz / Vref;",
-      "RateBasedSegment.cpp:587": "R[r++] = yI[i] - K[i] * xI[i];",
-      "RateBasedSegment.cpp:605": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
-      "RateBasedSegment.cpp:606": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
-      "RateBasedSegment.cpp:599": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
-      "RateBasedSegment.cpp:691": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
-      "RateBasedSegment.cpp:473": "c.HOG = r.HG + st.lambda * r.HL;",
-      "RateBasedSegment.cpp:702": "const scalar wl = (ys - xm[lk]) / (1.0 / c0.betaV + m / c0.betaL);",
-      "RateBasedSegment.cpp:877": "const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;",
-      "RateBasedSegment.cpp:909": "profile_.columns[\"HOG\"].push_back(HOGk);",
+      "RateBasedSegment.cpp:517": "const scalar cG = rhoG / MV, cL = rhoL / ML;",
+      "RateBasedSegment.cpp:518": "c.betaV = cG * r.kG * r.ae * A_T * dz / Vref;",
+      "RateBasedSegment.cpp:519": "c.betaL = cL * r.kL * r.ae * A_T * dz / Vref;",
+      "RateBasedSegment.cpp:635": "R[r++] = yI[i] - K[i] * xI[i];",
+      "RateBasedSegment.cpp:653": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
+      "RateBasedSegment.cpp:654": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
+      "RateBasedSegment.cpp:647": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
+      "RateBasedSegment.cpp:739": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
+      "RateBasedSegment.cpp:521": "c.HOG = r.HG + st.lambda * r.HL;",
+      "RateBasedSegment.cpp:750": "const scalar wl = (ys - xm[lk]) / (1.0 / c0.betaV + m / c0.betaL);",
+      "RateBasedSegment.cpp:925": "const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;",
+      "RateBasedSegment.cpp:957": "profile_.columns[\"HOG\"].push_back(HOGk);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
       "ThermoPackage.cpp:1327": "K[i] = hl.H(T) / P;",
@@ -507,7 +507,7 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
 
   it("C449: step 4 does not claim the first guess is the only place the sum appears", () => {
     expect(body(4)).not.toContain("The one place the sum appears");
-    expect(body(4)).toContain("RateBasedSegment.cpp:877");
+    expect(body(4)).toContain("RateBasedSegment.cpp:925");
   });
 
   it("C449: water's vapour pressure is the Wagner/IAPWS form, never called Antoine", () => {
@@ -531,11 +531,11 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
   it("the engine's beta is k a times the segment's volume over V_ref, and the limit mode is linearised (MT-04)", () => {
     expect(OFMU_ENGINE_SCOPE).toContain("made dimensionless by V_ref");
     expect(body(4)).toContain("linearised about the bulk liquid");
-    expect(body(7)).toContain("RateBasedSegment.cpp:599");
+    expect(body(7)).toContain("RateBasedSegment.cpp:647");
     const src = tree("src/unitOperations/distillation/RateBasedSegment.cpp").split("\n");
-    //  line 583 sits inside the `if (!limitMode)` branch; 595 is the other branch
-    expect(src.slice(581, 585).join("\n")).toContain("if (!limitMode)");
-    expect(src.slice(585, 597).join("\n")).toContain("else");
+    //  line 632 sits inside the `if (!limitMode)` branch; 644 is the other branch
+    expect(src.slice(630, 634).join("\n")).toContain("if (!limitMode)");
+    expect(src.slice(634, 646).join("\n")).toContain("else");
   });
 
   it("flags the pseudo-first-order value above the instantaneous limit (Missen's data, c_B = 0.01 mol/L)", () => {
