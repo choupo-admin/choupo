@@ -2233,9 +2233,14 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     //  real things: the geometry is validated BEFORE the search spends dozens
     //  of full MESH solves on a column that cannot run, and the announcement
     //  says which column is being searched.
+    //  The keys the inner solves publish their KPIs for (C504): read on the
+    //  case's own dict as well, so a declared pair is not "dead" (the inner
+    //  solves run on a deepCopy) and a misspelt name is refused up front.
+    for (const char* kw : {"lightKey", "heavyKey"})
+        if (operDict->found(kw)) (void)thermo.indexOf(operDict->lookupWord(kw));
     const int nSt = static_cast<int>(operDict->lookupScalar("nStages"));
     const int nFd = static_cast<int>(operDict->lookupScalar("feedStage"));
-    const scalar RR = operDict->lookupScalar("refluxRatio");
+    const scalar RR =operDict->lookupScalar("refluxRatio");
     const scalar Pc = operDict->lookupScalarOrDefault("P", 0.0, Dims::pressure);
     //  The condenser type too: read (and refused, if misspelled) here on the
     //  case's own dict, for the same reason as the geometry above.
