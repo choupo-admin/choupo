@@ -394,14 +394,15 @@
     "packing": {
       "type": "object",
       "title": "Structured-packing bed (total reflux)",
-      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency. `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads corrugationBase, corrugationHeight and elementHeight instead of corrugationSide.",
+      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency. `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads corrugationBase, corrugationHeight and elementHeight instead of corrugationSide. `model BilletSchultes;` (Billet & Schultes 1999; random or structured packings, `model rateBased;` only) reads specificArea, voidFraction and the six constants CS, CFl, Ch, CP0, CL, CV of the packing.",
       "additionalProperties": false,
       "properties": {
         "model": {
           "type": "string",
           "enum": [
             "RochaBravoFair",
-            "Delft"
+            "Delft",
+            "BilletSchultes"
           ]
         },
         "diameter": {
@@ -486,6 +487,30 @@
         "holeFraction": {
           "type": "number",
           "description": "Delft only: fraction of the surface occupied by holes (0 unperforated)."
+        },
+        "CS": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's loading point constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
+        },
+        "CFl": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's flooding point constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
+        },
+        "Ch": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's hydraulic area (holdup) constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
+        },
+        "CP0": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's dry pressure drop constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
+        },
+        "CL": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's liquid film constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
+        },
+        "CV": {
+          "type": "number",
+          "description": "BilletSchultes only: the packing's gas film constant (Billet & Schultes 1999, Table 2). With a `record` it comes from the record."
         }
       }
     }

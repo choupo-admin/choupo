@@ -469,6 +469,7 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "distillationColumn.operation.hydraulics.pressureDropModel:Sinnott": { guide: "theory", dest: "ch:hydraulics" },
   "distillationColumn.operation.packing.model:RochaBravoFair":     { guide: "theory", dest: "sec:packing-rbf" },
   "distillationColumn.operation.packing.model:Delft":              { guide: "theory", dest: "sec:packing-delft" },
+  "distillationColumn.operation.packing.model:BilletSchultes":     { guide: "theory", dest: "sec:billetSchultes" },
   "column.model:totalReflux":                                      { guide: "theory", dest: "sec:total-reflux" },
   "column.model:rateBased":                                        { guide: "theory", dest: "sec:rateBasedSegment" },
   "column.operation.efficiency.model:AIChE":                       { guide: "theory", dest: "sec:eff-aiche" },
@@ -478,6 +479,7 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "column.operation.hydraulics.pressureDropModel:Sinnott":         { guide: "theory", dest: "ch:hydraulics" },
   "column.operation.packing.model:RochaBravoFair":                 { guide: "theory", dest: "sec:packing-rbf" },
   "column.operation.packing.model:Delft":                          { guide: "theory", dest: "sec:packing-delft" },
+  "column.operation.packing.model:BilletSchultes":                 { guide: "theory", dest: "sec:billetSchultes" },
   //  The continuous convective dryer's FLOW word: each arrangement opens the
   //  section that derives it (its paragraphs name each arrangement).
   "convectiveDryer.operation.flow:cocurrent":       { guide: "theory", dest: "sec:dryer-flow-arrangements" },

@@ -6404,6 +6404,23 @@ PYEOF
     fi
     rm -f /tmp/seulex.$$
 
+    # Billet-Schultes packing gate (2026-11-25, C513).  The law is ~30 equations and
+    # six per-packing constants typed from a scan; an exponent off by a digit or a
+    # constant in the wrong column of Table 2 crashes nothing, trips no balance, and
+    # a golden would pin the typo.  test/packing_bs.cpp (the law alone, built with
+    # g++) against bin/curate/billet_schultes_reference.py (the same equations written
+    # again, other code): 142 values to 1e-9; the five records equal the reference
+    # table; the witness runs; six refusals by name; the window announced.
+    if gate_exec "$ROOT/bin/curate/check_billet_schultes.py" > /tmp/billetschultes.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "billet-schultes-gate" "$(head -1 /tmp/billetschultes.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_billet_schultes.py)\n" "billet-schultes-gate"
+        cat /tmp/billetschultes.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/billetschultes.$$
+
     # ignition-sensitivity gate (2026-11-20).  `sensitivity { }` on a batchReactor
     # multiplies ONE reaction's NET rate and integrates N+1 times.  The defect it
     # would have caught: a multiplier on the forward rate only, which moves the

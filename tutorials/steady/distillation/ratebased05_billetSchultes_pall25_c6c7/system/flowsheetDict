@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ratebased05_billetSchultes_pall25_c6c7  --  THE FIRST RANDOM PACKING: a
+  packed bed of 25 mm metal Pall rings at total reflux, solved as rate-based
+  segments with the Billet & Schultes (1999) law (DEV.md C513; Theory Guide
+  sec:billetSchultes; design record docs/design/random-packings.md).
+
+  WHAT THIS CASE IS.  The cyclohexane / n-heptane pair of the Fractionation
+  Research tests (the system Bravo & Fair 1982 correlate), 1 atm at the top,
+  a 0.5 m column with 3 m of packing, the boil-up declared as an F-factor.
+  The packing is the catalogue record PallRing-metal-25 (Billet & Schultes
+  Table 2a: a 223.5 m2/m3, eps 0.954 and the six constants of the packing),
+  read by `model BilletSchultes;`.  The run prints the loading and flooding
+  points, the holdup, the pressure drop, the interfacial area and the HETP.
+
+  WHAT IT IS NOT.  A VALIDATION.  No measured HETP or pressure drop of a
+  random packing is in the tree, and the six constants are the authors' own
+  fit to their database, so this packing is in-sample for the law.  The
+  golden pins what the engine prints; it is not an `anchor`.  The law itself
+  is held to a hand point computed outside the engine by
+  bin/curate/check_billet_schultes.py.
+
+  INPUTS: column diameter and height, the top pressure and the F-factor are
+  chosen for the case (not a published bed); the reboiler composition 50 / 50
+  mol %.  MEASURED: nothing.  ESTIMATED: every transport property of the
+  package (see constant/thermoPhysPropDict).  FITTED: nothing here (the
+  packing's constants are the paper's).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       rateBased;
+
+        operation
+        {
+            P              0.5 bar;       // TOP pressure
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.2;       // (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    cyclohexane  0.5;
+                    nHeptane     0.5;
+                }
+            }
+
+            packing
+            {
+                record            PallRing-metal-25;   // data/standards/assets (Billet & Schultes 1999, Table 2a)
+                model             BilletSchultes;
+                diameter          0.5 m;
+                height            3.0 m;
+                lightKey          cyclohexane;
+                segments          100;
+            }
+        }
+    }
+);

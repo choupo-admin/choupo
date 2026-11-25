@@ -4,3 +4,5 @@
 # C435 (4) PAID: the three membrane benches (PoreTransportBench, PolarisationIndex, FitParametersMembrane) now ask the door for the film's viscosity and density and refuse typed ones; the ion D0 temperature rule is a declared choice (`ionDiffusivity {}`), so the NanoFiltran case declares none and no golden row moves.
 # C402 rest step 1: the detector's false positives (kW <-> W, kmol <-> mol, statistical weights, bounds) are exempt by FALSE_POSITIVES in the checker, each with its reason; what is pinned below is real or undecided.
 src/propertyOps/FitParametersMembrane.cpp	keyRead	1
+# C513: PackingBS.H keeps the reference WATER of Billet-Schultes Eqs 15 and 44 (sigma_W 0.0728 N/m, eta_W 1.002 mPa s, rho_W 998.2 kg/m3, water at 20 C: the correlation names "water" and prints no state) -- constants OF THE CORRELATION, never the process liquid, declared in PackingBS.H and in the design record docs/design/random-packings.md section 8.  Pinned, not hidden.
+src/unitOperations/distillation/PackingBS.H	literal	2

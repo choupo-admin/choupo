@@ -1546,6 +1546,17 @@ height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
 `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads
 `corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction` instead of
 `corrugationSide`/`surface`: `packing03_schulz_delft_0p10bar`, `packing04_schulz_delft_0p02bar`.
+**`model BilletSchultes;`** (Billet & Schultes, Trans IChemE 77A (1999) 498; `model rateBased;` ONLY -- the
+transfer-unit bed refuses it by name) is the law for a RANDOM packing (also serves a structured one): loading
+and flooding points, holdup, pressure drop, film coefficients and interfacial area from `specificArea`,
+`voidFraction` and the six constants of the packing `CS CFl Ch CP0 CL CV` (typed inline in `packing {}` or, with a
+`record`, from `correlations { BilletSchultes { ... } }`).  A bed past the flooding point is refused (`FLOODS`);
+a state outside the paper's Table 1 window is ANNOUNCED with its range, never refused; the system is taken as
+neutral or positive in surface tension (no Marangoni correction).  The published flooding fraction is the KPI
+`uV_over_uVFl_max` (not `dP_over_dPflood_max`).  The six constants are the authors' fit: every packing of the
+paper's Table 2 is in-sample.  Catalogue (random): `PallRing-metal-50`, `PallRing-metal-25`,
+`PallRing-plastic-50`, `PallRing-plastic-25`, `Raschig-ceramic-25`.  Example:
+`ratebased05_billetSchultes_pall25_c6c7`.  Theory Guide: sec:billetSchultes.
 
 **The packing as a record** (`packing { record <name>; model ...; diameter; height;
 [installed { <field> <v>; source "..."; }] [borrowed { <field> { from <record>;
@@ -1563,9 +1574,10 @@ lender is a random packing) and publishes the resolved geometry as KPIs
 REFUSED by name: an unknown `model` word (first); a key typed beside `record`; a field
 the chosen correlation reads that nothing supplies (RochaBravoFair reads
 `corrugationSide` and `surface`, plus `surfaceEnhancement` on `sheetMetal`; Delft reads
-`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction`); `installed`
-without `source`; `borrowed` without `reason`; a record with `arrangement random;` (no
-random-packing correlation); a record whose `name` is not its file name; a value out of
+`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction`; BilletSchultes reads `specificArea`,
+`voidFraction` and the six constants); `installed`
+without `source`; `borrowed` without `reason`; RochaBravoFair or Delft on a record with `arrangement random;`
+(select `model BilletSchultes;`); a record whose `name` is not its file name; a value out of
 range in a record, `installed`, `borrowed` or an inline block (void fraction and hole
 fraction below 1, angle between 0 and 90 deg).  Catalogue: `SulzerBX` (serves RochaBravoFair), `MontzB1-250` (serves
 Delft).  Example: `packing05_schulz_record_0p10bar` (same numbers as packing01).

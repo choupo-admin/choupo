@@ -103,7 +103,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 615 witness(es), 47 tutorial(s), 16 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "claim": "check_case_tiers: OK -- 617 witness(es), 47 tutorial(s), 16 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
       "seconds": 0.2
     },
     "check_caveat_surface": {
@@ -208,8 +208,8 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 261 design record(s) appear in the index, and its stated counts (183 state a rejected alternative, 78 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
-      "seconds": 0.1
+      "claim": "check_decision_index: OK -- all 262 design record(s) appear in the index, and its stated counts (184 state a rejected alternative, 78 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "seconds": 0.0
     },
     "check_default_reports": {
       "exit": 0,
@@ -623,8 +623,8 @@
     },
     "check_origin_census": {
       "exit": 0,
-      "claim": "check_origin_census: OK -- recounted at BOTH depths over 4043 file(s) carrying a `provenance {}`: 2379 origin declaration(s) as direct children and 6519 nested one level deeper in per-value blocks (8898 total; the largest are literature 4772, estimated 414, fitted 395, predictive 340), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
-      "seconds": 2.0
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 4048 file(s) carrying a `provenance {}`: 2379 origin declaration(s) as direct children and 6519 nested one level deeper in per-value blocks (8898 total; the largest are literature 4772, estimated 414, fitted 395, predictive 340), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "seconds": 1.7
     },
     "check_origin_vocabulary": {
       "exit": 0,
@@ -1573,13 +1573,13 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 18616 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 656, binaries 8, blocks 18615, values 168837, refusals 158930, packages not assembled 1728; non-finite values: NaN 3, inf 6; data-root paths replaced in messages: 969; door against the old call: 148236 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 11.9
+      "claim": "check_property_route_bench: OK -- 18648 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 656, binaries 8, blocks 18647, values 169059, refusals 159060, packages not assembled 1728; non-finite values: NaN 3, inf 6; data-root paths replaced in messages: 969; door against the old call: 148236 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 10.8
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 555 files of src/unitOperations and src/postProcessing hold 1 raw liquid-property site(s) (vliq 0, direct 0, phaseVariable 0, literal 0, keyRead 1, conversion 0), each within its pin; none new; the two door reviews' 38 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, the kernel itself under src/thermo/ (propertyOps IS scanned since C402); a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
-      "seconds": 3.3
+      "claim": "check_liquid_property_ratchet: OK -- 557 files of src/unitOperations and src/postProcessing hold 3 raw liquid-property site(s) (vliq 0, direct 0, phaseVariable 0, literal 2, keyRead 1, conversion 0), each within its pin; none new; the two door reviews' 38 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, the kernel itself under src/thermo/ (propertyOps IS scanned since C402); a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
+      "seconds": 4.1
     },
     "check_property_source_witnesses": {
       "exit": 0,
@@ -1936,10 +1936,10 @@
       "claim": "check_dynamic_views: OK -- 27 time-integrated cases declare views; 40 views, 117 series, every series carries points inside its declared axis windows; a window beyond the run's end is seen; 2 case(s) with an outerDict draw nothing by design (ctrl16_williams_otto_optimal, ctrl20_bode_cstr); NOT CHECKED: that a figure answers its question or that a note's numbers equal the run's",
       "seconds": 35.6
     },
-    "check_mw_formula": {
+    "check_billet_schultes": {
       "exit": 0,
-      "claim": "check_mw_formula: OK -- 1737 records hold MW to their formula's sum within 0.0001 (engine atomic weights); 823 between 1e-05 and 0.0001 (ratchet); 72 out of scope (no formula/MW, non-molecular formula, pseudo-component)",
-      "seconds": 0.1
+      "claim": "check_billet_schultes: OK -- the Billet-Schultes law equals a second transcription of the paper (law = second transcription on 142 values (worst relative 6.6e-16); 5 records equal the reference table; witness runs (HETP 0.466 m, flooding fraction 0.367); 6 refusals by name and the window announced); it does NOT check that the constants transcribe the paper or that the law predicts a measurement",
+      "seconds": 12.1
     }
   }
 }

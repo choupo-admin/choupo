@@ -1048,6 +1048,7 @@
    "src/unitOperations/membrane/transport/GelPolarisation.H"
   ],
   "Geometry": [
+   "src/unitOperations/distillation/PackingBS.H",
    "src/unitOperations/distillation/PackingDelft.H",
    "src/unitOperations/distillation/PackingRBF.H",
    "src/unitOperations/distillation/TrayEfficiency.H",
@@ -1715,6 +1716,9 @@
   "PackageTagScope": [
    "src/thermo/RecordLaws.H"
   ],
+  "PackingBS": [
+   "src/unitOperations/distillation/PackingBS.H"
+  ],
   "PackingDelft": [
    "src/unitOperations/distillation/PackingDelft.H"
   ],
@@ -2171,6 +2175,7 @@
    "src/postProcessing/sizing/DrumSize.H",
    "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/electrolyte/AqueousVolumetric.H",
+   "src/unitOperations/distillation/PackingBS.H",
    "src/unitOperations/distillation/PackingRBF.H",
    "src/unitOperations/distillation/TrayEfficiency.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
@@ -13667,6 +13672,11 @@
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
+  "src/unitOperations/distillation/PackingBS.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/distillation/PackingBS.H",
+   "src/unitOperations/distillation/PackingRBF.H"
+  ],
   "src/unitOperations/distillation/PackingDelft.cpp": [
    "src/core/Constants.H",
    "src/core/Types.H",
@@ -13738,6 +13748,7 @@
    "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
+   "src/unitOperations/distillation/PackingBS.H",
    "src/unitOperations/distillation/PackingDelft.H",
    "src/unitOperations/distillation/PackingRBF.H",
    "src/unitOperations/distillation/PackingRecord.H",
@@ -21285,6 +21296,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/PackingBS.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
    "src/unitOperations/distillation/PackingRecord.cpp",
@@ -29706,6 +29718,10 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
+  "src/unitOperations/distillation/PackingBS.H": [
+   "src/unitOperations/distillation/PackingBS.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
+  ],
   "src/unitOperations/distillation/PackingDelft.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
@@ -29713,6 +29729,7 @@
   ],
   "src/unitOperations/distillation/PackingRBF.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/PackingBS.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp"

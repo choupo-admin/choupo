@@ -46,6 +46,7 @@ Description
 #include "RateBasedSegment.H"
 #include "PackingRBF.H"
 #include "PackingDelft.H"
+#include "PackingBS.H"
 #include "TrayHydraulics.H"
 #include "core/Constants.H"
 #include "core/PropertySourceLog.H"
@@ -224,13 +225,14 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     auto pk = operDict->subDict("packing");
     const bool modelDeclared = pk->found("model");
     const std::string pmodel = pk->lookupWordOrDefault("model", "RochaBravoFair");
-    if (pmodel != "RochaBravoFair" && pmodel != "Delft")
+    if (pmodel != "RochaBravoFair" && pmodel != "Delft" && pmodel != "BilletSchultes")
         throw std::runtime_error(who + "no mass-transfer correlation for this"
             " packing: " + registryRefusal::message("packing model", pmodel,
-                {"RochaBravoFair", "Delft"}, "Accepted")
-            + "  Both are corrugated STRUCTURED packings; a random packing has no"
-              " correlation in the engine.");
+                {"RochaBravoFair", "Delft", "BilletSchultes"}, "Accepted")
+            + "  Rocha-Bravo-Fair and Delft are corrugated STRUCTURED packings;"
+              " Billet-Schultes serves random and structured ones.");
     const bool delft = (pmodel == "Delft");
+    const bool bs = (pmodel == "BilletSchultes");
     const scalar Dcol = pk->lookupScalar("diameter", Dims::length);
     const scalar Hbed = pk->lookupScalar("height", Dims::length);
     if (!(Dcol > 0.0) || !std::isfinite(Dcol))
@@ -243,8 +245,24 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     PackingDelft::Geometry dg;
     pg.ap    = pk->lookupScalar("specificArea");
     pg.eps   = pk->lookupScalar("voidFraction");
-    pg.theta = packingRecord::angleDegrees(*pk) * constant::pi / 180.0;
-    if (delft)
+    if (!bs) pg.theta = packingRecord::angleDegrees(*pk) * constant::pi / 180.0;
+    PackingBS::Geometry bg;
+    if (bs)
+    {
+        bg.ap = pg.ap; bg.eps = pg.eps; bg.colDiameter = Dcol;
+        const char* names[] = {"CS", "CFl", "Ch", "CP0", "CL", "CV"};
+        scalar* slots[] = {&bg.CS, &bg.CFl, &bg.Ch, &bg.CP0, &bg.CL, &bg.CV};
+        for (int i = 0; i < 6; ++i)
+        {
+            if (!pk->found(names[i]))
+                throw std::runtime_error(who + "`packing {}` lacks `" + names[i] + "`, a constant"
+                    " of the packing under BilletSchultes (Billet & Schultes 1999, Table 2; a"
+                    " blank cell of that table is a constant the authors did not publish, and"
+                    " the engine does not default it).");
+            *slots[i] = pk->lookupScalar(names[i]);
+        }
+    }
+    else if (delft)
     {
         dg.ap = pg.ap; dg.eps = pg.eps; dg.alpha = pg.theta;
         dg.b   = pk->lookupScalar("corrugationBase", Dims::length);
@@ -430,6 +448,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     probeFormationEnthalpy(reb.T, Ptop);
     const scalar lamRef = hV(reb.y, reb.T, Ptop) - hL(reb.y, reb.T, Ptop);
 
+    //  Billet-Schultes: what left the paper's window, and where the bed sits.
+    struct BsRange { std::string unit; scalar lo = 0, hi = 0, vmin = 0, vmax = 0; };
+    std::map<std::string, BsRange> bsOutside;
+    int bsAbove = 0, bsFloored = 0, bsSegmentsSeen = 0;
+    scalar bsUVSmin = 1.0e300, bsUVFlmin = 1.0e300;
+
     //  ---- The coefficients of one segment at its mid-state ----------------
     auto coefficientsAt = [&](const sVector& ym, const sVector& xm, scalar TVm,
                               scalar TLm, scalar vm, scalar lm, scalar Pm)
@@ -456,15 +480,39 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         scalar ys = 0.0;
         (void)ystarAndSlope(xl[lk], Pm, TLm, ys, c.m);
         st.lambda = c.m * vm / lm;
-        const PackingRBF::Result r = delft ? PackingDelft::evaluate(dg, st)
-                                           : PackingRBF::evaluate(pg, st);
+        PackingBS::Result rb;
+        PackingRBF::Result r;
+        if (bs) { rb = PackingBS::evaluate(bg, st); r = rb; }
+        else r = delft ? PackingDelft::evaluate(dg, st) : PackingRBF::evaluate(pg, st);
         if (r.flooded)
         {
             std::ostringstream o;
-            o << who << "the packed bed FLOODS (no Rocha-Bravo-Fair holdup below "
-              << pg.dPflood << " Pa/m) at F = " << st.UGs * std::sqrt(rhoG)
-              << " (m/s)(kg/m3)^0.5, P = " << Pm * 1.0e-5 << " bar.";
+            if (bs)
+                o << who << "the packed bed FLOODS (Billet-Schultes: u_V = " << st.UGs
+                  << " m/s >= the flooding point u_V,Fl = " << rb.uVFl << " m/s; loading point "
+                  << rb.uVS << " m/s) at F = " << st.UGs * std::sqrt(rhoG)
+                  << " (m/s)(kg/m3)^0.5, P = " << Pm * 1.0e-5 << " bar.";
+            else
+                o << who << "the packed bed FLOODS (no Rocha-Bravo-Fair holdup below "
+                  << pg.dPflood << " Pa/m) at F = " << st.UGs * std::sqrt(rhoG)
+                  << " (m/s)(kg/m3)^0.5, P = " << Pm * 1.0e-5 << " bar.";
             throw std::runtime_error(o.str());
+        }
+        if (bs)
+        {
+            ++bsSegmentsSeen;
+            if (rb.aboveLoading) ++bsAbove;
+            if (rb.sigmaFloored) ++bsFloored;
+            bsUVSmin = std::min(bsUVSmin, rb.uVS); bsUVFlmin = std::min(bsUVFlmin, rb.uVFl);
+            for (const auto& o : rb.outside)
+            {
+                auto it = bsOutside.find(o.name);
+                if (it == bsOutside.end())
+                    bsOutside[o.name] = {o.unit, o.lo, o.hi, o.value, o.value};
+                else
+                { it->second.vmin = std::min(it->second.vmin, o.value);
+                  it->second.vmax = std::max(it->second.vmax, o.value); }
+            }
         }
         const scalar cG = rhoG / MV, cL = rhoL / ML;           // kmol/m3
         c.betaV = cG * r.kG * r.ae * A_T * dz / Vref;
@@ -475,7 +523,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         c.uL = st.ULs * 3600.0;
         c.aeOverAp = r.ae / pg.ap;
         c.holdup = r.hL;
-        c.flood = r.dP / pg.dPflood;
+        c.flood = bs ? rb.floodFraction : r.dP / pg.dPflood;
         if (!limitMode)
         {
             //  THE HEAT/MASS-TRANSFER ANALOGY on the same films.  Vapour: the
@@ -792,7 +840,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         //  the Delft model has no flooding criterion of its own and would
         //  otherwise run on to any load.
         const scalar meanDrop = (Pface[M] - Ptop) / Hbed;
-        if (meanDrop > pg.dPflood)
+        if (!bs && meanDrop > pg.dPflood)
         {
             std::ostringstream o;
             o << who << "the bed's mean pressure drop " << meanDrop << " Pa/m exceeds the"
@@ -941,7 +989,8 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
                                 " the transfer-unit bed, solved as segments (a check mode)"
                               : "two films, interface equilibrium, interface energy balance:"
                                 " the fluxes are NOT assumed equimolar") << "\n"
-        << "  correlation: " << (delft ? "Delft (Olujic et al. 1999; Fair et al. 2000 Tables 2, 4)"
+        << "  correlation: " << (bs ? "Billet-Schultes (Trans IChemE 77A (1999) 498, Table 2 constants of the packing)"
+                                   : delft ? "Delft (Olujic et al. 1999; Fair et al. 2000 Tables 2, 4)"
                                        : "Rocha-Bravo-Fair (IECR 32 (1993) 641; 35 (1996) 1660)")
         << (modelDeclared ? " (declared)" : " (the default for a structured packing; `packing { model ...; }` selects)") << "\n"
         << "  flow: PLUG flow in both phases (box scheme: each film driven by the mean of the"
@@ -988,6 +1037,30 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
                "  NOTE (Delft): the Delft correlations carry no flooding criterion of their own;"
                " dP_over_dPflood_max is the pressure drop over the Rocha-Bravo-Fair flooding drop ("
             << pg.dPflood << " Pa/m, Rocha-Bravo-Fair 1993), a reference ratio, not Delft's own limit.\n";
+    if (bs)
+    {
+        rep << "  NOTE (Billet-Schultes): the six constants of the packing are FITTED by the authors to their own"
+               " database (3500+ points, 70 packings), so this packing is in-sample for the law; the paper's"
+               " stated mean deviations (Table 3) are 5 % loading/flooding, 6.7 % holdup, 9.1 % pressure drop,"
+               " 14.1 % mass transfer in rectification.  Loading point "
+            << std::setprecision(4) << bsUVSmin << " m/s, flooding point " << bsUVFlmin
+            << " m/s (lowest over the bed); the bed is above its loading point in " << bsAbove << " of "
+            << bsSegmentsSeen << " coefficient evaluations.\n"
+               "  NOTE (Billet-Schultes): the system is taken as neutral or positive in surface tension"
+               " (the Marangoni correction of Eqs 17-20 for NEGATIVE systems is not implemented); 'water' in"
+               " Eqs 15 and 44 is water at 20 C (0.0728 N/m, 1.002 mPa s, 998.2 kg/m3), which the paper does not"
+               " state.\n";
+        if (bsFloored)
+            rep << "  NOTE (Billet-Schultes): the surface tension was below 0.03 N/m in " << bsFloored
+                << " evaluations and is floored at 0.03 N/m in Eqs 9 and 15 (paper, p. 500).\n";
+        if (bsOutside.empty())
+            rep << "  Billet-Schultes window (Table 1, mass-transfer column): every state inside.\n";
+        for (const auto& kv : bsOutside)
+            rep << "  WARNING (Billet-Schultes window, Table 1): " << kv.first << " from "
+                << std::setprecision(4) << kv.second.vmin << " to " << kv.second.vmax << " " << kv.second.unit
+                << " is outside the paper's range " << kv.second.lo << " to " << kv.second.hi << " "
+                << kv.second.unit << "; the law is extrapolated there.\n";
+    }
     rep << "  " << M << " segments of " << std::setprecision(4) << dz << " m; " << nUnknowns
         << " unknowns (" << B << " per segment), block-tridiagonal: "
         << (auditedAt ? "VERIFIED on the first Newton of the " + std::to_string(auditedAt)
@@ -1053,7 +1126,8 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     kpis_["V_boilup"] = reb.V;
     kpis_["P_bottom_bar"] = Pface[M] * 1.0e-5;
     kpis_["dP_bed_mbar_per_m"] = (Pface[M] - Ptop) * 1.0e-2 / Hbed;
-    kpis_["dP_over_dPflood_max"] = maxFlood;
+    if (bs) kpis_["uV_over_uVFl_max"] = maxFlood;      // the flooding point of Billet-Schultes, Eq 36
+    else    kpis_["dP_over_dPflood_max"] = maxFlood;
     kpis_["fFactor_bedTop"] = Ftop;
     kpis_["fFactor_bedBottom"] = Fbot;
     kpis_["uL_mean_m3_m2h"] = sumUL / M;

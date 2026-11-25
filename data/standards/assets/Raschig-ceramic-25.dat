@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -----------------------*\
+  PACKING: Raschig ring, ceramic, 25 mm, a RANDOM (dumped) packing
+
+  WHAT THIS RECORD IS.  The nominal geometry and the six constants of one
+  random packing under the Billet & Schultes correlation, for a column's
+  `packing { record Raschig-ceramic-25; model BilletSchultes; ... }` (kind packing,
+  read by src/unitOperations/distillation/PackingRecord.cpp; Theory Guide
+  sec:packing-record and sec:billetSchultes; design record
+  docs/design/random-packings.md).
+
+  EVERY VALUE, AND WHERE IT WAS READ (primary read 2026-11-25 on the page
+  image, twice): Billet & Schultes, Trans IChemE 77 Part A (1999) 498-504,
+  Table 2a, p. 501, row "Raschig ring", "Ceramic", size 25 mm:
+  a 190.0 m2/m3, void fraction 0.68,
+  C_S 2.454, C_Fl 1.899, C_h 0.577, C_P,0 1.329, C_L 1.361, C_V 0.412.
+
+  IN-SAMPLE.  The authors fitted the six constants to their own database
+  (over 3500 points, 70 packings, p. 498): every number here is a value of
+  that fit, so this packing cannot be a held-out test of the law.  The paper's
+  stated accuracy is Table 3 (p. 503): 5 % loading/flooding, 6.7 % holdup,
+  9.1 % pressure drop, 12.4 % absorption, 14.1 % rectification (their data).
+
+  WHAT IT SERVES.  `model BilletSchultes;` only (hydraulics and mass transfer).
+  Not Rocha-Bravo-Fair or Delft: those are models of a corrugated structured
+  packing.
+\*-----------------------------------------------------------------*/
+
+name              Raschig-ceramic-25;
+kind              packing;
+arrangement       random;
+
+specificArea      190.0;          // m2/m3 (Table 2a)
+voidFraction      0.68;          // (Table 2a)
+
+correlations
+{
+    BilletSchultes
+    {
+        CS   2.454;     // loading point (Table 2a)
+        CFl  1.899;     // flooding point
+        Ch   0.577;     // hydraulic area, holdup
+        CP0  1.329;     // dry pressure drop
+        CL   1.361;     // liquid film
+        CV   0.412;     // gas film
+    }
+}
+
+provenance
+{
+    source  "R. Billet, M. Schultes, Prediction of mass transfer columns with dumped and arranged packings: updated summary of the calculation method of Billet and Schultes, Trans IChemE 77 Part A (1999) 498-504, Table 2a, p. 501, row Raschig ring Ceramic 25 mm";
+    specificArea  { origin literature; method "Table 2a (p. 501), a"; }
+    voidFraction  { origin literature; method "Table 2a (p. 501), eps"; }
+    BilletSchultes { origin literature; method "Table 2a (p. 501), columns C_S, C_Fl, C_h, C_P,0, C_L, C_V of the row"; }
+}

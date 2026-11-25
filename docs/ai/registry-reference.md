@@ -283,7 +283,7 @@ efficiency.liquidViscosity n|s [Pa s] >0
 efficiency.entrainment s {FairMedian|none}
 efficiency.holePitch n|s [m]
 packing o
-packing.model s {RochaBravoFair|Delft}
+packing.model s {RochaBravoFair|Delft|BilletSchultes}
 packing.diameter n|s [m]
 packing.height n|s [m]
 packing.specificArea n [m2/m3]
@@ -299,6 +299,12 @@ packing.corrugationBase n|s [m]
 packing.corrugationHeight n|s [m]
 packing.elementHeight n|s [m]
 packing.holeFraction n
+packing.CS n
+packing.CFl n
+packing.Ch n
+packing.CP0 n
+packing.CL n
+packing.CV n
 ```
 
 ### electricLoad

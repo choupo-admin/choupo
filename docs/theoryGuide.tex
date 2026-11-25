@@ -34006,6 +34006,72 @@ $\alpha$, corrugation base $b$ and height $h$, element height.  One reading:
 the sign inside $\psi$ (Table~4) is not legible and is taken as minus (the
 chord).
 
+\subsubsection{Billet and Schultes, random and structured (\code{model BilletSchultes;})}\label{sec:billetSchultes}
+The method of Billet and Schultes \cite{BilletSchultes1999} (Trans.\ IChemE 77A (1999) 498--504;
+equation numbers below are the paper's) gives, from ONE set of six constants of the packing, its
+loading and flooding points, holdup, pressure drop, film coefficients and interfacial area.  It is the
+engine's law for a \emph{random} packing (rings, saddles) and also serves a structured one; it is read by
+\code{model rateBased;} only (the transfer-unit bed of Sec.~\ref{sec:packed-bed} refuses it by name).
+SI units; $u$ are superficial velocities, $a$ the specific area, $\varepsilon$ the void fraction,
+$d_h = 4\varepsilon/a$ (10), $L/V = u_L\rho_L/(u_V\rho_V)$ the mass-flow ratio, $\nu = \eta/\rho$.
+\begin{itemize}
+\item \emph{Holdup below loading} (41)--(43): $\mathrm{Re}_L = u_L\rho_L/(a\eta_L)$, $\mathrm{Fr}_L = u_L^2 a/g$,
+  $a_h/a = C_h\,\mathrm{Re}_L^{0.15}\mathrm{Fr}_L^{0.1}$ for $\mathrm{Re}_L<5$ and
+  $0.85\,C_h\,\mathrm{Re}_L^{0.25}\mathrm{Fr}_L^{0.1}$ above, and
+  $h_{L,S} = (12\nu_L u_L a^2/g)^{1/3}(a_h/a)^{2/3}$.
+\item \emph{Loading point} (31)--(35): $u_{V,S}=\sqrt{g/\psi_S}\,\bigl[\varepsilon/a^{1/6}-a^{1/2}X^{1/3}\bigr]X^{1/6}
+  \sqrt{\rho_L/\rho_V}$, $X = 12\nu_L u_{L,S}/g$, $u_{L,S}=(\rho_V/\rho_L)(L/V)\,u_{V,S}$,
+  $\psi_S = (g/C_S^2)\,[(L/V)\sqrt{\rho_V/\rho_L}\,(\eta_L/\eta_V)^{0.4}]^{-2n_S}$; for the flow parameter
+  $(L/V)\sqrt{\rho_V/\rho_L}\le0.4$, $n_S=-0.326$ and $C_S$ is the table's; above it $n_S=-0.723$ and
+  $C_S = 0.695\,C_{S,\mathrm{tab}}(\eta_L/\eta_V)^{0.1588}$.  Implicit in $u_{V,S}$: solved by bisection.
+\item \emph{Flooding point} (36)--(40) and (13): $u_{V,Fl}=\sqrt2\sqrt{(g/\psi_{Fl})(\varepsilon-h_{L,Fl})^{3/2}\varepsilon^{-1/2}}
+  \sqrt{h_{L,Fl}/a}\sqrt{\rho_L/\rho_V}$, with $\psi_{Fl}$ as $\psi_S$ with $C_{Fl}$, exponent $0.2$ for the
+  viscosity ratio, $n_{Fl}=-0.194$ ($-0.708$ above flow parameter $0.4$, with $C_{Fl}=0.6244\,C_{Fl,\mathrm{tab}}
+  (\eta_L/\eta_V)^{0.1028}$), and the holdup at flooding from
+  $h_{L,Fl}^3(3h_{L,Fl}-\varepsilon)=(6/g)\,a^2\varepsilon\,\nu_L\,(L/V)(\rho_V/\rho_L)\,u_{V,Fl}$,
+  $\varepsilon/3\le h_{L,Fl}\le\varepsilon$ (bisection).  A gas velocity at or above $u_{V,Fl}$ is FLOODED.
+\item \emph{Holdup above loading} (12), (44): $h_L = h_{L,S}+(h_{L,Fl}-h_{L,S})(u_V/u_{V,Fl})^{13}$ with the
+  real flooding holdup $h_{L,Fl}=2.2\,h_{L,S}(\eta_L\rho_W/(\eta_W\rho_L))^{0.05}$.  Effective liquid velocity
+  $\bar u_L = u_L/h_L$ (7) below loading and, between loading and flooding (16),
+  $\bar u_L=[g\rho_V^2u_V^2/(12\eta_L a^2\rho_L)]^{1/3}(L/V)^{2/3}[1-((u_V-u_{V,S})/(u_{V,Fl}-u_{V,S}))^2]$.
+\item \emph{Interfacial area} (9), (14), (15): $a_{Ph,S}/a = 1.5\,(ad_h)^{-0.5}(u_Ld_h/\nu_L)^{-0.2}
+  (u_L^2\rho_Ld_h/\sigma)^{0.75}(u_L^2/gd_h)^{-0.45}$; $a_{Ph,Fl}/a$ is the same with the prefactor
+  $10.5(\sigma/\sigma_W)^{0.56}$; between loading and flooding
+  $a_{Ph}/a = a_{Ph,S}/a+(a_{Ph,Fl}/a-a_{Ph,S}/a)(u_V/u_{V,Fl})^{13}$ (14).  The surface tension is floored at
+  $0.03$~N/m in (9) and (15) (the paper, p.~500: below it the surface is completely wet).
+\item \emph{Films} (6), (8): $\beta_La_{Ph}=C_L\,12^{1/6}\bar u_L^{1/2}(D_L/d_h)^{1/2}a\,(a_{Ph}/a)$ and
+  $\beta_Va_{Ph}=C_V(\varepsilon-h_L)^{-1/2}a^{3/2}d_h^{-1/2}D_V(u_V/a\nu_V)^{3/4}(\nu_V/D_V)^{1/3}(a_{Ph}/a)$;
+  $H_G=u_V/(\beta_Va_{Ph})$, $H_L=u_L/(\beta_La_{Ph})$, $H_{OG}=H_G+\lambda H_L$ (5), as in
+  Eq.~\eqref{eq:packed-bed}.  The segment takes $k_L=\beta_L$, $k_G=\beta_V$, $a_e=a_{Ph}$.
+\item \emph{Pressure drop} (23)--(30): $d_P = 6(1-\varepsilon)/a$, $1/K = 1+\tfrac23\,d_P/((1-\varepsilon)d_S)$
+  (the wall factor, $d_S$ the column diameter), $\mathrm{Re}_V=u_Vd_PK/((1-\varepsilon)\nu_V)$,
+  $\psi_0=C_{P,0}(64/\mathrm{Re}_V+1.8/\mathrm{Re}_V^{0.08})$, dry $\Delta p_0/H=\psi_0\,(a/\varepsilon^3)(F_V^2/2)/K$;
+  irrigated $\Delta p/H=\psi_L\,(a/(\varepsilon-h_L)^3)(F_V^2/2)/K$ with
+  $\psi_L=\psi_0((\varepsilon-h_L)/\varepsilon)^{1.5}(h_L/h_{L,S})^{0.3}\exp(13300\sqrt{\mathrm{Fr}_L}/a^{3/2})$,
+  $F_V=u_V\sqrt{\rho_V}$.
+\end{itemize}
+\emph{Symbols the paper does not define in numbers}: ``water'' in (15) and (44) is taken at 20\,$^\circ$C
+($\sigma_W=0.0728$~N/m, $\eta_W=1.002$~mPa\,s, $\rho_W=998.2$~kg/m$^3$), declared, since the paper gives none.
+\emph{The packing's constants} $C_S, C_{Fl}, C_h, C_{P,0}, C_L, C_V$ are the packing's: Table~2 of the paper,
+entered as a record under \code{correlations \{ BilletSchultes \{ \} \}}
+(Sec.~\ref{sec:packing-record}); a cell the paper leaves blank is a constant it did not publish, and the
+engine refuses by name the one the packing lacks.  \emph{Validity}: the paper's Table~1 (mass-transfer
+column: $F_V$ 0.003--2.77~Pa$^{1/2}$, $u_L$ 0.256--118~m$^3$/m$^2$h, $\rho_L$ 361--1237, $\nu_L$
+0.14--1.66\,$\times10^{-6}$~m$^2$/s, $\sigma$ 0.7--74~mN/m, $D_L$ 0.29--6.5\,$\times10^{-9}$, $\rho_V$
+0.07--97, $\nu_V$ 0.14--126\,$\times10^{-6}$, $D_V$ 0.29--87.4\,$\times10^{-6}$~m$^2$/s): a state outside is
+ANNOUNCED with its range, not refused.  Not implemented: the Marangoni correction for negative systems
+(17)--(20); the system is taken as neutral or positive, and the run says so.
+\emph{In sample}: the six constants are fitted by the authors to their own database (over 3500 points, 70
+packings), so every packing in Table~2 is in sample; the paper's stated mean deviations on its data are 5\,\%
+(loading and flooding), 6.7\,\% (holdup), 9.1\,\% (pressure drop), 12.4\,\% (absorption), 14.1\,\%
+(rectification).  No measurement of a random packing held out of the fit is in the tree, so no accuracy of
+this law is claimed beyond those: the witness \code{ratebased05\_billetSchultes\_pall25\_c6c7} pins what the
+engine prints, and the law is held to a second transcription of the paper by gate
+\code{check\_billet\_schultes}.  Records: \code{PallRing-metal-50}, \code{PallRing-metal-25},
+\code{PallRing-plastic-50}, \code{PallRing-plastic-25}, \code{Raschig-ceramic-25} (Table~2a, every cell
+present); not entered: the 50~mm ceramic Raschig ring (no $C_h$, no $C_{P,0}$) and the Berl saddles (no
+$C_S$, $C_{Fl}$, $C_{P,0}$), and the paper has no row for metal Raschig rings, Intalox saddles or IMTP.
+
 \subsubsection{The packing as a record (\code{record}, \code{installed}, \code{borrowed})}\label{sec:packing-record}
 A packing is a piece of equipment with its own data, so the geometry the two
 correlations read can live in an asset record of the flat catalogue,
@@ -34067,6 +34133,9 @@ $b$, $h$, $h_{pe}$, $\Omega$ & --- & read (Fair et al.\ 2000 Tables~2, 4) \\
 \hline
 \end{tabular}
 \end{center}
+Billet--Schultes (Sec.~\ref{sec:billetSchultes}) reads $a_p$, $\varepsilon$ and the six constants
+\code{CS}, \code{CFl}, \code{Ch}, \code{CP0}, \code{CL}, \code{CV} stated under
+\code{correlations \{ BilletSchultes \{ \} \}}; no corrugation geometry.
 The catalogue holds two records, each written only from the table it cites:
 \code{SulzerBX} (gauze, $a_p = 492$~m$^2$/m$^3$, $\varepsilon = 0.90$,
 $S = 9$~mm: Rocha, Bravo and Fair 1993 \cite{RochaBravoFair1993}, Table~IV;
@@ -34077,8 +34146,9 @@ and refused by Rocha--Bravo--Fair for want of $F_{SE}$.  The resolved values
 are handed to the bed solvers through the same keys as the inline form, so a
 record changes no number: the witness \code{packing05\_schulz\_record\_0p10bar}
 reproduces \code{packing01} exactly (gate \code{check\_packing\_record}).  The
-record kind also admits \code{arrangement random;}; no random-packing
-correlation is implemented, so a column refuses one by name.
+record kind also admits \code{arrangement random;}: a random packing is
+served by \code{model BilletSchultes;} alone (five such records ship, from the
+paper's Table~2a), and Rocha--Bravo--Fair or Delft on one is refused by name.
 
 \subsubsection{What was measured: Montz-Pak A3-500M}\label{sec:packing-schulz}
 Schulz et al.\ \cite{Schulz2018} measured HETP and pressure drop of a
@@ -36983,6 +37053,11 @@ packing'', \emph{Chem.\ Eng.\ Process.}\ \textbf{38} (1999) 683--695.
 P.~P.\ and Olujic, \v{Z}., ``Structured packing performance --- experimental
 evaluation of two predictive models'', \emph{Ind.\ Eng.\ Chem.\ Res.}\
 \textbf{39} (2000) 1788--1796.  Tables~2 and~4: the working equations.
+
+\bibitem{BilletSchultes1999} Billet, R.\ and Schultes, M., ``Prediction of mass
+transfer columns with dumped and arranged packings: updated summary of the
+calculation method of Billet and Schultes'', \emph{Trans.\ IChemE} \textbf{77}
+Part~A (1999) 498--504.  Eqs.~(5)--(16), (23)--(44) and Tables~1--3.
 
 \bibitem{Schulz2018} Schulz, R., Rietfort, T., Jansen, H.\ and Olujic, \v{Z}.,
 ``Experimental evidence on performance of an advanced gauze structured packing

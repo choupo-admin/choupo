@@ -54,6 +54,7 @@ describe("C329 column selectables -> theory sections", () => {
     ["operation.hydraulics.pressureDropModel", "BollesFair", "sec:bolles-fair"],
     ["operation.packing.model", "RochaBravoFair", "sec:packing-rbf"],
     ["operation.packing.model", "Delft", "sec:packing-delft"],
+    ["operation.packing.model", "BilletSchultes", "sec:billetSchultes"],
   ];
   for (const [path, token, want] of cases) {
     it(`${path} ${token} -> ${want}`, () => {
