@@ -414,6 +414,9 @@ const LetdownTool = lazy(() =>
 const ControlValveTool = lazy(() =>
   import("./methods/ControlValveTool.js")
     .then((m) => ({ default: m.ControlValveTool })));
+const CompressorChoiceTool = lazy(() =>
+  import("./methods/CompressorChoiceTool.js")
+    .then((m) => ({ default: m.CompressorChoiceTool })));
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
@@ -746,6 +749,7 @@ export function MethodsWorkspace() {
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "control-valve" ? <ControlValveTool />
+            : tool === "compressor-choice" ? <CompressorChoiceTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "syngas" ? <SyngasTool />
