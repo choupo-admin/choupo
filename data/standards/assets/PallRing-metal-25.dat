@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -----------------------*\
+  PACKING: Pall ring, metal, 25 mm, a RANDOM (dumped) packing
+
+  WHAT THIS RECORD IS.  The nominal geometry and the six constants of one
+  random packing under the Billet & Schultes correlation, for a column's
+  `packing { record PallRing-metal-25; model BilletSchultes; ... }` (kind packing,
+  read by src/unitOperations/distillation/PackingRecord.cpp; Theory Guide
+  sec:packing-record and sec:billetSchultes; design record
+  docs/design/random-packings.md).
+
+  EVERY VALUE, AND WHERE IT WAS READ (primary read 2026-11-25 on the page
+  image, twice): Billet & Schultes, Trans IChemE 77 Part A (1999) 498-504,
+  Table 2a, p. 501, row "Pall ring", "Metal", size 25 mm:
+  a 223.5 m2/m3, void fraction 0.954,
+  C_S 2.627, C_Fl 2.083, C_h 0.719, C_P,0 0.957, C_L 1.44, C_V 0.336.
+
+  IN-SAMPLE.  The authors fitted the six constants to their own database
+  (over 3500 points, 70 packings, p. 498): every number here is a value of
+  that fit, so this packing cannot be a held-out test of the law.  The paper's
+  stated accuracy is Table 3 (p. 503): 5 % loading/flooding, 6.7 % holdup,
+  9.1 % pressure drop, 12.4 % absorption, 14.1 % rectification (their data).
+
+  WHAT IT SERVES.  `model BilletSchultes;` only (hydraulics and mass transfer).
+  Not Rocha-Bravo-Fair or Delft: those are models of a corrugated structured
+  packing.
+\*-----------------------------------------------------------------*/
+
+name              PallRing-metal-25;
+kind              packing;
+arrangement       random;
+
+specificArea      223.5;          // m2/m3 (Table 2a)
+voidFraction      0.954;          // (Table 2a)
+
+correlations
+{
+    BilletSchultes
+    {
+        CS   2.627;     // loading point (Table 2a)
+        CFl  2.083;     // flooding point
+        Ch   0.719;     // hydraulic area, holdup
+        CP0  0.957;     // dry pressure drop
+        CL   1.44;     // liquid film
+        CV   0.336;     // gas film
+    }
+}
+
+provenance
+{
+    source  "R. Billet, M. Schultes, Prediction of mass transfer columns with dumped and arranged packings: updated summary of the calculation method of Billet and Schultes, Trans IChemE 77 Part A (1999) 498-504, Table 2a, p. 501, row Pall ring Metal 25 mm";
+    specificArea  { origin literature; method "Table 2a (p. 501), a"; }
+    voidFraction  { origin literature; method "Table 2a (p. 501), eps"; }
+    BilletSchultes { origin literature; method "Table 2a (p. 501), columns C_S, C_Fl, C_h, C_P,0, C_L, C_V of the row"; }
+}
