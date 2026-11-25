@@ -305,7 +305,7 @@ Gate `check_elementary_rates` (s, d, b, B).
 **THE REACTION LIBRARY (C458, C339; Theory Guide `sec:kinetics-library`).**  One FOLDER per elementary gas-phase reaction under
 `data/standards/kinetics/` and one FILE per published SOURCE in it (`recordType elementaryReaction`; the folder name is the CANONICAL
 EQUATION -- species sorted within each side, reversible oriented smaller side first, `+M` / `(+M)` suffix, `~` for an irreversible one,
-`@1`/`@2` for a summed duplicate; the file is the source: `H+O2=O+OH/OConaire2004.dat`, `H+O2=O+OH/MillerBowman1989.dat`, so two published
+`@1`/`@2` for a summed duplicate; the folder is the equation and the file is the source: folder `H+O2=O+OH`, files `OConaire2004.dat` and `MillerBowman1989.dat`, so two published
 rate constants of one reaction coexist; no `: * ? < > " \ |` or space in a name, no two names equal ignoring case).  Species are the
 catalogue's (`water`, `ethane`); `printedEquation "H + O2 = O + OH";` is the equation as the source prints it, shown beside the canonical
 name wherever the run names a reaction.  A species on both sides (`2H+H2=2H2`) is a `spectators true;` record (`order` left, `orderRev`

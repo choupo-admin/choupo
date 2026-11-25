@@ -3721,7 +3721,8 @@ BUND_REFUSALS = [
          'items       ( "Separator" "LetdownHP" "StorageFlash" "NH3Storage/tank1" );')),
     ("two containments sharing a floor", "claim the same ground",
      sub("region      { xMin 103 m; xMax 213 m; yMin -64 m; yMax 4 m; }",
-         "region      { xMin 80 m; xMax 213 m; yMin -64 m; yMax 11 m; }")),
+         "polygon     ( { x 103 m; y -64 m; } { x 213 m; y -64 m; } { x 213 m; y 11 m; }"
+         " { x 80 m; y 11 m; } { x 80 m; y 5 m; } { x 103 m; y 5 m; } );")),
 ]
 
 
