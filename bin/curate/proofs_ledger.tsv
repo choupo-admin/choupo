@@ -14,7 +14,7 @@ VIOLATES	T3	tutorials/steady/flash/flash20_ethanol_water_pcsaft	2026-11-25	the s
 VIOLATES	T3	tutorials/steady/flowsheets/process05_isomerization_recycle	2026-11-25	the solver's own stopping tolerance: a recycle stopped at its tolerance amplifies the 1e-16 rewrite to 4e-7 in the bottoms neoPentane
 VIOLATES	T6	tutorials/steady/absorption/extract02_declared_interior	2026-11-25	the solver's own stopping tolerance: N_shortcut moves 9.6e-7 when the converged state is the seed
 VIOLATES	T6	tutorials/steady/electrodialysis/ed07_feed_and_bleed	2026-11-25	the solver's own stopping tolerance: a recycle stopped at 1e-4; the product composition moves 1.5e-4 on a restart
-NOTJUDGED	T1	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T1	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T1	declared size is not a plain number	1	2026-11-25	a $variable size cannot be scaled by the text transformation
 NOTJUDGED	T1	declared size outside a unit block	24	2026-11-25	a sectored sub-flowsheet or a top-level key carries the size; no unit rule can reach it yet
 NOTJUDGED	T1	declared size, no unit rule: agitatedVessel	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
@@ -26,7 +26,7 @@ NOTJUDGED	T1	declared size, no unit rule: condenser	1	2026-11-25	a declared size
 NOTJUDGED	T1	declared size, no unit rule: convectiveDryer	3	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: crystalliser	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: cyclone	6	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
-NOTJUDGED	T1	declared size, no unit rule: distillationColumn	23	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
+NOTJUDGED	T1	declared size, no unit rule: distillationColumn	24	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: electrodialysisStack	10	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: evaporator	9	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: extractor	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
@@ -44,12 +44,12 @@ NOTJUDGED	T1	declared size, no unit rule: tsaTwinBed	1	2026-11-25	a declared siz
 NOTJUDGED	T1	declared size, no unit rule: turbine	6	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	feeds not identifiable	14	2026-11-25	observer units or a flowsheet without a parsable `units (` list: the independent topology reader cannot name the feeds
 NOTJUDGED	T1	flat-sheet cell: one coupon, nothing to scale	1	2026-11-25	one coupon of fixed area has no parallel vessels to scale
-NOTJUDGED	T1	outerDict (an outer driver varies the case)	14	2026-11-25	an outer driver varies the case: its own repeated runs are the proof, and the outputs are not one state
-NOTJUDGED	T2	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T1	outerDict (an outer driver varies the case)	15	2026-11-25	an outer driver varies the case: its own repeated runs are the proof, and the outputs are not one state
+NOTJUDGED	T2	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T2	fewer than 2 components	34	2026-11-25	a single-component case has no order to reverse
-NOTJUDGED	T3	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T3	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T4	a value the independent reader cannot parse (n/a, nested block)	4	2026-11-25	the reader of proofs_closure.py does not handle a text value or a nested block in a state file
-NOTJUDGED	T4	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T4	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T4	engine report carries a text value (n/a)	3	2026-11-25	the engine report holds n/a where the reader needs a number
 NOTJUDGED	T4	flowsheet the independent reader cannot parse	18	2026-11-25	a flowsheet without a flat `units (` list: the topology reader refuses by name
 NOTJUDGED	T4	no converged/ stream files	10	2026-11-25	a sweep or an outer-driver case keeps no single converged state
@@ -58,7 +58,7 @@ NOTJUDGED	T4	other independent-reader limit	3	2026-11-25	unclassified limit of t
 NOTJUDGED	T4	pseudo-component formula	5	2026-11-25	a pseudo-component (A, B, C) has no formula, so no element balance
 NOTJUDGED	T4	stream blocks the independent reader does not handle	47	2026-11-25	utility category, vaporFraction, speciation and similar blocks the independent reader does not read
 NOTJUDGED	T4	stream state file not unique	5	2026-11-25	a stream with 0 or 2 candidate state files in a sectored plant
-NOTJUDGED	T5	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T5	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T5	the result publishes no streams	18	2026-11-25	the result JSON carries no streams block (a sweep or a property case run by choupoSolve)
-NOTJUDGED	T6	base run refuses or does not converge	18	2026-11-25	refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes), plus two on main at 2026-11-25 that are FINDINGS: column20_mtbe_kinetic_mesh (postDict view declares kmol/h for a series published in h) and optim08_bayesian_membrane (the retired bayesian method)
+NOTJUDGED	T6	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T6	no converged/ stream files	37	2026-11-25	a sweep or an outer-driver case keeps no single converged state
