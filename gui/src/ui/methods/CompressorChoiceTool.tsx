@@ -413,7 +413,11 @@ export function CompressorChoiceTool(): JSX.Element {
   );
 
   // ---- card 5 -----------------------------------------------------------------
-  const sd = A.sheet && !("error" in A.sheet) ? A.sheet : null;
+  const kp = (r: MethodRunState): { power: number; Tin: number; Tout: number } | null => {
+    const k = r.result?.kpis?.[COMPRESSION_UNIT];
+    return k && Number.isFinite(k["W_shaft_kW"]) ? { power: k["W_shaft_kW"]!, Tin: k["T_in"]!, Tout: k["T_out"]! } : null;
+  };
+  const sd = kp(air);
   const rec = antiSurge(demand, surgeFrac, margin);
   const floor = Math.min(1, surgeFrac * (1 + margin));
   const feedOverrides = (f: number, T: number) => ([
@@ -423,16 +427,14 @@ export function CompressorChoiceTool(): JSX.Element {
   ]);
   const totalKey = rec.total.toFixed(4);
   const runC = useMethodRun(COMPRESSION_WITNESS, feedOverrides(rec.total, AIR_FEED_T), `cool:${totalKey}`, "choupoSolve");
-  const sC = useMemo(() => (runC.result ? readCompressionSheet(runC.result.designFiles, COMPRESSION_UNIT) : null), [runC.result]); // eslint-disable-line react-hooks/exhaustive-deps
-  const cooledOut = sC && !("error" in sC) ? sC : null;
-  const Tmix = cooledOut ? suctionMix(rec.share, AIR_FEED_T, cooledOut.singlePassTout) : AIR_FEED_T;
+  const cooledOut = kp(runC);
+  const Tmix = cooledOut ? suctionMix(rec.share, AIR_FEED_T, cooledOut.Tout) : AIR_FEED_T;
   const hotKey = `hot:${totalKey}:${Tmix.toFixed(2)}`;
   const runH = useMethodRun(COMPRESSION_WITNESS, feedOverrides(rec.total, cooledOut ? Tmix : AIR_FEED_T), hotKey, "choupoSolve");
-  const sH = useMemo(() => (runH.result ? readCompressionSheet(runH.result.designFiles, COMPRESSION_UNIT) : null), [runH.result]); // eslint-disable-line react-hooks/exhaustive-deps
-  const hotOut = sH && !("error" in sH) ? sH : null;
+  const hotOut = kp(runH);
   const chosen = cooled === "cooled" ? cooledOut : hotOut;
-  const perKg = (s: CompressionSheet | null): number | null =>
-    s && sd && demand > 0 ? (s.singlePassPower / sd.singlePassPower) / demand : null;
+  const perKg = (s: { power: number } | null): number | null =>
+    s && sd && demand > 0 ? (s.power / sd.power) / demand : null;
   const card5 = (
     <Box data-cc-card="recycle">
       <OriginMark of={["engine", "page", "assumption"]}
@@ -466,23 +468,30 @@ export function CompressorChoiceTool(): JSX.Element {
           <Table.Tbody>
             <Table.Tr><Table.Td>machine passes [share of design]</Table.Td><Table.Td>1.00</Table.Td><Table.Td>{fx(rec.total, 2)}</Table.Td><Table.Td>{fx(rec.total, 2)}</Table.Td></Table.Tr>
             <Table.Tr><Table.Td>suction temperature [K]</Table.Td><Table.Td>{fx(sd.Tin, 1)}</Table.Td><Table.Td>{fx(cooledOut.Tin, 1)}</Table.Td><Table.Td>{fx(hotOut?.Tin, 1)}</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>shaft power [kW]</Table.Td><Table.Td>{fx(sd.singlePassPower, 0)}</Table.Td><Table.Td>{fx(cooledOut.singlePassPower, 0)}</Table.Td><Table.Td>{fx(hotOut?.singlePassPower, 0)}</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>power if it followed the demand [kW]</Table.Td><Table.Td>{fx(sd.singlePassPower, 0)}</Table.Td><Table.Td>{fx(sd.singlePassPower * demand, 0)}</Table.Td><Table.Td>{fx(sd.singlePassPower * demand, 0)}</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>discharge temperature [K]</Table.Td><Table.Td>{fx(sd.singlePassTout, 1)}</Table.Td><Table.Td>{fx(cooledOut.singlePassTout, 1)}</Table.Td><Table.Td>{fx(hotOut?.singlePassTout, 1)}</Table.Td></Table.Tr>
+            <Table.Tr><Table.Td>shaft power [kW]</Table.Td><Table.Td>{fx(sd.power, 0)}</Table.Td><Table.Td>{fx(cooledOut.power, 0)}</Table.Td><Table.Td>{fx(hotOut?.power, 0)}</Table.Td></Table.Tr>
+            <Table.Tr><Table.Td>power if it followed the demand [kW]</Table.Td><Table.Td>{fx(sd.power, 0)}</Table.Td><Table.Td>{fx(sd.power * demand, 0)}</Table.Td><Table.Td>{fx(sd.power * demand, 0)}</Table.Td></Table.Tr>
+            <Table.Tr><Table.Td>discharge temperature [K]</Table.Td><Table.Td>{fx(sd.Tout, 1)}</Table.Td><Table.Td>{fx(cooledOut.Tout, 1)}</Table.Td><Table.Td>{fx(hotOut?.Tout, 1)}</Table.Td></Table.Tr>
             <Table.Tr><Table.Td>energy per kilogram delivered, against design</Table.Td><Table.Td>1.00</Table.Td><Table.Td>{fx(perKg(cooledOut), 2)}</Table.Td><Table.Td>{fx(perKg(hotOut), 2)}</Table.Td></Table.Tr>
           </Table.Tbody>
         </PanTable>
       )}
       {chosen && sd && (
         <Text size="sm" mt={8} data-cc-recycle-line="">
-          With the recycle {cooled === "cooled" ? "cooled back to the fresh gas's temperature" : "returning hot"}, the machine draws {fx(chosen.singlePassPower, 0)} kW
-          to deliver {fx(demand * 100, 0)} % of the flow: {fx(chosen.singlePassPower / (sd.singlePassPower * demand), 2)} times the power it would draw if it followed the demand,
-          and the discharge is {fx(chosen.singlePassTout, 0)} K against {fx(sd.singlePassTout, 0)} K at the design point.
+          With the recycle {cooled === "cooled" ? "cooled back to the fresh gas's temperature" : "returning hot"}, the machine draws {fx(chosen.power, 0)} kW
+          to deliver {fx(demand * 100, 0)} % of the flow: {fx(chosen.power / (sd.power * demand), 2)} times the power it would draw if it followed the demand,
+          and the discharge is {fx(chosen.Tout, 0)} K against {fx(sd.Tout, 0)} K at the design point.
           {cooled === "uncooled" && hotOut && cooledOut && (
             <> The hot run's suction temperature ({fx(hotOut.Tin, 1)} K) comes from the cooled run's discharge, one step of the iteration;
-              the hot run's own discharge came out {fx(hotOut.singlePassTout - cooledOut.singlePassTout, 1)} K above that, so a converged value would be a little higher.</>
+              the hot run's own discharge came out {fx(hotOut.Tout - cooledOut.Tout, 1)} K above that, so the iteration has not converged and the true discharge is higher still; the page does not iterate further.</>
           )}
         </Text>
+      )}
+      {rec.share > 0 && runH.result?.log.includes("could not be SIZED") && (
+        <Alert color="orange" variant="light" mt={8} data-cc-hot-refused="">
+          With the recycle returning hot, the engine's staged design of this machine could not keep every discharge within the
+          case's temperature limit, and the engine said so (its message is in the run's log): the single pass above is still solved,
+          but a machine with a hot recycle cannot be designed on the same staging.
+        </Alert>
       )}
       <PanelNote>
         Runs tutorials/{COMPRESSION_WITNESS} with its feed flow scaled to the total the machine passes (nitrogen and oxygen in their
