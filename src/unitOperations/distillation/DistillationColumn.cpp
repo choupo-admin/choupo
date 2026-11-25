@@ -5893,7 +5893,8 @@ int DistillationColumn::solvePackedReadingRecord(const DictPtr& dict,
         auto pk = resolved->subDict("operation")->subDict("packing");
         kpis_["packing_specificArea_m2_m3"]  = pk->lookupScalar("specificArea");
         kpis_["packing_voidFraction"]        = pk->lookupScalar("voidFraction");
-        kpis_["packing_corrugationAngle_deg"] = packingRecord::angleDegrees(*pk);
+        if (pk->found("corrugationAngle"))      // a Billet-Schultes bed has none
+            kpis_["packing_corrugationAngle_deg"] = packingRecord::angleDegrees(*pk);
         packingRecord::transferReads(*resolved, *dict);
     }
     return rc;

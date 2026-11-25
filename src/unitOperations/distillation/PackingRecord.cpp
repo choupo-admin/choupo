@@ -61,8 +61,17 @@ const std::map<std::string, std::vector<std::string>>& correlationConstants()
     static const std::map<std::string, std::vector<std::string>> c = {
         { "RochaBravoFair", { "surfaceEnhancement" } },
         { "Delft",          { } },
+        //  Billet & Schultes 1999, Table 2: the six constants of the packing.
+        { "BilletSchultes", { "CS", "CFl", "Ch", "CP0", "CL", "CV" } },
     };
     return c;
+}
+
+//  The packing correlations the engine knows, for every refusal that lists them.
+const std::vector<std::string>& modelNames()
+{
+    static const std::vector<std::string> n = { "RochaBravoFair", "Delft", "BilletSchultes" };
+    return n;
 }
 
 bool isLength(const std::string& f)
@@ -91,6 +100,12 @@ std::string meaning(const std::string& f)
     if (f == "elementHeight")      return "the height of one packing element h_pe, m";
     if (f == "holeFraction")       return "the fraction of the surface occupied by holes, Omega";
     if (f == "surface")            return "the surface, gauze or sheetMetal";
+    if (f == "CS")  return "Billet-Schultes' loading-point constant C_S (1999 Table 2)";
+    if (f == "CFl") return "Billet-Schultes' flooding-point constant C_Fl (1999 Table 2)";
+    if (f == "Ch")  return "Billet-Schultes' hydraulic-area constant C_h (1999 Table 2)";
+    if (f == "CP0") return "Billet-Schultes' dry pressure-drop constant C_P,0 (1999 Table 2)";
+    if (f == "CL")  return "Billet-Schultes' liquid-film constant C_L (1999 Table 2)";
+    if (f == "CV")  return "Billet-Schultes' gas-film constant C_V (1999 Table 2)";
     if (f == "surfaceEnhancement") return "Rocha-Bravo-Fair's surface-enhancement factor F_SE of a"
                                           " sheet-metal packing (1996 Eq 10 and Table 1), a constant of"
                                           " the packing under that correlation";
@@ -132,6 +147,8 @@ std::vector<std::string> fieldsRead(const std::string& model)
     if (model == "Delft")
         return { "specificArea", "voidFraction", "corrugationAngle", "corrugationBase",
                  "corrugationHeight", "elementHeight", "holeFraction" };
+    if (model == "BilletSchultes")
+        return { "specificArea", "voidFraction" };       // + the six constants
     return {};
 }
 
@@ -211,7 +228,7 @@ void PackingRecord::read(const DictPtr& d, const std::string& sourcePath)
             if (it == correlationConstants().end())
                 throw std::runtime_error(locus + ": `correlations { " + model + " }`: "
                     + registryRefusal::message("packing correlation", model,
-                        {"RochaBravoFair", "Delft"}, "Accepted"));
+                        modelNames(), "Accepted"));
             auto m = c->subDict(model);
             for (const auto& k : m->keys())
             {
@@ -402,13 +419,6 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
     const PackingRecord& rec = PackingRegistry::byName(recName, locus);
     const std::string recAt = "record '" + recName + "' (" + rec.where() + ")";
 
-    if (rec.arrangement() != "structured")
-        throw std::runtime_error(locus + " " + recAt + " is a RANDOM packing; the"
-            " engine's packing correlations (RochaBravoFair, Delft) are models of a"
-            " corrugated STRUCTURED packing, and no random-packing correlation is"
-            " implemented.  The record kind holds a random packing; a column cannot"
-            " use one yet.");
-
     //  A value typed beside `record` would override the record in silence.
     std::vector<std::string> recordOwned = geometryFields();
     recordOwned.push_back("surface");
@@ -451,9 +461,14 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
     //  message (PK-01): every check below is about what a KNOWN correlation
     //  reads, and would otherwise blame `installed` or `borrowed`.
     const std::string model = pk->lookupWordOrDefault("model", "RochaBravoFair");
-    if (model != "RochaBravoFair" && model != "Delft")
+    if (std::find(modelNames().begin(), modelNames().end(), model) == modelNames().end())
         throw std::runtime_error("DistillationColumn '" + unit + "': "
-            + registryRefusal::message("packing model", model, {"RochaBravoFair", "Delft"}, "Accepted"));
+            + registryRefusal::message("packing model", model, modelNames(), "Accepted"));
+    if (rec.arrangement() != "structured" && model != "BilletSchultes")
+        throw std::runtime_error(locus + " " + recAt + " is a RANDOM packing; `model "
+            + model + ";` is a model of a corrugated STRUCTURED packing.  Select `model"
+            " BilletSchultes;` (Billet & Schultes 1999: random and structured packings),"
+            " the correlation the engine has for a random one.");
 
     //  ---- installed: measured on THIS bed, the case's ------------------------
     std::map<std::string, scalar> installed;
@@ -550,6 +565,10 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
     std::vector<std::string> missing;
     for (const auto& f : need)
         if (!installed.count(f) && !borrowed.count(f) && !rec.has(f)) missing.push_back(f);
+    const bool bs = (model == "BilletSchultes");
+    if (bs)
+        for (const auto& c : correlationConstants().at("BilletSchultes"))
+            if (!rec.hasConstant("BilletSchultes", c)) missing.push_back(c);
     if (rbf && rec.surface().empty()) missing.push_back("surface");
     const bool sheet = rbf && rec.surface() == "sheetMetal";
     if (sheet && !borrowed.count("surfaceEnhancement")
@@ -572,6 +591,8 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
         for (const auto& f : missing)
             o << "\n    `" << (f == "surfaceEnhancement"
                                    ? "correlations { RochaBravoFair { surfaceEnhancement } }"
+                                   : (bs && f.size() <= 3 && f[0] == 'C')
+                                   ? "correlations { BilletSchultes { " + f + " } }"
                                    : f)
               << "` -- " << meaning(f);
         o << "\n  The record states only what its source printed.  Add the value to"
@@ -631,6 +652,17 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
         wpk->insert(f, EntryValue(v));
         line(f, fmt(v) + unitLabel(f), how);
     }
+    if (bs)
+        for (const auto& c : correlationConstants().at("BilletSchultes"))
+        {
+            const scalar v = rec.constant("BilletSchultes", c);
+            std::string how = "record, a constant of this packing under BilletSchultes (Table 2)";
+            if (const auto* pv = rec.provenanceOf("BilletSchultes"))
+                if (pv->origin == "estimated")
+                    how += ", an ESTIMATE (" + pv->reviewStatus + "): " + pv->notes;
+            wpk->insert(c, EntryValue(v));
+            line(c, fmt(v), how);
+        }
     if (rbf)
     {
         wpk->insert("surface", EntryValue(rec.surface()));

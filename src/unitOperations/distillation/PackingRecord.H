@@ -77,9 +77,11 @@ Description
     own dictionary as before.
 
     The record kind serves a RANDOM packing too (`arrangement random;`), the
-    shape being the same (nominal geometry + per-correlation constants); no
-    random-packing correlation is implemented, so a column refuses one by
-    name.
+    shape being the same (nominal geometry + per-correlation constants): the
+    random-packing law is Billet & Schultes 1999 (`model BilletSchultes;`,
+    PackingBS.H), whose six constants CS CFl Ch CP0 CL CV are stated under
+    `correlations { BilletSchultes { ... } }`; Rocha-Bravo-Fair and Delft on a
+    random record are refused by name (C513).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
