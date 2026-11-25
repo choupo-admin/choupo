@@ -112,9 +112,8 @@ building { ... }                                           // §4
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
   MATERIAL stream is routed or listed `notRouted` with its reason; an unreachable
   end that is a sized-but-unplaced or refused unit is also a `pipeNotRouted`
-  finding (an unsized unit or unattached junction is not), and a unit inside a placed converter
-  shell pipes to the shell's side (`layout.insideShell` lists streams with both
-  ends in one shell).  SOLIDS ARE
+  finding, and a unit inside a placed converter shell pipes to the shell
+  (`layout.insideShell`: streams with both ends in it).  SOLIDS ARE
   NOT PIPED (powder, tablets: containers or conveyors), a unit with no placed
   item leaves its streams unrouted, and the router does not steer round
   items: a segment through a footprint is announced `pipeClash`.  No pressure
