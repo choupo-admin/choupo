@@ -644,6 +644,9 @@
   "DemandSample": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DenseLDLT": [
+   "src/solver/ip/DenseLDLT.H"
+  ],
   "DensityAnswer": [
    "src/thermo/liquidProperty/DensityMethod.H"
   ],
@@ -1212,6 +1215,9 @@
   ],
   "IndoorPlace": [
    "src/postProcessing/layout/BuildingLayout.H"
+  ],
+  "Inertia": [
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "InfeasibleTrial": [
    "src/core/InfeasibleTrial.H"
@@ -2431,6 +2437,9 @@
   "SolutionWriter": [
    "src/io/SolutionWriter.H"
   ],
+  "SolveReport": [
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
   "Solvent": [
    "src/unitOperations/UnitAcceptance.H"
   ],
@@ -2583,6 +2592,9 @@
   ],
   "Symbolic": [
    "src/solver/SparseLU.H"
+  ],
+  "SymmetricIndefinite": [
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "SystemClassification": [
    "src/thermo/SystemClassifier.H"
@@ -10283,6 +10295,11 @@
   "src/solver/Wegstein.cpp": [
    "src/core/Types.H",
    "src/solver/Wegstein.H"
+  ],
+  "src/solver/ip/DenseLDLT.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/SymmetricIndefinite.H"
   ],
   "src/streams/AnalysisReconciler.cpp": [
    "src/core/Types.H",
@@ -21178,6 +21195,7 @@
    "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
    "src/solver/Wegstein.cpp",
+   "src/solver/ip/DenseLDLT.cpp",
    "src/streams/AnalysisReconciler.cpp",
    "src/streams/Carried.cpp",
    "src/streams/Composition.cpp",
@@ -23613,6 +23631,12 @@
    "src/solver/Wegstein.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/solver/ip/DenseLDLT.H": [
+   "src/solver/ip/DenseLDLT.cpp"
+  ],
+  "src/solver/ip/SymmetricIndefinite.H": [
+   "src/solver/ip/DenseLDLT.cpp"
   ],
   "src/streams/AnalysisReconciler.H": [
    "src/propertyOps/DataReconciliation.cpp",
