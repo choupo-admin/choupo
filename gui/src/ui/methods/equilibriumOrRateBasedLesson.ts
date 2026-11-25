@@ -62,11 +62,11 @@ export const EQ_RB_OPENING = "A tray never brings its vapour all the way to equi
 /** What the engine has and has not, stated before anything is run. */
 export const EQ_RB_ENGINE_SCOPE = "Choupo has the first way and not the second.  A "
   + "Wang-Henke column reads a declared Murphree efficiency "
-  + "(DistillationColumn.cpp:1600) and folds it into an effective K-value "
-  + "(DistillationColumn.cpp:1732); the simultaneous MESH method refuses one rather "
-  + "than solve ideal stages in its place (DistillationColumn.cpp:2400).  A binary "
+  + "(DistillationColumn.cpp:1662) and folds it into an effective K-value "
+  + "(DistillationColumn.cpp:1794); the simultaneous MESH method refuses one rather "
+  + "than solve ideal stages in its place (DistillationColumn.cpp:2474).  A binary "
   + "column at total reflux can compute its tray efficiency from the tray's geometry "
-  + "(DistillationColumn.cpp:5103, binary only).  The one rate-based column is a "
+  + "(DistillationColumn.cpp:5176, binary only).  The one rate-based column is a "
   + "binary packed bed at total reflux (`model rateBased;`, RateBasedSegment.cpp): no "
   + "trays, no feed, no third component.  So everything this page says about "
   + "rate-based models of tray columns, of columns with a feed and of mixtures of "
@@ -99,7 +99,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     ],
     note: "The engine applies this relation with one efficiency for every component "
       + "and every tray, the reboiler and a partial condenser excepted "
-      + "(DistillationColumn.cpp:1732).",
+      + "(DistillationColumn.cpp:1794).",
   },
   {
     n: 2,
@@ -148,7 +148,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     note: "For a binary the Murphree efficiencies of the two components are the same "
       + "number, because both the vapour and its equilibrium value sum to one; the "
       + "engine computes the efficiency for a binary only and refuses a third component "
-      + "(DistillationColumn.cpp:5103).",
+      + "(DistillationColumn.cpp:5176).",
   },
   {
     n: 4,
@@ -196,11 +196,11 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     formula: String.raw`\begin{aligned} \mathrm{HETP} &= H_{OG}\,\frac{\ln\lambda}{\lambda - 1}, \qquad \lambda = \frac{m\,V}{L} \\ H_{OG} &= H_G + \lambda\,H_L \end{aligned}`,
     where: [
       { sym: "\\mathrm{HETP}", means: "height equivalent to a theoretical plate (the engine's relation: PackingDelft.cpp:131)", unit: "m" },
-      { sym: "H_{OG}", means: "height of an overall gas-phase transfer unit; the rate-based bed publishes it per segment (RateBasedSegment.cpp:909)", unit: "m" },
-      { sym: "H_G, H_L", means: "heights of a gas-film and of a liquid-film transfer unit (RateBasedSegment.cpp:910 and RateBasedSegment.cpp:911)", unit: "m" },
+      { sym: "H_{OG}", means: "height of an overall gas-phase transfer unit; the rate-based bed publishes it per segment (RateBasedSegment.cpp:957)", unit: "m" },
+      { sym: "H_G, H_L", means: "heights of a gas-film and of a liquid-film transfer unit (RateBasedSegment.cpp:958 and RateBasedSegment.cpp:959)", unit: "m" },
       { sym: "\\lambda", means: "m V / L, the slope of the equilibrium line times the vapour flow over the liquid flow" },
-      { sym: "m", means: "local slope dy/dx of the equilibrium curve, per segment (RateBasedSegment.cpp:912)" },
-      { sym: "V, L", means: "vapour and liquid molar flows in a segment (RateBasedSegment.cpp:907 and RateBasedSegment.cpp:908)", unit: "kmol/s" },
+      { sym: "m", means: "local slope dy/dx of the equilibrium curve, per segment (RateBasedSegment.cpp:960)" },
+      { sym: "V, L", means: "vapour and liquid molar flows in a segment (RateBasedSegment.cpp:955 and RateBasedSegment.cpp:956)", unit: "kmol/s" },
     ],
     note: "The relation needs straight lines.  In a bed whose lambda changes, the page "
       + "applies it segment by segment: the local HETP of the second panel is the page's "

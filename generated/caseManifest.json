@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1939,
+  "cases": 1940,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -26235,6 +26235,24 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/ratebased05_billetSchultes_pall25_c6c7": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "BilletSchultes",
+    "rateBased"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32754,6 +32772,7 @@
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased05_billetSchultes_pall25_c6c7",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -33355,6 +33374,7 @@
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased05_billetSchultes_pall25_c6c7",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
@@ -36354,6 +36374,7 @@
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased05_billetSchultes_pall25_c6c7",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
     "tutorials/steady/distillation/trayEfficiency01_yanagi14",
