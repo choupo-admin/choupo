@@ -247,6 +247,8 @@ def read_stream(path):
 
 def parse_flat_units(fdict):
     m = re.search(r"(?<![A-Za-z0-9_])units\s*\(", fdict)
+    if not m:                       # proofs.py: refuse by name instead of an AttributeError
+        raise ValueError("flowsheetDict has no `units (` list the independent reader can parse")
     i = m.end() - 1
     j = match_close(fdict, i, "(", ")")
     body = fdict[i + 1:j]
@@ -450,7 +452,8 @@ def verdict(r):
     emi, emo, ec = r["eng_mass"]
     if abs(c - ec) > TOL_PCT:
         why.append("mass closure %.6f vs %.6f" % (c, ec))
-    if abs(mi - emi) > TOL_REL * max(abs(emi), 1e-30) or abs(mo - emo) > TOL_REL * max(abs(emo), 1e-30):
+    # the CSV prints kg/h with 4 decimals: absolute floor 6e-5 (proofs.py change to the vendored text)
+    if abs(mi - emi) > max(TOL_REL * abs(emi), 6e-5) or abs(mo - emo) > max(TOL_REL * abs(emo), 6e-5):
         why.append("mass totals in %.4f/%.4f out %.4f/%.4f" % (mi, emi, mo, emo))
     for e, (ai, ao, ac) in r["elem"].items():
         if e not in r["eng_elem"]:

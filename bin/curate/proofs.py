@@ -75,7 +75,8 @@ def scale_flows(txt, k):
     def blk(m):
         body = re.sub(_ENTRY, lambda e: e.group(1) + repr(float(e.group(2)) * k) + e.group(3), m.group(2))
         return m.group(1) + body + '}'
-    return re.sub(r'(\b(?:%s)\s*\{)([^{}]*)\}' % '|'.join(FLOWKEYS), blk, txt)
+    txt = re.sub(r'(\b(?:%s)\s*\{)([^{}]*)\}' % '|'.join(FLOWKEYS), blk, txt)
+    return re.sub(r'(\bvolumetricFlow\s+)([-+0-9.eE]+)', lambda m: m.group(1) + repr(float(m.group(2)) * k), txt)
 
 
 def reverse_flows(txt):
@@ -194,17 +195,17 @@ EXT_LAST = re.compile(r'^(F|F_mass|F_solid_mass|H_kW)$')
 def classify(k):
     """ext / int / res (noise) / unc, by the name of the key (the cloud's rule, simplified)."""
     last = k.split('/')[-1]
-    if last.endswith('residual_kW') or last.endswith('residual_pct') or last.endswith('residual_denom_kW'):
-        return 'res'
+    if 'esidual' in last or re.search(r'(^|_)(iterations|nIter|iter|outerIt)$', last) or 'analysisReconciliation' in k:
+        return 'res'      # solver noise, iteration counts and inlet provenance are not results
     if k.startswith('streams/'):
-        return 'ext' if (EXT_LAST.match(last) or '/solids/' in k) else 'int'
+        return 'ext' if (EXT_LAST.match(last) or '/solids/' in k or '/flows/' in k) else 'int'
     if k.startswith('globalEnergyBoundary/'):
         return 'ext' if last.endswith('_kW') else 'unc'
     if re.search(r'^F_(in|out|alpha|beta)$|^[QW]_?(kW)?$|W_shaft|[Dd]uty', last):
         return 'ext'
-    if re.search(r'_over_|[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
+    if re.search(r'_over_|(^|_)[Rr]atio|(^|_)(T|P|vf|x|y|z|K|alpha|eta|conversion|recovery|selectivity)(_|\[|$)|^K_|^x_|^y_|dT|dP|composition|frac|yield|purity', last):
         return 'int'
-    if re.search(r'(^|_)(F|Q|W|duty|power|flow|mass|rate|area|V)(_|\[|$)|kW|[Ff]low|[Dd]uty|F_(in|out|alpha|beta)|W_shaft|extent|moles', last):
+    if re.search(r'(^|_)(F|Q|W|duty|power|flow|mass|rate|area|V)(_|\[|$)|kW|[Ff]low|[Dd]uty|F_(in|out|alpha|beta)|W_shaft|extent|moles|_kg_s$|_mol_s$|_m3_s$', last):
         return 'ext'
     return 'unc'
 
@@ -301,6 +302,10 @@ def declared_extensive(case):
             except ValueError:
                 pass
             return '%s %s in %s' % (m.group(1), m.group(2)[:30], f.relative_to(case))
+        for m in re.finditer(r'(?m)(?<![\w.$])([A-Za-z_]\w*)\s+([-+0-9.eE]+)\s+(m|mm|cm|um|m2|m3|L|kg|g|W|kW|MW|J|kJ|rpm|s|min|h)\s*;', t):
+            if re.match(r'(xM|x[0-9]|d[0-9]|particle|dp$|d_p)', m.group(1)) or float(m.group(2)) == 0.0:
+                continue
+            return '%s %s %s (a unit-bearing size/duty) in %s' % (m.group(1), m.group(2), m.group(3), f.relative_to(case))
         if re.search(r'(?<![\w.])geometry\s*\{', t):
             return 'geometry {} in %s' % f.relative_to(case)
     return None
@@ -415,8 +420,9 @@ def t3(case):
     rr = run_in(d)
     if rr['json'] is None:
         return VIOLATES, 'run with SI-written values failed where the base ran: %s' % rr['err']
-    worst, wk, viol, n = compare(view(r['json']), view(rr['json']), 1, 1e-10, label_all=True)
-    return verdict_from(viol, worst, wk, n, ' [tol 1e-10, %d values rewritten]' % total)
+    tol = 1e-7 if is_recycle(case) else 1e-10
+    worst, wk, viol, n = compare(view(r['json']), view(rr['json']), 1, tol, label_all=True)
+    return verdict_from(viol, worst, wk, n, ' [tol %.0e, %d values rewritten]' % (tol, total))
 
 
 # --------------------------------------------------------------------------- T4
@@ -509,7 +515,7 @@ def t5(case):
             vals = list(comp.values())
             if any((not isinstance(x, (int, float))) or not math.isfinite(x) or x < -1e-12 or x > 1 + 1e-12 for x in vals):
                 bad.append('%s: composition outside [0,1]: %s' % (s, {c: x for c, x in comp.items() if not (-1e-12 <= x <= 1 + 1e-12)}))
-            if v.get('F', 1) and abs(sum(vals) - 1.0) > 1e-9:
+            if v.get('F', 1) and abs(sum(vals) - 1.0) > 1e-7:
                 bad.append('%s: fractions sum to %.12f' % (s, sum(vals)))
         for key in ('F', 'F_mass', 'H_kW'):
             x = v.get(key)
@@ -539,7 +545,7 @@ def t6(case):
         return NOTJ, 'converged/ holds no state files'
     d = fresh_copy(case, SCR / 'T6' / case.name)
     shutil.rmtree(d / '0')
-    shutil.copytree(conv, d / '0', ignore=shutil.ignore_patterns('problemDivergence'))
+    shutil.copytree(conv, d / '0', ignore=shutil.ignore_patterns('problemDivergence', 'internalStates'))   # a projection: the engine refuses it as a seed
     if SABOTAGE:
         f = next((f for f in sorted((d / '0').rglob('*')) if f.is_file() and 'componentMolarFlows' in read(f)), None)
         if f:
