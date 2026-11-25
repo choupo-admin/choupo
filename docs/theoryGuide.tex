@@ -16699,6 +16699,118 @@ their pass is announced. On convergence the five-line KKT certificate is
 printed and the simulator is replayed once at the optimum with full
 verbosity, exactly as the Nelder-Mead path does.
 
+% =====================================================================
+%  Interior-point optimizer (Choupo-IP): sec:ip-barrier ... sec:ip-termination,
+%  with sec:ldlt-inertia (the linear algebra) between them.
+% =====================================================================
+\section{Interior-point optimizer: the barrier problem and the primal-dual step}\label{sec:ip-barrier}
+
+Choupo has a second constrained optimizer beside the SQP of §\ref{ch:sqp}:
+a primal-dual \emph{interior-point} method with a filter line search, built
+in stages (design record \code{docs/design/interior-point.md}).  The SQP
+serves the \code{outerDict} (a few variables, finite-difference gradients);
+the interior-point code serves \emph{inner} problems that have structure
+and analytic derivatives.  Slice A2, described in this and the following
+sections, is the algorithm itself on dense matrices; no case selects it yet.
+The sections read in this order: the barrier problem and its step (here),
+the linear algebra with the inertia (§\ref{sec:ldlt-inertia}), the inertia
+correction (§\ref{sec:ip-inertia}), the filter line search
+(§\ref{sec:ip-filter}), the restoration phase (§\ref{sec:ip-restoration}),
+the barrier update (§\ref{sec:ip-barrier-update}) and the termination, start
+and scaling (§\ref{sec:ip-termination}).
+
+\paragraph{What was read.} Everything below is Algorithm~A of W\"achter and
+Biegler \cite{WaechterBiegler2006}, read as the \emph{preprint} (optimization-online
+2004/03/836, revised 19~March 2004; sections 1--3 and 4.1 in full, page~10 as
+an image for the constants).  \textbf{Equation numbers are the preprint's;
+the journal's are not verified.}  Two printed details are flagged where they
+arise (the filter corner (22), the merit test (40)).
+
+\paragraph{The problem.}
+\begin{equation}\label{eq:ip-nlp}
+\min_{x}\; f(x)\quad\text{s.t.}\quad c(x)=0\ (m\text{ rows}),\qquad x^{L}\le x\le x^{U},
+\end{equation}
+with $f$ and $c$ twice differentiable and either bound possibly absent.
+A row $c^{L}_j\le c_j(x)\le c^{U}_j$ with $c^{L}_j<c^{U}_j$ becomes
+$c_j(x)-s_j=0$ with a slack $s_j\in[c^{L}_j,c^{U}_j]$ (preprint sec.~4); a
+variable with $x^{L}_i=x^{U}_i$ is removed (sec.~3.4).  The code does both
+before the iteration starts (\code{EqualityForm}, \code{FixedVariables} in
+\code{NLPProblem.H}), so the loop sees equalities and simple bounds only.
+
+\paragraph{The barrier problem.}  For a decreasing sequence of $\mu>0$ the
+optimizer solves approximately
+\begin{equation}\label{eq:ip-barrier}
+\min_{x}\;\varphi_\mu(x)=f(x)-\mu\sum_{i}\ln(x_i-x^{L}_i)-\mu\sum_{i}\ln(x^{U}_i-x_i)
+\quad\text{s.t.}\quad c(x)=0
+\end{equation}
+(preprint (3), (34)); a variable with \emph{one} bound also carries the
+damping term $\kappa_d\mu\,(x_i-x^{L}_i)$ (or $\kappa_d\mu\,(x^{U}_i-x_i)$),
+$\kappa_d=10^{-4}$ (sec.~3.7), so that it cannot run to infinity along an
+unbounded direction.
+
+\paragraph{The primal-dual equations.}  With multipliers $\lambda$ for the
+rows and $z^{L},z^{U}\ge0$ for the bounds, the optimality conditions of
+\eqref{eq:ip-barrier} are (preprint (4), written for both bounds)
+\begin{equation}\label{eq:ip-kkt}
+\nabla f(x)+A(x)\lambda-z^{L}+z^{U}=0,\qquad c(x)=0,\qquad
+(x_i-x^{L}_i)z^{L}_i=\mu,\quad (x^{U}_i-x_i)z^{U}_i=\mu,
+\end{equation}
+$A=\nabla c$ ($n\times m$).  Newton's method on \eqref{eq:ip-kkt}, with the
+rows of the bound multipliers eliminated, gives the symmetric system of
+preprint (13),
+\begin{equation}\label{eq:ip-step}
+\begin{bmatrix} W+\Sigma+\delta_w I & A\\ A^{T} & -\delta_c I\end{bmatrix}
+\begin{bmatrix} \Delta x\\ \Delta\lambda\end{bmatrix}
+=-\begin{bmatrix}\nabla\varphi_\mu(x)+A\lambda\\ c(x)\end{bmatrix},
+\qquad
+\Sigma=\Sigma^{L}+\Sigma^{U},\quad
+\Sigma^{L}_{ii}=\frac{z^{L}_i}{x_i-x^{L}_i},\quad
+\Sigma^{U}_{ii}=\frac{z^{U}_i}{x^{U}_i-x_i},
+\end{equation}
+$W=\nabla^{2}f+\sum_j\lambda_j\nabla^{2}c_j$ the Hessian of the Lagrangian
+(analytic when the problem supplies it, otherwise central differences of the
+analytic gradient of the Lagrangian, which the run header announces), and
+$\delta_w,\delta_c$ the regularisation of §\ref{sec:ip-inertia}.  The bound
+multipliers follow from preprint (11)--(12):
+\begin{equation}\label{eq:ip-dz}
+\Delta z^{L}_i=\frac{\mu}{x_i-x^{L}_i}-z^{L}_i-\Sigma^{L}_{ii}\Delta x_i,\qquad
+\Delta z^{U}_i=\frac{\mu}{x^{U}_i-x_i}-z^{U}_i+\Sigma^{U}_{ii}\Delta x_i .
+\end{equation}
+$\Sigma_{ii}$ is large for a variable pressed against a bound and damps the
+step in it exactly as much as the bound requires.
+
+\paragraph{Fraction to the boundary and the dual clipping.}  The step lengths
+are the largest $\alpha\in(0,1]$ with (preprint (15))
+\begin{equation}\label{eq:ip-ftb}
+x+\alpha\Delta x\ge x^{L}+(1-\tau)(x-x^{L}),\quad
+x+\alpha\Delta x\le x^{U}-(1-\tau)(x^{U}-x),\quad
+z+\alpha_z\Delta z\ge(1-\tau)z,
+\end{equation}
+$\tau=\max(\tau_{\min},1-\mu)$, $\tau_{\min}=0.99$: no iterate and no multiplier
+ever touches its bound.  After each accepted step every $z_i$ is clipped into
+$[\mu/(\kappa_\Sigma s_i),\ \kappa_\Sigma\mu/s_i]$, $s_i$ the slack to its
+bound and $\kappa_\Sigma=10^{10}$ (preprint (16)), so that $\Sigma$ cannot drift
+from the primal barrier Hessian $\mu S^{-2}$.  The gate
+\code{check\_interior\_point} counts every evaluation of $f$ made outside the
+bounds and requires zero: the line search would otherwise hide a missing
+fraction to the boundary, because it rejects a trial whose logarithm is
+undefined.
+
+\paragraph{Validity and what was measured.}  Local quadratic convergence of
+the primal-dual step needs the usual conditions (a point satisfying the
+second-order conditions, linearly independent active gradients); where they
+fail the run is slow rather than wrong (HS13 in §\ref{sec:ip-termination}).
+The barrier problem is a smooth reformulation of an inequality-constrained
+one, not a relaxation: $\mu\to0$ recovers the original optimum, and at the
+last $\mu=\mathrm{tol}/10=10^{-9}$ a bound that is \emph{inactive} at the optimum
+keeps a multiplier $z=\mu/s$ of the order of $\mu$ divided by its slack.  A
+variable \emph{present} at a trace amount therefore carries an error of
+$\mu/n_i$ in its stationarity condition (design record sec.~2.9), which is the
+reason the planned Gibbs-reactor stage keeps the element-potential Newton as
+a polish.  In-sample statement: the equations are those of the cited source,
+verified on the Hock--Schittkowski set in §\ref{sec:ip-termination}; nothing is
+fitted.
+
 % ---------------------------------------------------------------------
 \section{Interior-point linear algebra: the symmetric indefinite $LDL^{T}$ and the inertia}\label{sec:ldlt-inertia}
 
@@ -16815,11 +16927,319 @@ against another code's factorisation. Not covered: sparse storage, a
 block-tridiagonal structure, and a matrix whose smallest eigenvalue lies
 within $\tau$ of zero (reported as zero).
 
-\paragraph{What you see in Choupo.} No case selects it yet: the one caller,
-Algorithm IC, is a later slice, so there is no dictionary key, no tutorial and
-no F1 link; the piece is run and held by \code{bin/curate/check\_ldlt\_inertia.py}
+\paragraph{What you see in Choupo.} No case selects it yet: its one caller,
+Algorithm IC (§\ref{sec:ip-inertia}), belongs to the interior-point optimizer, which no
+dictionary key selects either, so there is no key, no tutorial and no F1 link;
+the piece is run and held by \code{bin/curate/check\_ldlt\_inertia.py}
 (\code{test/ldlt\_inertia.cpp}), which prints, for each matrix, the expected
 and computed inertia and $\eta$ before and after refinement.
+
+% ---------------------------------------------------------------------
+\section{Interior-point optimizer: Algorithm IC, the inertia correction}\label{sec:ip-inertia}
+
+The step \eqref{eq:ip-step} is a descent direction for $\varphi_\mu$ only if
+its matrix has inertia $(n,m,0)$ (§\ref{sec:ldlt-inertia}).  Algorithm~IC of
+\cite{WaechterBiegler2006} (sec.~3.1, p.~10; constants read on the page image)
+changes the matrix until it does.  \code{InertiaCorrection} runs it as
+follows, with the step numbers in the source:
+\begin{enumerate}
+\item[IC-1] factor with $\delta_w=\delta_c=0$; inertia $(n,m,0)$ and a
+      backward error within the limit: use the step.
+\item[IC-2] if $K$ has zero eigenvalues, $\delta_c=\bar\delta_c\mu^{\kappa_c}$,
+      otherwise $\delta_c=0$.  \emph{A factorisation that breaks down} (a
+      singular $2\times2$ block, or a zero pivot with non-negligible entries
+      under it: \code{DenseLDLT} returns \code{ok()} false) is \emph{the same
+      news} as zero eigenvalues and takes this branch; it is never a crash and
+      never a silent acceptance.
+\item[IC-3] $\delta_w=\bar\delta_w^{0}$ if no $\delta_w$ was needed in the
+      last iteration that needed one, else
+      $\max\{\delta_w^{\min},\kappa_w^{-}\delta_w^{\rm last}\}$.
+\item[IC-4] factor; inertia right and backward error within the limit:
+      $\delta_w^{\rm last}=\delta_w$, use the step.
+\item[IC-5] $\delta_w\leftarrow\bar\kappa_w^{+}\delta_w$ if no $\delta_w$ was
+      needed before, else $\kappa_w^{+}\delta_w$; go to IC-4.
+\item[IC-6] $\delta_w>\delta_w^{\max}$: abandon the step; the line search is
+      not tried and the restoration phase starts (§\ref{sec:ip-restoration}).
+\end{enumerate}
+The constants are $\delta_w^{\min}=10^{-20}$, $\bar\delta_w^{0}=10^{-4}$,
+$\delta_w^{\max}=10^{40}$, $\bar\delta_c=10^{-8}$, $\bar\kappa_w^{+}=100$,
+$\kappa_w^{+}=8$, $\kappa_w^{-}=1/3$, $\kappa_c=1/4$.  Two additions, both
+announced in the run: a solve whose normwise backward error exceeds
+$10^{-12}$ is a \emph{wrong factorisation} and is treated like a wrong
+inertia ($\delta_w$ grows; its step is never used); and the deviation of the
+source (sec.~3.1) that if $K$ is singular in one of the first three iterations
+$\delta_c$ stays positive in IC-1 of every later iteration.
+
+\paragraph{Validity and what was measured.}  IC makes $W+\Sigma+\delta_wI$
+positive definite on the null space of $A^{T}$ when $A$ has full column rank
+(the reduced Hessian is then shifted by $\delta_w$); if $A$ is rank-deficient
+$\delta_c$ makes the $(2,2)$ block definite.  What it costs is a modified
+Newton step.  In the test set the matrix is regularised in 2 iterations of HS6,
+12 of HS7, 3 of HS38 and 287 of HS13 (there $K$ acquires a zero eigenvalue as
+$\mu$ falls: the active gradients are parallel); with the inertia test removed from the code HS7 converges to
+$f=+1.78$ instead of $-\sqrt3$ and HS6 and HS38 stop at the restoration
+phase.  In-sample statement: the corrections are counted on the test set, not
+fitted; the checks of a breakdown, a large backward error, an indefinite
+reduced Hessian and a matrix with a NaN are constructed cases of the gate.
+
+% ---------------------------------------------------------------------
+\section{Interior-point optimizer: the filter line search}\label{sec:ip-filter}
+
+With the step $(\Delta x,\Delta\lambda,\Delta z)$ and
+$\alpha_{\max}$ from \eqref{eq:ip-ftb}, the trial points are
+$x(\alpha)=x+\alpha\Delta x$, $\alpha=2^{-l}\alpha_{\max}$, $l=0,1,\ldots$
+(\code{LineSearch}); a trial whose evaluation fails (a NaN, a refusing
+property routine, a logarithm of a non-positive number) is rejected and the
+step halved.  Two measures judge a trial: the infeasibility
+$\theta(x)=\|c(x)\|_1$ and the barrier objective $\varphi_\mu(x)$.  The rule
+(\code{FilterGlobalization}; \cite{WaechterBiegler2006} preprint sec.~2.3, eqs.~(18)--(23)) is:
+\begin{align}
+&\text{margins (18):}&&\theta(x^{+})\le(1-\gamma_\theta)\theta(x)\ \ \text{or}\ \
+   \varphi_\mu(x^{+})\le\varphi_\mu(x)-\gamma_\varphi\theta(x),\label{eq:ip-margin}\\
+&\text{switching (19):}&&\nabla\varphi_\mu^{T}\Delta x<0\ \ \text{and}\ \
+   \alpha\,(-\nabla\varphi_\mu^{T}\Delta x)^{s_\varphi}>\delta\,\theta(x)^{s_\theta},\label{eq:ip-switch}\\
+&\text{Armijo (20):}&&\varphi_\mu(x^{+})\le\varphi_\mu(x)+\eta_\varphi\,\alpha\,\nabla\varphi_\mu^{T}\Delta x,\label{eq:ip-armijo}\\
+&\text{smallest step (23):}&&\alpha_{\min}=\gamma_\alpha\min\Big\{\gamma_\theta,\ \tfrac{\gamma_\varphi\theta}{-\nabla\varphi_\mu^{T}\Delta x}\ [\nabla\varphi_\mu^{T}\Delta x<0],\
+   \tfrac{\delta\theta^{s_\theta}}{(-\nabla\varphi_\mu^{T}\Delta x)^{s_\varphi}}\ [\nabla\varphi_\mu^{T}\Delta x<0,\ \theta\le\theta_{\min}]\Big\}.\label{eq:ip-amin}
+\end{align}
+A \emph{filter} $\mathcal F$ is a set of corners $(\theta_F,\varphi_F)$; a trial
+is \emph{dominated} when $\theta^{+}\ge\theta_F$ and $\varphi^{+}\ge\varphi_F$
+for a corner, and the filter starts as $\{\theta\ge\theta_{\max}\}$
+(preprint (21)), $\theta_{\max}=10^{4}\max(1,\theta(x_0))$.  A trial is
+accepted when it is not dominated and \emph{either} (19) holds with
+$\theta(x)\le\theta_{\min}=10^{-4}\max(1,\theta(x_0))$ and the Armijo
+condition (20) holds (a ``$\varphi$-type'' step: the filter is not
+enlarged), \emph{or} the margins (18) hold, in which case, unless (19) and (20)
+both hold, the filter gains the corner of the \emph{current} point
+\begin{equation}\label{eq:ip-corner}
+\big((1-\gamma_\theta)\,\theta(x),\ \ \varphi_\mu(x)-\gamma_\varphi\,\theta(x)\big)
+\end{equation}
+(preprint (22)).  \textbf{Printed detail of the source.}  The preprint prints
+$f(x_k)$ in the second coordinate of this corner; the sentence around it and
+the margins (18) use the barrier objective, and $\varphi_\mu$ is what is coded
+(a corner in $f$ would compare unlike quantities with the trial's
+$\varphi_\mu(x^{+})$).  The source comment says so.  The filter is reset to
+$\{\theta\ge\theta_{\max}\}$ at each new value of $\mu$.  If $\alpha$ falls
+below $\alpha_{\min}$ the restoration phase starts.
+$\gamma_\theta=\gamma_\varphi=10^{-5}$, $\delta=1$, $s_\theta=1.1$,
+$s_\varphi=2.3$, $\eta_\varphi=10^{-4}$, $\gamma_\alpha=0.05$ (preprint p.~9).
+
+\paragraph{Not in this slice.}  The second-order correction (preprint sec.~2.4)
+that cures the Maratos effect, the merit-function alternative (preprint (39)--(40);
+the second printed detail, $\mathrm{ared}<\eta\,\mathrm{pred}$ in (40), is read
+against its source by the slice that codes it) and the KKT-error-reduction
+restoration are later slices (A3, A4); the run header says so.
+
+\paragraph{Validity and what was measured.}  The filter accepts any trial
+that improves either measure by a margin, so it cannot cycle between the
+two; it is a globalization, not a convergence rate.  On the Hock--Schittkowski
+set the full step $\alpha_{\max}$ is accepted at 482 of the 508 iterations
+(HS13's 311 included; the \code{ls} column of the trace is 1); a trial rejected by the filter appears as
+\code{ls}$>1$.  In-sample statement: the thresholds are those of the source,
+not tuned; the sets below are the test set.
+
+% ---------------------------------------------------------------------
+\section{Interior-point optimizer: the restoration phase and local infeasibility}\label{sec:ip-restoration}
+
+When the inertia correction fails (IC-6) or the line search ends below
+$\alpha_{\min}$, no regular step is acceptable.  \code{Restoration}
+(\cite{WaechterBiegler2006} preprint sec.~3.3.1; slice A2 has this route only, the cheaper
+KKT-error-reduction route of sec.~3.3.2 is slice A3) first adds the current
+point $x_R$ to the filter by \eqref{eq:ip-corner} and then solves, with the
+\emph{same} Algorithm~A (its own restoration disabled), the minimum-violation
+problem
+\begin{equation}\label{eq:ip-resto}
+\min_{x,p,n}\ \rho\sum_j(p_j+n_j)+\tfrac{\zeta}{2}\,\|D_R(x-x_R)\|_2^{2}
+\quad\text{s.t.}\quad c(x)-p+n=0,\quad x^{L}\le x\le x^{U},\ p,n\ge0,
+\end{equation}
+$\rho=1000$, $\zeta=\sqrt\mu$, $D_R=\mathrm{diag}(\min\{1,1/|x_{R,i}|\})$.  $p$
+and $n$ are the positive and negative parts of $c$, so the first term is
+$\rho\|c\|_1$; the second keeps the point near $x_R$.  The start of $(p,n)$ is
+the positive solution of its stationarity at $x_R$ (preprint (33)),
+\begin{equation}\label{eq:ip-pn}
+n_j=\frac{\mu-\rho c_j}{2\rho}+\sqrt{\Big(\frac{\mu-\rho c_j}{2\rho}\Big)^{2}+\frac{\mu c_j}{2\rho}},\qquad p_j=c_j+n_j,
+\end{equation}
+and the barrier parameter starts at $\max(\mu,\|c(x_R)\|_\infty)$.  The
+Hessian of \eqref{eq:ip-resto} is $\zeta D_R^{2}+\sum_j\lambda_j\nabla^{2}c_j$ on $x$
+(the objective weight of the original $f$ is zero there) and zero on $p,n$.
+
+It ends in one of three ways.  (1) \emph{Recovered}: after some inner iteration
+the point is acceptable to the augmented filter and
+$\theta(x)\le\kappa_{\rm resto}\theta(x_R)$, $\kappa_{\rm resto}=0.9$; the bound
+multipliers are reset to $\mu/s$, $\lambda$ re-estimated by least squares, and
+the regular iteration resumes.  (2) \emph{Locally infeasible}: the problem
+\eqref{eq:ip-resto} \emph{converged} to a point whose scaled infeasibility
+$\|c\|_\infty$ is still above the tolerance, so the infeasibility cannot be
+reduced further: the run stops with that name and prints the rows still
+violated, worst first, with their residuals.  It is never reported
+\code{converged}, and never as an iteration limit.  (3) \emph{Failed}: the inner
+run hit its limit or an evaluation failure.  If the restoration phase is
+entered at a point that is already feasible ($\theta\le\mathrm{tol}$) it stops
+with that reason: no step reduces the barrier objective there.
+
+\paragraph{Validity and what was measured.}  ``Locally infeasible'' is a local
+statement: a stationary point of the infeasibility, not a proof that no
+feasible point exists elsewhere (as with every local optimizer).  Two problems
+with no feasible point are in the gate (review R3): the two equalities
+$x_1+x_2=1$ and $x_1+x_2=2$ end locally infeasible in one iteration with
+$\|c\|_1=1$, naming both rows ($\pm0.5$); a bound against an equality
+($0\le x\le1$, $x_1+x_2=5$) ends locally infeasible in three iterations with
+$\|c\|_1=3$, naming the row.  Sabotaged by hand: with the verdict removed the
+same problems end at the iteration limit (3000 iterations, 2999
+restorations); with the primal infeasibility removed from the stopping test
+the first reports \code{converged}.  In-sample statement:
+the infeasible problems are constructed, not fitted.  The restoration phase
+does not occur in any of the fifteen Hock--Schittkowski runs (all converge
+without it); the recovery branch (1) is exercised by one added problem,
+WB2000 of W\"achter and Biegler (2000) from the start $(-3,3,0.01)$ (the line
+search finds no acceptable step at iteration 5, restoration is entered once and
+the run converges to $(1,0,0.5)$ in 15 iterations), and branch (2) by the two
+infeasible problems.
+
+% ---------------------------------------------------------------------
+\section{Interior-point optimizer: the barrier update}\label{sec:ip-barrier-update}
+
+The barrier parameter starts at $\mu_0=0.1$ and is lowered by the
+\emph{monotone} rule of the source (\cite{WaechterBiegler2006} preprint (7), \code{BarrierUpdate}): when
+the error of the current barrier problem has fallen to $E_\mu\le\kappa_\varepsilon\mu$,
+\begin{equation}\label{eq:ip-mu}
+\mu\leftarrow\max\Big\{\frac{\mathrm{tol}}{10},\ \min\{\kappa_\mu\mu,\ \mu^{\theta_\mu}\}\Big\},
+\qquad\kappa_\varepsilon=10,\ \kappa_\mu=0.2,\ \theta_\mu=1.5 .
+\end{equation}
+Far from zero the linear branch $0.2\mu$ is the smaller (for $\mu>0.2^{2}=0.04$),
+near zero the superlinear power; the update is repeated while the condition
+still holds (so the run can drop several levels in one iteration), $\tau$ is
+recomputed and the filter reset.  The adaptive rule (Nocedal, W\"achter and
+Waltz) is slice A3 and is not here.  Each change prints its rule: \code{mu
+1.0e-01 -> 2.0e-02 by (7)}.  Validity: it is a heuristic of the source, with
+no proof of a global rate; what is measured is the iteration count of each
+test problem (§\ref{sec:ip-termination}).  In-sample statement: none of the constants is
+tuned here.
+
+% ---------------------------------------------------------------------
+\section{Interior-point optimizer: termination, start and scaling}\label{sec:ip-termination}
+
+\paragraph{The error and the stopping test.}  With $s_d,s_c\ge1$ that grow with
+the average multiplier above $s_{\max}=100$ (preprint (5)--(6)),
+\begin{equation}\label{eq:ip-error}
+E_\mu=\max\Big\{\frac{\|\nabla f+A\lambda-z^{L}+z^{U}\|_\infty}{s_d},\
+\|c\|_\infty,\ \frac{\|\,(x-x^{L})z^{L}-\mu e,\ (x^{U}-x)z^{U}-\mu e\,\|_\infty}{s_c}\Big\},
+\end{equation}
+$s_d=\max\{s_{\max},(\|\lambda\|_1+\|z\|_1)/(m+n_z)\}/s_{\max}$,
+$s_c=\max\{s_{\max},\|z\|_1/n_z\}/s_{\max}$, $n_z$ the number of finite bounds.
+The run \emph{converges} when $E_0\le\mathrm{tol}=10^{-8}$ and, in addition,
+the constraint violation of the \emph{unscaled} rows is at most
+$\mathrm{tol}$ (the scaling below is of the source; this extra condition is
+Choupo's, so that the reported violation is a violation of the problem the
+caller wrote).  Every other end is named: iteration limit; locally infeasible
+(§\ref{sec:ip-restoration}); restoration failed (IC-6 or the line search with no
+restoration possible, or entered at a feasible point); step too small (steps of
+$10\,\varepsilon_{\rm mach}$ twice at $\mu=\mathrm{tol}/10$, preprint
+sec.~3.9); evaluation failed at the start.
+
+\paragraph{Start and scaling (preprint sec.~3.5, 3.6, 3.8; (35), (36)).}
+$x_0$ is pushed inside its bounds by $p=\min\{\kappa_1\max(1,|b|),\kappa_2(x^{U}-x^{L})\}$,
+$\kappa_1=\kappa_2=10^{-2}$; $z_0=1$; $\lambda_0$ minimises
+$\|\nabla f-z^{L}+z^{U}+A\lambda\|_2$ (the symmetric system with the identity
+block) and is dropped to zero if the system is singular or
+$\|\lambda_0\|_\infty>10^{3}$; $f$ and each row $c_j$ are multiplied by
+$\min\{1,100/\|\nabla\cdot\|_\infty\}$ at $x_0$.  Each is printed when it changes
+the problem.  \textbf{A measured deviation:} the source relaxes every bound
+outward by $10^{-8}\max(1,|b|)$ (preprint (35)); Choupo's default is zero (the
+option stays).  The relaxed problem is not the one asked for: on HS13 it moves
+the optimum by $6\times10^{-3}$ in $f$, on HS116 (multipliers near $2\times10^{3}$)
+by $9\times10^{-4}$, and the returned point violates a constraint by up to
+$10^{-8}\max(1,|b|)$, above the $10^{-8}$ the gate demands.  The
+fraction-to-the-boundary rule keeps every iterate strictly inside the original
+bounds without it, and the returned $x$ is clipped to them.
+
+\paragraph{The constants, with their source.}  tol $=10^{-8}$,
+$\mu_0=0.1$, $\kappa_\varepsilon=10$, $\kappa_\mu=0.2$, $\theta_\mu=1.5$,
+$\tau_{\min}=0.99$ (preprint p.~9); $\kappa_\Sigma=10^{10}$ ((16)); $s_{\max}=100$
+(p.~3); $\gamma_\theta=\gamma_\varphi=10^{-5}$, $\delta=1$, $s_\theta=1.1$,
+$s_\varphi=2.3$, $\eta_\varphi=10^{-4}$, $\gamma_\alpha=0.05$, $\theta_{\max},\theta_{\min}$
+(p.~9); the IC constants (p.~10); $\rho=1000$, $\kappa_{\rm resto}=0.9$
+(sec.~3.3); $\kappa_d=10^{-4}$ (sec.~3.7); $\lambda_{\max}=10^{3}$ ((36));
+$g_{\max}=100$ (sec.~3.8); the iteration limit 3000 and the inner limit 1000 of
+the restoration problem are Choupo's choices.  None is a dictionary key;
+\code{IPParameters::print} prints the table, with these sources, at the head of
+every run.
+
+\paragraph{What was measured: the Hock--Schittkowski set.}  The fifteen problems
+HS1, 6, 7, 13, 21, 35, 38, 40, 43, 71, 76, 100, 113, 116, 118 are written in
+\code{test/interior\_point\_hs.cpp} from the mathematical statement of each
+(objective, constraints, bounds, the collection's start and optimum
+$f^\star$ \cite{Schittkowski306}); the hand derivatives are checked against
+central differences before each run.  The PASS rule is
+$|f-f^\star|\le10^{-6}\max(1,|f^\star|)$ and a violation of at most $10^{-8}$,
+for thirteen of the fifteen; HS13 and HS116 have a rule of their own, stated
+below with its reason.
+Iterations (the gate pins each with a band):
+\begin{center}
+\begin{tabular}{lrrlrr}
+\hline
+problem & it & $|f-f^\star|$ & problem & it & $|f-f^\star|$\\
+\hline
+HS1   & 25  & $6\times10^{-16}$ & HS71  & 8  & $5\times10^{-9}$\\
+HS6   & 6   & $0$               & HS76  & 7  & $5\times10^{-9}$\\
+HS7   & 27  & $7\times10^{-14}$ & HS100 & 10 & $1\times10^{-7}$\\
+HS13  & 311 & $4.3\times10^{-3}$ (own rule) & HS113 & 11 & $2\times10^{-8}$\\
+HS21  & 8   & $3\times10^{-9}$  & HS116 & 21 & $9.0\times10^{-4}$ (own rule)\\
+HS35  & 7   & $3\times10^{-9}$  & HS118 & 11 & $5\times10^{-8}$\\
+HS38  & 40  & $3\times10^{-19}$ & HS40  & 3  & $8\times10^{-11}$\\
+HS43  & 9   & $5\times10^{-9}$ & WB2000 & 15 & $3\times10^{-9}$\\
+\hline
+\end{tabular}
+\end{center}
+Thirteen problems meet the common rule; the other two meet a rule that follows
+from the problem, and each is stated rather than hidden.
+\label{sec:ip-hs-own-rules}
+\textbf{HS13} ($\min (x_1-2)^2+x_2^2$ s.t.\ $(1-x_1)^3-x_2\ge0$, $x\ge0$):
+its optimum $x^\star=(1,0)$ is a cusp: the gradient of the
+active constraint, $(0,-1)$, is parallel to that of the active bound
+$x_2\ge0$ and $\nabla f=(-2,0)$ cannot be balanced, so no KKT point exists (the
+multipliers of the run grow to $1.4\times10^{5}$).  The constraint is a cube at
+$x^\star$: a violation $v$ lets $x_1$ reach $1+v^{1/3}$ with $x_2=0$, so the
+lowest $f$ that a point of violation $v$ can have is $(1-v^{1/3})^2$, about
+$2v^{1/3}=4.3\times10^{-3}$ below $f^\star$ at $v=10^{-8}$, and
+$|f-f^\star|\le10^{-6}$ would need $v\le10^{-19}$, below what double
+precision resolves in $(1-x_1)^3$.  No solver can meet the common rule here, so
+the rule is: converged, $v\le10^{-8}$,
+$(1-v^{1/3})^2\le f\le f^\star+10^{-6}$ and $x_1\in[1,\,1+v^{1/3}]$; the run
+($f=0.99570$, $x_1=1.00215$) sits exactly on the floor.  Its 311 iterations
+with 287 inertia corrections (the KKT matrix has a zero eigenvalue at the cusp,
+so $\delta_c>0$ is imposed, and every step is a $\theta$ step lowering the
+violation by about 0.2\,\% per iteration) are a real slowness, kept in the
+iteration pin and recorded for slice A3 (second-order correction, adaptive
+barrier update).
+\textbf{HS116}: the run is feasible (violation $0$) and ends at
+$f=97.58751$, whereas the collection's $f^\star=97.58841$ is
+$9.0\times10^{-4}$ (relative $9.2\times10^{-6}$) \emph{above} it.  The statement
+written in the test was re-read term by term (fifteen constraints, bounds and
+start), and the run's $x$ agrees with the published $x^\star$ to the digits
+published; the collection's own text was not at hand, so this is a reading and
+not a diff.  The multipliers are about $10^{3}$ ($1.07\times10^{3}$ on the
+constraint $x_4-0.03475x_1-0.975x_1x_4+0.00975x_1^2\ge0$), so a constraint
+tightened by $8.5\times10^{-7}$ moves $f$ by exactly this difference (measured:
+tightened to $8\times10^{-7}$, $f=97.58836$).  The hypothesis, not proven, is
+that the collection's $f^\star$ was computed at a point with that feasibility
+margin.  The rule is one-sided and narrow, $f\in[f^\star(1-10^{-5}),
+f^\star(1+10^{-6})]$: a run that ends higher than $f^\star$ by more than
+$10^{-6}$ fails, and so does one that finds a lower value than the margin
+explains.
+
+\paragraph{What you see in Choupo.}  No case selects the optimizer yet (a case's
+\code{model interiorPoint} is stage B) and there is no dictionary key, so
+there is no tutorial and no F1 link.  The piece is run and held by
+\code{bin/curate/check\_interior\_point.py} (\code{test/interior\_point\_hs.cpp}),
+which prints the table above, the two infeasible runs and the inertia-correction
+checks; the test binary run with \code{-v HS7} prints the whole trace
+(\code{IPTrace}: iteration, $\mu$, $\varphi_\mu$, $\theta$, the dual and
+complementarity errors, $\delta_w$, the inertia, the step lengths, the line-search
+trials, the step type, the filter size, and one event line for each change of
+$\mu$, each inertia correction and each restoration), then the certificate
+(active bounds and multipliers as shadow prices).  In-sample statement: the
+fifteen problems are the test set; nothing is fitted to them.
 
 % ---------------------------------------------------------------------
 \section{Derivative-free constrained optimisation: MADS}\label{ch:mads}
@@ -36956,6 +37376,11 @@ Algorithm~1 (the Bunch--Kaufman partial pivoting strategy, $\alpha=(1+\sqrt{17})
 with the remark on $\alpha$; the stability analysis of the later sections was not
 read.  The pivoting rule of \code{DenseLDLT}.
 
+\bibitem{Schittkowski306} Schittkowski, K., ``An updated set of 306 test
+problems for nonlinear programming with validated optimal solutions''
+(table row 35: $f^\star=0.11111111$; row 21: $-0.99960000\times10^{2}$).
+READ. Published optimum of HS35 used by \code{verifyMADS}.
+
 \bibitem{AuditNOMAD4} Audet, C., Le Digabel, S., Rochon Montplaisir, V.,
 \& Tribes, C., ``Algorithm 1027: NOMAD version 4: nonlinear optimization
 with the MADS algorithm'', \emph{ACM Trans. Math. Software} (2022),
@@ -37004,11 +37429,6 @@ READ (paywalled); the Householder construction is as described in
 adaptive direct search algorithm for granular and discrete variables'',
 \emph{SIAM J. Optim.} \textbf{29}(2), 1164--1189 (2019). Cited from the
 reference list of \cite{AuditNOMAD4}; not read.
-
-\bibitem{Schittkowski306} Schittkowski, K., ``An updated set of 306 test
-problems for nonlinear programming with validated optimal solutions''
-(table row 35: $f^\star=0.11111111$; row 21: $-0.99960000\times10^{2}$).
-READ. Published optimum of HS35 used by \code{verifyMADS}.
 
 \bibitem{HANSOcmp} ``Comparative numerical results on HANSO (Hybrid
 Algorithm for Nonsmooth Optimization)'', arXiv:2009.01037, Table~1. READ:
