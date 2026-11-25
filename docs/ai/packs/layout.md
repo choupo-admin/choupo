@@ -146,7 +146,12 @@ building { ... }                                           // §4
   sector area; an ignition source inside a zone or DOWNWIND of a release
   source; a site with ONE gate; a gate, building or item with no road within
   `access`; a road in a closed zone; an unlabelled fence crossing; a liquid
-  item no bund encloses (`unbundedLiquid`).
+  item no bund encloses (`unbundedLiquid`).  Also ANNOUNCED: a shell-and-tube exchanger whose bundle cannot be pulled
+  (`serviceClearance`: the clear length at its declared channel end is less than
+  its sheet's `tubeLength` plus the declared `clearance`).  Declare
+  `serviceClearance { clearance <m>; source; reason; items ( { item "X";
+  channelEnd west; reason; } ); }`; the extra is yours, none is shipped; with no
+  block the exchangers are listed as NOT checked.
 * A draft: `bin/choupo-layout --draft <case>` solves the case and writes a
   PROPOSAL `system/layoutDict`: the sized items in flow order along one line
   with a drafting gap, one area per sector, each separation you already
