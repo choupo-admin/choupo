@@ -124,6 +124,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
+#  The one walk below compiles every translation unit of the interior point
+#  beside the test; the gate therefore reaches src/solver/ip/ and the test.
+SCAN_ROOTS = ("src/solver/ip/*.cpp", "src/solver/ip/*.H", "test/interior_point_hs.cpp")
+
 HS_NAMES = ["HS1", "HS6", "HS7", "HS13", "HS21", "HS35", "HS38", "HS40", "HS43", "HS71",
             "HS76", "HS100", "HS100p1", "HS100p2", "HS113", "HS116", "HS118", "WB2000", "WB2000c",
             "FDHESS", "EVALFAIL"]
