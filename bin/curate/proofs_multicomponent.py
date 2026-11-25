@@ -252,7 +252,31 @@ def arm_tower():
         check('tower', 'O2 runs', False)
 
 
-ARMS = {'evap': arm_evap, 'tower': arm_tower}
+# ------------------------------------------------------------------ ConvectiveDryer
+def arm_convective():
+    print('ConvectiveDryer')
+    src = (WT / 'tutorials/steady/drying/convDryer01_sugar_curve/0/wetSolid').read_text()
+    rec = {'SOLA': solid_record('SOLA', 100.0, 60.0)}
+    for tag, extra in (('one', False), ('two', True)):
+        s = src
+        if extra:
+            s = s.replace('    sucrose    10.00008764 kmol/h;\n}\n\nT', '    sucrose    10.00008764 kmol/h;\n    SOLA 1 kmol/h;\n}\n\nT', 1)
+            s = s.replace('            sucrose    10.00008764 kmol/h;\n', '            sucrose    10.00008764 kmol/h;\n            SOLA 1 kmol/h;\n', 1)
+        comps = ['water', 'sucrose', 'air'] + (['SOLA'] if extra else [])
+        d = make_case('conv_' + tag, 'drying/convDryer01_sugar_curve', comps, rec if extra else {},
+                      {'0/wetSolid': s})
+        rc, res, txt = run(d)
+        if not extra:
+            check('convective', 'base run converges', res is not None and rc == 0, txt[-120:])
+        else:
+            lost = None
+            if res is not None and rc == 0:
+                lost = 'accepted; SOLA absent from drySolid: %s' % ('SOLA' not in str(res['streams'].get('drySolid', {})))
+            check('convective', 'R a second solid is refused by name (never dropped)',
+                  rc != 0 and 'SOLA' in txt, lost or txt.strip().split('\n')[-1][:140])
+
+
+ARMS = {'evap': arm_evap, 'tower': arm_tower, 'convective': arm_convective}
 
 if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
