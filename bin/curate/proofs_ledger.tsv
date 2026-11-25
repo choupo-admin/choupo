@@ -27,7 +27,7 @@ NOTJUDGED	T1	declared size, no unit rule: condenser	1	2026-11-25	a declared size
 NOTJUDGED	T1	declared size, no unit rule: convectiveDryer	3	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: crystalliser	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: cyclone	6	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
-NOTJUDGED	T1	declared size, no unit rule: distillationColumn	15	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
+NOTJUDGED	T1	declared size, no unit rule: distillationColumn	23	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: electrodialysisStack	10	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: evaporator	9	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	declared size, no unit rule: extractor	1	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
@@ -45,7 +45,7 @@ NOTJUDGED	T1	declared size, no unit rule: tsaTwinBed	1	2026-11-25	a declared siz
 NOTJUDGED	T1	declared size, no unit rule: turbine	6	2026-11-25	a declared size or duty of this unit type has no rule yet (UNIT_RULES in proofs.py): add one, justified in a comment and checked by hand on a case
 NOTJUDGED	T1	feeds not identifiable	14	2026-11-25	observer units or a flowsheet without a parsable `units (` list: the independent topology reader cannot name the feeds
 NOTJUDGED	T1	flat-sheet cell: one coupon, nothing to scale	1	2026-11-25	one coupon of fixed area has no parallel vessels to scale
-NOTJUDGED	T1	outerDict (an outer driver varies the case)	22	2026-11-25	an outer driver varies the case: its own repeated runs are the proof, and the outputs are not one state
+NOTJUDGED	T1	outerDict (an outer driver varies the case)	14	2026-11-25	an outer driver varies the case: its own repeated runs are the proof, and the outputs are not one state
 NOTJUDGED	T2	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
 NOTJUDGED	T2	fewer than 2 components	34	2026-11-25	a single-component case has no order to reverse
 NOTJUDGED	T3	base run refuses or does not converge	16	2026-11-25	16 shipped cases refuse by design or need user code (EXPECTED-FAIL and KNOWN-BROKEN lanes)
