@@ -755,9 +755,9 @@ def main():
             moved = [k for k in k0 if not close(k0[k], k1.get(k), abs_tol=0.0, rel=0.0)]
             if moved:
                 fail(f"(c) project KPIs moved with the loan: {moved}")
-            e0 = dict(res0["economics"])
+            e0 = {k: v for k, v in res0["economics"].items() if k != "books"}   # C524: the books show the loan (their own gate holds them)
             e1 = {k: v for k, v in res1["economics"].items()
-                  if k not in ("financing", "sensitivity")}
+                  if k not in ("financing", "sensitivity", "books")}
             if e0 != e1:
                 diff = [k for k in set(e0) | set(e1) if e0.get(k) != e1.get(k)]
                 fail(f"(c) the result's economics object moved with the loan: {diff}")
@@ -821,7 +821,7 @@ def main():
                      f" loan at start-up {F3['loanAtStartup']} (want 0 and 0.5 FCI)")
             if "a one-year construction spends its capital at its END" not in out3:
                 fail("(e) the console does not say why no interest accrued")
-            if "(2 sheets, coloured)" not in out3:
+            if "(5 sheets, coloured)" not in out3:
                 fail("(e) the .ods carries no equity sheet")
 
         # (g) refusals
@@ -874,7 +874,7 @@ def main():
             if "financing" in (res.get("economics") or {}) \
                     or any(x.startswith(("debt_", "equity_")) for x in k) \
                     or (dd / "reports/economics/financing.csv").exists() \
-                    or "EQUITY view" in o or "(1 sheet, coloured)" not in o:
+                    or "EQUITY view" in o or "(4 sheets, coloured)" not in o:
                 fail(f"(h) {nm} declares no loan and printed, published or wrote one")
 
         arm_source()

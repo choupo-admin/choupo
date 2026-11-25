@@ -311,6 +311,9 @@
   "BondEnergy": [
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
+  "BooksRow": [
+   "src/core/ResultRecords.H"
+  ],
   "BracketedRoot": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
@@ -1847,6 +1850,9 @@
   ],
   "Plan": [
    "src/propertyOps/FitAlphaRows.H"
+  ],
+  "PlantBooks": [
+   "src/core/ResultRecords.H"
   ],
   "PlantLayoutRecord": [
    "src/core/ResultRecords.H"
@@ -5579,6 +5585,7 @@
    "src/materials/Material.H",
    "src/postProcessing/EconomicsPass.H",
    "src/postProcessing/EstimateClass.H",
+   "src/postProcessing/PlantBooks.H",
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/costing/CostingModel.H",
    "src/result/ClosureVariable.H",
@@ -5648,6 +5655,12 @@
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H"
+  ],
+  "src/postProcessing/PlantBooks.cpp": [
+   "src/core/OdsWriter.H",
+   "src/core/ResultRecords.H",
+   "src/core/Types.H",
+   "src/postProcessing/PlantBooks.H"
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
@@ -19635,6 +19648,7 @@
   "src/core/OdsWriter.H": [
    "src/core/OdsWriter.cpp",
    "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/reporting/SpreadsheetReport.cpp"
   ],
   "src/core/Origin.H": [
@@ -20745,6 +20759,7 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
@@ -21026,6 +21041,7 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PlantBooks.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
@@ -21695,6 +21711,10 @@
   "src/postProcessing/PinchPass.H": [
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp"
+  ],
+  "src/postProcessing/PlantBooks.H": [
+   "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PlantBooks.cpp"
   ],
   "src/postProcessing/PostProcessor.H": [
    "src/applications/choupoSolve/main.cpp",
