@@ -32001,6 +32001,53 @@ temperatures), printable to PDF; the raw numbers also export to a
 spreadsheet.  Open, cited, and reproducible --- the black box a commercial
 tool hands you, opened.
 
+\subsection{From the calculated to the bought: margin and stock}\label{sec:hx-bought}
+The design loop above ends on the smallest tube count that just delivers the
+duty, so the area it reports, $A_\mathrm{calc}=|Q|/(U F\,\Delta T_\mathrm{lm})$,
+is a \emph{minimum specification}: nothing a plant can buy has exactly that
+area.  Two decisions stand between it and the equipment, and a case may declare
+either, both or neither (\code{design \{ margin \{\} stock \{\} \}}); with
+neither declared the design is the one above, number for number.
+
+\paragraph{The margin is a decision about an uncertainty.}
+\code{margin \{ area $m$; reason "..."; \}} asks the loop to deliver the duty
+times $(1+m)$ instead of the duty.  The required area is
+\begin{equation}
+   A_\mathrm{req} = (1+m)\,A_\mathrm{calc},
+   \label{eq:hx-margin}
+\end{equation}
+and the bundle is the smallest tube count whose $U F\,\Delta T_\mathrm{lm}\,A$
+reaches $(1+m)\,|Q|$ (the coefficient $U$ is recomputed for the larger bundle, so
+the installed area is not exactly $A_\mathrm{req}$).  The \code{reason} is
+required text: a margin with no named uncertainty behind it (a film correlation
+good to about ten percent, a fouling allowance that is typical and not
+measured) is a number nobody can defend or remove.
+
+\paragraph{The stock list is the case's, with its source.}
+\code{stock \{ source "..."; reason "..."; tubeLengths ( \{ length $L$; \} \ldots );
+shellIDs ( \{ insideDiameter $D$; \} \ldots ); \}} lists what can be bought.  For
+every listed tube length the loop finds the smallest bundle that meets the
+required duty; the \emph{bought} bundle is the one with the smallest installed
+area (the shorter length on a tie).  The bought shell is the smallest listed inside
+diameter that holds the bundle's Sinnott diameter; the bundle is not enlarged
+to fill a larger shell, and the run says so.  The engine ships no vendor table: the
+lists are the case's own assumptions, and the tutorial's lists are marked as such.
+
+\paragraph{Three numbers side by side.}  The sheet and the result publish
+\code{A\_calculated}, \code{A\_margined} $=(1+m)A_\mathrm{calc}$ and
+\code{A\_bought} (the installed area, which the cost is priced on), with
+\code{designMargin} and, when a shell list is declared, \code{shellID\_bought}.
+The leftover $A_\mathrm{bought}/A_\mathrm{calc}-1$ keeps its key
+\code{overdesign} and is named on the sheet the \emph{rounding surplus}: it is
+what whole tubes and a stock length add, not a margin anybody chose.  The cost
+follows the bought area, so the margin has a price, and the next subsection's
+question --- which margin is worth buying --- is the case's to answer for its
+own uncertainty.  Worked case: \file{hxBought01\_margin\_and\_stock} (the
+condenser of \file{column17\_exchanger\_design} with a 10\,\% margin: calculated
+42.40\,m$^2$, required 46.64\,m$^2$, bought 46.70\,m$^2$ on a 6.096\,m length in a
+0.35\,m shell).  Source: \file{src/postProcessing/sizing/ShellTubeHX.cpp}; the EduTool
+\emph{From the calculated to the bought} runs it live.
+
 % ---------------------------------------------------------------------
 \section{The water cooling tower: Merkel's enthalpy driving force}\label{ch:coolingTower}
 
