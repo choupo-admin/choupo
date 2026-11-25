@@ -884,6 +884,19 @@ operation
 }
 ```
 
+**A DESIGN MARGIN AND A STOCK LIST ON A DESIGNED EXCHANGER (C503).**  The sizer
+route's `design {}` (the `shellTubeHX` sizing of `postDict`, flowsheet exchangers
+and column condensers and reboilers alike) takes two optional blocks beside the
+bundle: `margin { area <fraction>; reason "..."; }` and `stock { source "...";
+reason "..."; tubeLengths ( { length <m>; } ... ); shellIDs ( { insideDiameter
+<m>; } ... ); }`.  Absent: the design is unchanged, number for number.  Present:
+the calculated area stays what it was, the loop asks the duty times (1 + area) on
+each listed length, buys the length of smallest installed area and the smallest
+listed shell that holds the bundle, and the sheet shows `A_calculated`,
+`A_margined`, `A_bought` (the area the cost is priced on).  `overdesign` keeps its
+key and is named the rounding surplus on the sheet.  Case:
+`tutorials/steady/heat/hxBought01_margin_and_stock`; theory `sec:hx-bought`.
+
 `model geometry;` rates a declared tube bundle (U and area COMPUTED from the
 tubes, Gnielinski/Kern films and the wall) and `model design;` sizes one for a
 target outlet temperature; both read `operation.geometry {}` and both accept,

@@ -1019,6 +1019,16 @@ fouling}\label{ux3b4t_min-lmtd-correction-fouling}}
   \textbf{Fouling}: add R\_f \(\approx\) 0.0002 (clean liquid) to 0.0005--0.001
   m\textsuperscript{2}K/W (cooling water, fouling organics); this can dominate 1/U and is
   why a glass-box run should report the clean-vs-fouled area split.
+\item
+  \textbf{Calculated is not bought}: the sized area is a minimum
+  specification. Declare a margin only against an uncertainty you can name
+  (a film correlation good to about \(\pm\)10 \%, a typical rather than measured
+  fouling allowance), and declare the stock you can buy (tube lengths, shell
+  diameters) with where the list came from; the sheet then shows calculated,
+  required and bought area side by side and the cost follows the bought one.
+  A margin with no named uncertainty is a number nobody can remove. Hypothesis
+  to run: \texttt{hxBought01\_margin\_and\_stock}, margin 0 to 30 \%, and watch
+  what the next stock length does to the cost.
 \end{itemize}
 
 \hypertarget{heat-integration--pinch-analysis}{%

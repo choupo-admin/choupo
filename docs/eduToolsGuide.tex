@@ -4187,6 +4187,66 @@ controlling opening, $F_L$ and the starting valve's size are the student's or
 the page's declared values, marked as such.
 \declaredanchor{sec:control-valve}
 
+\subsection*{Which compressor, and how far can I turn it down? \quad(\code{tool=compressor-choice})}\label{sec:edu-compressor-choice}
+A compressor is chosen from the gas as it enters the machine, a volume flow, and
+a pressure ratio, not from kilograms and kilowatts.  The page runs two sized
+compressors of the engine in the browser (the air machine of
+\code{compressor03\_staged\_design} and the make-up compressor of
+\code{ammonia02\_full\_plant}) and reads their design sheets.  Five cards.
+(1)~\emph{The duty is a volume and a ratio}: the two duties side by side, and the
+air machine's volume and ratio handed to the other gas, which moves the mass flow
+and the head per kilogram but, because the molar mass cancels from
+$W=P_1Q(r^{m}-1)/(m\eta_p)$, hardly the power.  (2)~\emph{Where each family can
+exist}: the machine chart the engine selects from (Brown 2005, Fig.~1-2), drawn
+from the \emph{engine's own export} in the design sheet, never from corners typed
+on the page, with the duty as a point you drag; the machines whose rectangle holds
+it light up, the engine's pick is starred and its tie-break (the order of its
+list; the book gives none) and its two fall-backs are stated; the four compressors
+of the reference ammonia plant are marked from a \emph{recorded} run, labelled as
+such.  (3)~\emph{Seven questions the chart does not answer}: a grid for four
+machines, \emph{authored, not computed}, with a tally over the questions you
+tick.  (4)~\emph{The highest pressure the machine can make}: the driver's limit
+for a positive-displacement machine, a shut-off head that is a multiple you set
+for a centrifugal one, the vessel's design pressure you set, the verdict, and a
+link to the Overpressure page for the relief.  (5)~\emph{The anti-surge valve is
+not free}: the engine compresses the total flow the machine must pass, cooled and
+with the recycle returning hot, and the page prints power, discharge temperature
+and energy per kilogram delivered against the design.  The engine holds no
+characteristic map, so the surge flow and the shut-off head are the student's
+declared values; surge itself, speed control, suction throttling and cylinder
+unloading are not on the page, and it says why.
+\declaredanchor{sec:compressor-choice}
+
+\subsection*{From the calculated to the bought \quad(\code{tool=calculated-to-bought})}\label{sec:edu-calculated-to-bought}
+A calculation gives a minimum specification and a purchase gives a size.  The
+page runs the engine's own condenser design with a margin you set and a stock
+list of tube lengths and shells that the witness declares
+(\code{hxBought01\_margin\_and\_stock}, in the browser), and reads the three
+areas it prints side by side: the \emph{calculated} one, the one \emph{required
+with the margin}, and the \emph{bought} one, which is also the area the cost is
+priced on.  Six cards.  (1)~\emph{A calculation gives a minimum; a purchase
+gives a size}: the three areas as bars, the tubes, the length and shell bought
+and the purchased cost, at the margin you move from nothing to thirty percent.
+(2)~\emph{A margin is a decision about an uncertainty you can name}: the engine
+is swept over the margin and the page marks the cheapest swept margin whose
+bought area still delivers the duty if the overall coefficient falls by the
+fraction you set ($A\ge A_\mathrm{calc}/(1-u)$, the page's arithmetic on the
+engine's areas).  (3)~\emph{The stock steps}: one engine run per stock length
+at your margin, the length with the smallest installed area in bold.
+(4)~\emph{A pipe: the next nominal size up}: the engine's line list for the
+pumped-drum case with the velocity ceiling of the liquid window moved by you,
+and the smallest bore that ceiling allows ($d_\mathrm{min}=d\sqrt{v/v_\mathrm{max}}$,
+the page's arithmetic from the engine's own bore and velocity) beside the size
+bought; only the 4~inch line is priced, and the page says so.
+(5)~\emph{A driver}: the staged compressor's shaft power and the rating the
+engine printed at its margin, the engine's own note on that margin quoted from
+the run's log, the rating at a margin you set and a frame ladder you declare
+(the engine has none).  (6)~\emph{What the margin costs and what it covers}: the
+cost against the margin in steps, with the sentence that a margin is chosen for
+an uncertainty you must name.  The stock lists are the witness's own
+assumption, not a maker's catalogue; the page predicts no engine number.
+\declaredanchor{sec:hx-bought}
+
 \subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
 Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
 of a staged machine come out equal, and what the real gas adds, worked on the

@@ -29121,7 +29121,10 @@ $10^3$--$10^4$ cfm with the upper ratio edge sloping from 20 to 13.8 (straight o
 Where several contain the point the order is centrifugal, axial, screw,
 reciprocating (a tie-break the book does not give); a point outside every
 region takes the reciprocating machine (p.~5) and says so.  \texttt{machine}
-overrides the choice.
+overrides the choice.  The sheet's \texttt{compressor \{ chart ( \dots ) \}}
+block publishes the region rectangles, the duty's inlet flow and its overall
+ratio and the rule in words, so a reader draws the chart the engine used and
+holds no corner of its own (\S\ref{sec:compressor-choice}).
 
 \begin{center}\small
 \begin{tabular}{llll}
@@ -29155,6 +29158,86 @@ speed selection, the axial hub/tip check, the reciprocating gas-gravity and
 low-pressure multipliers (Tables 3-1, 3-2), standard motor sizes, surge and
 turndown.  The witness is \file{tutorials/steady/rotating/compressor03\_staged\_design},
 whose README repeats one stage by hand.
+
+\subsection{Choosing the machine, and what a blocked discharge does}\label{sec:compressor-choice}
+
+\emph{Which compressor, and how far can I turn it down?}  The arithmetic of the
+EduTools page \code{tool=compressor-choice}, on the engine's own sheets.
+
+\paragraph{The duty is a volume and a ratio.}  The gas power of one section is
+$W=\dot m H/\eta_p$ with the head $H=(Z R_s T_1/m)(r^{m}-1)$ (Brown Eq.\ 2.73
+and 2.78, $m=(n-1)/n$).  The mass flow is $\dot m=\rho Q=P_1 Q/(Z R_s T_1)$, so
+\begin{equation}
+  W \;=\; \frac{P_1\,Q}{m\,\eta_p}\left(r^{m}-1\right):
+  \label{eq:compressor-volume-ratio}
+\end{equation}
+the specific gas constant, and with it the molar mass, cancels.  Two gases with
+the same actual inlet volume, ratio and suction state need nearly the same power
+and very different mass flows and heads per kilogram (the weight of the gas comes
+back only through $m$ and $Z$); the head per kilogram is what limits a
+centrifugal impeller.  The machine is therefore chosen from $Q$ and $r$, as the
+chart of Fig.~1-2 does.
+
+\paragraph{The chart, as the engine publishes it.}  A region holds the duty
+when $Q_{\min}\le Q\le Q_{\max}$ and $r_{\min}\le r\le r_{\max}(Q)$, the upper
+edge being a straight line on the log-log axes between its two corners,
+\begin{equation}
+  r_{\max}(Q)=r_L\left(\frac{r_R}{r_L}\right)^{\ln(Q/Q_{\min})/\ln(Q_{\max}/Q_{\min})}.
+  \label{eq:compressor-chart-edge}
+\end{equation}
+The engine takes the first region of its list that holds the point (a
+tie-break the book does not give); below $r=1.4$, where the figure draws
+nothing, the first machine whose flow range holds $Q$; outside every region the
+reciprocating machine; above $10^6$ cfm it refuses.  The corners are the
+engine's reading of the figure, good to about $3\,\%$ of an edge, and the page
+reads them from the sheet.  The chart is a convention of a book, not a law.
+
+\paragraph{The seven questions.}  A grid of seven questions a plant engineer
+asks beyond the chart (smoothness of delivery, a lubricant-free gas path,
+turndown, the highest ratio of one machine, a lighter gas, driver speed, how
+often it is opened) with a tendency for each machine and one sentence of reason
+is on the page.  It is \emph{authored}: written for the lesson in its own words
+from general practice, no source read for any cell.
+
+\paragraph{The highest pressure.}  A positive-displacement machine keeps
+displacing its volume against a closed discharge until its driver, its casing or a
+relief valve stops it, so the relief valve must pass its whole flow.  The page
+prices the \emph{driver} limit with the engine's own staging (equal section
+ratios, the intercoolers' pressure drop, every section cooled back to the
+intercooler temperature, the exponent of stage~1 held): the largest overall ratio
+at which
+\begin{equation}
+  W_d=\frac{(1+\mu)\,\dot m\,Z R_s T_1}{m\,\eta_p}\sum_{i=1}^{N}\left(r_i^{m}-1\right)
+  \label{eq:compressor-driver-ceiling}
+\end{equation}
+equals the sheet's \texttt{driverRating} $W_d$; the design ratio sits below it by
+the $110\,\%$ margin.  A centrifugal machine climbs only to its shut-off head,
+taken as $k$ times the design head with $k$ \emph{the student's} (the engine has
+no characteristic map): a section's head is proportional to $r^{m}-1$, so a
+section ratio $r_1$ becomes $(1+k(r_1^{m}-1))^{1/m}$ and the overall ratio is scaled
+by that gain over $N$ sections.  Both are estimates for the lesson, not a rating:
+the efficiency is held at its design value and the casing and rod-load limits of
+a real machine are not in them.  The relief a blocked discharge asks is the
+Overpressure page's question (the EduTools page \code{tool=overpressure}).
+
+\paragraph{The cost of the anti-surge recycle.}  A centrifugal machine must pass
+a minimum flow.  With $f_s$ the surge flow as a fraction of the design flow
+(\emph{the student's}: the engine has no map) and $\mu_s$ a margin, the machine
+passes $Q_t=\max(Q_d,f_s(1+\mu_s)Q_{\mathrm{des}})$ for a demand $Q_d$; the share
+$\varphi=(Q_t-Q_d)/Q_t$ goes round the recycle valve.  The page asks the engine
+to compress $Q_t$ (the air machine's feed scaled in its declared ratio) and
+prints the single-pass power, the discharge temperature and the energy per
+kilogram delivered against the design.  An uncooled recycle raises the suction
+temperature to $T_{\mathrm{mix}}=(1-\varphi)T_f+\varphi T_{\mathrm{out}}$, a
+constant heat capacity and one step of the iteration, and the engine is run again
+at it.  Surge itself is a dynamic instability set by the map and the volume
+downstream and is not computed; speed control and suction throttling need the
+same map, and cylinder unloading a source not yet read.
+
+\paragraph{Limits.}  The chart's edges are a reading; the plant's four
+compressors on the chart are a recorded run; the surge flow and the shut-off
+head are declared; the ceiling is one set of arithmetic on the engine's staging;
+the grid is authored.
 
 % ---------------------------------------------------------------------
 \section{Pipe pressure drop: Darcy--Weisbach and the friction
@@ -32254,6 +32337,53 @@ temperatures), printable to PDF; the raw numbers also export to a
 spreadsheet.  Open, cited, and reproducible --- the black box a commercial
 tool hands you, opened.
 
+\subsection{From the calculated to the bought: margin and stock}\label{sec:hx-bought}
+The design loop above ends on the smallest tube count that just delivers the
+duty, so the area it reports, $A_\mathrm{calc}=|Q|/(U F\,\Delta T_\mathrm{lm})$,
+is a \emph{minimum specification}: nothing a plant can buy has exactly that
+area.  Two decisions stand between it and the equipment, and a case may declare
+either, both or neither (\code{design \{ margin \{\} stock \{\} \}}); with
+neither declared the design is the one above, number for number.
+
+\paragraph{The margin is a decision about an uncertainty.}
+\code{margin \{ area $m$; reason "..."; \}} asks the loop to deliver the duty
+times $(1+m)$ instead of the duty.  The required area is
+\begin{equation}
+   A_\mathrm{req} = (1+m)\,A_\mathrm{calc},
+   \label{eq:hx-margin}
+\end{equation}
+and the bundle is the smallest tube count whose $U F\,\Delta T_\mathrm{lm}\,A$
+reaches $(1+m)\,|Q|$ (the coefficient $U$ is recomputed for the larger bundle, so
+the installed area is not exactly $A_\mathrm{req}$).  The \code{reason} is
+required text: a margin with no named uncertainty behind it (a film correlation
+good to about ten percent, a fouling allowance that is typical and not
+measured) is a number nobody can defend or remove.
+
+\paragraph{The stock list is the case's, with its source.}
+\code{stock \{ source "..."; reason "..."; tubeLengths ( \{ length $L$; \} \ldots );
+shellIDs ( \{ insideDiameter $D$; \} \ldots ); \}} lists what can be bought.  For
+every listed tube length the loop finds the smallest bundle that meets the
+required duty; the \emph{bought} bundle is the one with the smallest installed
+area (the shorter length on a tie).  The bought shell is the smallest listed inside
+diameter that holds the bundle's Sinnott diameter; the bundle is not enlarged
+to fill a larger shell, and the run says so.  The engine ships no vendor table: the
+lists are the case's own assumptions, and the tutorial's lists are marked as such.
+
+\paragraph{Three numbers side by side.}  The sheet and the result publish
+\code{A\_calculated}, \code{A\_margined} $=(1+m)A_\mathrm{calc}$ and
+\code{A\_bought} (the installed area, which the cost is priced on), with
+\code{designMargin} and, when a shell list is declared, \code{shellID\_bought}.
+The leftover $A_\mathrm{bought}/A_\mathrm{calc}-1$ keeps its key
+\code{overdesign} and is named on the sheet the \emph{rounding surplus}: it is
+what whole tubes and a stock length add, not a margin anybody chose.  The cost
+follows the bought area, so the margin has a price, and the next subsection's
+question --- which margin is worth buying --- is the case's to answer for its
+own uncertainty.  Worked case: \file{hxBought01\_margin\_and\_stock} (the
+condenser of \file{column17\_exchanger\_design} with a 10\,\% margin: calculated
+42.40\,m$^2$, required 46.64\,m$^2$, bought 46.70\,m$^2$ on a 6.096\,m length in a
+0.35\,m shell).  Source: \file{src/postProcessing/sizing/ShellTubeHX.cpp}; the EduTool
+\emph{From the calculated to the bought} runs it live.
+
 % ---------------------------------------------------------------------
 \section{The water cooling tower: Merkel's enthalpy driving force}\label{ch:coolingTower}
 
@@ -33171,12 +33301,12 @@ Eq.~\eqref{eq:column-design-g} finds.
 $R(N)$ falls monotonically with $N$ towards a floor, the minimum reflux
 $R_\mathrm{min}$, where a pinch forms in the column and added stages stop
 helping; and as $R\to\infty$ (total reflux) $N$ falls to a floor, the minimum
-stages $N_\mathrm{min}$.  For an ideal mixture the first is Underwood's~\cite{Underwood1948}
-(Section~\ref{ch:fug}) and the second Fenske's~\cite{Fenske1932}.  For a non-ideal mixture
+stages $N_\mathrm{min}$.  For an ideal mixture the first is Underwood's
+\cite{Underwood1948} (Section~\ref{ch:fug}) and the second Fenske's \cite{Fenske1932}.  For a non-ideal mixture
 $R_\mathrm{min}$ is set by a pinch that may lie away from the feed, at the
 tangent of the operating line with the equilibrium curve in the rectifying
-section, and past an azeotrope by the boundary value construction (Levy, Van
-Dongen and Doherty 1985; Julka and Doherty 1990); that calculation is the next
+section, and past an azeotrope by the boundary value construction
+\cite{LevyDoherty1985,JulkaDoherty1990}; that calculation is the next
 step for the engine, and the curve's own floor, the reflux at the largest
 recorded $N$, is an upper bound of it.
 
@@ -33190,7 +33320,7 @@ $i(1+i)^n/[(1+i)^n-1]$ for an interest rate $i$ and a life $n$),
 $C_\mathrm{inst}$ the installed cost, $h$ the yearly hours, $p_E$ the price of the
 reboiler's heat and $Q_\mathrm{reb}$ its duty.  The engine supplies
 $C_\mathrm{inst}$ as the Turton total-module cost (bare module with contingency
-and fee, Turton et al.~\cite{Turton}) of the five items the tray hydraulics sized, the
+and fee \cite{Turton}) of the five items the tray hydraulics sized, the
 duties, and the utility prices; the page adds $f_c$, $p_E$ and $h$.  $C_\mathrm{inst}$
 rises with $N$ (a taller shell, more trays) and $Q_\mathrm{reb}$ falls with it
 (a smaller $R$), so $C_A$ has an interior minimum.  Raising $p_E$ moves it to a
@@ -33200,7 +33330,7 @@ larger $N$ and a smaller $R$.
 
 The shortcut freezes one relative volatility $\alpha=K_\mathrm{LK}/K_\mathrm{HK}$ at
 the feed's bubble point and returns $N_\mathrm{min}^{\mathrm{FUG}}$,
-$R_\mathrm{min}^{\mathrm{FUG}}$ and a Gilliland $N(R)$~\cite{Gilliland1940}.  Its error on a mixture is
+$R_\mathrm{min}^{\mathrm{FUG}}$ and a Gilliland \cite{Gilliland1940} $N(R)$.  Its error on a mixture is
 measured by
 \begin{equation}\label{eq:column-design-ratio}
 \rho_R=\frac{R^{\mathrm{rig}}(N_\mathrm{big})}{R_\mathrm{min}^{\mathrm{FUG}}},\qquad
@@ -37466,6 +37596,17 @@ one whose root bracket the engine refuses to guess at.
 \textbf{32}, 1220, 1940.  The empirical $N(R)$ correlation between the
 Fenske and Underwood limits.  Choupo evaluates it in the Molokanov
 closed form, for which this repository records no reference at all.
+
+\bibitem{LevyDoherty1985} Levy, S. G., Van Dongen, D. B., \& Doherty, M. F.,
+``Design and synthesis of homogeneous azeotropic distillations. 2. Minimum
+reflux calculations for nonideal and azeotropic columns,'' \emph{Ind. Eng.
+Chem. Fundam.}\ \textbf{24}(4), 463--474 (1985).
+doi:\code{10.1021/i100020a011}.
+
+\bibitem{JulkaDoherty1990} Julka, V., \& Doherty, M. F., ``Geometric behavior
+and minimum flows for nonideal multicomponent distillation,'' \emph{Chem.
+Eng. Sci.}\ \textbf{45}(7), 1801--1822 (1990).
+doi:\code{10.1016/0009-2509(90)87057-y}.
 
 \bibitem{CurtisPowellReid1974} Curtis, A. R., Powell, M. J. D. \& Reid,
 J. K., \emph{J. Inst. Maths Applics} \textbf{13}, 117, 1974.  The

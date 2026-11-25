@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1943,
+  "cases": 1944,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -28542,6 +28542,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/hxBought01_margin_and_stock": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/hxWorkflow1_design_from_duty": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32975,6 +32989,7 @@
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
     "tutorials/steady/heat/hx02_condensing_steam",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -33443,6 +33458,7 @@
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
@@ -36533,6 +36549,7 @@
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
     "tutorials/steady/heat/hx02_condensing_steam",
+    "tutorials/steady/heat/hxBought01_margin_and_stock",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",

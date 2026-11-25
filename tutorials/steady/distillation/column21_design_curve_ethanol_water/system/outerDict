@@ -14,8 +14,8 @@ type         designSpec;
 
 manipulate
 (
-    { variable R;  initial 3.0;  min 0.5;  max 400.0; }
-    { variable D;  initial 32.0 kmol/h;  min 20.0 kmol/h;  max 45.0 kmol/h; }
+    { variable R;  min 0.5;  max 400.0; }
+    { variable D;  min 20.0 kmol/h;  max 45.0 kmol/h; }
 );
 
 targets

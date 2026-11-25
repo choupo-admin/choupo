@@ -313,6 +313,7 @@ Put on the **tube side**: the dirtier, higher-pressure, more-corrosive, or lower
 - **ΔT_min**: 10–20 °C for hot utility/gas, 5–10 °C liquid–liquid, 3–5 °C refrigeration (energy vs area trade-off — verify via Choupo pinch composite curves).
 - **LMTD correction F**: keep **F > 0.8**; F < 0.75 means add shell passes (2-4, 4-8) or go pure counter-current.
 - **Fouling**: add R_f ≈ 0.0002 (clean liquid) to 0.0005–0.001 m²K/W (cooling water, fouling organics); this can dominate 1/U and is why a glass-box run should report the clean-vs-fouled area split.
+- **Calculated is not bought**: the sized area is a minimum specification. Declare a margin only against an uncertainty you can name (a film correlation good to about ±10 %, a typical rather than measured fouling allowance), and declare the stock you can buy (tube lengths, shell diameters) with where the list came from; the sheet then shows calculated, required and bought area side by side and the cost follows the bought one. A margin with no named uncertainty is a number nobody can remove. Hypothesis to run: `hxBought01_margin_and_stock`, margin 0 to 30 %, and watch what the next stock length does to the cost.
 
 ## Heat integration & pinch analysis
 

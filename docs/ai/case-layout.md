@@ -842,6 +842,19 @@ does not lower it).  The package must declare liquid `viscosity` and
 `transport {}`, or the item refuses by name.  Worked case:
 `tutorials/steady/distillation/column17_exchanger_design`.
 
+**A DESIGN MARGIN AND A STOCK LIST (C503, 2026-11-25; opt-in).**  Inside the same
+`design {}`: `margin { area 0.10; reason "..."; }` (the duty times 1 + area, the
+reason REQUIRED and naming the uncertainty) and `stock { source "..."; reason
+"..."; tubeLengths ( { length 3.658 m; } { length 6.096 m; } ); shellIDs (
+{ insideDiameter 0.35 m; } ... ); }` (the case's own list; the engine carries no
+vendor table).  The run finds, per listed length, the smallest bundle that
+delivers the duty times (1 + area), BUYS the length of smallest installed area
+and the smallest listed shell that holds the bundle, and the sheet shows
+`A_calculated`, `A_margined`, `A_bought` (the area the cost is priced on),
+`designMargin`, `shellID_bought`, `tubeLength_calculated`.  `overdesign` keeps its
+key and is the rounding surplus over the calculated area.  Neither block: the
+design is unchanged.  Worked case: `tutorials/steady/heat/hxBought01_margin_and_stock`.
+
 **A PLUG-FLOW CATALYST BED IS A SHELL AND A CATALYST CHARGE (2026-09-26).**
 `type pfr` sizes the unit's OWN `V_R` -- the volume the PFR integrated, which
 is the outer driver's answer when a `designSpec` solves it -- and never
