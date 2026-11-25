@@ -78,7 +78,7 @@ Models: `WangHenke` = bubble-point sweep, cheap per pass, hundreds of passes (33
 
 DOF: feed, P, nStages, feedStage fixed; `refluxRatio` + (`distillateRate` or `distillateRecovery`) = exactly specified. Both `distillateRate` and `distillateRecovery` → refused. `distillateRecovery` (single feed only) is the fraction of that component's feed flow reaching the distillate; the engine searches the rate. Use it inside recycles, where the feed moves.
 
-Published (KPIs, kW): `Q_condenser_kW` (negative), `Q_reboiler_kW`, `D`, `B`, `T_top`, `T_bottom`, `L_rect`, `V_rect`, `L_strip`, `V_strip`, `x_D_LK`, `x_B_HK`, `iterations`, plus `profile` (T and x,y per stage). The reboiler duty is the remainder of the column's energy balance (not an independent check) — judge the condenser duty against `(R+1)·D·λ`.
+Published (KPIs, kW): `Q_condenser_kW` (negative), `Q_reboiler_kW`, `D`, `B`, `T_top`, `T_bottom`, `L_rect`, `V_rect`, `L_strip`, `V_strip`, `x_D_LK`, `x_B_HK` (purities of the KEYS: declare `lightKey <name>; heavyKey <name>;` in `operation`; a binary without them gets the component with the larger K; THREE OR MORE components without them publish `x_D_<component>` and `x_B_<component>` instead, never the two LK/HK names), `iterations`, plus `profile` (T and x,y per stage). The reboiler duty is the remainder of the column's energy balance (not an independent check) — judge the condenser duty against `(R+1)·D·λ`.
 
 Feed state: a stream is read for what it means (subcooled liquid q>1, two-phase q = 1−vf, vapour q<0); announced as `[column] … CMO q = …`. Never also write `feedQuality`; if you do and it disagrees with the stream it is refused.
 

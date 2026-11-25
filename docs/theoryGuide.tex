@@ -23392,6 +23392,32 @@ supplies it.  On the industrial C$_4$ splitter of
 $\varphi = 0.22$, and the reboiler duty moves from 8.09 to 9.77~MW against
 a measured 10.24~MW.
 
+\subsection{The key purities \texttt{x\_D\_LK} and \texttt{x\_B\_HK}}\label{sec:column-key-kpis}
+
+Two published numbers are purities of the \emph{keys}: $x_{D,LK}$, the
+mole fraction of the light key in the distillate, and $x_{B,HK}$, that of the
+heavy key in the bottoms.  They never mean ``first'' and ``last'' in the
+\texttt{components} list (before 2026-11-25 they did: reversing the list of a
+three-component column left every physical result equal and moved $x_{B,HK}$
+from 0.884 to 0.095).  Which components are the keys is decided in this order.
+\begin{enumerate}
+\item \texttt{lightKey} and \texttt{heavyKey} in \texttt{operation \{\}}
+  (the words the shortcut column already uses; one without the other, or the
+  same name twice, is refused): the KPIs are published for them.
+\item A binary with no declaration: the light component is the one with the
+  larger $K$ in the sense
+  $\sum_{j=1}^{N_s}\ln\bigl(K_{a,j}/K_{b,j}\bigr)>0$, summed over \emph{all}
+  stages, so an azeotrope inside the column (where $K_a/K_b$ crosses 1 on one
+  stage) is judged by the column as a whole.  The answer cannot depend on the
+  list order; only a tie falls back to it, and the run says so.
+\item Three or more components and no declaration: \texttt{x\_D\_LK} and
+  \texttt{x\_B\_HK} are \emph{not} published.  The run publishes
+  \texttt{x\_D\_<component>} and \texttt{x\_B\_<component>} for every
+  component and prints one line saying how to declare the keys.
+\end{enumerate}
+Both solver paths (Wang--Henke and the simultaneous MESH) use this one rule
+(\texttt{publishKeyKpis}, \texttt{DistillationColumn.cpp}).
+
 \subsection{When this method struggles}
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
