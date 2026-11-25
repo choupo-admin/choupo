@@ -9470,6 +9470,50 @@ The pipe04 case with a flow-curve record that claims to be capillary-rheometer r
 \tutreadme{The record claims instrument capillary and declares two of the four corrections a capillary needs; the refusal names the first one missing (the Bagley end-effect correction).}
 
 \clearpage
+\tutentry{pipe09\_isothermal\_gas\_line}{tutorials/steady/hydraulics/pipe09\_isothermal\_gas\_line}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (P1) at (0.0,-0.0) {\textbf{P1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(P1.west)+(-1.05,0.00)$) -- ($(P1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(P1.east)+(0,0.00)$) -- ($(P1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {downstream};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Compressible isothermal gas line: 45 kmol/h of nitrogen at 8 bar in 300 m of 0.05 m steel pipe}
+\begin{tutnarrative}
+The same `pipe` unit as pipe01, fed a GAS. An all-vapour inlet (V/F = 1) takes the steady ISOTHERMAL COMPRESSIBLE pipe equation instead of the incompressible liquid arithmetic (C506):
+
+P1\textasciicircum{}2 - P2\textasciicircum{}2 = c G\textasciicircum{}2 [ f L/D + SUM K + 2 ln(P1/P2) ] , c = P1/rho1
+
+The run prints the exact outlet pressure, the mean-density shortcut beside it and their difference, the isothermal choking limit G sqrt(c) and the longest line that does not choke. Adiabatic and Joule-Thomson effects are not modelled. The line is horizontal (dz 0); a rise is refused by name.
+
+feed (N2, 8 bar, 300 K, 45 kmol/h) $\to$ [P1 pipe] D, L, roughness $\to$ P\_out (result) $\to$ downstream
+
+\end{tutnarrative}
+\tutreadme{The same pipe unit as pipe01\_water\_line, fed a GAS. An all-vapour inlet (V/F = 1; here phase gas; declares it) takes the steady, horizontal, constant-area, isothermal compressible equation instead of the liquid's incompressible Darcy-Weisbach arithmetic (Theory Guide, section $\ast$An isothermal gas line$\ast$, label sec:pipe-gasline).}
+\tutreadme{Nitrogen, 45 kmol/h (0.3502 kg/s), 8 bar and 300 K, through 300 m of 50 mm commercial-steel pipe (eps = 46 um), Churchill friction, ideal gas (Z = 1), gas viscosity from the Chung model of the property dictionary (17.84 uPa s).}
+\tutreadme{With c = P1/rho1 = Z R T / M (89 042 m2/s2), the mass flux G = mdot/A (178.34 kg/m2/s) and one friction factor (Re = G D / mu = 4.997e5 is the same at every section, because the viscosity depends on T only; f = 0.019993):}
+\tutreadme{$\ast$ Exact: P1\textasciicircum{}2 - P2\textasciicircum{}2 = c G\textasciicircum{}2 [ f L/D + sum K + 2 ln(P1/P2) ], solved for P2 by a bracketed Newton (3 steps). P2 = 5.46010 bar (dP = 2.5399 bar, 31.7 \% of P1). $\ast$ Mean density: P2\textasciicircum{}2 = P1\textasciicircum{}2 - c G\textasciicircum{}2 [ f L/D + sum K ] (the gas treated as a liquid at the arithmetic-mean density). P2 = 5.47988 bar (dP = 2.5201 bar).}
+\tutreadme{The shortcut's dP is 0.78 \% low here; the run prints both and their difference. The difference is the acceleration of the gas, the 2 ln(P1/P2) term. Hand-run table (bin/curate/gasline\_reference.py, the same inputs, only L changed):}
+\tutreadme{The pressure gradient grows without bound as P $\to$ G sqrt(c): the isothermal Mach number u / sqrt(c) reaches 1. For this inlet that pressure is 0.532 bar and the longest line that carries the flow is L\_max = 549.1 m; a longer one is REFUSED by name (try L 600). Also REFUSED by name: an inlet already beyond the limit, dz != 0 (the line is horizontal), and a gas with no viscosity model in the property dictionary. Adiabatic and Joule-Thomson effects are not modelled: the wall is assumed to hold T constant. A drop above 40 \% of the inlet pressure raises a validity advisory (a flag level, not a derived bound).}
+\begin{tutgolden}
+\goldrow{stream}{downstream}{F}{0.0125}
+\goldrow{stream}{downstream}{T}{300}
+\goldrow{stream}{feed}{F}{0.0125}
+\goldrow{stream}{feed}{T}{300}
+\goldrow{kpi}{P1}{F}{0.0125}
+\goldrow{kpi}{P1}{L\_max}{549.132019304}
+\goldrow{kpi}{P1}{P\_choke}{53215.4395251}
+\goldrow{kpi}{P1}{P\_in}{800000}
+\goldrow{kpi}{P1}{P\_out}{546010.18302}
+\goldrow{kpi}{P1}{P\_out\_meanDensity}{547987.711445}
+\goldrow{kpi}{P1}{compressibilityZ}{1}
+\goldrow{kpi}{P1}{deltaP}{253989.81698}
+\goldrow{kpi}{P1}{deltaP\_meanDensity}{252012.288555}
+\goldrow{kpi}{P1}{density}{8.984505285}
+\goldmore{15}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

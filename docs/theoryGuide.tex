@@ -29581,6 +29581,118 @@ holdup and the regime, and lets you compare \code{LockhartMartinelli} against
 \code{homogeneous}.
 \end{tutoriallink}
 
+\subsection{An isothermal gas line: compressible flow in a straight pipe}\label{sec:pipe-gasline}
+
+When the inlet is all vapour ($V/F=1$) the incompressible law above cannot be
+used: the pressure falls along the line, the gas expands, its velocity rises
+and the mechanical-energy balance has a term that a liquid does not have.  The
+\code{pipe} unit answers with the steady, \emph{isothermal}, horizontal,
+constant-area compressible-flow equation.  Until C506 it refused a gas by
+name; it still refuses by name wherever the equation below does not hold.
+
+\paragraph{Assumptions (all of them, so the student can break one).}
+(i) Steady flow of a single vapour phase in a straight horizontal pipe of constant
+area $A=\pi D^2/4$.  (ii) $T$ is the inlet $T$ at every section --- the wall
+supplies whatever heat that takes; \textbf{adiabatic and Joule--Thomson effects are
+not modelled.}  (iii) The gas obeys $P/\rho = c$ with $c=Z R T/M$ constant along
+the line: the package's own vapour density at the inlet gives
+$c = P_1/\rho_1$, so $Z$ is held at its inlet value ($Z=1$ for the
+\code{idealGas} model, the equation of state's $Z$ otherwise).  (iv) The
+Darcy friction factor $f$ is that of the liquid line, from the same
+correlation ($f(\mathrm{Re},\varepsilon/D)$, Churchill by default), with the
+fittings' $\sum K$ added to $f L/D$ as an equivalent resistance.
+
+\paragraph{The constant Reynolds number.}  The mass flux $G=\dot m/A$ is
+constant along a constant-area pipe (continuity), so
+$\mathrm{Re} = \rho u D/\mu = G D/\mu$.  The gas viscosity depends on $T$ only (at
+the pressures where the low-pressure transport model holds), and $T$ is
+constant, so $\mathrm{Re}$ --- and therefore $f$ --- is the same at every section.
+One friction factor, evaluated at the inlet, serves the whole line; this is
+what makes the closed forms below exact in the model's own terms.
+
+\paragraph{The equation.}  The differential mechanical-energy balance with Darcy
+friction is
+\begin{equation}
+  \frac{\mathrm{d}P}{\rho} + u\,\mathrm{d}u + \frac{f}{2D}\,u^{2}\,\mathrm{d}L = 0 ,
+  \qquad \rho=\frac{P}{c},\quad u=\frac{G}{\rho}=\frac{G c}{P}.
+\end{equation}
+Substituting $u\,\mathrm{d}u = -G^2c^2\,\mathrm{d}P/P^3$ and $\mathrm{d}P/\rho =
+c\,\mathrm{d}P/P$ and multiplying by $P^2/c^2$,
+\begin{equation}
+  \frac{P}{c}\,\mathrm{d}P - \frac{G^{2}}{P}\,\mathrm{d}P + \frac{f G^{2}}{2D}\,\mathrm{d}L = 0 .
+\end{equation}
+Integrating from the inlet ($P_1$) to the outlet ($P_2$) over a length $L$ gives
+the \textbf{exact isothermal solution}
+\begin{equation}\label{eq:gasline-exact}
+  P_1^{2}-P_2^{2} \;=\; c\,G^{2}\left[\frac{f L}{D}+\sum K+2\ln\frac{P_1}{P_2}\right]
+  \;=\; \frac{G^{2} Z R T}{M}\left[\frac{f L}{D}+\sum K+2\ln\frac{P_1}{P_2}\right].
+\end{equation}
+It is implicit in $P_2$.  The unit solves it by Newton's method on
+$g(P_2)=P_1^2-P_2^2-cG^2[K+2\ln(P_1/P_2)]$ with $K = fL/D+\sum K$, safeguarded by the
+bracket $[G\sqrt c,\,P_1]$: $g'(P_2)=-2(P_2^2-cG^2)/P_2<0$ there, so $g$ is
+monotone and has exactly one root.  The starting value is the shortcut below.
+
+\paragraph{The mean-density shortcut.}  The textbook shortcut treats the gas as
+an incompressible fluid at the arithmetic-mean density
+$\rho_m=(\rho_1+\rho_2)/2=(P_1+P_2)/(2c)$:
+$\Delta P = K\,G^2/(2\rho_m)$, which rearranges to
+\begin{equation}\label{eq:gasline-mean}
+  P_2^{2} = P_1^{2} - c\,G^{2}\left[\frac{f L}{D}+\sum K\right]
+\end{equation}
+--- the exact equation (\ref{eq:gasline-exact}) with its logarithmic term
+dropped.  That term is the \emph{acceleration} of the gas, $\int u\,\mathrm{d}u$,
+which the shortcut ignores.  The unit prints both $P_2$ and their difference:
+the shortcut is good while $\ln(P_1/P_2)$ is small against $fL/D$, that is for a
+small relative pressure drop, and the student sees where it stops being so.
+
+\paragraph{The window: choking.}  Solving the differential form for the
+gradient,
+\begin{equation}
+  \frac{\mathrm{d}P}{\mathrm{d}L} = -\frac{f G^{2}/(2D)}{P/c - G^{2}/P}
+\end{equation}
+which grows without bound as $P\to G\sqrt{c}$, i.e.\ where $u=G c/P=\sqrt{c}=\sqrt{ZRT/M}$:
+the \emph{isothermal} Mach number $\mathrm{Ma}_T=u/\sqrt c$ reaches~1.  (In
+terms of the usual adiabatic sonic speed $\sqrt{\gamma c}$ this is $\mathrm{Ma}=1/\sqrt{\gamma}$.)  A subsonic isothermal flow cannot
+pass it: the longest line that can carry the inlet state ends at
+$P_2=P_{\mathrm{ch}}=G\sqrt c$, where (\ref{eq:gasline-exact}) gives
+\begin{equation}
+  \left(\frac{fL}{D}+\sum K\right)_{\max}=\frac{P_1^{2}-P_{\mathrm{ch}}^{2}}{cG^{2}}-2\ln\frac{P_1}{P_{\mathrm{ch}}},
+  \qquad L_{\max}=\frac{(\cdot)_{\max}-\sum K}{f}\,D .
+\end{equation}
+The unit therefore \textbf{refuses by name} (i) an inlet with $P_1\le G\sqrt c$
+(choked at the entrance), (ii) a line with $fL/D+\sum K\ge(\cdot)_{\max}$ (it
+prints $L_{\max}$), (iii) a sloped line ($\Delta z\ne0$: the elevation head of a
+gas with varying density is not in (\ref{eq:gasline-exact})), (iv) a gas with no
+viscosity model in the property dictionary.  A two-phase inlet keeps its own correlations
+(\S\ref{sec:pipe-twophase}); a liquid keeps the incompressible path
+byte-identical.  Beyond choking nothing is claimed: a real line then chokes at
+the exit and the upstream state is set by the exit.  As a \emph{flag}, not a bound derived
+here, a pressure drop above 40\,\% of the inlet pressure raises a \code{validity}
+advisory: the larger the velocities, the larger the heat exchange a real wall
+cannot supply, so the isothermal assumption weakens.
+
+\paragraph{Where the equation comes from, and what is not checked against a primary source.}
+Equation (\ref{eq:gasline-exact}) is the standard isothermal compressible-flow
+result found in the chemical-engineering fluid-flow textbooks (for example the
+compressible-flow chapter of \emph{Coulson \& Richardson's Chemical
+Engineering}, Vol.~1~\cite{CoulsonRichardson1}); the derivation above is
+self-contained.  The edition and equation number of the textbook form were
+\emph{not} verified against a primary page in the session that wrote this
+section, and no textbook worked example was reproduced for the same reason;
+the evidence is instead (a) an independent hand computation
+(\file{bin/curate/gasline\_reference.py}: ideal-gas density, Churchill's $f$ and
+a plain bisection written without the engine's source) that agrees with the engine to
+better than $10^{-6}$ in $P_2$, and (b) the limiting check that for a vanishing relative
+pressure drop (\ref{eq:gasline-exact}) and (\ref{eq:gasline-mean}) both tend to the
+incompressible Darcy law with the inlet density.
+
+\begin{tutoriallink}
+\file{tutorials/steady/hydraulics/pipe09\_isothermal\_gas\_line} --- 45\,kmol/h of
+nitrogen at 8\,bar in 300\,m of 50\,mm steel pipe: the exact and mean-density
+outlet pressures, the isothermal Mach numbers and $L_{\max}$ are on the screen;
+lengthen the line toward $L_{\max}$ and watch the shortcut fail.
+\end{tutoriallink}
+
 \subsection{A valve in its line: authority, the installed flow and the gain}\label{sec:control-valve}
 
 \emph{Why does a correctly sized control valve still control badly?}  Because
@@ -37116,6 +37228,13 @@ two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
 in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
 foundational gas--liquid pressure-drop correlation, developed and validated
 on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
+
+\bibitem{CoulsonRichardson1} Coulson, J. M., \& Richardson, J. F., \emph{Coulson \&
+Richardson's Chemical Engineering, Volume 1: Fluid Flow, Heat Transfer and Mass
+Transfer}, Butterworth--Heinemann (edition and equation numbers not verified
+against a primary page by the author of the section).  The compressible-flow
+chapter treats isothermal flow of an ideal gas in a pipe, whose result is
+Eq.~(\ref{eq:gasline-exact}); Choupo's gas line.
 
 \bibitem{TowlerSinnott2008} Towler, G., \& Sinnott, R. (2008). \emph{Chemical Engineering Design:
 Principles, Practice and Economics of Plant and Process Design}, 1st ed., Butterworth-Heinemann

@@ -312,7 +312,7 @@ pressures unless stated.
 * `pump` — spec `eta` and ONE of `P_out`, `dP`, `W_shaft` → the others.
 * `compressor` — spec `eta` and ONE of `P_out`, `W_shaft` → T_out and the
   other.  `turbine` — spec `eta` and `W_shaft` (NEGATIVE); `P_out` is a
-  RESULT, not a key.  `pipe` refuses an all-vapour inlet.
+  RESULT, not a key.  `pipe` takes an all-vapour inlet as an isothermal compressible gas line (refuses a choked one).
 * `conversionReactor` — spec `conversion`, optional `T`;
   `reaction <name>;` from `constant/reactions` (stoichiometry +
   `limitingReactant`) → outlet, duty.  Pack *reactors*.

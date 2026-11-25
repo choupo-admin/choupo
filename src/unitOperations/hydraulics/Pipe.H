@@ -83,10 +83,19 @@ Description
     ANNOUNCED in the report, and a pipe in the transition band also raises a
     `validity` advisory (DEV.md 4c C155): a design should move out of it.
 
-    GAS / compressible flow is a documented FUTURE extension: for a
-    compressible fluid ρ varies along the pipe and the integration is not a
-    single (ρ, v) evaluation -- that needs the isothermal- or adiabatic-
-    compressible pipe equation and is deliberately out of scope for v1.
+    GAS LINE (C506).  An ALL-VAPOUR inlet (V/F = 1) takes the steady
+    ISOTHERMAL compressible pipe equation, `solveGasLine` in Pipe.cpp:
+    with c = P1/rho1 (= Z R T / M, Z held at its inlet value) and the mass
+    flux G = mdot/A,
+
+        P1^2 - P2^2 = c G^2 [ f L/D + SUM K + 2 ln(P1/P2) ]
+
+    solved for P2 by a bracketed Newton iteration; the mean-density
+    shortcut P2^2 = P1^2 - c G^2 (f L/D + SUM K) is printed beside it.  The
+    unit REFUSES by name a horizontal-line violation (dz != 0), a missing gas
+    viscosity, an inlet at or beyond the isothermal sonic limit P1 <= G sqrt(c)
+    and a line longer than the one that chokes; adiabatic and Joule-Thomson
+    effects are NOT modelled.  Theory Guide, section "Isothermal gas line".
 
     Dictionary form:
 
@@ -158,6 +167,11 @@ public:
     }
 
 private:
+    //  The compressible isothermal GAS LINE (C506): Pipe.cpp, `solveGasLine`.
+    int solveGasLine(const DictPtr& dict, const DictPtr& operDict, const ThermoPackage& thermo,
+                     int verbosity, scalar F, scalar T, scalar Pin, const sVector& z,
+                     scalar D, scalar L, scalar eps, scalar dz, scalar sumK, const std::string& regimeWords);
+
     //  The non-Newtonian path (a liquid that declares a flow curve): Pipe.cpp, `solveNonNewtonian`.
     int solveNonNewtonian(const rheology::FlowCurve& fc, const DictPtr& dict, const DictPtr& operDict,
                           const ThermoPackage& thermo, int verbosity, scalar F, scalar T, scalar Pin,
