@@ -1965,6 +1965,11 @@
       "exit": 0,
       "claim": "check_interior_point: OK -- 21 of 21 HS problems to 1e-6 (iterations 0-312), 2 infeasible problems ended locally infeasible, 6 inertia-correction checks, 22 derivative checks",
       "seconds": 8.3
+    },
+    "check_gibbs_interior_point": {
+      "exit": 0,
+      "claim": "check_gibbs_interior_point: OK -- 24 reactor solves agree with elementPotential (amounts 1e-06 of max(n, 1e-09 N), pi 1e-06, pi = -lambda 1e-08, adiabatic T 1e-05 K) in both variants of R1, and 7 refusals name their slice",
+      "seconds": 1.6
     }
   }
 }

@@ -38,6 +38,7 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -257,14 +258,24 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
     if (onIter)
         for (const auto& row : r.trace.rows) onIter(static_cast<int>(row.iteration), row.infDu, row.alphaPr);
 
-    if (!r.converged())
+    //  THE LIMIT OF THE BARRIER-FREE VARIANT, MEASURED (gibbs06_thermal_nox, 1800 K, lean): a species at
+    //  ~1e-40 of the feed (here CH4) contributes ~1e-43 to G/RT, so the objective cannot SEE the step that
+    //  corrects it, the filter accepts only round-off in theta and the run stops "restoration failed" at a
+    //  FEASIBLE point with its dual infeasibility at 1e-3.  That point is exactly what the element-potential
+    //  polish exists for (design sec. 2.9): pi = -lambda is close, the Newton in ln n finishes it.  So a
+    //  feasible stop is RESCUED by the polish, announced, published only if the polish converges.
+    const bool rescue = !r.converged()
+        && (r.status == solver::IPStatus::RestorationFailed || r.status == solver::IPStatus::StepTooSmall)
+        && r.constraintViolation <= 1.0e-8;
+    if (!r.converged() && !rescue)
     {
         eq.converged = false;
         eq.residual = r.kktError;
         eq.notConvergedCause = std::string("the interior-point run ended \"") + solver::statusName(r.status)
             + "\": " + r.message;
         reportBrief_ = "  interiorPoint: NOT CONVERGED (" + std::string(solver::statusName(r.status)) + ")\n";
-        reportDetail_ = reportBrief_;
+        reportDetail_ = reportBrief_ + "    iteration trace:\n      " + solver::IPTrace::headerLine() + "\n";
+        for (const auto& row : r.trace.rows) reportDetail_ += "      " + solver::IPTrace::format(row) + "\n";
         kpis_.clear();
         return eq;
     }
@@ -327,8 +338,17 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
         }
         for (std::size_t j = 0; j < M; ++j) piDiff = std::max(piDiff, std::abs(pol.pi[j] - piIP[j]));
     }
-    const bool usePolish = everyAmount && pol.converged;
-    if (everyAmount && !pol.converged)
+    const bool usePolish = (everyAmount || rescue) && pol.converged;
+    if (rescue && !pol.converged)
+    {
+        eq.converged = false;
+        eq.notConvergedCause = std::string("the interior-point run ended \"") + solver::statusName(r.status)
+            + "\" and the element-potential polish from pi = -lambda did not converge either";
+        reportBrief_ = reportDetail_ = "  interiorPoint: NOT CONVERGED (" + std::string(solver::statusName(r.status)) + ", polish failed)\n";
+        kpis_.clear();
+        return eq;
+    }
+    if (everyAmount && !rescue && !pol.converged)
         throw std::runtime_error("GibbsReactor (model interiorPoint, barrier everyAmount): the element-potential"
             " polish did not converge from pi = -lambda (" + pol.notConvergedCause + ")");
     if (usePolish) eq.nGas = pol.nGas;
@@ -400,6 +420,8 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
           << "), " << M << " element balances, analytic gradient and Hessian; "
           << r.iterations << " iterations, " << r.inertiaCorrections << " inertia corrections, "
           << r.restorations << " restorations, final mu " << sci(muFinal, 2) << ", KKT error " << sci(r.kktError, 2) << "\n"
+          << (rescue ? "    RESCUED BY THE POLISH: the run ended \"" + std::string(solver::statusName(r.status)) + "\" at a feasible point with the dual infeasibility at "
+                       + sci(r.kktError, 2) + " (a trace amount the objective cannot see); the element-potential Newton from pi = -lambda finished it\n" : std::string())
           << "    THE BRIDGE  pi = -lambda  (the multiplier of each element balance IS minus its element potential):\n";
     for (std::size_t j = 0; j < M; ++j)
     {
@@ -412,10 +434,10 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
           << (pol.converged ? std::to_string(pol.iterations) + " iterations" : std::string("did not converge"))
           << "; largest change " << sci(polishRel, 2) << " relative (" << polishSpecies << "), "
           << sci(polishAbs, 2) << " of the feed, pi " << sci(piDiff, 2)
-          << (everyAmount ? "  [published]" : "  [reported, not applied]") << "\n";
+          << (usePolish ? "  [published]" : "  [reported, not applied]") << "\n";
     if (K)
         brief << "    liquid: IDEAL mixture of " << K << " condensable" << (K > 1 ? "s" : "") << " (Raoult; an activity model of the package is not read); tangent-plane sum "
-              << sci(tpd, 8) << (liquidPresent ? " >= 1: present" : " < 1: absent (barrier ghost " + sci(ghostMass, 2) + " mol/s dropped)") << "\n";
+              << sci(tpd, 8) << (liquidPresent ? " (>= 1 - 1e-7): present" : " < 1: absent (barrier ghost " + sci(ghostMass, 2) + " mol/s dropped)") << "\n";
     detail << brief.str() << "    iteration trace (mu, scaled dual infeasibility, element-balance infeasibility theta, complementarity, step lengths):\n"
            << "      " << solver::IPTrace::headerLine() << "\n";
     for (const auto& row : r.trace.rows) detail << "      " << solver::IPTrace::format(row) << "\n";
@@ -427,6 +449,7 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
     kpis_["ip_inertiaCorrections"] = static_cast<scalar>(r.inertiaCorrections);
     kpis_["ip_restorations"] = static_cast<scalar>(r.restorations);
     kpis_["ip_barrierOnEveryAmount"] = everyAmount ? 1.0 : 0.0;
+    kpis_["ip_rescuedByPolish"] = rescue ? 1.0 : 0.0;
     kpis_["ip_polishLargestRelativeChange"] = polishRel;
     for (std::size_t j = 0; j < M; ++j)
         kpis_["ip_lambda_" + (j < p.elements.size() ? p.elements[j] : std::to_string(j + 1))] = lambda[j];

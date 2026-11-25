@@ -23842,7 +23842,46 @@ and measured on the same cases (\code{interiorPoint \{ barrier \ldots; \}}):
 \end{description}
 In both, the polish is \emph{computed} and its largest change reported
 (\code{ip\_polishLargestRelativeChange}); only \code{everyAmount} publishes the
-polished amounts.  @@R1TABLE@@
+polished amounts.  \par\medskip\noindent\textbf{Measured} (\code{check\_gibbs\_interior\_point --table}, 2026-11-25; iterations of the
+interior-point run, and the largest relative change the polish makes to an amount above $10^{-30}N_0$):
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule
+case & \multicolumn{2}{c}{pureCondensedOnly} & \multicolumn{2}{c}{everyAmount}\\
+ & iter. & polish & iter. & polish\\
+\midrule
+gibbs01 shift 800~K & 5 & $4\times10^{-9}$ & 7 & $2\times10^{-8}$\\
+gibbs02 reforming & 8 & $8\times10^{-15}$ & 15 & $6\times10^{-7}$\\
+gibbs03 combustion 1800~K & 16 & $1\times10^{-14}$ & 23 & $2\times10^{9}$\\
+gibbs05 adiabatic flame & 20 & $1\times10^{-9}$ & 24 & $1\times10^{19}$\\
+gibbs06 radicals (H, O, OH, HO$_2$, H$_2$O$_2$) & 11 & $1\times10^{-8}$ & 24 & $2.4\times10^{-2}$\\
+gibbs06 thermal NO & 21$^{*}$ & $1\times10^{-3}$ & 23 & $1\times10^{9}$\\
+gibbs07 gas + condensing water & 12 & $4\times10^{-9}$ & 21 & $2\times10^{-4}$\\
+gibbs12 ammonia (NO) & 26 & $1\times10^{-8}$ & 24 & $5\times10^{15}$\\
+claus01 furnace (14 species, 5 elements) & 17 & $4\times10^{-13}$ & 27 & $3\times10^{3}$\\
+claus01 boiler & 23 & $2\times10^{-9}$ & 29 & $3\times10^{17}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The expectation of review R1 holds: without a barrier on the gas the polish changes nothing
+beyond $10^{-8}$ (the radicals of gibbs06 included), and with one it changes a species that sits
+at the barrier's floor $\mu/z$ by orders of magnitude (the huge entries are species present at
+$10^{-30}$ to $10^{-60}$ of the feed, which the barrier holds at about $10^{-9}$).  The barrier-free
+variant also needs fewer iterations on every case but one, so it is the default.
+\emph{Where it fails}, said: gibbs06 thermal NO ($^{*}$, lean combustion at 1800~K) has a species (CH$_4$) at
+about $10^{-40}$ of the feed; its contribution to $G/RT$ is $10^{-43}$, the objective cannot
+see the step that corrects it, and the run stops ``restoration failed'' at a \emph{feasible} point with its dual
+infeasibility at $10^{-3}$.  The method then \emph{rescues} the answer by the polish ($\pi=-\lambda$ is
+already close; the Newton in $\ln n$ finishes it), says so in the run and publishes
+\code{ip\_rescuedByPolish}${}=1$; if the polish does not converge either the solve is reported not
+converged.  A round-off allowance of $10\varepsilon|\varphi|$ in the Armijo test of the filter
+(\code{FilterGlobalization}, Choupo's choice, not in the source paper) belongs to the same slice: near the
+answer the decrease (20) asks for is below the round-off of $\varphi$ itself.
+Against the element-potential method the default agrees to $2\times10^{-7}$ in every amount
+(the liquid of gibbs07, whose reference is a bisection and a Newton closed to $10^{-8}$~mol/s; the
+interior point closes the element balances to $10^{-12}$), to $2\times10^{-9}$ in $\pi$, to
+$1.2\times10^{-6}$~K in the adiabatic outlet temperature (the outer Newton's own tolerance), and
+$\pi=-\lambda$ to $10^{-11}$.
 
 \paragraph{Validity.}  Gas $+$ ideal liquid, ideal-gas package.  Refused by name,
 with the slice that will carry each: a pure solid (slice B2; \code{GibbsMethod::solve}),
