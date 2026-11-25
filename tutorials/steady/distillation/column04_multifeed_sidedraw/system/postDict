@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column04_multifeed_sidedraw -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: two feeds and a liquid side draw make three different composition zones in one
+  column; the figure puts the three components on the stages where the feeds enter and the
+  draw leaves.
+
+  The plot: benzene, toluene and o-xylene liquid mole fractions stage by stage; markers on
+  the two feed stages (5 and 11) and on the side-draw stage (8).
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Multi-feed column: liquid composition by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler. The three markers are the first feed (stage 5), the liquid side draw (stage 8) and the second feed (stage 11), each drawn on the toluene curve. Read it: a composition kink at a feed stage is where the feed is mixed in, and the side draw takes the liquid that stage actually holds - which is why it sits between the benzene-rich top and the o-xylene-rich bottom.";
+        series
+        (
+            { name x_benzene; label "benzene"; unitOp radfracLite; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name x_toluene; label "toluene"; unitOp radfracLite; table profile; x stage; y x_toluene; style linesMarkers; }
+            { name x_oXylene; label "o-xylene"; unitOp radfracLite; table profile; x stage; y x_oXylene; style linesMarkers; }
+            { name x_toluene_5; label "feed 1 (stage 5)"; unitOp radfracLite; table profile; select { stage 5; } x stage; y x_toluene; style markers; }
+            { name x_toluene_8; label "side draw (stage 8)"; unitOp radfracLite; table profile; select { stage 8; } x stage; y x_toluene; style markers; }
+            { name x_toluene_11; label "feed 2 (stage 11)"; unitOp radfracLite; table profile; select { stage 11; } x stage; y x_toluene; style markers; }
+        );
+    }
+);

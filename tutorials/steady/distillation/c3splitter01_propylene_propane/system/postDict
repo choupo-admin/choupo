@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  c3splitter01_propylene_propane -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: propylene/propane is a near-ideal binary with a relative volatility close to 1,
+  so the column needs ~146 stages and a reflux ratio above 12; the figure shows where those
+  stages are spent (SRK, no binary interaction parameter).
+
+  The plot: the propylene mole fraction, liquid and vapour, stage by stage with the feed
+  stage marked: the long flat middle is the lesson.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    propylene_by_stage;
+        type    profile;
+        title   "C3 splitter: propylene by stage (SRK, no binary interaction parameter)";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "propylene mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler. The marker is the feed stage (83). Read it: over the first 80 stages the propylene fraction slides from 0.99 to about 0.71, a few thousandths per stage, and the liquid and vapour curves sit almost on top of each other; the fraction only falls steeply in the last 40 stages below the feed. That slow, nearly flat slope is what a relative volatility close to 1 costs in stages.";
+        series
+        (
+            { name x_propylene; label "liquid on the stage"; unitOp mesh; table profile; x stage; y x_propylene; style linesMarkers; }
+            { name y_propylene; label "vapour leaving the stage"; unitOp mesh; table profile; x stage; y y_propylene; style linesMarkers; }
+            { name x_propylene_83; label "feed stage (83)"; unitOp mesh; table profile; select { stage 83; } x stage; y x_propylene; style markers; }
+        );
+    }
+);
