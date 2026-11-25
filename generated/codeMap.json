@@ -1291,6 +1291,9 @@
   "LayoutFinding": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutInsideShell": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutItem": [
    "src/core/ResultRecords.H"
   ],
