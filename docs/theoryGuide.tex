@@ -22640,6 +22640,88 @@ iteration once the basin is correctly identified by Gibbs
 minimisation.  The minimisation thus plays the role of a globally
 robust pre-conditioner; Newton finishes the polish.
 
+\subsection{How many phases? Gibbs energy, the common tangent and three solutions of equal activities}\label{sec:tangent-plane}
+
+\begin{whatyoulllearn}
+At fixed $T$ and $P$ the equilibrium state is the \emph{global} minimum of the
+Gibbs energy.  Equal fugacities (equal activities, for a liquid pair) in every
+phase are only a \emph{necessary} condition: they are met by the trivial
+solution (two identical ``phases'', $K_i=1$), by a split that is only a local
+minimum, and by a split into the wrong number of phases.  A solver can
+therefore converge to a wrong answer without complaint.  What decides whether
+a phase is missing is Michelsen's tangent-plane test of
+\S\ref{sec:tpd}.  This subsection collects, for a binary, the equations the
+page \emph{How many phases?} of the EduTools draws and the tables of
+\code{propertyScanBinary} (block \code{stability}) that carry them.
+\end{whatyoulllearn}
+
+\paragraph{The curve and its tangent.}
+With $x\equiv x_1$ and $\ln a_i = \ln(x_i\gamma_i)$ the activity of
+component $i$,
+\begin{equation}
+  \frac{g_{\mathrm{mix}}(x)}{RT} \;=\; x_1\ln a_1 + x_2\ln a_2 ,
+  \qquad
+  \frac{\mu_i - \mu_i^{\circ}}{RT} \;=\; \ln a_i ,
+  \label{eq:tp-gmix}
+\end{equation}
+which is the form of \S\ref{sec:common-tangent} (the engine's \code{gmix} table
+is $g_{\mathrm{mix}}$ in J/mol).  The tangent to $g_{\mathrm{mix}}/RT$ at
+$x=z$ has the intercepts $\ln a_1(z)$ and $\ln a_2(z)$ on the two vertical
+axes $x=1$ and $x=0$ (the intercept form of the chemical potentials).
+
+\paragraph{Equal activities, and why they are not enough.}
+Two liquids $\alpha$ and $\beta$ at the same $T$ and $P$ are in equilibrium
+when both tangents coincide, that is when
+\begin{equation}
+  a_1(x') = a_1(x''), \qquad a_2(x') = a_2(x'') .
+  \label{eq:tp-isoactivity}
+\end{equation}
+Equations \eqref{eq:tp-isoactivity} are met by $x'=x''$ for every $x'$ (the
+trivial solution; a Newton method started near it, or near the plait point,
+converges to it, which is the trap of this chapter and the reason the engine
+minimises $G$ directly) and by the common-tangent pair of
+\S\ref{sec:common-tangent}.  For a binary whose $g_{\mathrm{mix}}$ has one
+hump the pair is the only non-trivial solution; with three or more
+components stationary points that are not the global minimum exist.  The
+lever rule on the pair gives the phase fractions of a feed $z$,
+$\beta_\beta=(z-x')/(x''-x')$ and $\beta_\alpha=1-\beta_\beta$; for a feed
+\emph{outside} $[x',x'']$ one of them is negative or above one, so the
+equal-activity solution then describes a split that cannot be made: the
+feed is one liquid, and a two-phase answer is the wrong number of phases.
+
+\paragraph{The tangent-plane distance in activities.}
+Written with the activities the distance of \eqref{eq:tpd-def} is, for a
+binary,
+\begin{equation}
+  \mathrm{tm}(y) \;=\; \sum_{i=1}^{2} y_i
+      \Bigl[\ln y_i + \ln\gamma_i(y) - \ln z_i - \ln\gamma_i(z)\Bigr]
+  \;=\; \sum_{i=1}^{2} y_i\bigl[\ln a_i(y) - \ln a_i(z)\bigr],
+  \label{eq:tp-tm}
+\end{equation}
+which is zero at $y=z$ (the trivial stationary point) and is the vertical gap
+between $g_{\mathrm{mix}}/RT$ and the tangent at $z$.  The feed is unstable
+when $\mathrm{tm}(y)<0$ for some $y$.  The engine's \code{michelsenTPD}
+(\file{src/solver/StabilityTest.cpp}) iterates on mole numbers $Y$ and tests
+the form $1+\sum_i Y_i(\ln Y_i+\ln\gamma_i-h_i-1)$ with
+$h_i=\ln(z_i\gamma_i(z))$, which at a converged stationary point equals
+$1-\sum_iY_i$ and has the sign of \eqref{eq:tp-tm} there; the table
+\code{tpd} is \eqref{eq:tp-tm} itself, evaluated on the grid, and the table
+\code{stationary} is the engine's own verdict.
+
+\paragraph{Source and validity.}
+The tangent-plane criterion is Michelsen's \cite{Michelsen} (Fluid Phase
+Equilib.\ 9, 1982, pp.~1--19).  \textbf{That paper was NOT read for this
+section}: it is cited as the origin of the criterion through the engine's own
+bibliography entry, and the equations above are re-derived from the definition
+of the chemical potential and checked against the engine's tables by the
+GUI test of the page (to $10^{-9}$ in \eqref{eq:tp-tm}).  The picture is
+exact for a binary on one activity model and one liquid surface at fixed $T$
+and $P$; the tables are sampled on the grid of the \code{grid} block, so a
+feed closer than one node to a binodal composition is not resolved by the
+grid and is decided by the engine's test, not by the table.  The case
+\code{binary04\_tangent\_plane\_water\_nbutanol} uses the cited
+Winkelman et al.\ UNIQUAC set of \code{binary01}.
+
 \subsection{Ternary phase diagrams: sweeping the simplex}\label{sec:ternary}
 
 A ternary diagram is not a new piece of physics --- it is the flash of this
@@ -42860,7 +42942,7 @@ The CSV is unchanged; where a table speaks a unit the CSV does not (bar for Pa, 
  (table \code{isobar}); its diagnostics speak the release's table units (m$^3$/kg, kJ/kg, kJ/(kg\,K), m/s, MPa);
 \item \code{psychrometricChart}: table \code{chart} ($T$, humidity ratio $Y$, \code{family} 0 saturation, 1 relative humidity, 2 adiabatic
  saturation, 3 true wet bulb, \code{param}) and the chart;
-\item \code{propertyScanBinary}: tables \code{gmix} and \code{binodal}; the figure is $g_{\mathrm{mix}}(x_1)$ with the two coexisting liquids and the common tangent;
+\item \code{propertyScanBinary}: tables \code{gmix} and \code{binodal}; the figure is $g_{\mathrm{mix}}(x_1)$ with the two coexisting liquids and the common tangent; with the optional \code{stability} block also \code{activity}, \code{binodalActivity}, \code{tpd} and \code{stationary} (Section~\ref{sec:tangent-plane});
 \item \code{propertyScan1D}: a T--$x$--$y$ diagram where the scan holds \code{T\_bubble}, \code{y\_eq\_<c>} and \code{x\_<c>}, otherwise one figure per unit;
 \item \code{vaporPressureFit}: table \code{fitPoints}; the data against the fitted Antoine curve, parity, residuals and the constants $A$, $B$, $C$;
 \item \code{phaseEnvelope}, \code{purePhaseDiagram}, \code{pitzerActivity}, \code{gibbsMap} (up to six pressures) and \code{scalingScan}.

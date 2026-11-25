@@ -8841,6 +8841,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/StabilityTest.H",
    "src/streams/Carried.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
@@ -8853,6 +8854,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/phase/Phase.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -23735,6 +23737,7 @@
   ],
   "src/solver/StabilityTest.H": [
    "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
    "src/solver/StabilityTest.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp"
   ],
@@ -28291,6 +28294,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
    "src/solver/StabilityTest.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/phase/LiquidPhase.cpp",

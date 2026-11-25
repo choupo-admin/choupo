@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1945,
+  "cases": 1946,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -24886,6 +24886,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/scan/binary04_tangent_plane_water_nbutanol": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanBinary"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIQUAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/scan/hxy01_ethanol_water_1atm": {
    "application": "choupoProps",
    "ops": [
@@ -32732,6 +32746,7 @@
     "tutorials/props/safety/relief01_ammonia_loop_gas",
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
@@ -34977,6 +34992,7 @@
    "UNIQUAC": [
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
     "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water",
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
@@ -38763,7 +38779,8 @@
     "tutorials/props/scan/scan2d01_co2_compressibility"
    ],
    "propertyScanBinary": [
-    "tutorials/props/scan/binary01_lle_water_nbutanol"
+    "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol"
    ],
    "propertyScanTernary": [
     "tutorials/props/scan/ternary01_audit_vlle",

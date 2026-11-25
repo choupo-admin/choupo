@@ -1,0 +1,12 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    lle                    T                298.15             1e-4
+diag    lle                    split            1                  1e-4
+diag    lle                    tpdFeed1         0.8                1e-4
+diag    lle                    tpdGridMin       -0.0358661218654   1e-4
+diag    lle                    tpdGridMinY1     0.98               1e-4
+diag    lle                    tpdTmMin         -0.0365841479999   1e-4
+diag    lle                    tpdTrialY1       0.982076027194     1e-4
+diag    lle                    tpdUnstable      1                  1e-4
