@@ -5719,6 +5719,12 @@ accepts today, and that is a policy call.
 > a liquid feed and old tray numbers; measure every case header's numbers against its golden (the README gate's
 > idea, for headers).
 
+> **C521. A RESTARTED ADIABATIC BATCH VESSEL IS ANOTHER VESSEL (C492's time proofs, 2026-11-25).**  The vessel
+> integrates a frozen-dH surrogate resolved at the charge temperature (BatchReactor.cpp:499); a restart from
+> t = 300 of 600 resolves it again at that instant's T (-2.416 against -2.428 kJ/mol), so the remaining rise is
+> 0.53 % smaller: batch02, batch04, batch06 end 6 mK apart.  Either the datum temperature enters the state, or
+> the vessel integrates on the canonical H surface (the code's own open item).
+
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
 > electrodialysis (demin_ratio), PhaseChanger (Q_latent_kW) and alpha_mean; the columns are C504.  C516:
