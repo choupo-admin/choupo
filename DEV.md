@@ -9782,6 +9782,13 @@ accepts today, and that is a policy call.
 > (C217); Butler-Volmer for the electrolyser (C214 W7); a kinetic-parameter
 > fit from rate data.  NOT planned: package activities or fugacities as
 > formula symbols (C67's decision stands).
+> THE REACTION IS A FOLDER, THE SOURCE IS A FILE (Vitor and the architect, 2026-11-25).  One equation could hold one
+> record, so two published constants could not stand side by side and Miller & Bowman's H2/O2 half was skipped.
+> `kinetics/<canonical equation>/<source>.dat`; a set names its source; a case that names none where several exist is
+> refused.  Names of species stay the catalogue's and the printed equation is kept.  Then Appendix A (235) and B (73),
+> Glarborg's pages, later Baulch 2005, 1992, 1994 and Tsang 1986.  THE ARCHIVE COUNTED (2327 pairs of two catalogue
+> components in the NIST index, 1501 with no gamma record; 475 with >= 8 bubble points never curated, C226; 193 with a
+> gas, C135).
 
 > **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
 > "severe" to 29 % and asked whether that is reasonable for a process
