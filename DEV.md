@@ -5702,6 +5702,22 @@ accepts today, and that is a policy call.
 > FIRST SLICE LANDED 2026-11-25: Billet-Schultes (PackingBS), five records, ratebased05; law equal to a second
 > transcription to 7e-16; no measured set in hand.  OPEN: Onda + Bravo-Fair as the cross-check, the 0.03 N/m floor
 > on surface tension (as printed on p. 500, it binds on every organic liquid; announced), C518 the packing pin.
+> BATCH 1125c LANDED 2026-11-25 (full sweep alone, 07:00-07:53: 2039 PASS / 2 FAIL, a restated start and an
+> uncited chapter, both fixed and re-run): C184 slice (1), the A-D diagnosis of a failed column; C477, 15
+> distillation figures; C499, `method bayesian` opt-in with its case study optim08 and the EduTool card (20 runs
+> against 25 for sqp central on the same problem, and the column where it is the wrong tool); C501, the
+> column-design tool and column21; C503, a design margin and a stock list on the exchanger, opt-in, and
+> `calculated-to-bought`; C510, `compressor-choice` on the engine's own chart; C511, the filter-press cycle;
+> the PEQ's converter pipes (36 of 36 routed, its golden alone re-recorded: 46 rows moved, 4 dropped, 84 added,
+> all layout.*); column10 floods again (D 1.10 -> 1.03 m, worst 112.6 %, 4 rows).
+
+> **C519. THE PEQ FEED-EFFLUENT EXCHANGER'S NOZZLES (from the converter pipes, 2026-11-25).**  Once piped, FEHE:N1/N2
+> take the tube side's 166 bar and 760.6 K, above the top class of the SS316 table, so the sheet picks no flange:
+> a material, a design condition, or a sentence.  Before 2 December, the rows listed.
+
+> **C520. CASE HEADERS WHOSE NUMBERS ARE NO LONGER THE RUN'S (from column10, 2026-11-25).**  column09 still carries
+> a liquid feed and old tray numbers; measure every case header's numbers against its golden (the README gate's
+> idea, for headers).
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
