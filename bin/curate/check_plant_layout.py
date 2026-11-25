@@ -3923,7 +3923,7 @@ def arm_service_clearance(work):
     if not PEQ.exists():
         fail("(q) the reference plant is missing")
         return
-    plain = prepare(work, "util_plain", PEQ)          # the same content as arm (u)'s: a cache hit
+    plain = prepare(work, "svc_plain", PEQ)          # the same content as arm (u)'s plain run: a cache hit, in its own directory
     short = prepare(work, "svc_short", PEQ,
                     lambda t: t.replace("x           37.8 m;", "x           40 m;", 1))
     absent = prepare(work, "svc_absent", PEQ,
