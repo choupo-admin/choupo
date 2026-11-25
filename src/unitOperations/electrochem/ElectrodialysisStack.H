@@ -96,8 +96,8 @@ Description
                                        STACK RECORD)
         current       I [A]            applied stack current            \
         targetDemin   (fraction)       OR solve I for this demin ratio   | give
-                                       of the FIRST cation in component  | exactly
-                                       order                             | one
+                                       of the DOMINANT cation of the     | exactly
+                                       diluate feed (not list order)     | one
         targetConductivityRemoval      OR solve I so the diluate loses   |
                       (fraction)       this fraction of its CONDUCTIVITY /
                                        (kappa by Nernst-Einstein on the ion

@@ -32,7 +32,7 @@ against the feed.  They are lower -- 0.49 for NaCl against 0.60 declared,
 0.97 for MgSO4 against 0.98 -- for two reasons the student can separate in
 the per-element KPIs: the wall is richer than the bulk (`Gamma_<salt>_elemK`,
 up to +24 % for MgSO4 in the first element) and the bulk concentrates along
-the vessel (`c_ret_elemK`) as 44 % of the water leaves.
+the vessel (`c_ret_<solute>_elemK`) as 44 % of the water leaves.
 
 **Why the feed is declared by salts.** A salt is neutral, so one R per salt
 cannot charge the permeate.  The law also accepts a feed written ion by ion,

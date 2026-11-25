@@ -289,6 +289,20 @@ ReactiveVLE::masterComposition(const std::string& species) const
             for (const auto& [mm, nu] : m.masters) out.emplace_back(mm, nu);
             return out;
         }
+    //  ...or a MASTER that only a mineral's dissolution names (C516).  A
+    //  network whose whole chemistry is one precipitating salt (marcilla01:
+    //  NaCl's halite and nothing else) has no reaction and no gas, so its
+    //  free Na and Cl matched none of the loops above, collapsed to NOTHING,
+    //  and the engine refused the very `speciation` block it had written
+    //  ("Master 'Na': the components carry 1.495e-04 kmol/s, the block
+    //  declares 1.130e-04" -- the halite alone).  The mineral's masters ARE
+    //  masters; naming them is no new physics.
+    for (const auto& m : spec_->minerals())
+        for (const auto& [mm, nu] : m.masters)
+        {
+            (void)nu;
+            if (mm == species) return {{ species, 1.0 }};
+        }
     return {};
 }
 

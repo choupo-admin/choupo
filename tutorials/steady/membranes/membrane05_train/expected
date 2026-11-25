@@ -5,9 +5,9 @@ stream  permeate               F                0.0583607980655  1e-4
 stream  retentate              F                0.101361424157   1e-4
 kpi     ROunit                 J_w_avg          9.81587254791e-06 1e-4
 kpi     ROunit                 R_obs_NaCl       0.996882910332   1e-4
-kpi     ROunit                 c_ret_elem1      0.696906126375   1e-4
-kpi     ROunit                 c_ret_elem2      0.806974036201   1e-4
-kpi     ROunit                 c_ret_elem3      0.894147607637   1e-4
+kpi     ROunit                 c_ret_NaCl_elem1      0.696906126375   1e-4
+kpi     ROunit                 c_ret_NaCl_elem2      0.806974036201   1e-4
+kpi     ROunit                 c_ret_NaCl_elem3      0.894147607637   1e-4
 kpi     ROunit                 dP_feed          99527.5416912    1e-4
 kpi     ROunit                 elements         3                1e-4
 kpi     ROunit                 recovery_elem1   0.174478446035   1e-4
