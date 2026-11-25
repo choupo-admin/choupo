@@ -19353,6 +19353,12 @@ saturation temperature $T^{\mathrm{sat}}(P)$.  Choupo locates it from the
           \label{eq:pc-tsat}
         \end{equation}
         over $T\in[150,1200]\,$K (the Antoine root, Sec.~\ref{ch:vap}).
+        The \emph{dominant} component is the one of largest mole fraction; components
+        within $10^{-9}$ (relative) of it are tied and the tie goes to the lowest
+        species \emph{name}, never to the position in the \code{components} list
+        (an equimolar benzene/toluene feed used to take whichever was listed first,
+        $T^{\mathrm{sat}}=352.8$ or $383.3$\,K, and the published latent/sensible
+        split moved with it while the total duty did not).
 \end{itemize}
 
 For a \emph{pure} (or dominant-component) dome the saturation plateau is a single
@@ -21856,6 +21862,17 @@ optimum collapses to two-phase V+L or LL.  Binary three-phase
 coexistence is a one-dimensional curve in $(T, P)$ by Gibbs phase
 rule ($F = 2 + 2 - 3 = 1$); ternaries give a two-dimensional region
 ($F = 2$) and are pedagogically more robust.
+
+\paragraph{The winning start is polished.}\label{sec:vlle-polish}
+The multi-start simplexes stop at $\texttt{tolX}=10^{-5}$ and $\texttt{tolF}=10^{-7}$,
+that is at a Gibbs energy within $10^{-7}$ of the minimum, which on a flat minimum
+is a composition uncertain by $\sim 4\times10^{-4}$.  The best start is therefore
+restarted from its own point, five times, at $\texttt{tolX}=10^{-10}$ and
+$\texttt{tolF}=10^{-14}$ (the tolerances the trace-component branch already used),
+and the better point is kept.  Before this, the published split depended on the
+\emph{order of the component list} (which only decides how the same starts are
+packed into the simplex): \file{vlle03\_audit\_artificial} gave $K_{A}^{\alpha}=0.04978$
+or $0.04965$ for the two orders; it now agrees to $6\times10^{-7}$.
 
 \paragraph{A phase the search cannot justify is re-solved, not
 renormalised.}\label{sec:vlle-drop-phase}
@@ -24781,7 +24798,11 @@ hydraulics), $\Delta P$ along the channel (constant, or Schock--Miquel
 friction), and the osmotic model (van't Hoff or Pitzer).  An
 \code{elements N} keyword chains $N$ elements in series (the retentate
 of one is the feed of the next), with an inter-element $\Delta P$ loss
---- a full train.
+--- a full train.  Each element publishes, per solute $s$ and element $k$, the retentate
+concentration leaving it as \code{c\_ret\_<$s$>\_elem<$k$>} and the polarisation
+index as \code{Gamma\_<$s$>\_elem<$k$>}: a solute is named by its species, never
+by its position in the component list (the KPI was the \emph{first} solute's,
+so reversing the list changed it).
 
 \begin{example}[Seawater RO, \file{membrane01\_RO\_NaCl\_seawater}]
 35\,g/L NaCl at 55\,bar through an SW30HR-style element ($A_w$, $B_s$
@@ -26813,7 +26834,7 @@ Chapter~\ref{ch:op-is-equipment} applied to charge.
 Three operating modes, exactly one of which you give.
 \code{current\ <I>\ A;} fixes the current and the demineralisation
 emerges; \code{targetDemin\ <fraction>;} fixes the demineralisation of
-the reference cation (the first cation in component order) and Choupo
+the reference cation (the cation with the largest mole inflow in the diluate feed, ties by species key; it does not depend on the order of the component list, and the run names it) and Choupo
 solves \eqref{eq:ed-faraday} for the current $I$ with a glass-box 1-D
 Newton (the residual $\dot n_\text{removed}/\dot n_\text{in} -
 \text{target}$, printed); \code{targetConductivityRemoval\ <fraction>;}
