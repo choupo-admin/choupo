@@ -411,6 +411,9 @@ const BundTool = lazy(() =>
 const LetdownTool = lazy(() =>
   import("./methods/LetdownTool.js")
     .then((m) => ({ default: m.LetdownTool })));
+const ControlValveTool = lazy(() =>
+  import("./methods/ControlValveTool.js")
+    .then((m) => ({ default: m.ControlValveTool })));
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
@@ -739,6 +742,7 @@ export function MethodsWorkspace() {
             : tool === "one-flux-many-units" ? <OneFluxManyUnitsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
+            : tool === "control-valve" ? <ControlValveTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "syngas" ? <SyngasTool />
