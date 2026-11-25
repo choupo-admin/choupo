@@ -526,13 +526,13 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/steady/rotating/compressor03_staged_design",
     file: "design/compressor1",
-    readBy: ["compression.test.ts"],
+    readBy: ["compression.test.ts", "compressorChoice.test.ts"],
     dir: true,
   },
   {
     caseDir: "tutorials/plant/ammonia02_full_plant",
     file: "design/makeupComp",
-    readBy: ["compression.test.ts"],
+    readBy: ["compression.test.ts", "compressorChoice.test.ts"],
     dir: true,
   },
   //  THE STREAM CARD AGAINST THE STREAMS TABLE on a solid-carrying case
