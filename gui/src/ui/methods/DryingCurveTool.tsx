@@ -113,6 +113,7 @@ import { LessonQuiz } from "./lessonQuiz.js";
 // arithmetic.
 import { axisDomain, type Domain } from "./VanHeerdenTool.js";
 import { OriginMark } from "./origin.js";
+import { LastPercentCard, LoadingCollapseCard, SprayChamberCard } from "./DryingCards.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type UnitKpis = { [key: string]: number };
@@ -471,7 +472,20 @@ export interface DryingKnob {
   unit: string;
   /** One line of why this knob is here -- shown as its tooltip. */
   why: string;
+  /** For a knob SHOWN in another quantity than the dict declares (the tray
+   *  loading, kg/m2, written as the area, m2): the dict's own unit word, the
+   *  dict's authored number, and the conversion.  The conversion is a ratio of
+   *  the case's own authored charge, never a prediction. */
+  dictUnit?: string;
+  dictDef?: number;
+  toDict?: (shown: number) => number;
 }
+
+/** The dry solid charged to the tray, kg: the witness's own authored charge
+ *  (its header: "a tray holding 2.0 kg of dry sucrose"; held to the engine's
+ *  campaign kpis by the tests).  It converts the loading knob to the area the
+ *  dict declares: area = m_s / L. */
+export const TRAY_DRY_SOLID_KG = 2.0;
 
 export const DRYING_KNOBS: readonly DryingKnob[] = [
   // Labels and tooltips name their variables as inline math, \( ... \),
@@ -493,13 +507,15 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
       + String.raw`the mass-transfer driving force \(Y_\mathrm{sat}(T_\mathrm{wb}) - Y\) `
       + "and, through the air's water activity, the GAB equilibrium moisture "
       + String.raw`\(X_\mathrm{eq}\) the tail aims at` },
-  { id: "area", label: String.raw`exposed tray area \(A\)`, file: FLOWSHEET,
+  { id: "area", label: String.raw`tray loading \(L = m_s/A\)`, file: FLOWSHEET,
     key: "area",
-    def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "m2",
-    why: String.raw`the exposed drying surface: it scales the evaporation rate `
-      + String.raw`\(R_c A\) without touching the flux \(R_c\), so the whole `
-      + String.raw`\(X(t)\) curve compresses in time while \(R(X)\) does not `
-      + "move at all" },
+    def: 4, min: 1, max: 20, step: 0.5, unit: "kg/m2",
+    dictUnit: "m2", dictDef: 0.5, toDict: (L) => TRAY_DRY_SOLID_KG / L,
+    why: String.raw`kilograms of dry solid on each square metre of exposed `
+      + String.raw`surface: the page writes the area \(A = m_s/L\) into the `
+      + String.raw`case.  It scales the time of the whole curve, \(t_c\) and `
+      + String.raw`the tail alike, without touching the flux \(R_c\), so `
+      + String.raw`\(R(X)\) does not move at all` },
   { id: "criticalMoisture", label: String.raw`critical moisture \(X_c\) (kg/kg)`,
     file: FLOWSHEET, key: "criticalMoisture",
     def: 0.12, min: 0.02, max: 0.28, step: 0.005, unit: "",
@@ -615,7 +631,7 @@ export function knobOverrides(values: DryingKnobValues): ScalarOverride[] {
   for (const k of DRYING_KNOBS) {
     const v = values[k.id];
     if (v !== undefined && Number.isFinite(v))
-      out.push({ file: k.file, key: k.key, value: v });
+      out.push({ file: k.file, key: k.key, value: k.toDict ? k.toDict(v) : v });
   }
   return out;
 }
@@ -623,7 +639,7 @@ export function knobOverrides(values: DryingKnobValues): ScalarOverride[] {
 // The provenance line, always visible in classroom mode.
 const PROVENANCE =
   `Runs tutorials/${DRYING_WITNESS} (2.0 kg dry sucrose wet to `
-  + String.raw`\(X_0 = 0.30\) kg/kg, 0.5 m² exposed to declared 60 C air at `
+  + String.raw`\(X_0 = 0.30\) kg/kg, 0.5 m² exposed, a loading of \(L = 4\) kg/m², to declared 60 C air at `
   + String.raw`\(Y = 0.010\)) with your parameters, in your browser `
   + String.raw`(choupoBatch WASM).  \(X\) and \(R\) are the dryer's own `
   + String.raw`trajectory columns; \(X_c\), \(X_\mathrm{eq}\), `
@@ -1005,7 +1021,7 @@ export function DryingCurveTool(): JSX.Element {
 
   const lessonHead = (
     <Box>
-      <Title order={3}>Drying, and the two operations hiding in one curve</Title>
+      <Title order={3}>The drying curve, and what decides the time</Title>
       <Text size="sm" c="dimmed" mt={4}>
         The air controls the first half and the solid controls the second —
         and a dryer sized on the first half is a dryer that is too small.
@@ -1038,7 +1054,7 @@ export function DryingCurveTool(): JSX.Element {
         <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
           {lessonHead}
           {alerts}
-          {[1, 2, 3, 4, 5].map(lessonStep)}
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(lessonStep)}
           <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
           <Box style={{ display: "flex", alignItems: "center",
             justifyContent: "center", padding: 12 }}>
@@ -1243,6 +1259,20 @@ export function DryingCurveTool(): JSX.Element {
         {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
+
+        {/* C508: what decides the time (loading), what the last percent
+            costs, and the spray chamber.  Each card runs the engine. */}
+        {lessonStep(6)}
+        {src === "classroom" && (
+          <LoadingCollapseCard loading={knobs["area"] ?? 4}
+            endTime={knobs["endTime"] ?? 3000}
+            overridesAt={(L, T) => knobOverrides({ ...knobs, area: L, endTime: T })}
+            baseKey={JSON.stringify({ ...knobs, area: 0, endTime: 0 })} />
+        )}
+        {lessonStep(7)}
+        <LastPercentCard run={{ traj: trajectory, kpis: kpis?.[view.unit] }} />
+        {lessonStep(8)}
+        <SprayChamberCard />
 
         {lessonLimits}
 
