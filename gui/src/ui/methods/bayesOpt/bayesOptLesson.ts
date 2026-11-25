@@ -42,8 +42,8 @@ export const ENGINE_STATUS =
   + "on the expensive reactive MTBE column (about 20 s per simulation) it "
   + "needed 23 against 22, and 14 to 18 of its 25 runs failed, because its "
   + "space-filling start spends the budget where the column does not "
-  + "converge (a failed run never enters the model as a number).  It has no "
-  + "multipliers: finish with `method sqp` from its best point.  What you see "
+  + "converge (a failed run is kept out of the model).  It prints the best "
+  + "point only, without shadow prices: finish with `method sqp` from it.  What you see "
   + "here is a one-variable teaching sketch run in your browser, not the "
   + "engine.";
 
@@ -397,3 +397,15 @@ export const BAYES_REFERENCES: readonly BayesReference[] = [
       + "gradient sketch borrows.",
   },
 ];
+
+/** Where the card sits inside the `optimizers` tool: its steps follow that
+ *  tool's six, so the numbers are shifted and stay unique in one lesson. */
+export const BAYES_STEP_OFFSET = 6;
+
+export const BAYES_STEPS_IN_TOOL: readonly LessonStep[] =
+  BAYES_STEPS.map((st) => ({ ...st, n: st.n + BAYES_STEP_OFFSET }));
+
+export const BAYES_QUIZ_IN_TOOL: readonly QuizQuestion[] =
+  BAYES_QUIZ.map((q) => ({
+    ...q, id: `bayes-${q.id}`, steps: q.steps.map((n) => n + BAYES_STEP_OFFSET),
+  }));

@@ -126,7 +126,7 @@ import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
-import { OPT_QUIZ, OPT_STEPS } from "../src/ui/methods/optimizersLesson.js";
+import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
@@ -300,14 +300,17 @@ interface QuizEntry {
   tool?: FunctionComponent;
   /** A named exception to the 3-5 options rule. */
   minOptions?: { n: number; why: string };
+  /** A named exception to the 4-7 questions rule. */
+  maxQuestions?: { n: number; why: string };
 }
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   optimizers: {
-    quiz: OPT_QUIZ, quizName: "OPT_QUIZ",
-    lesson: OPT_STEPS, lessonName: "OPT_STEPS",
+    quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",
+    lesson: OPT_STEPS_ALL, lessonName: "OPT_STEPS_ALL",
     file: "src/ui/methods/OptimizersTool.tsx", tool: OptimizersTool,
+    maxQuestions: { n: 11, why: "C499: the page carries two lessons, the three optimisers (7 questions) and the Bayesian section (4), drawn in one quiz" },
   },
   "stiff-chemistry": {
     quiz: SC_QUIZ, quizName: "SC_QUIZ",
@@ -752,7 +755,7 @@ describe.each(quizzed.map((t) => [t.id, t] as const))("%s: its quiz", (id, t) =>
   const e = QUIZZES[id]!;
   it("(b) has the shape, and every step it names is a step of its lesson", () => {
     expect(e.quiz.length, "about five questions").toBeGreaterThanOrEqual(4);
-    expect(e.quiz.length, "about five questions").toBeLessThanOrEqual(7);
+    expect(e.quiz.length, "about five questions").toBeLessThanOrEqual(e.maxQuestions?.n ?? 7);
     expect(new Set(e.quiz.map((q) => q.id)).size).toBe(e.quiz.length);
     const steps = new Set(e.lesson.map((s) => s.n));
     const lo = e.minOptions?.n ?? 3;

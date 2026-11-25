@@ -232,3 +232,24 @@ describe("the card renders", () => {
     for (const st of BAYES_STEPS) expect(html).toContain(st.title.replace(/&/g, "&amp;"));
   });
 });
+
+describe("the card inside the optimizers tool", () => {
+  it("numbers its steps after the tool's six and keeps every step and question number unique", async () => {
+    const { OPT_STEPS_ALL, OPT_QUIZ_ALL, OPT_LIMITS_ALL } = await import("../src/ui/methods/bayesOpt/optimizersWithBayes.js");
+    const ns = OPT_STEPS_ALL.map((s) => s.n);
+    expect(ns).toEqual(ns.map((_, i) => i + 1));
+    expect(ns.length).toBe(12);
+    const have = new Set(ns);
+    for (const q of OPT_QUIZ_ALL) for (const n of q.steps) expect(have.has(n)).toBe(true);
+    expect(new Set(OPT_QUIZ_ALL.map((q) => q.id)).size).toBe(OPT_QUIZ_ALL.length);
+    expect(new Set(OPT_LIMITS_ALL.map((l) => l.id)).size).toBe(OPT_LIMITS_ALL.length);
+  });
+  it("draws as a section without its own quiz or references block", () => {
+    const html = renderToStaticMarkup(
+      createElement(MantineProvider, null, createElement(BayesOptCard, { inTool: true })),
+    );
+    expect(html).toContain("15 simulations against 25");
+    expect(html).not.toContain("data-lesson-quiz");
+    expect(html).not.toContain("data-lesson-references");
+  });
+});
