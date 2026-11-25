@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|       \|/    C hemicals     |  PEQ 2026-27 -- Ammonia, 1200 t/day           |
 |      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
 |     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
 \*-----------------------------------------------------------------------------*/
@@ -19,11 +19,12 @@
       ammonia could be read, so none is assumed: the premium this plant needs
       is not an input, it is what the engine's break-even prints
       (`breakEven_price_ProductNH3` in system/postDict);
-    * H2Feed is the regulator's own statement of the average COST of
-      renewable (RFNBO) hydrogen in the EU, with its range -- a production
-      cost estimate current in October 2025.  The source states no delivered
-      price and no pressure: that the plant pays this cost at its fence is
-      THE CASE'S READING, not the source's;
+    * H2Feed is the AUTHOR'S CHOICE, 1.5 EUR/kg (C526, 2026-11-25), inside
+      the range 0.74-4.07 EUR/kg the project brief quotes from ACER's 2025
+      hydrogen-markets report (a range the report's text does not hold:
+      see the provenance).  The previous base, ACER's own 8 EUR/kg cost of
+      RFNBO hydrogen (range 7-10, p. 40), is the SCENARIO at which the plant
+      loses;
     * N2Feed is a MODELLED nitrogen PRODUCTION COST (a paper's table), not a
       merchant price.  It is about 1 % of the raw-material bill here.
   The ranges the sources span (low and high, each cited) feed the
@@ -47,10 +48,12 @@
     price: their hydrogen is lost, which the H2 price already charges, and
     no credit is taken for them as fuel.
 
-  AT THESE PRICES THE PLANT LOSES MONEY, and that is the finding, not a
-  defect: hydrogen at 8 EUR/kg alone costs 0.1803 x 8 = 1.44 EUR per kg of
-  ammonia made, against a market price of 0.53.  The labour rate below is
-  still the one figure in this file that is an assumption (see it).
+  AT THESE PRICES THE PLANT PAYS (hydrogen at 1.5 EUR/kg costs 0.1803 x 1.5
+  = 0.27 EUR per kg of ammonia made, against a market price of 0.53 for
+  CONVENTIONAL ammonia); at 8 EUR/kg, the cost of electrolytic hydrogen, it
+  would cost 1.44 and the plant loses: that contrast is the lesson, and the
+  README tabulates the scenarios.  The hydrogen price and the labour rate are
+  the figures in this file that are assumptions.
 \*---------------------------------------------------------------------------*/
 products
 (
@@ -69,14 +72,14 @@ products
 rawMaterials
 (
     {
-        stream    H2Feed;             // renewable (RFNBO) electrolytic H2 at 30 bar
-        price     8.0;                // EUR/kg H2 -- ACER, average COST of RFNBO hydrogen in the EU, October 2025
+        stream    H2Feed;             // hydrogen at 30 bar -- the AUTHOR'S CHOICE, 1.5 EUR/kg (C526)
+        price     1.5;                // EUR/kg H2 -- author-set, inside the range quoted below
         costYear  2025;
         provenance
         {
-            kind    published;
-            origin  "ACER (EU Agency for the Cooperation of Energy Regulators), 'European hydrogen markets, 2025 Monitoring Report', 2 December 2025, pdf p. 40 (para 78): 'Notably, the average cost of RFNBO hydrogen remains significantly higher at around 8 EUR/kg, ranging between 7-10 EUR/kg (purple area in the graph), depending on the country of origin' (an estimate current in October 2025, which the report bases on cost estimates of a commercial data provider, S&P Global Commodity Insights); the same figure is key finding 5, p. 5: 'At around 8 EUR/kgH2, the average cost of RFNBO hydrogen in the EU'; https://www.acer.europa.eu/sites/default/files/documents/Publications/ACER-2025-European-hydrogen-markets.pdf, retrieved 2026-11-13";
-            method  "taken as published, in EUR/kg, no conversion.  The source states a COST, and no delivered price and no pressure; THIS CASE reads that cost as what the plant pays at its fence for hydrogen at 30 bar -- the case's reading, not the source's: compression to 30 bar and a supplier's margin are not in the source's figure.  RANGE READ (the sensitivity ends): the source's own range of the same quantity, the report's cost of RFNBO hydrogen by country of origin, p. 40: low 7.0 EUR/kg, high 10.0 EUR/kg.  SUPPORT FOR READING THE COST AS A PRICE: the same report, p. 41 (para 79), gives a market-based index, the HYDRIX65 index issued by the European Energy Exchange for renewable hydrogen, 'averaging approximately 8.2 EUR/kg' in 2025 (7.8 in 2023).  CONTEXT, NOT PART OF THE RANGE: 4.95 EUR/kg, p. 26, is the average offtake price the report calculated for ammonia producers from the bids of the second European Hydrogen Bank auction ('Average offtake prices calculated by sector', 'Based on the information submitted among all the bids'), a subsidised auction.  CROSS-CHECKS READ: 6.17 EUR/kg (European Hydrogen Observatory, 'European average for renewable hydrogen in 2025', https://observatory.clean-hydrogen.europa.eu/, page undated) and about 6 EUR/kg (MIBGAS IBHYX index, January-October 2025, as quoted by ACER p. 41)";
+            kind    assumption;
+            origin  "author-set choice (Vitor Geraldes and the architect, 2026-11-25, C526): 1.5 EUR/kg, a price at which the plant pays, chosen INSIDE the range 0.74-4.07 EUR/kg that the project brief quotes from ACER, 'European hydrogen markets, 2025 Monitoring Report', 2 December 2025, data item 972.  READ BACK 2026-11-25 against the pdf (https://www.acer.europa.eu/sites/default/files/documents/Publications/ACER-2025-European-hydrogen-markets.pdf, text of all pages): the range 0.74-4.07 EUR/kg is NOT in the report's text, and neither is the data item number; page 40 (para 78) gives conventional hydrogen (SMR) 'a bit higher than 2 EUR/kg', abated (SMR with CCS) 2.8 EUR/kg, and RFNBO hydrogen 'around 8 EUR/kg, ranging between 7-10 EUR/kg'.  So 0.74-4.07 stays a figure the case's author quotes, UNCONFIRMED against the report until the data item is read.  Which hydrogen a plant buys at 1.5 EUR/kg is the author's reading: it is below conventional SMR hydrogen (about 2 EUR/kg, p. 40) and more than five times below the RFNBO cost (8)";
+            method  "taken as set, in EUR/kg, no conversion.  The previous base of this case was 8.0 EUR/kg (ACER p. 40 para 78, RFNBO cost 7-10, the HYDRIX65 index 8.2 EUR/kg, p. 41), at which the plant loses money; it is kept as a SCENARIO beside this base (README, 'Hydrogen price scenarios').  RANGE READ (the sensitivity ends): low 0.74 EUR/kg, high 4.07 EUR/kg, the range the brief quotes (above, unconfirmed in the pdf text).  CONTEXT, NOT PART OF THE RANGE: 2 EUR/kg (SMR, p. 40), 2.8 EUR/kg (SMR with CCS, p. 40), 7-10 EUR/kg (RFNBO cost, p. 40), 4.95 EUR/kg (average offtake price the report calculated for ammonia producers from the bids of the second European Hydrogen Bank auction, p. 26, a subsidised auction), 0.33-1.88 EUR/kg (the bid PREMIUMS of that auction's selected projects, p. 26: a subsidy per kg, not a price of hydrogen)";
         }
     }
     {
