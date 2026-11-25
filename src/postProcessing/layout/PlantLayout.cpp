@@ -6759,14 +6759,25 @@ void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
 {
     struct Cand { const LayoutItem* it; scalar tube; };
     std::vector<Cand> cands;
+    std::vector<std::string> noTube;
     for (const auto& it : rec.items)
     {
         if (it.nonProcess || !it.room.empty() || it.kind != "shellTubeHX") continue;
         const auto s = r.sizings.find(it.id);
         if (s == r.sizings.end()) continue;
         const auto t = s->second.values.find("tubeLength");
-        if (t == s->second.values.end() || !(t->second > 0)) continue;
+        if (t == s->second.values.end() || !(t->second > 0)) { noTube.push_back(it.id); continue; }
         cands.push_back({ &it, t->second });
+    }
+    if (!noTube.empty())
+    {
+        std::string names;
+        for (const auto& n : noTube) names += (names.empty() ? "" : ", ") + n;
+        announce("info", "layout",
+            std::to_string(noTube.size()) + " shell-and-tube exchanger" + (noTube.size() == 1 ? "" : "s")
+            + " placed (" + names + ") publish no `tubeLength` on their design sheets (sized by area:"
+            " no bundle is designed): whether the bundle can be WITHDRAWN is NOT checked, and no"
+            " tube length is invented");
     }
     if (cands.empty()) return;
 
@@ -6840,19 +6851,18 @@ void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
         const bool alongX = it.orientation == "alongX";
         //  An interval in the PULL axis (flipped so the pull runs toward +u,
         //  the item's channel face at u = its upper edge) and in the lateral.
-        auto axisOf = [&](scalar lo, scalar hi) -> std::array<scalar, 2>
-        { return sgn > 0 ? std::array<scalar, 2>{ lo, hi }
-                         : std::array<scalar, 2>{ -hi, -lo }; };
+        auto axisOf = [&](scalar lo, scalar hi) -> std::pair<scalar, scalar>
+        { return sgn > 0 ? std::make_pair(lo, hi) : std::make_pair(-hi, -lo); };
         const scalar hx = 0.5 * it.dx, hy = 0.5 * it.dy;
         const auto selfA = alongX ? axisOf(it.x - hx, it.x + hx)
                                   : axisOf(it.y - hy, it.y + hy);
-        const scalar face = selfA[1];
+        const scalar face = selfA.second;
         const scalar latLo = alongX ? it.y - hy : it.x - hx;
         const scalar latHi = alongX ? it.y + hy : it.x + hx;
         const scalar zLo = it.z, zHi = it.z + it.dz;
         const scalar need = c->tube + extra;
 
-        scalar clear = std::numeric_limits<scalar>::infinity();
+        scalar clear = 1e300;   // nothing found yet
         std::string by;
         auto consider = [&](const std::string& name, scalar x0, scalar x1,
                             scalar y0, scalar y1, scalar z0, scalar z1)
@@ -6861,8 +6871,8 @@ void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
             const scalar l0 = alongX ? y0 : x0, l1 = alongX ? y1 : x1;
             if (l1 <= latLo + kTol || l0 >= latHi - kTol) return;   // beside the bundle
             const auto a = alongX ? axisOf(x0, x1) : axisOf(y0, y1);
-            if (a[1] <= face + kTol) return;                        // behind the face
-            const scalar gap = std::max(a[0] - face, 0.0);
+            if (a.second <= face + kTol) return;                    // behind the face
+            const scalar gap = std::max(a.first - face, 0.0);
             if (gap < clear) { clear = gap; by = name; }
         };
         const scalar big = 1e9;
@@ -6892,7 +6902,7 @@ void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
             "the tube length " + num(c->tube) + " m (a fact: the sizer's `tubeLength`)"
             " plus the declared clearance " + num(extra) + " m (a convention; source: "
             + source + ") is " + num(need) + " m";
-        if (std::isinf(clear))
+        if (clear > 1e299)
             announce("info", "layout '" + id + "'",
                 "`" + id + "`: " + basis + ", and nothing in the checked geometry"
                 " (items, fence, pipe rack) stands " + end + " of its channel end");
