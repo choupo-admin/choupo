@@ -5678,6 +5678,15 @@ accepts today, and that is a policy call.
 > clearance at the channel end, a finding with a name; the PEQ would raise it.  After 2 December: it moves the
 > demonstration plant's layout.  Fact (tube length) and convention (the clearance) are said apart.
 
+> **C508-C512. EQUIPMENT PAGES INSPIRED BY A PRACTITIONER'S BOOKS (Vitor, 2026-11-25: "é só para te inspirares!
+> Aquilo não é para copiares! ... Vê se o nosso EduTool de secadores pode beneficiar ... Vê o resto!").**  Two
+> reading generals took the equipment chapters the first reading had skipped (private: IDEAS-solids-separations.md,
+> IDEAS-rotating-valves-heat-piping.md).  C508, in build: the dryer pages, led by "Why did it not dry?" (air,
+> time or isotherm, ordered from engine KPIs).  C509, in build: the control valve and its loop gain (page only;
+> the engine's `valve` has no Cv, C214 W5).  C510 compressor selection, C511 filter cycle, C512 fines and solid
+> temperature in the spray dryer: after 2 December.  Read back by the architect: the gains (2.8, 33.8), the dryer
+> goldens, evapDryer02's false sentence, the idle cyclone.
+
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
 > acabar").  Weighed and AGREED for the ENGINE half: three defects in one day (C493 second law, C495 an
