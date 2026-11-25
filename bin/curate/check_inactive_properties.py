@@ -28,6 +28,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
+#  The one directory walk below is over the gate's OWN scratch copy of the case (its records),
+#  never over the tree.
+SCAN_ROOTS = ()
 BENCH = "tutorials/props/membrane/dspmde01_water_treatment_salts"
 NONE = "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
 
