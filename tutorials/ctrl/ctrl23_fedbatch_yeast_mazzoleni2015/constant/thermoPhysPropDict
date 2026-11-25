@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- water and the eight mass-unit pseudo-components of
+  Mazzoleni et al. 2015 (constant/components/).  An IDEAL liquid, declared:
+  nothing here is a molecule except the water, and the model needs no phase
+  equilibrium (nothing leaves the vessel).  The pseudo-components are
+  nonvolatile and have a volume of ~0, so the volume of the broth is the volume
+  of the water, which is what the paper's V(t) is.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( water  glucoseMass  glycolysisProducts  ethanolMass  carbonMetabolites  reserves  inhibitor  deadCells  lostMass );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

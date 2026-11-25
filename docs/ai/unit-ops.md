@@ -4252,6 +4252,12 @@ under `timeStepping adaptive`.  Examples: `unsteady06_reactor_fill_and_react`
 (fills from a heel while a first-order isomerisation runs; closed form) and
 `ctrl22_reactor_level_and_temperature` (PI level on `F_out` + PI temperature
 on `T_jacket`, one unit, after an inflow step).
+`ctrl23_fedbatch_yeast_mazzoleni2015` is the FED-BATCH form: `outflow { mode flow; F 0.0 kmol/s; }` (nothing leaves),
+a `Signal` `staircase` on `inletField F` for the exponential feed, and a published model of seven pools written as eight
+`type expression` reactions over mass-unit pseudo-components (MW 1: kmol = kg, kmol/m3 = g/l; a molar volume of 1e-9 m3/mol so
+the volume is the water's) with a named `lostMass` component for the mass its efficiencies < 1 take out, so the mass balance
+closes (1.6e-14).  The paper's V(t) is its own; Theory Guide `sec:fedbatch-mazzoleni` says which equations and tables were read.
+A `batchReactor` cannot carry a fed-batch: it has no continuous feed and its volume does not follow a recipe `transfer`.
 `operation { energy isothermal; }` holds T and solves no energy equation
 (announced; the first law is withheld) -- for a vessel with NO reaction and NO
 jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop

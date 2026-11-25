@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1945,
+  "cases": 1946,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22659,6 +22659,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Signal",
+    "dynamicCSTR",
+    "staircase"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/ChemicalPlantTutorial": {
    "application": "choupoSolve",
    "thermo": {
@@ -31316,7 +31332,8 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
-    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "choupoProps": [
     "data/curation/batches/henry_sander",
@@ -33203,7 +33220,8 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
-    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -33502,6 +33520,7 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015",
     "tutorials/unsteady/unsteady01_startup_transient",
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
@@ -33974,7 +33993,8 @@
     "tutorials/steady/economics/economics04_building_royalty_breakeven"
    ],
    "staircase": [
-    "tutorials/ctrl/ctrl17_signal_shapes"
+    "tutorials/ctrl/ctrl17_signal_shapes",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "step": [
     "tutorials/ctrl/ctrl09_stream_disturbance",
@@ -36327,6 +36347,7 @@
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",

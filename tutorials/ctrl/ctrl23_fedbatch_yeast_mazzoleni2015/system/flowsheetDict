@@ -1,0 +1,191 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl23_fedbatch_yeast_mazzoleni2015 -- an aerobic fed-batch of yeast, from a
+  published model with every parameter printed.
+
+  SOURCE (read in full, CC BY 4.0): Mazzoleni S, Landi C, Cartenì F, de Alteriis
+  E, Giannino F, Paciello L, Parascandola P, "A novel process-based model of
+  microbial growth: self-inhibition in Saccharomyces cerevisiae aerobic
+  fed-batch cultures", Microb. Cell Fact. 14 (2015) 109,
+  doi:10.1186/s12934-015-0295-4.  READ: Eq 1-7 (the seven mass balances), Table
+  1 (the rate laws), Table 2 (the auxiliary equations), Table 3 (initial values
+  and feed set-up) and Table 4 (all parameters, four strains), and the Methods
+  paragraphs on the CEN.PK cultures.  NOT READ: the figures as data (Figs 2-7
+  are plots only), the paper's supplementary files, the optimisation of the
+  calibration.
+
+  WHICH RUN.  CEN.PK113-7D, the prototroph of Fig 4: feed 500 g/l glucose, mu =
+  0.16 1/h, feeding from t_F = 17 h to t_END = 49 h, the M_F and y_R of its Table 3.
+  Why this one: it is the run whose biomass reaches the highest density (about
+  100 g/l), so the inhibitor feedback that is the paper's point acts; it is a
+  new experiment of the paper's own, with the three measured variables of its
+  figure; and the concentrated feed keeps the volume change small.  The paper
+  ran the strain with its own set of Table 4 values, used here without change.
+
+  THE MODEL.  Seven pools in grams: G glucose, P glycolysis products, E ethanol,
+  C_M carbon metabolites (the cell material, B = P + C_M the active mass), I
+  inhibitor, R reserves, D dead cells.
+      dG/dt = Feeding - Uptake
+      dP/dt = eta_G Uptake - Resp_P - Ferm - Accum - Death_P
+      dE/dt = eta_FE Ferm - Resp_E
+      dC_M/dt = eta_RP Resp_P + eta_RE Resp_E + eta_FP Ferm - Secretion - Death_CM
+      dR/dt = eta_A Accum - Death_R        dI/dt = Secretion
+      dD/dt = Death_P + Death_CM + Death_R
+  The laws are in constant/reactions, one reaction per process (eight), each an
+  `expression` law with every Table 4 value and its table reference beside it.
+
+  HOW THE ENGINE CARRIES IT.  (1) A `dynamicCSTR` with `volumeMode variable`
+  and a zero outflow IS a fed-batch vessel: it fills and its volume follows the
+  inventory, so every c[i] = n_i / V is the paper's [G] = G/V.  (2) Each pool is
+  a mass-unit pseudo-component (MW = 1, volume ~ 0), so kmol are kg and kmol/m3
+  are g/l; the water is real and carries the volume.  (3) The paper's efficiencies
+  eta < 1 lose mass; the lost part is the named component `lostMass` (about 14
+  to 20 % of each flux), so the mass balance closes and the case shows what the
+  paper leaves untold.  (4) The exponential feed F0 exp(mu (t - t_F)) of Table 2
+  is a `Signal` staircase on the vessel's inflow, 64 steps of half an hour whose
+  value is the EXACT MEAN of the exponential over the step, so the volume fed at
+  every step boundary is exact (the feed rate within a step is flat: this is the
+  discretisation, 0.16 1/h x 0.5 h = 8 % between steps).  (5) The vessel is
+  adiabatic and all pool records share one formation datum: no metabolic heat
+  (the paper has none), so T stays at 303.15 K.
+
+  WHAT THE PAPER'S TABLE 2 GIVES FOR V(t) is not used as printed.  It reads
+  V = M_F/(c_F y_R) exp(mu (t - t_F)) , a few ml at t_F for this run, the volume of
+  FEED that has entered when F0 = M_F mu/(c_F y_R) is integrated -- but the
+  vessel held 1 l (Methods) at t_F, which is V_0.  The case uses the
+  mass-conserving form V = V_0 + (M_F/(c_F y_R)) (exp(mu (t - t_F)) - 1), which
+  is what the staircase integrates to, and reproduces the paper's reported
+  ~100 g/l at 40 h.
+
+  WHAT IS NOT MODELLED, from the paper itself: oxygen, pH, the base added for pH
+  control, antifoam and the volume they add; the evaporation of ethanol; the
+  sampling.  The paper's data are NOT reproduced as a pinned anchor: Fig 4 gives
+  mass, glucose and ethanol as curves, and the comparison in README.md is
+  information, read off the figure by eye.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+        in          feed;
+        outputs     ( broth );
+
+        operation
+        {
+            volumeMode  variable;
+
+            geometry
+            {
+                shape       verticalCylinder;
+                diameter    0.1 m;              // area 7.854e-3 m2: 1 l = 0.127 m, 3.4 l = 0.43 m
+                height      0.8 m;              // the overflow level (never reached)
+            }
+
+            outflow
+            {
+                mode        flow;
+                F           0.0 kmol/s;         // nothing leaves: a FED-batch vessel
+            }
+        }
+
+        reactions
+        (
+            uptake  respirationP  fermentation  respirationE  accumulation
+            secretion  deathP  deathCM  deathR
+        );
+    }
+);
+
+controllers
+(
+    //  The exponential feed of Table 2 (Feeding = c_F F0 exp(mu (t - t_F)), F0 =
+    //  M_F mu / (c_F y_R)), as a staircase of exact interval means on the TOTAL
+    //  inflow (the composition of 0/feed is kept).  0 until t_F = 17 h = 61200 s;
+    //  the first step is F0 x mean of exp over [0, 0.5 h].  kmol/s.
+    {
+        name         ExpFeed;
+        type         Signal;
+        actuator     { unit reactor;  inletField F; }
+        signal
+        {
+            type      staircase;
+            schedule
+            (
+                { time 0       ; value 0.000000e+00; }
+                { time 61200   ; value 3.761387e-07; }
+                { time 63000   ; value 4.074662e-07; }
+                { time 64800   ; value 4.414028e-07; }
+                { time 66600   ; value 4.781660e-07; }
+                { time 68400   ; value 5.179910e-07; }
+                { time 70200   ; value 5.611330e-07; }
+                { time 72000   ; value 6.078681e-07; }
+                { time 73800   ; value 6.584957e-07; }
+                { time 75600   ; value 7.133398e-07; }
+                { time 77400   ; value 7.727518e-07; }
+                { time 79200   ; value 8.371120e-07; }
+                { time 81000   ; value 9.068327e-07; }
+                { time 82800   ; value 9.823601e-07; }
+                { time 84600   ; value 1.064178e-06; }
+                { time 86400   ; value 1.152810e-06; }
+                { time 88200   ; value 1.248824e-06; }
+                { time 90000   ; value 1.352835e-06; }
+                { time 91800   ; value 1.465509e-06; }
+                { time 93600   ; value 1.587567e-06; }
+                { time 95400   ; value 1.719791e-06; }
+                { time 97200   ; value 1.863027e-06; }
+                { time 99000   ; value 2.018193e-06; }
+                { time 100800  ; value 2.186283e-06; }
+                { time 102600  ; value 2.368372e-06; }
+                { time 104400  ; value 2.565626e-06; }
+                { time 106200  ; value 2.779310e-06; }
+                { time 108000  ; value 3.010790e-06; }
+                { time 109800  ; value 3.261550e-06; }
+                { time 111600  ; value 3.533195e-06; }
+                { time 113400  ; value 3.827465e-06; }
+                { time 115200  ; value 4.146243e-06; }
+                { time 117000  ; value 4.491572e-06; }
+                { time 118800  ; value 4.865661e-06; }
+                { time 120600  ; value 5.270908e-06; }
+                { time 122400  ; value 5.709907e-06; }
+                { time 124200  ; value 6.185468e-06; }
+                { time 126000  ; value 6.700637e-06; }
+                { time 127800  ; value 7.258714e-06; }
+                { time 129600  ; value 7.863271e-06; }
+                { time 131400  ; value 8.518180e-06; }
+                { time 133200  ; value 9.227634e-06; }
+                { time 135000  ; value 9.996176e-06; }
+                { time 136800  ; value 1.082873e-05; }
+                { time 138600  ; value 1.173062e-05; }
+                { time 140400  ; value 1.270763e-05; }
+                { time 142200  ; value 1.376601e-05; }
+                { time 144000  ; value 1.491254e-05; }
+                { time 145800  ; value 1.615456e-05; }
+                { time 147600  ; value 1.750003e-05; }
+                { time 149400  ; value 1.895756e-05; }
+                { time 151200  ; value 2.053648e-05; }
+                { time 153000  ; value 2.224690e-05; }
+                { time 154800  ; value 2.409978e-05; }
+                { time 156600  ; value 2.610698e-05; }
+                { time 158400  ; value 2.828135e-05; }
+                { time 160200  ; value 3.063682e-05; }
+                { time 162000  ; value 3.318847e-05; }
+                { time 163800  ; value 3.595264e-05; }
+                { time 165600  ; value 3.894704e-05; }
+                { time 167400  ; value 4.219082e-05; }
+                { time 169200  ; value 4.570477e-05; }
+                { time 171000  ; value 4.951139e-05; }
+                { time 172800  ; value 5.363504e-05; }
+                { time 174600  ; value 5.810215e-05; }
+            );
+        }
+    }
+);

@@ -859,3 +859,53 @@ TWO DECLARED FIGURES (system/postDict, C487): `level`, "does the level loop hold
 \goldmore{27}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl23\_fedbatch\_yeast\_mazzoleni2015}{tutorials/ctrl/ctrl23\_fedbatch\_yeast\_mazzoleni2015}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {broth};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Fed-batch of S. cerevisiae CEN.PK113-7D on glucose, the seven balances and the rate laws of Mazzoleni et al. 2015 (Table 4 parameters, nothing fitted): 17 h of batch, then an exponential glucose feed of 0.16 1/h to 49 h in a variable-volume vessel}
+\begin{tutnarrative}
+an aerobic fed-batch of yeast, from a published model with every parameter printed.
+
+SOURCE (read in full, CC BY 4.0): Mazzoleni S, Landi C, Carten? F, de Alteriis E, Giannino F, Paciello L, Parascandola P, "A novel process-based model of microbial growth: self-inhibition in Saccharomyces cerevisiae aerobic fed-batch cultures", Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4. READ: Eq 1-7 (the seven mass balances), Table 1 (the rate laws), Table 2 (the auxiliary equations), Table 3 (initial values and feed set-up) and Table 4 (all parameters, four strains), and the Methods paragraphs on the CEN.PK cultures. NOT READ: the figures as data (Figs 2-7 are plots only), the paper's supplementary files, the optimisation of the calibration.
+
+WHICH RUN. CEN.PK113-7D, the prototroph of Fig 4: feed 500 g/l glucose, mu = 0.16 1/h, feeding from t\_F = 17 h to t\_END = 49 h, the M\_F and y\_R of its Table 3. Why this one: it is the run whose biomass reaches the highest density (about 100 g/l), so the inhibitor feedback that is the paper's point acts; it is a new experiment of the paper's own, with the three measured variables of its figure; and the concentrated feed keeps the volume change small. The paper ran the strain with its own set of Table 4 values, used here without change.
+
+THE MODEL. Seven pools in grams: G glucose, P glycolysis products, E ethanol, C\_M carbon metabolites (the cell material, B = P + C\_M the active mass), I inhibitor, R reserves, D dead cells. dG/dt = Feeding - Uptake dP/dt = eta\_G Uptake - Resp\_P - Ferm - Accum - Death\_P dE/dt = eta\_FE Ferm - Resp\_E dC\_M/dt = eta\_RP Resp\_P + eta\_RE Resp\_E + eta\_FP Ferm - Secretion - Death\_CM dR/dt = eta\_A Accum - Death\_R dI/dt = Secretion dD/dt = Death\_P + Death\_CM + Death\_R The laws are in constant/reactions, one reaction per process (eight), each an `expression` law with every Table 4 value and its table reference beside it.
+
+HOW THE ENGINE CARRIES IT. (1) A `dynamicCSTR` with `volumeMode variable` and a zero outflow IS a fed-batch vessel: it fills and its volume follows the inventory, so every c[i] = n\_i / V is the paper's [G] = G/V. (2) Each pool is a mass-unit pseudo-component (MW = 1, volume \textasciitilde{} 0), so kmol are kg and kmol/m3 are g/l; the water is real and carries the volume. (3) The paper's efficiencies eta < 1 lose mass; the lost part is the named component `lostMass` (about 14 to 20 \% of each flux), so the mass balance closes and the case shows what the paper leaves untold. (4) The exponential feed F0 exp(mu (t - t\_F)) of Table 2 is a `Signal` staircase on the vessel's inflow, 64 steps of half an hour whose value is the EXACT MEAN of the exponential over the step, so the volume fed at every step boundary is exact (the feed rate within a step is flat: this is the discretisation, 0.16 1/h x 0.5 h = 8 \% between steps). (5) The vessel is adiabatic and all pool records share one formation datum: no metabolic heat (the paper has none), so T stays at 303.15 K.
+
+WHAT THE PAPER'S TABLE 2 GIVES FOR V(t) is not used as printed. It reads V = M\_F/(c\_F y\_R) exp(mu (t - t\_F)) , a few ml at t\_F for this run, the volume of FEED that has entered when F0 = M\_F mu/(c\_F y\_R) is integrated -- but the vessel held 1 l (Methods) at t\_F, which is V\_0. The case uses the mass-conserving form V = V\_0 + (M\_F/(c\_F y\_R)) (exp(mu (t - t\_F)) - 1), which is what the staircase integrates to, and reproduces the paper's reported \textasciitilde{}100 g/l at 40 h.
+
+WHAT IS NOT MODELLED, from the paper itself: oxygen, pH, the base added for pH control, antifoam and the volume they add; the evaporation of ethanol; the sampling. The paper's data are NOT reproduced as a pinned anchor: Fig 4 gives mass, glucose and ethanol as curves, and the comparison in README.md is information, read off the figure by eye.
+
+\end{tutnarrative}
+\tutreadme{An aerobic fed-batch of $\ast$Saccharomyces cerevisiae$\ast$ CEN.PK113-7D on glucose: 17 h of batch on 20 g/l, then an exponential feed of 500 g/l glucose at 0.16 1/h until 49 h. The model is the one of Mazzoleni et al. 2015 ($\ast$Microb. Cell Fact.$\ast$ 14:109, doi 10.1186/s12934-015-0295-4, CC BY 4.0): seven mass balances, eight rate laws, every parameter printed. Nothing is fitted here: the numbers are the paper's Table 3 and Table 4 (CEN.PK113-7D column). Run it: runCase tutorials/ctrl/ctrl23\_fedbatch\_yeast\_mazzoleni2015 (it runs under choupoCtrl, about a minute and a half).}
+\tutreadme{READ, in the full text: Eq 1-7 (the seven balances), Table 1 (rate laws), Table 2 (auxiliary equations), Table 3 (initial values and feed set-up), Table 4 (all parameters, four strains), the Methods on the CEN.PK cultures (1 l of initial medium, 2 \% w/v glucose, 50 \% w/v glucose feed, pH 5, DOT 30 \%) and Fig 4 as an image. NOT read: the data behind the figures (only plots exist), the paper's other strains' runs, the supplementary material.}
+\tutreadme{Why this run: CEN.PK113-7D (Fig 4) reaches the highest cell density of the paper (about 100 g/l), where the inhibitor feedback it is about acts, and it is the paper's own new experiment with mass, glucose and ethanol measured.}
+\tutreadme{batchReactor could not carry this: it has no continuous feed and its volume is a number it keeps while a recipe transfer adds liquid, so every c = n/V would be wrong. The variable-volume dynamicCSTR under choupoCtrl is the engine's fed-batch vessel. No engine code was added.}
+\tutreadme{Table 2 prints V(t) = M\_F/(c\_F y\_R) exp(?(t - t\_F)), which is the volume of FEED entered (14.6 ml at t\_F), not the volume of the vessel (1 l by the Methods). The case uses V = V$_0$ + (M\_F/(c\_F y\_R))(exp(?(t - t\_F)) - 1), which is what the staircase integrates to; it is declared in the header. Two other readings are declared in constant/reactions: ? (secretion) is printed in 1/h but is a dimensionless fraction, and the death switch d is written as a ramp of 0.001 g/l around $\tau$ (the expression grammar has no comparison). The temperature (303.15 K) is an assumption: the paper states 30 $^\circ$C only for its plate counts; it affects only the density of water, because the model is isothermal and the pseudo-components share one formation datum.}
+\tutreadme{1. The diauxic batch. Glucose is gone at 14 h, ethanol peaks at about 9.5 g/l near 12.5 h and is consumed by 21 h (trajectory.csv). 2. The feed. After 17 h glucose stays near 0.01 g/l: the yeast takes what is fed and the biomass follows the feed, up to about 90 g/l at 40.5 h. 3. The overflow. After 40 h the glycolysis products pile up, ethanol is made and glucose accumulates; dead cells appear after 41 h. At 49 h the vessel holds 183.6 g of ethanol, 493.7 g of glucose and 60.9 g of dead cells in 3.436 l. 4. The mass balance closes (1.6e-14 relative; the energy ledger 3e-14). The paper does not track the mass its efficiencies lose; here it is 340.8 g of lostMass at 49 h, 27.5 \% of all the solute, so the case shows what the model leaves untold. The solutes in the vessel equal the 20 g charged plus the glucose fed (500 g/l $\times$ the fed volume): 1.2376 kg against 1.2382 kg (0.05 \%), the difference being the volume the pseudo-components are given (1e-9 m$^3$/mol, a total of 1.2 ml).}
+\begin{tutgolden}
+\goldrow{kpi}{ExpFeed}{MV\_final}{5.810215e-05}
+\goldrow{kpi}{ExpFeed}{PV\_final}{0}
+\goldrow{kpi}{ExpFeed}{SP\_final}{5.810215e-05}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{3.25753563777e-14}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-54275.9280895}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{0}
+\goldrow{kpi}{balance}{energy\_kJ\_in\_cum}{-38468.6530934}
+\goldrow{kpi}{balance}{energy\_kJ\_initial}{-15807.2749961}
+\goldrow{kpi}{balance}{energy\_kJ\_out\_cum}{0}
+\goldrow{kpi}{balance}{energy\_residual\_kJ}{-1.76805770025e-09}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{1.55410854116e-14}
+\goldrow{kpi}{balance}{mass\_kg\_final}{4.6577532578}
+\goldmore{31}
+\end{tutgolden}
+

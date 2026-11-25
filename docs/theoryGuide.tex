@@ -38450,6 +38450,13 @@ doi:10.1137/S0895479894278952.  The quotient-graph ordering that
 \code{SparseLU}'s explicit minimum degree is compared with, and the source of
 its dense-node rule.
 
+\bibitem{Mazzoleni2015} Mazzoleni, S., Landi, C., Cart\'eni, F., de Alteriis, E.,
+Giannino, F., Paciello, L., \& Parascandola, P., A novel process-based model of
+microbial growth: self-inhibition in \emph{Saccharomyces cerevisiae} aerobic
+fed-batch cultures, \emph{Microbial Cell Factories} \textbf{14} (2015) 109,
+doi:10.1186/s12934-015-0295-4 (CC BY 4.0).  Eqs.~1--7 and Tables~1--4 are the
+seven balances, rate laws, auxiliaries and parameters of Section~\ref{sec:fedbatch-mazzoleni}.
+
 \bibitem{Flory1953} Flory, P. J., \emph{Principles of Polymer
 Chemistry}, Cornell University Press, 1953, Ch.~VIII--IX.  The
 step-growth chain statistics of \S\ref{ch:polymers}: the number- and
@@ -42942,6 +42949,110 @@ Each dynamic unit and each controller is published as \code{unit:<name>} (a view
 The unit of a controller's PV and MV is read from the controlled and manipulated variable the controller names (\code{measurement \{ cv \}}, \code{actuator \{ mv \}}); where a label does not say its unit the column is published without one and the view declares the axis unit.
 A case that declares no \code{views} builds nothing, keeps nothing and writes nothing (its outputs are byte-identical); a \code{postDict} with \code{views} beside an \code{outerDict} is refused by name.
 The witness is \file{tutorials/ctrl/ctrl02\_disturbance\_rejection}: the reactor temperature against its set point, with the jacket temperature and the stepped feed temperature on the right axis (\code{response}, the overview), and the same signals from 600~s on a tight axis (\code{rejection}, the deviation after the steps, whose axis range is read from the run).
+
+\subsection{A fed-batch fermentation from a published model}\label{sec:fedbatch-mazzoleni}
+
+A yeast culture is the one process in this guide whose kinetics are not
+molecular: nothing in a cell is a rate constant of a reaction between two species
+the catalogue holds.  The case \file{tutorials/ctrl/ctrl23\_fedbatch\_yeast\_mazzoleni2015}
+therefore carries a \emph{published} model, with every parameter printed, and the
+engine's only contribution is the vessel: a variable-volume \code{dynamicCSTR}
+with no outflow, fed by a \code{Signal}.  Nothing is fitted in Choupo.
+
+\paragraph{Source, and what was read.}  Mazzoleni, Landi, Cartenì, de Alteriis,
+Giannino, Paciello and Parascandola, \emph{Microb.\ Cell Fact.}\ \textbf{14}
+(2015) 109, doi:10.1186/s12934-015-0295-4 (CC BY 4.0) \cite{Mazzoleni2015}.
+Read in full: Eqs.~1--7, Tables~1--4 and the Methods of the CEN.PK cultures, and
+Fig.~4 as an image.  Not read: the data behind the figures (they exist only as
+plots), the other strains' runs and the supplementary files.
+
+\paragraph{The seven balances} (masses in g; $G$ glucose, $P$ glycolysis
+products, $E$ ethanol, $C_M$ carbon metabolites, $R$ reserves, $I$ inhibitor,
+$D$ dead cells; the active mass is $B=P+C_M$):
+\begin{align}
+\dot G &= \mathit{Feeding}-\mathit{Uptake}\\
+\dot P &= \eta_G\,\mathit{Uptake}-\mathit{Resp}_P-\mathit{Ferm}-\mathit{Accum}-\mathit{Death}_P\\
+\dot E &= \eta_{FE}\,\mathit{Ferm}-\mathit{Resp}_E\\
+\dot C_M &= \eta_{RP}\,\mathit{Resp}_P+\eta_{RE}\,\mathit{Resp}_E+\eta_{FP}\,\mathit{Ferm}-\mathit{Secretion}-\mathit{Death}_{CM}\\
+\dot R &= \eta_A\,\mathit{Accum}-\mathit{Death}_R\qquad
+\dot I = \mathit{Secretion}\qquad
+\dot D = \mathit{Death}_P+\mathit{Death}_{CM}+\mathit{Death}_R
+\end{align}
+with the concentrations $[G]=G/V$, $[E]=E/V$, $[I]=I/V$ and the \emph{cell}
+concentration of the glycolysis products $[P]=P/((B+R)\,c)$, $c=0.01$~l/g.
+
+\paragraph{The rate laws as implemented} (Table~1 of the paper; lag${}=1$ for this
+strain, whose Table~4 column carries no lag parameters):
+\begin{align}
+\mathit{Uptake}&=v_G\frac{[G]}{k_G+[G]}\,B\Bigl(1-\frac{[P]}{[P]_{\max}}\Bigr)(1-n_E)\\
+\mathit{Resp}_P&=v_{RP}\frac{[P]}{k_{RP}+[P]}\,B(1-n_E)(1-n_I)\,ge\\
+\mathit{Ferm}&=v_F\frac{[P]}{k_F+[P]}\,B(1-n_E)(1-n_I)\,mo\\
+\mathit{Resp}_E&=v_{RE}\frac{[E]}{k_{RE}+[E]}\,B(1-n_E)(1-n_I)\,ge\\
+\mathit{Accum}&=v_A\frac{[P]}{k_A+[P]}\,B\Bigl(1-\frac{R}{R_{\max}}\Bigr)mo,\qquad R_{\max}=(B+R)\,r_{\max}\\
+\mathit{Secretion}&=\rho\,(\eta_{RP}\mathit{Resp}_P+\eta_{RE}\mathit{Resp}_E+\eta_{FP}\mathit{Ferm})\\
+\mathit{Death}_X&=d\,\delta\,X,\quad X\in\{P,C_M,R\},\qquad d=\begin{cases}0&[P]\le\tau\\1&[P]>\tau\end{cases}
+\end{align}
+and, from Table~2, $n_E=\sigma_E[E]/[E]_{\max}$, $n_I=\sigma_I[I]/[I]_{\max}$,
+$ge=1/(1+a\,e^{b[P]})$ (the glucose effect) and $mo=1-ge$ (the overflow).
+The feed is $\mathit{Feeding}=c_F F_0\,e^{\mu(t-t_F)}$, $F_0=M_F\mu/(c_F y_R)$, for
+$t\ge t_F$.  Parameters, all from Tables~3 and~4, CEN.PK113-7D column:
+$v_G=5.8$, $k_G=0.27$ g/l, $\eta_G=0.86$; $v_{RP}=1.0$, $k_{RP}=0.24$,
+$\eta_{RP}=0.80$; $v_F=2.6$, $k_F=0.14$, $\eta_{FE}=0.60$, $\eta_{FP}=0.20$;
+$v_{RE}=0.20$, $k_{RE}=0.15$, $\eta_{RE}=0.80$; $v_A=0.2$, $k_A=0.05$,
+$\eta_A=0.2$, $r_{\max}=0.3$; $\delta=0.05$ 1/h, $\tau=0.6$ g/l, $\rho=0.01$,
+$\sigma_I=1$, $\sigma_E=1.4$, $a=2\times10^{-4}$, $b=30$ l/g,
+$[P]_{\max}=1$, $[E]_{\max}=100$, $[I]_{\max}=1$ g/l (the $v$ in 1/h);
+$G_0=20$, $C_{M0}=0.023$, $P_0=5\times10^{-5}$ g, $V_0=1$~l (Methods),
+$t_F=17$, $t_{\mathrm{END}}=49$ h, $c_F=500$ g/l, $M_F=3.66$ g, $\mu=0.16$ 1/h,
+$y_R=0.5$.
+
+\paragraph{How the engine carries it.}
+\begin{enumerate}
+\item Each pool is a \emph{mass-unit pseudo-component}, $M=1$~g/mol and a molar
+volume of $10^{-9}$~m$^3$/mol: 1~kmol is 1~kg and a concentration in kmol/m$^3$
+is the paper's in g/l.  A rate law divided by $V$ is an extent rate in
+kmol/m$^3$/h, and a stoichiometric coefficient is a mass ratio.
+\item The efficiencies $\eta<1$ lose mass, which the paper does not follow.  The
+lost part is the named component \code{lostMass}: every reaction's coefficients
+sum to zero, so the mass balance closes.
+\item The eight processes are eight \code{kinetics \{ type expression; \}}
+reactions (Section~\ref{ch:dyn-cstr} and the unit-operations reference), with each
+Table~4 value beside its reference.  Table~4 prints $\rho$ in 1/h, but
+$\mathit{Secretion}=\rho\,(\cdots)$ is a flux times $\rho$, so it is read as a
+dimensionless fraction; the death switch $d$ is a ramp of 0.001~g/l centred on
+$\tau$, as the expression grammar has no comparison.  Neither is in the paper.
+\item The vessel is a \code{dynamicCSTR} with \code{volumeMode variable} and
+\code{F 0} outflow: it fills, $V=\sum_i n_iM_i/\rho$, and every
+$c_i=n_i/V$ is the paper's $[\,\cdot\,]=(\cdot)/V$.  The pseudo-components add
+essentially no volume, so $V$ is the volume of the water, which is the paper's
+$V$: the liquid that was fed.
+\item The feed is a \code{Signal} \code{staircase} on the inflow, 64 steps of
+0.5~h, each the exact mean of $F_0e^{\mu(t-t_F)}$ over the step, so the
+cumulative volume fed is exact at every step boundary.
+\end{enumerate}
+Table~2 of the paper prints $V(t)=M_F/(c_Fy_R)\,e^{\mu(t-t_F)}$, the volume of
+feed that has entered (14.6~ml at $t_F$) and not the volume of the vessel; the
+mass-conserving form is
+\begin{equation}
+V(t)=V_0+\frac{M_F}{c_Fy_R}\bigl(e^{\mu(t-t_F)}-1\bigr),
+\end{equation}
+which is what the staircase integrates to and which gives the paper's reported
+cell density of about 100~g/l near 40~h.
+
+\paragraph{Validity and in-sample statement.}  The parameters are the paper's,
+calibrated by its authors to \emph{this very run} (Fig.~4, $R^2$ of 0.991, 0.885
+and 0.934 for mass, glucose and ethanol): the comparison below is a check that
+the engine integrates the published model, not a validation of the model.
+The model has no oxygen, pH, evaporation or heat; it holds for aerobic
+glucose-limited growth with oxygen in excess, as run.  Read off Fig.~4 by eye
+(about $\pm5$~g/l), the run and the paper's model curve agree: mass
+$(P+C_M+R+D)/V$ peaks at 90.1~g/l near 40~h (paper about 90) and falls to
+63.3~g/l at 49~h (about 65); glucose is near zero to about 41~h and reaches
+143.7~g/l (about 145); ethanol peaks at 9.5~g/l in the batch (about 9--10) and
+reaches 53.4~g/l (about 52).  The mass and energy ledgers close to $10^{-14}$
+and the solutes in the vessel equal the 20~g charged plus the glucose fed to
+0.05~\%.  An exponential feed as a signal, a biomass component with an elemental
+formula and an oxygen balance are not in the engine.
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 

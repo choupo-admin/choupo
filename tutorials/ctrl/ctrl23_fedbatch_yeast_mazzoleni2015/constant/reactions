@@ -1,0 +1,411 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/reactions -- the PROCESSES of Mazzoleni et al. 2015, Table 1, for the
+  CEN.PK113-7D prototroph (Table 4, fourth column), written as case-carried rate
+  laws (`kinetics { type expression; }`, DEV.md 4c C67).
+
+  UNITS.  Every component is a mass-unit pseudo-component (MW = 1 g/mol), so a
+  concentration c[i] in kmol/m3 is the paper's concentration in g/l, a rate in
+  kmol/m3/h is g/l/h, and a stoichiometric coefficient nu is a mass ratio.  The
+  paper's rate laws are totals in g/h; dividing each by V gives the per-volume
+  extent rate written here (V cancels inside every ratio, because [P], [G], [E],
+  [I] and B/V are all concentrations).
+
+  MASS.  The paper's efficiencies (eta_G = 0.86 and the rest) are the fraction of
+  a flux that arrives in the next pool; the rest leaves the model.  Here that
+  rest is the named component `lostMass` (CO2, water and the like), so every
+  reaction below has coefficients that sum to zero and the run's mass balance
+  closes.
+
+  THE PARAMETERS are repeated in each law that uses them (a law reads only its
+  own `parameters`); one generator wrote them from one table, so they cannot
+  differ.  T1/T2/T4 = the paper's Tables 1, 2, 4.
+
+  TWO READINGS the paper's text forces, both declared:
+    * rho (secretion) is printed with the unit h^-1, but Secretion = rho (eta_RP
+      Resp_P + eta_RE Resp_E + eta_FP Ferm) is a flux (g/h) times rho, so the
+      balance is dimensionally consistent only if rho is a pure FRACTION of the
+      carbon-metabolite production.  It is read as dimensionless.
+    * the death switch d (0 while [P] <= tau, 1 above) is a step, and the
+      expression grammar has no comparison; it is written as a linear ramp of
+      width dw = 1e-3 g/l centred on tau (0.17 % of tau) -- NOT in the paper.
+  NOT IN THIS RUN: the lag phase of Table 2 (its parameters l1..l3 are listed for
+  the CBS 8066 column only), so lag = 1.
+\*---------------------------------------------------------------------------*/
+
+uptake
+{
+    //  Uptake (T1) = v_G [G]/(k_G + [G]) B (1 - [P]/[P]max)(1 - n_E) lag, lag = 1; G -> eta_G P, eta_G = 0.86 (T4; Eq 1, 2)
+    stoichiometry
+    (
+        { component glucoseMass        ; nu -1; }
+        { component glycolysisProducts ; nu +0.86; }
+        { component lostMass           ; nu +0.14; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            vG     5.8       1/h      ;  // T4 v_G
+            kG     0.27      kmol/m3  ;  // T4 k_G
+            Pmax   1         kmol/m3  ;  // T4 [P]_MAX
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "vG * c[glucoseMass] / (kG + c[glucoseMass]) * Bc * (1 - Pc / Pmax) * (1 - nE)";
+    }
+}
+
+respirationP
+{
+    //  Respiration_P (T1); P -> eta_RP C_M, eta_RP = 0.80 (T4; Eq 2, 4)
+    stoichiometry
+    (
+        { component glycolysisProducts ; nu -1; }
+        { component carbonMetabolites  ; nu +0.8; }
+        { component lostMass           ; nu +0.2; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            vRP    1         1/h      ;  // T4 v_RP
+            kRP    0.24      kmol/m3  ;  // T4 k_RP
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "vRP * Pc / (kRP + Pc) * Bc * (1 - nE) * (1 - nI) * ge";
+    }
+}
+
+fermentation
+{
+    //  Fermentation (T1); P -> eta_FE E + eta_FP C_M, 0.60 and 0.20 (T4; Eq 2, 3, 4)
+    stoichiometry
+    (
+        { component glycolysisProducts ; nu -1; }
+        { component ethanolMass        ; nu +0.6; }
+        { component carbonMetabolites  ; nu +0.2; }
+        { component lostMass           ; nu +0.2; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            vF     2.6       1/h      ;  // T4 v_F
+            kF     0.14      kmol/m3  ;  // T4 k_F
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "vF * Pc / (kF + Pc) * Bc * (1 - nE) * (1 - nI) * mo";
+    }
+}
+
+respirationE
+{
+    //  Respiration_E (T1); E -> eta_RE C_M, eta_RE = 0.80 (T4; Eq 3, 4)
+    stoichiometry
+    (
+        { component ethanolMass        ; nu -1; }
+        { component carbonMetabolites  ; nu +0.8; }
+        { component lostMass           ; nu +0.2; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            vRE    0.2       1/h      ;  // T4 v_RE
+            kRE    0.15      kmol/m3  ;  // T4 k_RE
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "vRE * c[ethanolMass] / (kRE + c[ethanolMass]) * Bc * (1 - nE) * (1 - nI) * ge";
+    }
+}
+
+accumulation
+{
+    //  Accumulation (T1) with Rmax = (B + R) r_max (T2); P -> eta_A R, eta_A = 0.2 (T4; Eq 2, 5)
+    stoichiometry
+    (
+        { component glycolysisProducts ; nu -1; }
+        { component reserves           ; nu +0.2; }
+        { component lostMass           ; nu +0.8; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            vA     0.2       1/h      ;  // T4 v_A
+            kA     0.05      kmol/m3  ;  // T4 k_A
+            rmax   0.3       -        ;  // T4 r_MAX
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "vA * Pc / (kA + Pc) * Bc * (1 - c[reserves] / ((Bc + c[reserves]) * rmax)) * mo";
+    }
+}
+
+secretion
+{
+    //  Secretion (T1) = rho (eta_RP Resp_P + eta_RE Resp_E + eta_FP Ferm), rho read as a fraction (header); C_M -> I (Eq 4, 6)
+    stoichiometry
+    (
+        { component carbonMetabolites  ; nu -1; }
+        { component inhibitor          ; nu +1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            rho    0.01      -        ;  // T4 rho
+            vRP    1         1/h      ;  // T4 v_RP
+            kRP    0.24      kmol/m3  ;  // T4 k_RP
+            vF     2.6       1/h      ;  // T4 v_F
+            kF     0.14      kmol/m3  ;  // T4 k_F
+            vRE    0.2       1/h      ;  // T4 v_RE
+            kRE    0.15      kmol/m3  ;  // T4 k_RE
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+        }
+        rate    "rho * (0.8 * vRP * Pc / (kRP + Pc) * Bc * (1 - nE) * (1 - nI) * ge + 0.8 * vRE * c[ethanolMass] / (kRE + c[ethanolMass]) * Bc * (1 - nE) * (1 - nI) * ge + 0.2 * vF * Pc / (kF + Pc) * Bc * (1 - nE) * (1 - nI) * mo)";
+    }
+}
+
+deathP
+{
+    //  Death_P (T1) = d delta P; P -> D (Eq 7)
+    stoichiometry
+    (
+        { component glycolysisProducts ; nu -1; }
+        { component deadCells          ; nu +1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            delta  0.05      1/h      ;  // T4 delta
+            tau    0.6       kmol/m3  ;  // T4 tau
+            dw     0.001     kmol/m3  ;  // NOT in the paper: width of the smoothed death switch (header)
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+            dsw  "max(0, min(1, (Pc - tau) / dw + 0.5))";                        // d: the death switch, smoothed (header)
+        }
+        rate    "delta * dsw * c[glycolysisProducts]";
+    }
+}
+
+deathCM
+{
+    //  Death_C_M (T1) = d delta C_M; C_M -> D (Eq 7)
+    stoichiometry
+    (
+        { component carbonMetabolites  ; nu -1; }
+        { component deadCells          ; nu +1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            delta  0.05      1/h      ;  // T4 delta
+            tau    0.6       kmol/m3  ;  // T4 tau
+            dw     0.001     kmol/m3  ;  // NOT in the paper: width of the smoothed death switch (header)
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+            dsw  "max(0, min(1, (Pc - tau) / dw + 0.5))";                        // d: the death switch, smoothed (header)
+        }
+        rate    "delta * dsw * c[carbonMetabolites]";
+    }
+}
+
+deathR
+{
+    //  Death_R (T1) = d delta R; R -> D (Eq 7)
+    stoichiometry
+    (
+        { component reserves           ; nu -1; }
+        { component deadCells          ; nu +1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Mazzoleni et al., Microb. Cell Fact. 14 (2015) 109, doi:10.1186/s12934-015-0295-4 -- Table 1 (rate law), Table 2 (auxiliaries), Table 4 (CEN.PK113-7D column); the paper's numbers, nothing fitted here";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            delta  0.05      1/h      ;  // T4 delta
+            tau    0.6       kmol/m3  ;  // T4 tau
+            dw     0.001     kmol/m3  ;  // NOT in the paper: width of the smoothed death switch (header)
+            a      0.0002    -        ;  // T4 a
+            binv   0.0333333333333 kmol/m3  ;  // T4 b = 30 l/g, entered as its reciprocal 1/30 g/l
+            cinv   100       kmol/m3  ;  // T4 c = 0.01 l/g, entered as its reciprocal 100 g/l
+            sigE   1.4       -        ;  // T4 sigma_E
+            Emax   100       kmol/m3  ;  // T4 [E]_MAX
+            sigI   1         -        ;  // T4 sigma_I
+            Imax   1         kmol/m3  ;  // T4 [I]_MAX
+        }
+        definitions
+        {
+            Bc   "c[glycolysisProducts] + c[carbonMetabolites]";                 // B = P + C_M            (T2)
+            Pc   "c[glycolysisProducts] * cinv / (Bc + c[reserves])";           // [P] = P / ((B + R) c)  (T2)
+            nE   "sigE * c[ethanolMass] / Emax";                                 // n_E                    (T2)
+            nI   "sigI * c[inhibitor] / Imax";                                   // n_I                    (T2)
+            ge   "1 / (1 + a * exp(Pc / binv))";                                    // glucose effect         (T2)
+            mo   "1 - ge";                                                       // metabolic overflow     (T2)
+            dsw  "max(0, min(1, (Pc - tau) / dw + 0.5))";                        // d: the death switch, smoothed (header)
+        }
+        rate    "delta * dsw * c[reserves]";
+    }
+}
