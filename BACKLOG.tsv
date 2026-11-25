@@ -470,7 +470,7 @@ C504	DONE		A pureza do leve e do pesado sai pela ordem da lista			2026-11-25	S	a
 C505	DONE		Ler o Moran: o que serve para EduTools e correlações			2026-11-25	M	3989f5e87f	
 C506	DONE		Linha de gás compressível			2026-11-25	M	0087e99195	
 C507	PARTIAL	7	Espaço para tirar o feixe do permutador no layout	O motor verifica o espaço para tirar o feixe e a PEQ passou a cumprir (25-11). Falta a EduTool "por onde sai o feixe?".	do Moran (25-11); é o que um engenheiro de instalações vê primeiro	2026-11-25	S		
-C508	DONE		EduTool dos secadores à luz do livro de projeto			2026-11-25	M	57a1e2ccad	
+C508	PARTIAL	0	EduTool dos secadores à luz do livro de projeto	As páginas e os nove tipos estão no main (25-11). A navegação da página está confusa: os passos 9 a 12 vêm antes do 1, há títulos repetidos e abre no que não se calcula. Reordenada em quatro partes, com o menu em ordem e um teste para todas as EduTools.	Um general: a página reordenada em quatro partes (Vítor, 25-11, ao testar).	2026-11-25	M	57a1e2ccad	
 C509	DONE		EduTool: porque é que uma válvula bem dimensionada controla mal?			2026-11-25	M	261595cd7c	
 C510	DONE		EduTool: que compressor, e até onde o posso abrandar?			2026-11-25	M	148bfa87fe	
 C511	DONE		EduTool: quando abrir o filtro-prensa			2026-11-25	S	148bfa87fe	
