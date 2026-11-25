@@ -48,6 +48,8 @@ LineSearchResult backtrackingLineSearch(const FilterGlobalization& filter,
     LineSearchResult r;
     const scalar alphaMin = filter.minimumStep(current);   //- (23)
     scalar alpha = alphaMax;
+    //  The paper tests (23) BEFORE the first trial: a step already below alpha_min is not tried.
+    if (alpha < alphaMin) { r.alpha = alpha; return r; }
     for (;;)
     {
         r.alpha = alpha;

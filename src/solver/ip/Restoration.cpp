@@ -217,7 +217,7 @@ RestorationOutcome runRestoration(const NLPProblem& core, const sVector& xLower,
             std::sort(rows.begin(), rows.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
             for (const auto& rw : rows) out.violatedRows.push_back(rw.second);
             out.note = "restoration converged to a point with ||c||_1 = " + fmt("", theta).substr(2)
-                       + ": the infeasibility cannot be reduced further";
+                       + ": a local minimum of the constraint violation (it cannot be reduced further from here)";
             return out;
         }
         out.kind = RestorationOutcome::Kind::Recovered;      //- a feasible point was found

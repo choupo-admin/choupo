@@ -146,8 +146,16 @@ public:
     scalar fStar = 0.0;
     std::size_t pinIterations = 0;     //- the pinned iteration count (0: none yet)
     bool exact = true;                 //- every function has an analytic Hessian
-    mutable std::size_t outside = 0;   //- evaluations of f at a point outside the variable bounds (the
-                                       //  fraction-to-the-boundary rule says there are none)
+    mutable std::size_t outside = 0;   //- evaluations (f, its gradient, the constraints, their Jacobian) at a
+                                       //  point outside the variable bounds (the fraction-to-the-boundary rule
+                                       //  and the clamped finite-difference Hessian say there are none)
+    IPStatus expect = IPStatus::Converged;   //- the status the row is EXPECTED to end in
+    Vec xExpect;                             //- for a "locally infeasible" row: the point it is expected to reach
+    void touch(const Vec& x) const
+    {
+        for (std::size_t i = 0; i < x.size(); ++i)
+            if (x[i] < xL[i] || x[i] > xU[i]) { ++outside; break; }
+    }
 
     std::string name() const override { return label; }
     std::size_t numVariables() const override { return x0.size(); }
@@ -157,20 +165,21 @@ public:
     Vec startingPoint() const override { return x0; }
     bool objective(const Vec& x, scalar& f) const override
     {
-        for (std::size_t i = 0; i < x.size(); ++i)
-            if (x[i] < xL[i] || x[i] > xU[i]) { ++outside; break; }
+        touch(x);
         f = obj.val(x);
         return std::isfinite(f);
     }
-    bool objectiveGradient(const Vec& x, Vec& g) const override { obj.grad(x, g); return true; }
+    bool objectiveGradient(const Vec& x, Vec& g) const override { touch(x); obj.grad(x, g); return true; }
     bool constraints(const Vec& x, Vec& c) const override
     {
+        touch(x);
         c.resize(cons.size());
         for (std::size_t j = 0; j < cons.size(); ++j) c[j] = cons[j].val(x);
         return true;
     }
     bool constraintJacobian(const Vec& x, DenseMatrix& J) const override
     {
+        touch(x);
         J.assign(cons.size(), Vec());
         for (std::size_t j = 0; j < cons.size(); ++j) cons[j].grad(x, J[j]);
         return true;
@@ -410,6 +419,26 @@ std::vector<std::unique_ptr<HSProblem>> makeProblems()
         Fn g4 = quad(7, 0.0, {{6, -5.0}, {7, 11.0}}, {{1, 1, -8.0}, {1, 2, 3.0}, {2, 2, -2.0}, {3, 3, -4.0}});
         geq(*p, g1);  geq(*p, g2);  geq(*p, g3);  geq(*p, g4);
     }
+    {   //  HS100p1 / HS100p2: HS100 from two starts of a seeded perturbation of the standard one
+        //  (generator std::mt19937, amplitude 2.0 of max(1, |x|); the doubles are printed in full).  They exist
+        //  because the filter's corner (22) is held ONLY by runs that put an entry in the filter and meet it
+        //  again: with phi_mu replaced by f in both augment calls, the standard start and every other HS row
+        //  give byte-identical output, while these two end "restoration failed" (14 and 21 iterations against
+        //  25 and 38 right).  Sabotage (iv).
+        const HSProblem base = *v.back();
+        const Vec starts[2] = {
+            {1.2385934678085486, 0.68399718793194619, -0.35526979872891684, -2.7703119810149657,
+             1.4121719764812677, 0.75994980991528949, -0.51218340115036143},
+            {0.44268941231855408, -1.2580267304224315, -1.2075608364401988, 11.95020471998648,
+             -0.36374350295061975, -0.13657873093933337, -0.80107105869716166}};
+        const char* names[2] = {"HS100p1", "HS100p2"};
+        for (int k = 0; k < 2; ++k)
+        {
+            v.push_back(std::make_unique<HSProblem>(base));
+            v.back()->label = names[k];
+            v.back()->x0 = starts[k];
+        }
+    }
     {   // HS113: n = 10, eight inequalities (three linear, five quadratic)
         HSProblem* p = add("HS113", 24.3062090641, 0);
         p->x0 = {2, 3, 5, 5, 1, 2, 7, 3, 6, 10};
@@ -433,7 +462,7 @@ std::vector<std::unique_ptr<HSProblem>> makeProblems()
         geq(*p, quad(10, -768.0, {{1, 3.0}, {2, -6.0}, {9, 192.0}, {10, 7.0}}, {{9, 9, -24.0}}));
     }
     {   // HS116: n = 13, fifteen inequalities, Hessian by finite differences (announced)
-        HSProblem* p = add("HS116", 97.5884089805, 0);
+        HSProblem* p = add("HS116", 97.5875096, 0);   // NOT the collection's 97.5884089805 (LEX = .FALSE.): see the note on kPins
         p->x0 = {0.5, 0.8, 0.9, 0.1, 0.14, 0.5, 489.0, 80.0, 650.0, 450.0, 150.0, 150.0, 150.0};
         p->xL = {0.1, 0.1, 0.1, 0.0001, 0.1, 0.1, 0.1, 0.1, 500.0, 0.1, 1.0, 0.0001, 0.0001};
         p->xU = {1.0, 1.0, 1.0, 0.1, 0.9, 0.9, 1000.0, 1000.0, 1000.0, 500.0, 150.0, 150.0, 150.0};
@@ -495,6 +524,36 @@ std::vector<std::unique_ptr<HSProblem>> makeProblems()
         p->obj = quad(3, 0.0, {{1, 1.0}}, {});
         eqc(*p, quad(3, -1.0, {{2, -1.0}}, {{1, 1, 2.0}}));
         eqc(*p, quad(3, -0.5, {{1, 1.0}, {3, -1.0}}, {}));
+    }
+    {   // WB2000c: the SAME problem from the paper's own start (-2, 3, 1).  Expected outcome, the known
+        //          behaviour of this method on that example: the run ends at x = (-1, 0, 0), a local minimum of
+        //          ||c||_1 = 1.5 (x1 < 0 cannot satisfy c2 = x1 - x3 - 0.5 with x3 >= 0), and says so.
+        HSProblem* p = add("WB2000c", 1.0, 0);
+        p->x0 = {-2.0, 3.0, 1.0};
+        p->xL = {-kInfinity, 0.0, 0.0};
+        p->obj = quad(3, 0.0, {{1, 1.0}}, {});
+        eqc(*p, quad(3, -1.0, {{2, -1.0}}, {{1, 1, 2.0}}));
+        eqc(*p, quad(3, -0.5, {{1, 1.0}, {3, -1.0}}, {}));
+        p->expect = IPStatus::LocallyInfeasible;
+        p->xExpect = {-1.0, 0.0, 0.0};
+    }
+    {   // FDHESS: min x1 + x1^1.5 + (x2 - 1)^2,  x1 >= 0, NO analytic Hessian.  x1^1.5 and its gradient are
+        //         NaN for x1 < 0; the finite-difference Hessian at the optimum x* = (0, 1) used to step to
+        //         x1 = -h and failed (33 factorisations, "restoration failed").  The differences are now
+        //         clamped to the bounds.
+        HSProblem* p = add("FDHESS", 0.0, 0);
+        p->x0 = {1.0, 0.0};
+        p->xL = {0.0, -kInfinity};
+        p->obj.val = [](const Vec& x) { return x[0] + std::pow(x[0], 1.5) + (x[1] - 1) * (x[1] - 1); };
+        p->obj.grad = [](const Vec& x, Vec& g) { g = {1.0 + 1.5 * std::sqrt(x[0]), 2.0 * (x[1] - 1)}; };
+    }
+    {   // EVALFAIL: min ln(x1) + x2^2 started at x1 = -1: the start cannot be evaluated.  The run must end
+        //           "evaluation failed" with a DEFINED x (the start), not read an empty vector.
+        HSProblem* p = add("EVALFAIL", 0.0, 0);
+        p->x0 = {-1.0, 1.0};
+        p->obj.val = [](const Vec& x) { return std::log(x[0]) + x[1] * x[1]; };
+        p->obj.grad = [](const Vec& x, Vec& g) { g = {1.0 / x[0], 2.0 * x[1]}; };
+        p->expect = IPStatus::EvaluationFailed;
     }
     {   // HS118: n = 15, 17 rows (12 ranges and 5 sums) = 29 one-sided inequalities
         HSProblem* p = add("HS118", 664.820449993, 0);
@@ -602,64 +661,82 @@ struct Pin { const char* name; std::size_t iterations; };
 //  Iteration counts of the first accepted runs (2026-11-25); a run within the
 //  band max(3, 25 %) passes.  A move outside it is a change of behaviour of
 //  the algorithm and is read, not re-pinned silently.
+//  HS100p1 and HS100p2 carry NO pin, on purpose: their starts are chaotic
+//  perturbations chosen because the filter-corner sabotage (iv) ends them in
+//  "restoration failed" while the correct code converges.  What witnesses (iv)
+//  is that OUTCOME, which every platform keeps; their iteration counts (25 and
+//  38 on the build that chose them) can move with another libm (the browser's
+//  WASM, the CI runner), and a band on them would turn a platform difference
+//  into a red gate.
 const Pin kPins[] = {
     {"HS1", 25}, {"HS6", 6}, {"HS7", 27}, {"HS13", 311}, {"HS21", 8}, {"HS35", 7}, {"HS38", 40}, {"HS40", 3},
-    {"HS43", 9}, {"HS71", 8}, {"HS76", 7}, {"HS100", 10}, {"HS113", 11}, {"HS116", 21}, {"WB2000", 15}, {"HS118", 11},
+    {"HS43", 9}, {"HS71", 8}, {"HS76", 7}, {"HS100", 10}, {"HS113", 11}, {"HS116", 21}, {"WB2000", 15}, {"FDHESS", 13}, {"HS118", 11},
 };
 
-//  TWO PROBLEMS HAVE THEIR OWN ACCEPTANCE RULE, each following from the problem
-//  and stated here and in the Theory Guide (sec:interior-point-hs).
+//  ONE PROBLEM HAS ITS OWN ACCEPTANCE RULE (HS13), and one has a corrected
+//  reference value (HS116); both follow from the problem, stated here and in
+//  the Theory Guide (sec:ip-hs-own-rules).
 //
 //  HS13: the optimum x* = (1, 0) is a CUSP -- the gradient of the active
 //  constraint, (0, -1), is parallel to that of the active bound x2 >= 0, and
-//  no multipliers exist (grad f = (-2, 0) cannot be balanced: the run's
-//  multipliers grow to 1.4e5).  The constraint is a CUBE at x*: a violation v
-//  lets x1 reach 1 + v^(1/3) with x2 = 0, so the best f a point of violation v
-//  can have is (1 - v^(1/3))^2, about 2 v^(1/3) = 4.3e-3 below f* at
-//  v = 1e-8.  "|f - f*| <= 1e-6 at v <= 1e-8" would need v <= 1e-19, below
-//  what double precision can resolve in (1 - x1)^3: NO solver can meet it.  The
-//  rule is therefore the one the problem implies: the run is converged, v <= 1e-8,
-//  f lies between the permitted-violation floor and f* + 1e-6, and
-//  x1 within [1 - 1e-6, 1 + v^(1/3) (1 + 1e-6) + 1e-9] -- the permitted cusp.
-//  Its 311 iterations with 287 inertia corrections (zero eigenvalue of the
-//  KKT matrix at the cusp, theta steps only) are a slowness recorded for A3
-//  (second-order correction, adaptive barrier update), not hidden: the
-//  iteration pin stays.
+//  grad f = (-2, 0) cannot be balanced, so THERE IS NO KKT POINT at x* (the
+//  run's multipliers grow to 1.4e5).  A method that stays on the feasible side
+//  would approach f = 1 from above and meet the common rule; this method
+//  accepts an equality residual up to tol on g - s = 0 (the constraint is
+//  written with a slack) and USES it: the constraint is a cube at x*, so a
+//  residual v lets x1 reach 1 + v^(1/3) with x2 = 0, and f reaches the floor
+//  (1 - v^(1/3))^2, about 2 v^(1/3) = 4.3e-3 below f* at v = 1e-8.  (The
+//  earlier justification, "no solver can meet the common rule here", was
+//  false: x = (1, 0) meets it.)  The rule is therefore the one that follows
+//  from the run's OWN violation v: converged, v <= 1e-8, and
+//  (1 - v^(1/3))^2 - 1e-6 <= f <= f* + 1e-6, x1 within
+//  [1 - 1e-6, 1 + v^(1/3)(1 + 1e-6) + 1e-9], x2 <= max(v, 1e-12).  A run with
+//  v = 0 must give f >= 1 - 1e-6.  Its 311 iterations with 287 inertia
+//  corrections (zero eigenvalue of the KKT matrix at the cusp, theta steps
+//  only) are a slowness recorded for A3 (second-order correction, adaptive
+//  barrier update), not hidden: the iteration pin stays.
 //
-//  HS116: the run is FEASIBLE (violation 0 against the statement written here;
-//  re-read term by term a second time on 2026-11-25 against the statement as
-//  the collection gives it -- 15 constraints, 13 bounds pairs and the start
-//  agree; the collection's own text was not at hand, so this is a reading, not
-//  a diff) and ends 9.0e-4 BELOW the collection's f* = 97.5884089805,
-//  relative 9.2e-6.  The multipliers are about 1e3 (c13: 1.07e3), so a
-//  constraint tightened by 8.5e-7 moves f by exactly that difference (measured:
-//  tightening c13 to >= 8e-7 gives 97.58836, to >= 1e-6 gives 97.58858); the
-//  HYPOTHESIS (not proven) is that the collection's f* was taken at a point
-//  with that feasibility margin, or at rounded constants.  The run's x agrees
-//  with the published x* to the digits published (x1 = 0.80377, x9 = 500.016).  The rule is one-sided and stated: not worse than f* by
-//  more than 1e-6 relative, and not better than the f* minus the 1e-5
-//  relative that a 1e-6 feasibility margin at these multipliers explains.  It
-//  is NOT a loosening for a run that finds a lower f silently: a drop below
-//  f* (1 - 1e-5) fails, a feasible lower value is reported, and the finding is
-//  put to the architect.
-struct Rule
-{
-    scalar below;   // relative: f may be below f* by at most this
-    scalar above;   // relative: f may be above f* by at most this
-};
+//  HS116: the reference value is 97.5875096, NOT the collection's 97.5884089805,
+//  and the common rule applies.  EVIDENCE (an independent review, 2026-11-25):
+//  the transcription was read term by term against Schittkowski's PROB.FOR
+//  (TP116, which sets LEX = .FALSE., the collection's flag that the listed
+//  solution is NOT exact), CUTEst HS116.SIF, Vanderbei's AMPL hs116.mod,
+//  JSO's hs116.jl and the collection's TEST.TEX; it agrees.  The published x*
+//  evaluated in this transcription gives f = 97.5884089807 with all eleven
+//  active rows INSIDE their constraints by +2.29e-7 .. +2.39e-7 (and x4 4.8e-7
+//  below its upper bound); scipy SLSQP and trust-constr started from the
+//  published x* converge to 97.5875096 / 97.5875097, feasible to 1e-11.  First
+//  order, with this run's multipliers: sum |lambda| ~ 3790 x 2.309e-7 = 8.75e-4,
+//  plus the x4 bound's 2.4e-5, = 8.99e-4 = the measured gap to 97.5884090.  So
+//  the collection's f* is a point strictly inside the constraints, not the
+//  optimum of the stated problem.  HS116 has a SECOND stationary point at
+//  97.59103 (SLSQP from the standard start; TEST.TEX's value), and x3 and x6
+//  are not unique: f is pinned, never x.
 
-Rule ruleFor(const std::string& name)
+//  HS13's own check, on the run's own violation v.
+bool hs13Rule(const IPResult& r)
 {
-    if (name == "HS116") return {1e-5, 1e-6};
-    return {1e-6, 1e-6};
+    const scalar v = std::max(r.constraintViolation, 0.0), cr = std::cbrt(v);
+    const scalar floorF = (1 - cr) * (1 - cr);
+    return r.x.size() == 2 && r.x[0] >= 1 - 1e-6 && r.x[0] <= 1 + cr * (1 + 1e-6) + 1e-9
+           && r.x[1] <= std::max(v, 1e-12) && r.objective >= floorF - 1e-6 && r.objective <= 1.0 + 1e-6;
 }
 
-//  HS13's own check, on x.
-bool hs13Cusp(const IPResult& r, scalar& floorF)
+//  A row that is EXPECTED to end otherwise than converged.
+bool runExpected(HSProblem& p, const IPResult& r)
 {
-    const scalar v = 1e-8, cr = std::cbrt(v);
-    floorF = (1 - cr) * (1 - cr);
-    return r.x.size() == 2 && r.x[0] >= 1 - 1e-6 && r.x[0] <= 1 + cr * (1 + 1e-6) + 1e-9 && r.x[1] <= v;
+    bool ok = r.status == p.expect && r.x.size() == p.numVariables();
+    for (scalar xi : r.x) ok = ok && std::isfinite(xi);
+    if (p.expect == IPStatus::LocallyInfeasible)
+    {
+        ok = ok && !r.infeasibleRows.empty() && !p.xExpect.empty();
+        for (std::size_t i = 0; ok && i < p.xExpect.size(); ++i) ok = std::abs(r.x[i] - p.xExpect[i]) <= 1e-4;
+    }
+    std::printf("%-8s expected %-18s status %-18s it %3zu  resto %zu  outside %zu  x =", p.label.c_str(),
+                statusName(p.expect), statusName(r.status), r.iterations, r.restorations, p.outside);
+    for (scalar xi : r.x) std::printf(" %.5g", xi);
+    std::printf("  %s\n", ok && p.outside == 0 ? "PASS" : "FAIL");
+    return ok && p.outside == 0;
 }
 
 bool runHS(HSProblem& p, bool verbose)
@@ -670,13 +747,9 @@ bool runHS(HSProblem& p, bool verbose)
     const IPResult r = InteriorPoint::solve(p, o);
     const scalar fErr = std::abs(r.objective - p.fStar);
     const scalar scaleF = std::max(1.0, std::abs(p.fStar));
-    const Rule rule = ruleFor(p.label);
-    bool fOk = r.objective >= p.fStar - rule.below * scaleF && r.objective <= p.fStar + rule.above * scaleF;
-    if (p.label == "HS13")
-    {
-        scalar floorF = 0;
-        fOk = hs13Cusp(r, floorF) && r.objective >= floorF - 1e-9 && r.objective <= p.fStar + 1e-6;
-    }
+    if (p.expect != IPStatus::Converged) return runExpected(p, r);
+    bool fOk = fErr <= 1e-6 * scaleF;
+    if (p.label == "HS13") fOk = hs13Rule(r);
     std::size_t pin = 0;
     for (const Pin& k : kPins) if (p.label == k.name) pin = k.iterations;
     const std::size_t band = std::max<std::size_t>(3, pin / 4);
@@ -685,8 +758,7 @@ bool runHS(HSProblem& p, bool verbose)
     std::printf("%-6s f* %-16.10g f %-16.10g |df| %.1e viol %.1e  it %3zu (pin %3zu +-%zu)  ic %2zu  resto %zu  outside %zu  %s  %s\n",
                 p.label.c_str(), p.fStar, r.objective, fErr, r.constraintViolation, r.iterations, pin, band,
                 r.inertiaCorrections, r.restorations, p.outside, statusName(r.status), pass ? "PASS" : "FAIL");
-    if (p.label == "HS13") std::printf("       own rule: cusp optimum, f in [(1 - v^(1/3))^2, f*], x1 in [1, 1 + v^(1/3)], v <= 1e-8\n");
-    if (p.label == "HS116") std::printf("       own rule: f in [f* (1 - 1e-5), f* (1 + 1e-6)]; collection's f* is at a feasibility margin of ~8.5e-7 (multipliers ~1e3)\n");
+    if (p.label == "HS13") std::printf("       own rule: no KKT point at the cusp; f in [(1 - v^(1/3))^2, 1], v = the run's own violation\n");
     if (verbose)
     {
         std::printf("       x =");
@@ -877,7 +949,7 @@ int main(int argc, char** argv)
     auto inf2 = makeBoundAgainstEquality();
 
     std::printf("== derivatives ==\n");
-    for (auto& p : problems) if (only.empty() || only == p->label) if (!checkDerivatives(*p)) ++g_failures;
+    for (auto& p : problems) if (only.empty() || only == p->label) if (p->label != "EVALFAIL" && !checkDerivatives(*p)) ++g_failures;
     if (only.empty())
     {
         for (HSProblem* p : {inf1.get(), inf2.get()}) if (!checkDerivatives(*p)) ++g_failures;

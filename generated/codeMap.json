@@ -10350,9 +10350,59 @@
    "src/core/Types.H",
    "src/solver/Wegstein.H"
   ],
+  "src/solver/ip/BarrierUpdate.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/BarrierUpdate.H",
+   "src/solver/ip/IPParameters.H"
+  ],
   "src/solver/ip/DenseLDLT.cpp": [
    "src/core/Types.H",
    "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/Globalization.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H"
+  ],
+  "src/solver/ip/InertiaCorrection.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/InertiaCorrection.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/InteriorPoint.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/BarrierUpdate.H",
+   "src/solver/ip/DenseLDLT.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/IPTrace.H",
+   "src/solver/ip/InertiaCorrection.H",
+   "src/solver/ip/InteriorPoint.H",
+   "src/solver/ip/LineSearch.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/Restoration.H",
+   "src/solver/ip/SymmetricIndefinite.H"
+  ],
+  "src/solver/ip/LineSearch.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/Globalization.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/LineSearch.H"
+  ],
+  "src/solver/ip/NLPProblem.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/NLPProblem.H"
+  ],
+  "src/solver/ip/Restoration.cpp": [
+   "src/core/Types.H",
+   "src/solver/ip/IPParameters.H",
+   "src/solver/ip/IPTrace.H",
+   "src/solver/ip/InteriorPoint.H",
+   "src/solver/ip/NLPProblem.H",
+   "src/solver/ip/Restoration.H",
    "src/solver/ip/SymmetricIndefinite.H"
   ],
   "src/streams/AnalysisReconciler.cpp": [
@@ -21249,7 +21299,14 @@
    "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
    "src/solver/Wegstein.cpp",
+   "src/solver/ip/BarrierUpdate.cpp",
    "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp",
+   "src/solver/ip/NLPProblem.cpp",
+   "src/solver/ip/Restoration.cpp",
    "src/streams/AnalysisReconciler.cpp",
    "src/streams/Carried.cpp",
    "src/streams/Composition.cpp",
@@ -23686,11 +23743,58 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
+  "src/solver/ip/BarrierUpdate.H": [
+   "src/solver/ip/BarrierUpdate.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
   "src/solver/ip/DenseLDLT.H": [
-   "src/solver/ip/DenseLDLT.cpp"
+   "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
+  "src/solver/ip/Globalization.H": [
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp"
+  ],
+  "src/solver/ip/IPParameters.H": [
+   "src/solver/ip/BarrierUpdate.cpp",
+   "src/solver/ip/Globalization.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/IPTrace.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/InertiaCorrection.H": [
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp"
+  ],
+  "src/solver/ip/InteriorPoint.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/LineSearch.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/LineSearch.cpp"
+  ],
+  "src/solver/ip/NLPProblem.H": [
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/NLPProblem.cpp",
+   "src/solver/ip/Restoration.cpp"
+  ],
+  "src/solver/ip/Restoration.H": [
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
   ],
   "src/solver/ip/SymmetricIndefinite.H": [
-   "src/solver/ip/DenseLDLT.cpp"
+   "src/solver/ip/DenseLDLT.cpp",
+   "src/solver/ip/InertiaCorrection.cpp",
+   "src/solver/ip/InteriorPoint.cpp",
+   "src/solver/ip/Restoration.cpp"
   ],
   "src/streams/AnalysisReconciler.H": [
    "src/propertyOps/DataReconciliation.cpp",
