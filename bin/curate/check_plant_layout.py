@@ -996,8 +996,8 @@ def arm_utility(work):
         "an allocation the run does not carry": (lambda t: t.replace("utility coolingWater; }", "utility chilledWater; }", 1),
                                                   [r"names an allocation the run does not carry"]),
     }
-    box = ('    { nonProcess "tallBox"; kind building; x 112 m; y 10 m; z 0 m;'
-           ' orientation alongX; footprint { length 4 m; width 4 m; height 30 m; }'
+    box = ('    { nonProcess "tallBox"; kind building; x 112 m; y 12.5 m; z 0 m;'
+           ' orientation alongX; footprint { length 4 m; width 2 m; height 30 m; }'
            ' source "gate sabotage"; reason "a tall box across the tower lines"; }\n')
     def no_fouling(t):
         return t.replace("""                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
@@ -1113,10 +1113,10 @@ def arm_utility(work):
     want = set()
     for u in jc["layout"]["utilityLines"]:
         for a, b in zip(u["route"], u["route"][1:]):
-            # plan rectangle x 110..114, y 8..12, z 0..30: a segment strictly through it
+            # plan rectangle x 110..114, y 11.5..13.5, z 0..30: a segment strictly through it
             lo = [min(a[k], b[k]) for k in range(3)]; hi = [max(a[k], b[k]) for k in range(3)]
-            if lo[0] < 114 and hi[0] > 110 and lo[1] < 12 and hi[1] > 8 and lo[2] < 30 and hi[2] > 0:
-                if not (hi[0] == lo[0] and (lo[0] <= 110 or lo[0] >= 114)) and not (hi[1] == lo[1] and (lo[1] <= 8 or lo[1] >= 12)):
+            if lo[0] < 114 and hi[0] > 110 and lo[1] < 13.5 and hi[1] > 11.5 and lo[2] < 30 and hi[2] > 0:
+                if not (hi[0] == lo[0] and (lo[0] <= 110 or lo[0] >= 114)) and not (hi[1] == lo[1] and (lo[1] <= 11.5 or lo[1] >= 13.5)):
                     want.add(u["name"]); break
     if not want or pub != want:
         fail(f"(u) utilityClash names {sorted(pub)}, recomputed from the routes: {sorted(want)}")
@@ -3720,8 +3720,8 @@ BUND_REFUSALS = [
      sub('items       ( "Separator" "LetdownHP" "StorageFlash" );',
          'items       ( "Separator" "LetdownHP" "StorageFlash" "NH3Storage/tank1" );')),
     ("two containments sharing a floor", "claim the same ground",
-     sub("region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
-         "region      { xMin 80 m; xMax 213 m; yMin -69 m; yMax 12 m; }")),
+     sub("region      { xMin 103 m; xMax 213 m; yMin -64 m; yMax 4 m; }",
+         "region      { xMin 80 m; xMax 213 m; yMin -64 m; yMax 11 m; }")),
 ]
 
 
@@ -3738,13 +3738,13 @@ def arm_bunds(work):
     pre["small"] = prepare(work, "bund_small", GREEN, sub("wall        { height 4.5 m; }",
                                                            "wall        { height 2 m; }"))
     pre["polygon"] = prepare(work, "bund_polygon", GREEN, sub(
-        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
-        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -69 m; } { x 213 m; y -1 m; }"
-        " { x 160 m; y -1 m; } { x 160 m; y -10 m; } { x 103 m; y -10 m; } );"))
+        "region      { xMin 103 m; xMax 213 m; yMin -64 m; yMax 4 m; }",
+        "polygon     ( { x 103 m; y -64 m; } { x 213 m; y -64 m; } { x 213 m; y 4 m; }"
+        " { x 160 m; y 4 m; } { x 160 m; y -5 m; } { x 103 m; y -5 m; } );"))
     pre["bowtie"] = prepare(work, "bund_bowtie", GREEN, sub(
-        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
-        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -1 m; } { x 213 m; y -69 m; }"
-        " { x 103 m; y -1 m; } );"))
+        "region      { xMin 103 m; xMax 213 m; yMin -64 m; yMax 4 m; }",
+        "polygon     ( { x 103 m; y -64 m; } { x 213 m; y 4 m; } { x 213 m; y -64 m; }"
+        " { x 103 m; y 4 m; } );"))
     pre["lying"] = prepare(work, "bund_lying", WITNESS, chain(
         sub("kind        impounding;", "kind        bund;"),
         sub("        pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }\n", ""),
