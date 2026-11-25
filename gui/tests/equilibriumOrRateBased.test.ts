@@ -218,8 +218,8 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       files[file] ??= tree(`src/unitOperations/distillation/${file}`).split("\n");
       expect(files[file]![Number(ln) - 1], c).toContain(want);
     }
-    //  The refusal at 2398 is the MESH one, two lines on.
-    expect(files["DistillationColumn.cpp"]!.slice(2400, 2403).join("\n")).toContain("implemented for `method simultaneous`");
+    //  The refusal at 2474 is the MESH one, two lines on.
+    expect(files["DistillationColumn.cpp"]!.slice(2473, 2477).join("\n")).toContain("implemented for `method simultaneous`");
   });
   it("names the four witnesses it runs, and each exists in the tree", () => {
     for (const w of [MURPHREE_WITNESS, HETP_BED_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])

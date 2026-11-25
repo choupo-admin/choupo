@@ -96,8 +96,8 @@ describe("HETP and the transfer unit", () => {
 
 describe("the cited engine lines say what the page says", () => {
   it("the rate-based bed publishes H_OG and lambda = m v / l", () => {
-    expect(lineOf("src/unitOperations/distillation/RateBasedSegment.cpp", 909)).toContain('columns["HOG"]');
-    expect(lineOf("src/unitOperations/distillation/RateBasedSegment.cpp", 458)).toContain("st.lambda = c.m * vm / lm");
+    expect(lineOf("src/unitOperations/distillation/RateBasedSegment.cpp", 957)).toContain('columns["HOG"]');
+    expect(lineOf("src/unitOperations/distillation/RateBasedSegment.cpp", 482)).toContain("st.lambda = c.m * vm / lm");
     expect(lineOf("src/unitOperations/distillation/PackingRBF.cpp", 136)).toContain("r.HOG = r.HG + s.lambda * r.HL");
   });
   it("the Theory Guide has the packed-bed label the registry points to", () => {

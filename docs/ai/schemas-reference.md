@@ -223,6 +223,8 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 |---|:-:|---|---|---|
 | `nStages` |   | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
+| `lightKey` |   | string | — | Component whose purity in the distillate is published as the KPI x_D_LK. Declare it together with `heavyKey`; without them a binary takes… |
+| `heavyKey` |   | string | — | Component whose purity in the bottoms is published as the KPI x_B_HK (see `lightKey`). |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
@@ -400,6 +402,8 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 |---|:-:|---|---|---|
 | `nStages` |   | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
+| `lightKey` |   | string | — | Component whose purity in the distillate is published as the KPI x_D_LK. Declare it together with `heavyKey`; without them a binary takes… |
+| `heavyKey` |   | string | — | Component whose purity in the bottoms is published as the KPI x_B_HK (see `lightKey`). |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |

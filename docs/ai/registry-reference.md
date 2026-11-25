@@ -233,6 +233,8 @@ Multistage distillation column with constant molar overflow [`src/unitOperations
 ```
 nStages i >=2 ui=20
 feedStage i >=1 ui=10
+lightKey s
+heavyKey s
 refluxRatio n >0 ui=2.0
 refluxTemperature n [K] >0
 distillateRate n [kmol/s] >0 ui=0.5
