@@ -161,6 +161,20 @@ int ConvectiveDryer::solve(const DictPtr& dict,
         if (sW[i] > 0.0 && thermo.comp(i).hasSorption()) iSol = i;
     for (std::size_t i = 0; i < n; ++i)
         if (zW[i] > 0.0 && thermo.comp(i).hasVaporPressure()) { iW = i; break; }
+    //  ONE SOLID, AND SAID SO (external review 4, 2026-11-25).  The dry solid
+    //  leaves carrying `iSol` alone, so a second solid in the feed -- or a
+    //  second sorbing one, of which the LAST was taken -- was in the feed and
+    //  in no outlet: mass lost at exit 0 and an order-dependent isotherm.
+    //  Refused by name; the unit that rides such solids through is SolidDryer.
+    for (std::size_t i = 0; i < n; ++i)
+        if (sW[i] > 0.0 && i != iSol)
+            throw std::runtime_error(who + ": the wet solid carries '"
+                + thermo.comp(i).name() + "' beside '"
+                + (iSol < n ? thermo.comp(iSol).name() : std::string("(no sorbing solid)"))
+                + "' -- this dryer dries ONE solid with ONE `sorption {}`"
+                " isotherm and has no outlet for another.  Remedy: `solidDryer`"
+                " (it carries the other solids through as dry spectators), or"
+                " dry the one solid.");
     if (iW == n)
         throw std::runtime_error(who + ": the wet solid carries no volatile"
             " moisture (a component with a vapour pressure in its liquid)");
