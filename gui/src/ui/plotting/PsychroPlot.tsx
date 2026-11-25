@@ -40,6 +40,7 @@ import { useComputedColorScheme } from "@mantine/core";
 import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotly.js";
 import { useStore } from "../../state/store.js";
 import { kToDisplay, temperatureLabel } from "../../state/displayUnits.js";
+import { groupPsychroCurves, curveLabelNumber } from "./psychroCurves.js";
 
 // Curve colours per scheme.  The dark palette is the bright Mantine accents;
 // on a WHITE background those light cyans/oranges vanish, so light mode uses
@@ -52,7 +53,6 @@ const LIGHT_CURVES: CurvePalette = {
   sat: "#00838f", rh: "#0097a7", adia: "#ef6c00", wb: "#c62828",
 };
 
-interface Series { x: number[]; y: number[]; }
 interface Trace {
   type: "scattergl"; mode: "lines"; name: string; x: number[]; y: number[];
   legendgroup: string; showlegend: boolean;
@@ -72,19 +72,7 @@ export function PsychroPlot({ csv, yMax = 0 }: { csv: string; yMax?: number }) {
   if ((rows[0] ?? "").trim() !== "T_C,Y,curve") {
     return <div style={{ padding: 16, color: "#888", fontSize: 12 }}>Computing psychrometric chart…</div>;
   }
-  const groups = new Map<string, Series>();
-  for (let i = 1; i < rows.length; i++) {
-    const parts = rows[i]!.split(",");
-    if (parts.length < 3) continue;
-    const t = Number(parts[0]);
-    const y = Number(parts[1]);
-    const curve = parts[2]!;
-    if (!Number.isFinite(t) || !Number.isFinite(y)) continue;
-    if (!groups.has(curve)) groups.set(curve, { x: [], y: [] });
-    const g = groups.get(curve)!;
-    g.x.push(t);
-    g.y.push(y);
-  }
+  const groups = groupPsychroCurves(rows);
 
   // DIAGNOSTIC: if no data points parsed, show what the worker actually returned
   // (so a screenshot reveals the cause without needing the browser console).
@@ -115,9 +103,9 @@ export function PsychroPlot({ csv, yMax = 0 }: { csv: string; yMax?: number }) {
     } else if (curve.startsWith("rh:")) {
       name = `RH ${curve.slice(3)}%`; color = C.rh; width = 1; showlegend = false;
     } else if (curve.startsWith("adiabatic:")) {
-      name = `adiabatic sat. ${curve.slice(10)}°C`; color = C.adia; dash = "dash"; width = 1; showlegend = false;
+      name = `adiabatic sat. ${curveLabelNumber(curve.slice(10))}°C`; color = C.adia; dash = "dash"; width = 1; showlegend = false;
     } else if (curve.startsWith("wetbulb:")) {
-      name = `wet-bulb ${curve.slice(8)}°C`; color = C.wb; dash = "dot"; width = 1; showlegend = false;
+      name = `wet-bulb ${curveLabelNumber(curve.slice(8))}°C`; color = C.wb; dash = "dot"; width = 1; showlegend = false;
     }
     return {
       type: "scattergl" as const,
