@@ -28,8 +28,8 @@ License
 
 
 /*---------------------------------------------------------------------------*\
-  dryerDrawings -- the seven schematics of the "Which dryer for which
-  product" page (DEV.md 4c C460).
+  dryerDrawings -- the nine schematics of the "Which dryer for which
+  product" page (DEV.md 4c C460; flash and agitated vacuum added by C508).
 
   EVERY DRAWING IS ORIGINAL.  Each one was constructed for this page from a
   written description of how the equipment works (the descriptions in
@@ -459,8 +459,89 @@ function Freeze(): JSX.Element {
   );
 }
 
+/** Flash (pneumatic-conveying) dryer, C508.  Read from the words of van 't Land section 7.1 (a long
+ *  duct carrying a gas at high velocity, a fan, a feeder that disperses the solid in the gas, a
+ *  cyclone for the final recovery), Perry p. 12-67 (feed by a screw into a venturi throat,
+ *  the drying column, a cyclone) and Towler p. 574 (feed dispersed into an upward-flowing stream
+ *  of hot gas).  The solid is blue where the feed enters and amber at the top: it dries as it is
+ *  carried.  ORIGINAL, as the others. */
+function Flash(): JSX.Element {
+  const col: [number, number, number][] = [[46, 98, 0], [53, 90, 0], [47, 80, 0.2], [52, 72, 0.3],
+    [46, 62, 0.5], [53, 54, 0.6], [47, 44, 0.8], [52, 36, 0.9], [47, 28, 1]];
+  return (
+    <g data-dryer-part="flash">
+      {/* the drying duct: gas and solid go UP together */}
+      <rect x={40} y={22} width={18} height={86} {...body} />
+      {col.map(([x, y, f]) => <circle key={y} cx={x} cy={y} r={2} fill={dryness(f)} />)}
+      <Arrow x1={49} y1={142} x2={49} y2={112} color={GAS_COLOR} flow="gas" />
+      <Label x={55} y={136}>hot gas</Label>
+      {/* the feeder disperses the wet feed into the gas at the foot of the duct */}
+      <rect x={10} y={84} width={20} height={16} {...body} />
+      <path d="M13,88 L27,88 M13,92 L27,92 M13,96 L27,96" fill="none" stroke={INK} strokeWidth={1} />
+      <Arrow x1={30} y1={92} x2={40} y2={92} color={FEED_COLOR} />
+      <Label x={20} y={78} anchor="middle">feeder</Label>
+      <Arrow x1={20} y1={66} x2={20} y2={82} color={FEED_COLOR} />
+      <Label x={20} y={60} anchor="middle">wet feed</Label>
+      {/* the duct bends into a cyclone: dry solid and humid gas leave together */}
+      <Duct d="M49,22 L49,12 L112,12 L112,40 L118,40" color={VAPOUR_COLOR} />
+      <Cyclone x={118} y={32} w={30} h={18} ch={28} />
+      <Arrow x1={133} y1={32} x2={133} y2={18} color={VAPOUR_COLOR} />
+      <Label x={140} y={16}>exhaust gas</Label>
+      <Arrow x1={133} y1={80} x2={133} y2={100} color={PRODUCT_COLOR} />
+      <Label x={133} y={112} anchor="middle">dry product</Label>
+      <Label x={133} y={70} anchor="middle">cyclone</Label>
+      <Label x={64} y={62}>drying</Label>
+      <Label x={64} y={72}>duct</Label>
+    </g>
+  );
+}
+
+/** Agitated vacuum dryer, C508: a closed vessel with a heated jacket (the heated surface is the
+ *  colour of hot gas, the code's "hot gas or heated surface"), a stirrer, a vapour line through a
+ *  dust filter to a cold condenser (teal) and a vacuum pump.  Read from Perry p. 12-46/47 (jacket,
+ *  vacuum, condenser, dust filter on the vapour line) and van 't Land Fig. 3.10.  ORIGINAL. */
+function AgitatedVacuum(): JSX.Element {
+  const bulk: [number, number, string][] = [[34, 76, FEED_COLOR], [46, 84, "#7b7f8e"],
+    [58, 78, PRODUCT_COLOR], [70, 84, FEED_COLOR], [40, 68, PRODUCT_COLOR], [64, 66, "#7b7f8e"],
+    [76, 72, PRODUCT_COLOR], [52, 92, FEED_COLOR]];
+  return (
+    <g data-dryer-part="agitatedVacuum">
+      {/* the jacket is the heated surface */}
+      <path d="M20,34 L20,86 L46,114 L64,114 L90,86 L90,34" fill="none" stroke={GAS_COLOR}
+        strokeWidth={2.6} strokeLinejoin="round" />
+      <path d="M26,30 L84,30 L84,84 L61,108 L49,108 L26,84 Z" {...body} />
+      {bulk.map(([x, y, c], i) => <circle key={i} cx={x} cy={y} r={2} fill={c} />)}
+      {/* the stirrer: a shaft with its drive, and two blades */}
+      <rect x={48} y={4} width={14} height={9} {...body} />
+      <line x1={55} y1={13} x2={55} y2={100} stroke={INK} strokeWidth={2} />
+      <path d="M55,96 L36,72 M55,86 L76,60" fill="none" stroke={INK} strokeWidth={2} />
+      <Label x={55} y={140} anchor="middle">jacket</Label>
+      <Label x={55} y={150} anchor="middle">(steam or hot water)</Label>
+      <Arrow x1={4} y1={36} x2={26} y2={40} color={FEED_COLOR} />
+      <Label x={4} y={28}>charge</Label>
+      <Arrow x1={55} y1={116} x2={55} y2={130} color={PRODUCT_COLOR} />
+      <Label x={62} y={128}>discharge</Label>
+      {/* the vapour line: dust filter, a cold condenser, the vacuum pump */}
+      <Duct d="M78,30 L78,20 L108,20 L108,40" color={VAPOUR_COLOR} />
+      <rect x={88} y={15} width={10} height={10} {...body} />
+      <Label x={93} y={10} anchor="middle">dust filter</Label>
+      <rect x={96} y={40} width={34} height={46} rx={3} {...body} />
+      <path d="M102,48 L124,54 L102,60 L124,66 L102,72 L124,78" fill="none" stroke={COLD_COLOR}
+        strokeWidth={1.6} />
+      <Label x={113} y={98} anchor="middle">condenser</Label>
+      <Arrow x1={113} y1={86} x2={113} y2={104} color={COLD_COLOR} />
+      <Label x={113} y={114} anchor="middle">solvent</Label>
+      <line x1={130} y1={62} x2={158} y2={62} stroke={VAPOUR_COLOR} strokeWidth={2.4} />
+      <circle cx={168} cy={62} r={9} {...body} />
+      <Label x={168} y={84} anchor="middle">vacuum</Label>
+      <Label x={168} y={94} anchor="middle">pump</Label>
+    </g>
+  );
+}
+
 const DRAWINGS: Readonly<Record<DryerId, () => JSX.Element>> = {
   spray: Spray, rotary: Rotary, fluidBed: FluidBed, tray: Tray, belt: Belt, drum: Drum, freeze: Freeze,
+  flash: Flash, agitatedVacuum: AgitatedVacuum,
 };
 
 export function DryerDrawing({ id, label }: { id: DryerId; label: string }): JSX.Element {
