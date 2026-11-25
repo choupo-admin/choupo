@@ -5754,6 +5754,8 @@ accepts today, and that is a policy call.
 > diagnosis, the choice, the limits); a diagnosis is a chapter of its family, never a new tool.  No big-bang merge: the
 > drying family is the pilot (choose, curve, diagnose, chart), old links alias.  No new EduTool until Vitor has read the
 > skeleton and seen the pilot.
+> FIRST WORK OF SATURDAY 28 NOVEMBER, WITH HIM: the architecture once and for all, and the NAME is open too (Vitor,
+> 2026-11-25: "simples que funciona muito bem e que depois possa escalar sem remendos").
 
 > **C534. PSYCHROMETRIC CHARTS: ONE HOME, THREE DOORS (Vitor, 2026-11-25, for Saturday 28 November).**  The chart
 > stays in its EduTool; the Explorer gets a card (a gas and a vapour) that opens it with the pair filled; Find answers
