@@ -503,6 +503,15 @@ shells), the two ammonia tanks, the control room and the electrical
 substation have DECLARED boxes, because their sizers publish no diameter
 and length — the engine will not invent one.
 
+**Can each exchanger's tube bundle be pulled? (C507.)**  The `serviceClearance`
+block declares the extra beyond each sheet's `tubeLength` (6.096 m on all six
+exchangers; the 1.5 m extra is an author-set assumption, not a standard's) and
+the channel end of each.  The water cooler's bundle needs 7.6 m in line: it had
+5.45 m toward the feed-effluent exchanger and 3.9 m toward the chiller, so the
+FEHE stands 2.2 m further west (x = 37.8 m) and the water cooler is pulled that
+way, 7.65 m clear.  Before and after plans and 3D schematics:
+[`docs/audits/2026-11-25-c507/`](../../../docs/audits/2026-11-25-c507/).
+
 **Redraw it** with `bin/choupo-layout --draft --force .` from the case
 directory: it lines the sized items up in flow order again and keeps the
 separation table, wind, boxes, non-process items and zones. **See it** in
