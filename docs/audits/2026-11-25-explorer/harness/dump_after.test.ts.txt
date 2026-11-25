@@ -1,0 +1,122 @@
+import { it } from "vitest";
+import { writeFileSync, mkdirSync, appendFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { CATALOGUE, metaByName } from "../src/case/catalogue.js";
+import { synthesizeExploreCase, type ExploreSpec } from "../src/case/exploreSynth.js";
+import { binaryVleSpec, binaryPxySpec } from "../src/case/methodFeeds.js";
+import { envelopePlan } from "../src/case/phaseEnvelopeLens.js";
+import { phaseSplitPlan } from "../src/case/phaseSplitScan.js";
+import { classifySelection } from "../src/case/exploreViews.js";
+import { serialiseCase } from "../src/adapters/WasmAdapter.js";
+import { scanPropertyKeys } from "../src/case/scanProperties.js";
+import type { CaseFiles } from "../src/case/types.js";
+import { hasPair } from "../src/case/pairsCatalogue.js";
+import { activityVerdict, eosVerdict, transportVerdict, type ApplicabilityCtx } from "../src/case/modelApplicability.js";
+import { appendFileSync as app } from "node:fs";
+
+const OUT = homedir() + "/.cache/choupo/expl/after_";
+const CTX: ApplicabilityCtx = { metaOf: (c) => metaByName(c, CATALOGUE), hasUnifac: (c) => metaByName(c, CATALOGUE)?.hasUnifac ?? false, hasPair };
+const skip = (id: string, op: string, model: string, comps: string[], why: string) => app(OUT + "disabled.tsv", [id, op, model, comps.join(","), why].join("\t") + "\n");
+let seed = 12345;
+const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+function emit(file: string, id: string, op: string, model: string, comps: string[], f: CaseFiles) {
+  appendFileSync(OUT + file, JSON.stringify({ id, op, model, comps, files: serialiseCase(f) }) + "\n");
+}
+const ACT = ["ideal", "NRTL", "Wilson", "UNIFAC"];
+const EOSS = ["idealGas", "SRK", "PR"];
+
+it("dump", () => {
+  mkdirSync(OUT, { recursive: true });
+  for (const f of ["singles.jsonl", "pairs_txy.jsonl", "pairs_other.jsonl", "disabled.tsv"]) writeFileSync(OUT + f, "");
+  const all = CATALOGUE.filter((m) => m.origin === "standard" || !m.origin);
+  writeFileSync(OUT + "components.json", JSON.stringify(all.map((m) => ({ name: m.name, vleAble: m.vleAble, hasUnifac: m.hasUnifac, kind: m.kind, isElectrolyte: m.isElectrolyte }))));
+  const scanProps: { p: string; eos?: boolean; tr?: ExploreSpec["transport"] }[] = [
+    { p: "Psat" }, { p: "Cp_liquid" },
+    { p: "Z", eos: true }, { p: "v_molar", eos: true }, { p: "Cp_ig" }, { p: "H_real", eos: true }, { p: "S_real", eos: true },
+    { p: "viscosity_liquid", tr: { liquidViscosity: "chemsepEq101" } }, { p: "viscosity_liquid", tr: { liquidViscosity: "Andrade" } }, { p: "viscosity_liquid", tr: { liquidViscosity: "Vogel" } },
+    { p: "viscosity_gas", tr: { model: "Chung" } },
+    { p: "thermal_conductivity_liquid", tr: { liquidConductivity: "SatoRiedel" } },
+    { p: "thermal_conductivity_liquid", tr: { liquidConductivity: "chemsepEq16" } },
+    { p: "thermal_conductivity", tr: { model: "Chung", thermalConductivity: "Eucken" } },
+  ];
+  for (const m of all) {
+    const c = m.name;
+    for (const sp of scanProps) {
+      const eoss = sp.eos ? EOSS : ["-"];
+      for (const e of eoss) {
+        const keys = scanPropertyKeys(sp.p, [c], CATALOGUE).keys;
+        if (keys.length === 0) continue;
+        const tm = sp.tr?.liquidViscosity ?? sp.tr?.liquidConductivity;
+        const v = sp.eos ? eosVerdict(e, [c], CTX) : tm ? transportVerdict(sp.p, tm, [c], CTX) : { ok: true };
+        if (!v.ok) { skip(`s_${c}_${sp.p}_${tm ?? e}`, "scan:" + sp.p, tm ?? e, [c], v.reason!); continue; }
+        const spec: ExploreSpec = {
+          components: [c], properties: keys, axis: { variable: "T", from: 290, to: 380, n: 5 },
+          state: { P: 101325, composition: { [c]: 1 } }, mode: "pure",
+          activityModel: { model: "ideal" },
+          ...(sp.eos ? { equationOfState: { model: e } } : {}),
+          ...(sp.tr ? { transport: sp.tr } : {}),
+        };
+        const model = sp.tr ? JSON.stringify(sp.tr) : e;
+        emit("singles.jsonl", `s_${c}_${sp.p}_${model.replace(/\W/g, "")}`, "scan:" + sp.p, model, [c], synthesizeExploreCase(spec));
+      }
+    }
+    emit("singles.jsonl", `s_${c}_phase`, "phaseDiagram", "AmbroseWalton", [c], synthesizeExploreCase({
+      components: [c], properties: [], axis: { variable: "T", from: 0, to: 1, n: 2 }, state: { composition: { [c]: 1 } },
+      phaseDiagram: { grid: 20 },
+      componentFiles: { [`constant/components/${c}.dat`]: `name ${c};\noverlayOf ${c};\nvariationReason "Explorer P-T diagram: vapour pressure from Ambrose-Walton corresponding states";\nvaporPressure { model AmbroseWalton; }\n` } }));
+  }
+  const elig = all.filter((m) => m.vleAble && !m.isElectrolyte);
+  const names = elig.map((m) => m.name);
+  const pairs: [string, string][] = [];
+  const key = (a: string, b: string) => a < b ? a + "|" + b : b + "|" + a;
+  const set = new Set<string>();
+  for (const a of names) for (let k = 0; k < 3; k++) {
+    let b = names[Math.floor(rnd() * names.length)]!; let tries = 0;
+    while ((b === a || set.has(key(a, b))) && tries++ < 50) b = names[Math.floor(rnd() * names.length)]!;
+    if (b === a || set.has(key(a, b))) continue;
+    set.add(key(a, b)); pairs.push([a, b]);
+  }
+  const extra = ["water", "ethanol", "tertButylbenzene", "toluene"];
+  for (const a of extra) for (let k = 0; k < 40; k++) {
+    const b = names[Math.floor(rnd() * names.length)]!; if (a === b || set.has(key(a, b))) continue; set.add(key(a, b)); pairs.push([a, b]);
+  }
+  while (pairs.length < 2000) {
+    const a = names[Math.floor(rnd() * names.length)]!, b = names[Math.floor(rnd() * names.length)]!;
+    if (a === b || set.has(key(a, b))) continue; set.add(key(a, b)); pairs.push([a, b]);
+  }
+  writeFileSync(OUT + "pairs.json", JSON.stringify(pairs));
+  const lu = {};
+  pairs.forEach(([a, b], i) => {
+    const cls = classifySelection([a, b], CATALOGUE);
+    if (cls !== "aqueous-organic" && cls !== "organic-mixture") return;
+    for (const act of ACT) for (const eos of EOSS) {
+      const va = activityVerdict(act, [a, b], CTX), ve = eosVerdict(eos, [a, b], CTX);
+      if (!va.ok || !ve.ok) { skip(`p${i}_txy_${act}_${eos}`, "txy", `${act}+${eos}`, [a, b], (va.reason ?? ve.reason)!); continue; }
+      const s = binaryVleSpec({ pair: [a, b], catalogue: CATALOGUE, kind: "txy", activity: act, eos, P: 101325, n: 5, localUnifac: lu });
+      emit("pairs_txy.jsonl", `p${i}_txy_${act}_${eos}`, "txy", `${act}+${eos}`, [a, b], synthesizeExploreCase(s));
+    }
+    if (i % 5 !== 0) return;
+    for (const act of ACT) {
+      const va = activityVerdict(act, [a, b], CTX);
+      if (!va.ok) { skip(`p${i}_other_${act}`, "gamma|pxy|envelope|phaseSplit", act, [a, b], va.reason!); continue; }
+      const g = binaryVleSpec({ pair: [a, b], catalogue: CATALOGUE, kind: "gamma", activity: act, eos: "idealGas", P: 101325, n: 5, localUnifac: lu });
+      emit("pairs_other.jsonl", `p${i}_gamma_${act}`, "gamma", act, [a, b], synthesizeExploreCase(g));
+      const px = binaryPxySpec({ pair: [a, b], catalogue: CATALOGUE, activity: act, eos: eosVerdict("PR", [a, b], CTX).ok ? "PR" : "idealGas", T: 330, n: 5, localUnifac: lu });
+      emit("pairs_other.jsonl", `p${i}_pxy_${act}`, "pxy", act + "+PR", [a, b], synthesizeExploreCase(px));
+      for (const eos of ["PR", "SRK"]) {
+        const ve = eosVerdict(eos, [a, b], CTX);
+        if (!ve.ok) { skip(`p${i}_env_${act}_${eos}`, "envelope", `${act}+${eos}`, [a, b], ve.reason!); continue; }
+        const e = envelopePlan({ components: [a, b], amounts: { [a]: 1, [b]: 1 }, eos, activity: act, Pfrom: 1e5, Pto: 8e5, n: 5 });
+        if (e.files) emit("pairs_other.jsonl", `p${i}_env_${act}_${eos}`, "envelope", `${act}+${eos}`, [a, b], e.files);
+      }
+      const ps = phaseSplitPlan({ components: [a, b], amounts: { [a]: 1, [b]: 1 }, variable: "T", held: 101325, from: 300, to: 360, n: 4, phaseSet: "VL", thermo: { source: "synth", activityModel: act, solids: [] } });
+      if (ps.files) emit("pairs_other.jsonl", `p${i}_psplit_${act}`, "phaseSplit", act, [a, b], ps.files);
+    }
+    const unif = [a, b].every((c) => metaByName(c, CATALOGUE)?.hasUnifac);
+    if (unif) {
+      emit("pairs_other.jsonl", `p${i}_blle`, "binaryLle", "UNIFAC", [a, b], synthesizeExploreCase({
+        components: [a, b], properties: [], axis: { variable: "x", from: 0, to: 1, n: 2 }, state: { T: 298.15, P: 101325, composition: { [a]: 0.5, [b]: 0.5 } },
+        binaryLle: { n: 11 } }));
+    }
+  });
+});
