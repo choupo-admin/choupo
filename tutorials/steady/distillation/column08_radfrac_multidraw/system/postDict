@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column08_radfrac_multidraw -- the view the lesson opens on (DEV.md 4c C477).
+
+  The lesson: two feeds and two liquid side draws turn one column into a
+  four-way split (C3 at the top, C4 and C5 drawn on the way, C6 at the bottom);
+  each draw sits where its component peaks.
+
+  The plot: the liquid composition of the four components stage by stage, with
+  the two feed stages (10, 20) and the two side-draw stages (13, 23) marked on
+  the curves.
+
+  This declares how the run is DRAWN, over what the column already publishes;
+  it computes nothing and changes no number.  Grammar: docs/design/a-post-
+  processing-dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Four components stage by stage: each side draw sits at its component's peak";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale linear; }
+        note    "Read it: propane falls from the condenser end, n-hexane rises to the reboiler, and n-butane and n-pentane each rise to a maximum in between. The side draw at stage 13 sits on n-butane's peak and the one at stage 23 near n-pentane's, which is why those cuts come out 89 % and 74 % pure. Markers: the two feeds (stages 10 and 20, on propane) and the two draws (stages 13 and 23, on the curve of the component drawn).";
+        series
+        (
+            { name propane;  label "propane";   unitOp radfrac; table profile; x stage; y x_propane;  style lines; }
+            { name nButane;  label "n-butane";  unitOp radfrac; table profile; x stage; y x_nButane;  style lines; }
+            { name nPentane; label "n-pentane"; unitOp radfrac; table profile; x stage; y x_nPentane; style lines; }
+            { name nHexane;  label "n-hexane";  unitOp radfrac; table profile; x stage; y x_nHexane;  style lines; }
+            { name feed1;    label "feed 1 (stage 10)";        unitOp radfrac; table profile; select { stage 10; } x stage; y x_propane; style markers; }
+            { name feed2;    label "feed 2 (stage 20)";        unitOp radfrac; table profile; select { stage 20; } x stage; y x_nHexane; style markers; }
+            { name drawC4;   label "side draw n-butane (13)";  unitOp radfrac; table profile; select { stage 13; } x stage; y x_nButane; style markers; }
+            { name drawC5;   label "side draw n-pentane (23)"; unitOp radfrac; table profile; select { stage 23; } x stage; y x_nPentane; style markers; }
+        );
+    }
+);

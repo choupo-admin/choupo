@@ -3362,6 +3362,33 @@ Nelder--Mead does well on both toys (two variables, an adequate penalty
 weight), which the page says is a property of the toys; and the quiz asks what
 an engineer should conclude from the theorem.
 
+\subsubsection*{The Bayesian section (steps 7 to 12)}
+
+After the decision card the page carries a section on Bayesian optimisation,
+the method one reaches for when a single simulation is the expensive thing.
+It is a one-variable teaching sketch run in the browser, not the engine: a
+Gaussian-process model with the squared-exponential kernel, conditioned on the
+calls made so far (Rasmussen and Williams, Algorithm~2.1 and
+eqs.~(2.25)--(2.26)), and the expected improvement of Jones, Schonlau and Welch
+(eqs.~(14)--(15)), which says where the next call is most likely to pay.  A
+workbench takes one call at a time on a smooth setting and on a narrow-dip
+setting, with sliders for the length scale and the noise, and counts the calls
+of the method against a finite-difference gradient sketch at an equal budget,
+turned into wall time at 1~ms, 1~min or 1~h per call.  The narrow dip is the
+honest failure: a length scale longer than the dip makes the model confident
+between its points and the dip is never sampled.  The engine side is one
+sentence, the measured result: an opt-in Bayesian method was built and compared
+with \code{sqp} under a rule written before the runs
+(the C499 protocol); on the cheap problem it
+reached 1\,\% of the best value in a median of 15 simulations against 25, on
+the expensive one (the reactive MTBE column) in 23 against 22, so by the rule
+it is not offered.  The section's limits and four quiz questions join the
+page's own, and its four sources (Rasmussen and Williams 2006; Jones et~al.
+1998; Shahriari et~al. 2016; Nocedal and Wright 2006) are in the page's list.
+The page's tests are \code{gui/tests/bayesOpt.test.ts}: hand-computed
+Gaussian-process and expected-improvement values, the shrinking band, the loop
+and the dip failure.
+
 \subsubsection*{What the page is held to}
 
 A test (\code{gui/tests/optimizers.test.ts}) recomputes the exact optimum
