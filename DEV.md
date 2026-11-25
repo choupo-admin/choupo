@@ -5740,6 +5740,20 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **C532. THE LAWS OF EVERY RUN (Vitor, 2026-11-25: "Cada operação, setor e processo global devia gerar isso em cada corrida
+> e lançar alarmes em caso de falha grosseira").**  The laws live in the engine, once per unit kind, never in a folder a
+> case can edit; the CASE holds only its declared specifications; what each run writes into the case is the VERDICT, per
+> unit, per sector and for the plant, recomputed from the published streams: closures, no outlet beyond the temperature of
+> what heats or cools it, phase availability, second law, the declared specification met, per-segment energy.  Gross failure
+> = the run does not converge; the rest is an alarm.  FIRST the 22 shipped units the second-law ledger flags (C491) are
+> separated one by one; waits for C531's class table.
+
+> **C531. EXTERNAL REVIEW 5 (Vitor, 2026-11-25).**  PhaseChanger (geometry) lets a phase run out: an outlet colder than its
+> coolant, a vapour hotter than its heating, at exit 0; HeatExchanger's two-phase profile is an interpolation that does not
+> conserve energy locally.  The robustness run of the same day moved feeds only and judged numbers one by one: it could
+> not see this, and said so.  A thermal-feasibility proof (utility limits, phase availability, per-segment energy, second
+> law from independent properties) with a geometry sweep is the remedy.
+
 > **C529, C530 (Vitor, 2026-11-25).**  C529: EXTERNAL REVIEW 4 -- EvaporativeDryer prices the first solid only (order moves
 > T_out 19 K), CoolingTower sees the majority gas only, an infeasible `maxExhaustHumidity` is accepted; the idiom (first or
 > largest component by index, bisection without a bracket) is searched in every unit; synthetic two-solid and two-gas
