@@ -58,16 +58,19 @@ export type { LessonStep };
 export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
   {
     n: 1,
-    title: "Seven types do most of the drying, and they differ in how heat reaches the product",
+    title: "Nine types do most of the drying, and they differ in how heat reaches the product",
     body: "Hundreds of dryers are sold, but a handful of types account for most of what a "
       + "chemical or food plant meets: the spray dryer, the direct-heat rotary dryer, the "
-      + "fluidised-bed dryer, the tray dryer, the belt (band) dryer, the drum dryer and the "
-      + "freeze dryer.  Mujumdar sorts dryers by three things: how heat is supplied "
+      + "fluidised-bed dryer, the tray dryer, the belt (band) dryer, the drum dryer, the "
+      + "freeze dryer, the flash (pneumatic-conveying) dryer and the agitated vacuum dryer "
+      + "(the conical, double-cone or pan dryer).  Mujumdar sorts dryers by three things: how heat is supplied "
       + "(convection, conduction or radiation), the temperature and pressure of operation, and "
       + "how the material is handled inside (Mujumdar 2006, section 1.5, p.21).  In a convective "
       + "(direct) dryer hot gas touches the product and carries the vapour away: spray, rotary, "
-      + "fluidised bed and belt.  In a conduction (indirect) dryer a heated wall touches it: the "
-      + "drum, and the heated-shelf tray; the thermal efficiency of conduction dryers tends to be "
+      + "fluidised bed, belt and flash, which carries the solid up a duct in the gas "
+      + "(Perry p.12-67).  In a conduction (indirect) dryer a heated wall touches it: the "
+      + "drum, the heated-shelf tray and the jacket of an agitated vacuum dryer, whose "
+      + "contents are stirred or tumbled under vacuum (Perry p.12-46); the thermal efficiency of conduction dryers tends to be "
       + "higher because the hot gas of a convective dryer carries away a large enthalpy "
       + "(Mujumdar p.22).  The freeze dryer is a special case: the water leaves as ice sublimes "
       + "under vacuum, below the triple point (Mujumdar p.22).  The page draws each type as a "
@@ -85,7 +88,9 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
     title: "The form of the feed is asked first",
     body: "A dryer must be able to take the feed as it arrives.  Mujumdar's Table 1.1 (p.21) "
       + "ticks, for each dryer, the feed forms it handles: the spray dryer and the drum dryer "
-      + "take liquids (solution, slurry, paste) and nothing else; the belt dryer takes "
+      + "take liquids (solution, slurry, paste) and nothing else; the flash dryer takes cakes, "
+      + "powders, granules and fibres, never a liquid (Perry admits a slurry only with dry "
+      + "product mixed back); the belt dryer takes "
       + "granules, pellets, fragile crystals, fibres and formed solids; the rotary and the "
       + "fluidised-bed dryers take cakes, powders, granules and pellets, and the fluidised bed "
       + "also solutions and slurries in the table; the tray dryer takes almost every solid "
@@ -95,7 +100,7 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "if it can be pre-formed; a fluidised bed takes a liquid only as a granulator with an "
       + "inert bed or with dry solid mixed back.  For liquid feeds the choice is normally "
       + "limited to a spray dryer, a drum dryer or an agitated batch vacuum dryer "
-      + "(Mujumdar p.24).  A sheet or a web (paper, film, fabric) is none of the seven: it is "
+      + "(Mujumdar p.24).  A sheet or a web (paper, film, fabric) is none of the nine: it is "
       + "dried on cylinders or by impinging gas (Perry p.12-34; Mujumdar Table 1.3, p.23).",
     note: "A tick in Table 1.1 means the type is used for that form, not that it is the "
       + "best; Perry's conditions are where the real decisions are.",
@@ -105,8 +110,9 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
     title: "Heat sensitivity: how long, how hot, and in which direction",
     body: "A product is hurt by temperature and by time, and the types differ greatly in both.  "
       + "Mujumdar's Table 1.2 (p.21) gives the typical residence time: 10 to 30 s in a spray "
-      + "dryer and in a drum dryer, 10 to 60 min in a fluidised bed, a rotary dryer and a belt "
-      + "dryer, 1 to 6 h in a batch tray dryer; van 't Land gives 10 to 20 h for a 1 cm layer of "
+      + "dryer and in a drum dryer, 0 to 10 s in a flash dryer, 10 to 60 min in a fluidised bed, a "
+      + "rotary dryer and a belt dryer, 1 to 6 h in a batch tray dryer, and Towler gives 3 to 12 h "
+      + "for the cycle of a double-cone vacuum dryer (his Table 10.7 prints it '3.12 h'); van 't Land gives 10 to 20 h for a 1 cm layer of "
       + "a simple material in a freeze dryer (p.236).  While the surface is wet the solid sits "
       + "at the wet-bulb temperature of the gas, and only in the falling-rate period does it "
       + "approach the gas's dry-bulb temperature (Mujumdar p.21-22), a fact the book asks "
@@ -148,19 +154,19 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "continuous equipment (Perry p.12-38), which is why pharmaceutical plants use it; "
       + "pharmaceutical freeze drying is usually batchwise for the same reason, good "
       + "manufacturing practice (van 't Land p.232).  The mode also limits the choice of type: "
-      + "among the seven, the spray, rotary, belt and drum dryers are continuous, the tray "
-      + "dryer is batch, the freeze dryer is batch for pharmaceuticals, and the fluidised-bed "
-      + "dryer comes in both.",
+      + "among the nine, the spray, rotary, belt, drum and flash dryers are continuous, the tray "
+      + "and agitated vacuum dryers are batch, the freeze dryer is batch for pharmaceuticals, "
+      + "and the fluidised-bed dryer comes in both.",
   },
   {
     n: 5,
     title: "What the energy column costs",
     body: "Mujumdar's Table 1.4 (p.26) lists, for the dryers it prices, a typical energy "
       + "consumption in kJ per kg of water evaporated: 3,200 to 6,500 for a drum dryer, "
-      + "4,000 to 6,000 for a fluidised bed and for a belt dryer, 4,600 to 9,200 for a rotary "
-      + "dryer and 4,500 to 11,500 for a spray dryer; the figures are approximate and are "
+      + "4,000 to 6,000 for a fluidised bed and for a belt dryer, 4,500 to 9,000 for a flash "
+      + "dryer, 4,600 to 9,200 for a rotary dryer and 4,500 to 11,500 for a spray dryer; the figures are approximate and are "
       + "current practice, not the limit of the art.  The book gives none for a batch tray "
-      + "dryer or a freeze dryer, and the page leaves them blank.  Evaporating a kilogram of "
+      + "dryer, a freeze dryer or an agitated vacuum dryer, and the page leaves them blank.  Evaporating a kilogram of "
       + "water at 100 degC needs 2257 kJ (Perry's Example 12-19, p.12-71), so the ratio of "
       + "that heat to the table's energy is the share of the energy that does the evaporating: "
       + "at 4,500 kJ/kg a spray dryer sends about half of it into the vapour, at 11,500 about a "
@@ -209,9 +215,14 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "Towler's Table 10.7 (printed p.571) lists some twenty specific dryers with whether "
       + "they are jacketed, suit heat-sensitive materials or vacuum service, their retention "
       + "or cycle time, heat-transfer method, capacity and typical evaporation capacity; it "
-      + "is where the tray (0.15 to 1.0 kg/(h m2) of heat-transfer area, cabinet type) and "
-      + "the belt (1.5 to 35 kg/(h m3), tunnel belt type) get a number the other books do not "
-      + "give.  Before choosing, Mujumdar's Table 1.6 (p.28) is the checklist vendors use to "
+      + "is where the tray (0.15 to 1.0 kg/(h m2) of heat-transfer area, cabinet type), "
+      + "the belt (1.5 to 35 kg/(h m3), tunnel belt type) and the double-cone vacuum dryer (0.5 "
+      + "to 12 kg/(h m2)) get a number the other books do not give.  For the tray, Perry's "
+      + "performance data (p.12-39) give an overall 0.0025 to 0.025 kg of water per second per "
+      + "m2 of tray area, which is 9 to 90 kg/(h m2): sixty to ninety times Towler's figure.  The lower "
+      + "ends agree if Towler's unit is read per minute (0.0025 kg/s is 0.15 kg/min), so the "
+      + "printed unit looks like the error, but that is a reading, not a proof, and the page "
+      + "keeps both.  Before choosing, Mujumdar's Table 1.6 (p.28) is the checklist vendors use to "
       + "select and quote a dryer, to be read with van 't Land's list of the data to assess "
       + "(Table 3.1) and of the criteria for judging the dried product (Table 3.2), both on "
       + "p.22.  Last, the drum dryer is the one place where two books give different "
@@ -231,15 +242,20 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
     n: 7,
     title: "Which of these the engine models",
     body: "Choupo models some of this equipment, and each model has a tutorial case that the "
-      + "page opens in a new tab.  The spray dryer is the engine's sprayDryer unit, and its "
+      + "page opens in a new tab.  The flash dryer is limited as the engine's evaporativeDryer "
+      + "is: free surface water on a non-sorbing solid, evaporated into a hot gas until it is "
+      + "gone, the exhaust saturates or the gas runs out of heat; that unit carries no residence "
+      + "time, so it cannot say whether a few seconds are enough, and the drying duct is the "
+      + "pneumaticConveyor unit, which dries nothing.  No unit of the engine stands "
+      + "near the agitated vacuum dryer (the batchDryer is a tray in air, not a jacketed vessel under vacuum).  The spray dryer is the engine's sprayDryer unit, and its "
       + "case dries a sugar solution.  The fluidised-bed type is nearest to the engine's "
       + "solidDryer, a powder dried toward the moisture set by the hot air and its sorption "
       + "isotherm; it has no fluidisation or bed height.  The continuous convective dryers "
       + "(co-current or counter-current over a contact area, as in a rotary dryer) are "
       + "nearest to the convectiveDryer unit, which has no shell, flights or belt.  The "
       + "batch tray dryer is the engine's batchDryer, one tray of wet sucrose in declared "
-      + "air.  The drum dryer, the belt dryer's geometry and the freeze dryer have no model, "
-      + "and the page does not pretend otherwise: those rows have no case.",
+      + "air.  The drum dryer, the belt dryer's geometry, the agitated vacuum dryer and the freeze "
+      + "dryer have no model, and the page does not pretend otherwise: those rows have no case.",
   },
   {
     n: 8,
@@ -405,11 +421,15 @@ Y = Y_\mathrm{ex} - \frac{S\,(X_\mathrm{in}-X)}{G} \quad \text{(counter-current)
 export const DRYER_SELECTION_LIMITS: readonly LessonLimit[] = [
   {
     id: "seven",
-    title: "Seven types, not all dryers",
-    body: "The page does not cover flash and pneumatic dryers, paddle and other agitated contact "
-      + "dryers, plate and turbo-tray dryers, steam dryers, infrared or microwave dryers, "
-      + "or the dryers of sheets and webs.  A rule whose answer is one of those names it as "
-      + "'outside the seven' and says where the book describes it.",
+    title: "Nine types, not all dryers",
+    body: "The page does not cover paddle and other continuous agitated contact dryers, plate "
+      + "and turbo-tray dryers, steam dryers, infrared or microwave dryers, or the dryers of "
+      + "sheets and webs.  A rule whose answer is one of those names it as 'outside the nine' "
+      + "and says where the book describes it.  The two types added last, the flash and the "
+      + "agitated vacuum dryer, are picks only where a book's rule names them: the flash dryer "
+      + "when you say a test shows the drying over in about 10 s, or for a paste mixed back "
+      + "with dry product; the agitated vacuum dryer for a batch of liquid or paste, or of a "
+      + "granular solid at 30 degC or a fine, flammable one.",
   },
   {
     id: "rules",
@@ -477,7 +497,7 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
       "A spray dryer",
       "A drum dryer",
       "A rotary or a fluidised-bed dryer",
-      "None of the seven",
+      "None of the nine",
     ],
     correct: 2,
     feedback: "Mujumdar's Table 1.1 ticks the rotary and the fluidised-bed dryers for cakes, "
