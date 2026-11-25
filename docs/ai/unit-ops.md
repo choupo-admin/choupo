@@ -3322,6 +3322,22 @@ standing on the chord below the lowest measured rate); `viscosity` is the effect
 `pipe05_herschelbulkley_clay_slurry` (Example 3.3).
 
 
+**A GAS LINE (C506; Theory Guide `sec:pipe-gasline`).**  An ALL-VAPOUR inlet (`V/F = 1`; a feed that
+declares `phase gas;` is not flashed) takes the steady, horizontal, constant-area, ISOTHERMAL compressible
+equation instead of the old refusal: with `c = P1/rho1` (= `Z R T / M`, `Z` held at its inlet value, from the
+package's vapour density), `G = mdot/A` and ONE Darcy `f` (Re = `G D / mu` is the same at every section: the gas
+viscosity depends on T only),
+`P1^2 - P2^2 = c G^2 [ f L/D + sum K + 2 ln(P1/P2) ]`, solved for `P2` by a bracketed Newton.  The run prints the
+exact `P_out`, the MEAN-DENSITY shortcut `P2^2 = P1^2 - c G^2 (f L/D + sum K)` beside it and the difference, the
+isothermal Mach numbers, the choking pressure `G sqrt(c)` (where `dP/dL -> infinity`) and `L_max`.  Needs a gas
+viscosity: `transport { vapour { viscosity { model Chung; } } }`.  REFUSED by name: a choked inlet
+(`P_in <= G sqrt(c)`), a line longer than `L_max` (it prints `L_max`), `dz != 0`, no gas viscosity.  A drop above
+40 % of `P_in` raises a `validity` advisory.  **Adiabatic and Joule-Thomson effects are NOT modelled.**  A liquid
+and a two-phase inlet keep their paths byte-identical.  Extra KPIs: `gasLine` (1), `massFlux`, `compressibilityZ`,
+`velocity_out`, `P_choke`, `L_max`, `machIsothermal_in`, `machIsothermal_out`, `P_out_meanDensity`,
+`deltaP_meanDensity`, `meanDensityError_P_out`.  Witness: `tutorials/steady/hydraulics/pipe09_isothermal_gas_line`;
+independent hand computation `bin/curate/gasline_reference.py`.
+
 **Gas-liquid two-phase flow (Layer 1).**  When the feed flashes two-phase at
 `(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves;
 a feed that DECLARES a single phase, `phase liquid;` / `phase gas;`, is not

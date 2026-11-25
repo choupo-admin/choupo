@@ -178,42 +178,22 @@ int Pipe::solve(const DictPtr& dict,
         const scalar VF = (fs.converged && std::isfinite(fs.V_over_F))
             ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
 
-        //  AN ALL-VAPOUR INLET IS REFUSED BY NAME (DEV.md C35 item 8, Vitor
-        //  2026-10-05).  The single-phase path below is INCOMPRESSIBLE and
-        //  LIQUID: it prices the line with the package's liquid density and
-        //  liquid viscosity.  A gas falling through it -- an RR V/F of 1, or
-        //  a supercritical root discarded to the single fluid phase -- got a
-        //  liquid Delta-P at exit 0 (found C34, DEV.md §5).  No compressible
-        //  model exists, so the honest answer is a refusal, not a number.  A
-        //  TWO-PHASE inlet is NOT refused: it has its own correlations just
-        //  above (homogeneous / Lockhart-Martinelli / Friedel / Beggs-Brill)
-        //  and its witness, pipe02_airwater_twophase.
+        //  AN ALL-VAPOUR INLET IS A GAS LINE (C506).  Until then it was
+        //  REFUSED BY NAME (DEV.md C35 item 8, Vitor 2026-10-05): the
+        //  single-phase path below is INCOMPRESSIBLE and LIQUID, and a gas
+        //  priced through it -- an RR V/F of 1, or a supercritical root
+        //  discarded to the single fluid phase -- got a liquid Delta-P at exit 0
+        //  (found C34, DEV.md section 5).  The gas now has its own equation and
+        //  never reaches the liquid arithmetic.  A TWO-PHASE inlet has its own
+        //  correlations just above (witness pipe02_airwater_twophase).
         if (fs.converged && VF >= 1.0 - 1.0e-6)
         {
-            //  The composed dict is named after the unit, and the flowsheet
-            //  stamps the inlet's name into `feed {}` for messages exactly
-            //  like this one (UnitInputs.cpp, `streamName`).
-            const std::string unitName = dict->name();
-            const std::string inName   =
-                feedDict->lookupWordOrDefault("streamName", "");
-            std::ostringstream m;
-            m << "Pipe" << (unitName.empty() ? "" : " '" + unitName + "'")
-              << ": inlet stream"
-              << (inName.empty() ? "" : " '" + inName + "'")
-              << " resolves to a vapour fraction V/F = " << VF
-              << " at its own (T = " << T << " K, P = " << Pin << " Pa)"
-              << (fs.regime.empty() ? "" : " [" + fs.regime + "]")
-              << " -- an all-vapour feed.  REFUSED: this pipe has no"
-                 " compressible model; its single-phase path prices the line"
-                 " with a LIQUID density and viscosity, which for a gas is not"
-                 " a pressure drop (a two-phase inlet has its own"
-                 " correlations and runs).  Remedies: (1) if the line is meant"
-                 " to carry a LIQUID, the inlet state is mis-declared --"
-                 " correct its T, P or composition so the stream resolves"
-                 " liquid; (2) a gas line has no model in Choupo until a"
-                 " compressible pipe exists (DEV.md C35 item 8) -- size it"
-                 " outside the flowsheet and say so in the case.";
-            throw std::runtime_error(m.str());
+            //  THE GAS LINE (C506): an all-vapour inlet takes the compressible
+            //  isothermal pipe equation instead of the old refusal.  Its own
+            //  refusals (no gas viscosity, a sloped line, a choked line) are
+            //  by name, inside `solveGasLine`.
+            return solveGasLine(dict, operDict, thermo, verbosity, F, T, Pin, z,
+                                D, L, eps, dz, sumK, fs.regime);
         }
 
         if (VF > 1.0e-6 && VF < 1.0 - 1.0e-6)
@@ -823,6 +803,179 @@ int Pipe::solveNonNewtonian(const rheology::FlowCurve& fc, const DictPtr& dict, 
             kpis_["plugVelocity"] = nonNewtonianPipe::plugVelocity(fc, D, tauW);   // m/s (eq. 3.40)
         }
         return 0;
+}
+
+// =========================================================================
+//  THE COMPRESSIBLE ISOTHERMAL GAS LINE  (C506; Theory Guide, "Isothermal gas line")
+//
+//  Steady, isothermal, horizontal, constant-area flow of a single vapour
+//  phase.  With c = P/rho (= Z R T / M, constant along the line because T is
+//  held and Z is held at its inlet value), mass flux G = mdot / A and the
+//  Darcy friction factor f:
+//
+//      dP/rho + u du + (f/2D) u^2 dL = 0 ,   u = G c / P
+//   => (P1^2 - P2^2) = c G^2 [ f L/D + SUM K + 2 ln(P1/P2) ]       (exact)
+//   => P2^2 = P1^2 - c G^2 [ f L/D + SUM K ]                       (mean density)
+//
+//  The mean-density line is the exact one with the logarithmic (acceleration)
+//  term dropped, i.e. rho taken as the arithmetic mean of the inlet and outlet
+//  densities.  Re = G D / mu is the same at every section (mu depends on T
+//  only), so ONE friction factor serves the whole line.  dP/dL -> infinity at
+//  P = G sqrt(c) (isothermal Mach number u / sqrt(c) = 1): the window.
+// =========================================================================
+int Pipe::solveGasLine(const DictPtr& dict, const DictPtr& operDict, const ThermoPackage& thermo,
+                       int verbosity, scalar F, scalar T, scalar Pin, const sVector& z,
+                       scalar D, scalar L, scalar eps, scalar dz, scalar sumK, const std::string& regimeWords)
+{
+    const std::string unitName = dict->name();
+    const std::string locus = "Pipe" + (unitName.empty() ? std::string() : " '" + unitName + "'");
+    const std::size_t n = thermo.n();
+
+    //  ---- the window, part 1: what the model does not carry ------------------
+    if (std::fabs(dz) > 0.0)
+        throw std::runtime_error(locus + ": gas line REFUSED -- dz = " + std::to_string(dz) + " m.  The gas line is horizontal: the elevation"
+            " head of a gas (rho g dz, with rho varying along the line) is not in the isothermal equation.  Set dz 0, or size the rise"
+            " outside the flowsheet.");
+    if (!thermo.hasTransport())
+        throw std::runtime_error(locus + ": gas line REFUSED -- the inlet is all vapour and the property dictionary has no gas viscosity"
+            " (Re needs it).  Add `transport { vapour { viscosity { model Chung; } } }` (or a `measured` record); a viscosity is never typed in"
+            " the pipe's `operation`.");
+
+    //  ---- properties: the package's vapour density and gas viscosity ---------
+    const scalar rho1 = thermo.density(T, Pin, z, DensityPhase::Vapour);
+    if (!(rho1 > 0.0) || !std::isfinite(rho1))
+        throw std::runtime_error(locus + ": gas line -- non-physical vapour density at the inlet.");
+    const scalar mu = thermo.viscosityGas(T, Pin, z);
+    if (!(mu > 0.0) || !std::isfinite(mu))
+        throw std::runtime_error(locus + ": gas line -- non-physical gas viscosity.");
+
+    scalar MW = 0.0;                                       // kg/kmol
+    for (std::size_t i = 0; i < n; ++i) MW += z[i] * thermo.comp(i).MW();
+    const scalar mdot = F * MW;                            // kg/s
+    const scalar area = constant::pi * D * D / 4.0;
+    const scalar G    = mdot / area;                       // kg/(m2 s), constant along the line
+    const scalar c    = Pin / rho1;                        // = Z R T / M   [Pa m3/kg = m2/s2]
+    const scalar Z    = Pin * (MW / 1000.0) / (rho1 * constant::R * T);
+    const scalar Re   = G * D / mu;                        // the same at every section
+    const scalar relRough = eps / D;
+
+    const std::string modelName = dict->lookupWordOrDefault("model", operDict->lookupWordOrDefault("model", "Churchill"));
+    FrictionFactorCorrelation::registerBuiltins();
+    scalar f;
+    {
+        auto corr = FrictionFactorCorrelation::New(modelName);
+        FrictionContext fc;  fc.Re = Re;  fc.relRough = relRough;
+        f = corr->evaluate(fc).f;
+    }
+    const int regimeCode = Re < Re_laminar ? 0 : (Re < Re_turb ? 1 : 2);
+    const char* regime = regimeCode == 0 ? "laminar" : (regimeCode == 1 ? "transition" : "turbulent");
+    if (regimeCode == 1)
+    {
+        std::ostringstream m;
+        m << "Re = " << std::fixed << std::setprecision(0) << Re << " lies in the laminar-turbulent transition band; f = "
+          << std::setprecision(5) << f << " is an interpolation, not a prediction (see the liquid line's note).";
+        if (AdvisoryLog::instance().addAnnouncedOnce("pipeTransition:" + unitName, "validity", "warning", locus, m.str()))
+            std::cerr << "[pipe] " << locus << ": " << m.str() << "\n";
+    }
+
+    //  ---- the window, part 2: the isothermal choking limit -------------------
+    const scalar Kfric = f * L / D + sumK;                 // the whole line's resistance, f L/D + SUM K
+    const scalar cG2   = c * G * G;
+    const scalar Pch   = G * std::sqrt(c);                 // P at which u = sqrt(c): dP/dL -> infinity
+    const scalar M1    = Pch / Pin;                        // isothermal Mach number at the inlet, u1/sqrt(c)
+    if (M1 >= 1.0)
+        throw std::runtime_error(locus + ": gas line REFUSED -- the inlet is at or beyond the isothermal sonic limit: P_in = "
+            + std::to_string(Pin) + " Pa <= G sqrt(c) = " + std::to_string(Pch) + " Pa (isothermal Mach number "
+            + std::to_string(M1) + " >= 1).  The flow is choked at the entrance: a larger D, a lower flow or a higher inlet pressure is needed.");
+    // the longest line the inlet state can carry: the exact equation at P2 = Pch
+    const scalar KfricMax = (Pin * Pin - Pch * Pch) / cG2 - 2.0 * std::log(Pin / Pch);
+    const scalar Lmax = (KfricMax - sumK) * D / f;          // f held (Re does not change along the line)
+    if (Kfric >= KfricMax)
+        throw std::runtime_error(locus + ": gas line REFUSED -- the line is choked.  f L/D + SUM K = " + std::to_string(Kfric)
+            + " exceeds the " + std::to_string(KfricMax) + " that brings the outlet to the isothermal sonic limit P2 = G sqrt(c) = "
+            + std::to_string(Pch) + " Pa, i.e. L = " + std::to_string(L) + " m > L_max = " + std::to_string(Lmax)
+            + " m at this flow.  The steady isothermal equation has no solution beyond it: shorten the line, enlarge D or lower the flow.");
+
+    //  ---- the exact solution: bracketed Newton on g(P2) = 0 -------------------
+    //  g(P2) = P1^2 - P2^2 - cG^2 [Kfric + 2 ln(P1/P2)];  g' = -2 (P2^2 - cG^2)/P2 < 0 for P2 > Pch,
+    //  so g is monotone on [Pch, P1] with g(P1) <= 0 < g(Pch): one root, bracketed.
+    auto g  = [&](scalar P2) { return Pin * Pin - P2 * P2 - cG2 * (Kfric + 2.0 * std::log(Pin / P2)); };
+    auto dg = [&](scalar P2) { return -2.0 * (P2 * P2 - cG2) / P2; };
+    const scalar P2mean = std::sqrt(Pin * Pin - cG2 * Kfric);          // mean-density shortcut (closed form)
+    scalar lo = Pch, hi = Pin, P2 = std::min(hi, std::max(lo, P2mean));
+    int iters = 0;
+    for (; iters < 100; ++iters)
+    {
+        const scalar gv = g(P2);
+        if (gv > 0.0) lo = P2; else hi = P2;
+        if (std::fabs(gv) <= 1.0e-14 * Pin * Pin) break;
+        scalar Pn = P2 - gv / dg(P2);
+        if (!(Pn > lo && Pn < hi)) Pn = 0.5 * (lo + hi);
+        if (std::fabs(Pn - P2) <= 1.0e-15 * Pin) { P2 = Pn; ++iters; break; }
+        P2 = Pn;
+    }
+    if (!std::isfinite(P2) || P2 <= Pch || P2 > Pin)
+        throw std::runtime_error(locus + ": gas line -- the outlet-pressure iteration did not converge inside [G sqrt(c), P_in].");
+
+    const scalar dP      = Pin - P2;
+    const scalar dPmean  = Pin - P2mean;
+    const scalar rho2    = P2 / c;
+    const scalar u1      = G / rho1, u2 = G / rho2;
+    const scalar M2      = Pch / P2;
+    const scalar meanErr = (P2mean - P2) / P2;             // outlet-pressure error of the shortcut (relative to the exact P2)
+    const scalar dropFrac = dP / Pin;
+    //  A flag level, not a derived bound: the heat the wall would have to supply to hold T constant grows with u^2.
+    if (dropFrac > 0.4)
+    {
+        std::ostringstream m;
+        m << "the pressure falls by " << std::fixed << std::setprecision(1) << 100.0 * dropFrac << " % of the inlet pressure (outlet isothermal Mach "
+          << std::setprecision(2) << M2 << "): a real gas line expands and cools or heats through the wall, so the isothermal assumption is"
+             " weak here -- adiabatic and Joule-Thomson effects are not modelled.";
+        if (AdvisoryLog::instance().addAnnouncedOnce("pipeGasDrop:" + unitName, "validity", "warning", locus, m.str()))
+            std::cerr << "[pipe] " << locus << ": " << m.str() << "\n";
+    }
+
+    if (verbosity >= 2)
+    {
+        std::cout << "\n==============================  Pipe Result (GAS LINE)  =============\n"
+                  << "  Model:           steady isothermal compressible flow, horizontal, constant area\n"
+                  << "                   (adiabatic and Joule-Thomson effects are not modelled; Z held at its inlet value)\n"
+                  << "  Friction model:  " << modelName << "   (" << regime << ")   Re = " << std::fixed << std::setprecision(1) << Re
+                  << "  (same at every section: mu depends on T only)\n"
+                  << "  Geometry:        D = " << std::setprecision(4) << D << " m   L = " << std::setprecision(2) << L
+                  << " m   eps/D = " << std::scientific << std::setprecision(3) << relRough << "   Sum K = " << std::fixed << std::setprecision(2) << sumK << "\n"
+                  << "  Gas (inlet):     rho = " << std::setprecision(4) << rho1 << " kg/m3   Z = " << std::setprecision(5) << Z
+                  << "   mu = " << std::scientific << std::setprecision(4) << mu << " Pa.s  (thermoPackage vapour density, gas viscosity"
+                  << (regimeWords.empty() ? "" : "; inlet " + regimeWords) << ")\n"
+                  << "  Flow:            mdot = " << std::setprecision(4) << mdot << " kg/s   G = " << std::fixed << std::setprecision(3) << G
+                  << " kg/(m2 s)   u_in = " << u1 << " m/s   u_out = " << u2 << " m/s\n"
+                  << "  Friction factor: f = " << std::setprecision(6) << f << "   f L/D + Sum K = " << std::setprecision(4) << Kfric << "\n"
+                  << "  Window:          P_choke = G sqrt(c) = " << std::setprecision(1) << Pch << " Pa   Ma_T(in) = " << std::setprecision(4) << M1
+                  << "   Ma_T(out) = " << M2 << "   L_max = " << std::setprecision(2) << Lmax << " m\n"
+                  << "  P_out (exact):   " << std::setprecision(6) << P2 * 1.0e-5 << " bar   dP = " << dP * 1.0e-5 << " bar   <- RESULT (" << iters << " Newton steps)\n"
+                  << "  P_out (mean rho):" << std::setprecision(6) << P2mean * 1.0e-5 << " bar   dP = " << dPmean * 1.0e-5
+                  << " bar   (shortcut error in P_out " << std::scientific << std::setprecision(2) << meanErr
+                  << ";  dP error " << std::fixed << std::setprecision(2) << 100.0 * (dPmean - dP) / dP << " %)\n"
+                  << "=====================================================================\n\n";
+    }
+
+    produced_.clear();
+    ProcessStream out;
+    out.name = "out";  out.F = F;  out.T = T;  out.P = P2;  out.z = z;  out.vf = 1.0;
+    produced_.push_back(out);
+
+    kpis_.clear();
+    kpis_["deltaP"] = dP;                kpis_["P_in"] = Pin;              kpis_["P_out"] = P2;
+    kpis_["velocity"] = u1;              kpis_["velocity_out"] = u2;       kpis_["reynolds"] = Re;
+    kpis_["frictionFactor"] = f;         kpis_["regime"] = static_cast<scalar>(regimeCode);
+    kpis_["density"] = rho1;             kpis_["viscosity"] = mu;          kpis_["compressibilityZ"] = Z;
+    kpis_["gasLine"] = 1.0;
+    kpis_["massFlux"] = G;               kpis_["P_choke"] = Pch;           kpis_["L_max"] = Lmax;
+    kpis_["machIsothermal_in"] = M1;     kpis_["machIsothermal_out"] = M2;
+    kpis_["P_out_meanDensity"] = P2mean; kpis_["deltaP_meanDensity"] = dPmean;
+    kpis_["meanDensityError_P_out"] = meanErr;
+    kpis_["F"] = F;
+    return 0;
 }
 
 } // namespace Choupo

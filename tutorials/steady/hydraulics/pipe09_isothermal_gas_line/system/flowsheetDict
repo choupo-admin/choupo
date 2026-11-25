@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe09_isothermal_gas_line
+
+  The same `pipe` unit as pipe01, fed a GAS.  An all-vapour inlet (V/F = 1)
+  takes the steady ISOTHERMAL COMPRESSIBLE pipe equation instead of the
+  incompressible liquid arithmetic (C506):
+
+      P1^2 - P2^2 = c G^2 [ f L/D + SUM K + 2 ln(P1/P2) ] ,   c = P1/rho1
+
+  The run prints the exact outlet pressure, the mean-density shortcut beside
+  it and their difference, the isothermal choking limit G sqrt(c) and the
+  longest line that does not choke.  Adiabatic and Joule-Thomson effects are
+  not modelled.  The line is horizontal (dz 0); a rise is refused by name.
+
+    feed (N2, 8 bar, 300 K, 45 kmol/h)
+      -> [P1 pipe]   D, L, roughness  ->  P_out (result)
+      -> downstream
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        P1;
+        type        pipe;
+        model       Churchill;
+        in          feed;
+        outputs     ( downstream );
+
+        operation
+        {
+            geometry
+            {
+                D          0.05    m;      // internal diameter
+                L          300.0   m;      // straight horizontal length
+                roughness  4.6e-5  m;      // commercial steel
+            }
+        }
+    }
+);
