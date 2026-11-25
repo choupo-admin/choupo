@@ -4047,6 +4047,36 @@ controlling opening, $F_L$ and the starting valve's size are the student's or
 the page's declared values, marked as such.
 \declaredanchor{sec:control-valve}
 
+\subsection*{Which compressor, and how far can I turn it down? \quad(\code{tool=compressor-choice})}\label{sec:edu-compressor-choice}
+A compressor is chosen from the gas as it enters the machine, a volume flow, and
+a pressure ratio, not from kilograms and kilowatts.  The page runs two sized
+compressors of the engine in the browser (the air machine of
+\code{compressor03\_staged\_design} and the make-up compressor of
+\code{ammonia02\_full\_plant}) and reads their design sheets.  Five cards.
+(1)~\emph{The duty is a volume and a ratio}: the two duties side by side, and the
+air machine's volume and ratio handed to the other gas, which moves the mass flow
+and the head per kilogram but, because the molar mass cancels from
+$W=P_1Q(r^{m}-1)/(m\eta_p)$, hardly the power.  (2)~\emph{Where each family can
+exist}: the machine chart the engine selects from (Brown 2005, Fig.~1-2), drawn
+from the \emph{engine's own export} in the design sheet, never from corners typed
+on the page, with the duty as a point you drag; the machines whose rectangle holds
+it light up, the engine's pick is starred and its tie-break (the order of its
+list; the book gives none) and its two fall-backs are stated; the four compressors
+of the reference ammonia plant are marked from a \emph{recorded} run, labelled as
+such.  (3)~\emph{Seven questions the chart does not answer}: a grid for four
+machines, \emph{authored, not computed}, with a tally over the questions you
+tick.  (4)~\emph{The highest pressure the machine can make}: the driver's limit
+for a positive-displacement machine, a shut-off head that is a multiple you set
+for a centrifugal one, the vessel's design pressure you set, the verdict, and a
+link to the Overpressure page for the relief.  (5)~\emph{The anti-surge valve is
+not free}: the engine compresses the total flow the machine must pass, cooled and
+with the recycle returning hot, and the page prints power, discharge temperature
+and energy per kilogram delivered against the design.  The engine holds no
+characteristic map, so the surge flow and the shut-off head are the student's
+declared values; surge itself, speed control, suction throttling and cylinder
+unloading are not on the page, and it says why.
+\declaredanchor{sec:compressor-choice}
+
 \subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
 Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
 of a staged machine come out equal, and what the real gas adds, worked on the
