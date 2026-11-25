@@ -3602,6 +3602,94 @@ pressures are the catalogue's correlations, extrapolated at the higher
 pressures, as the engine announces.  Measured azeotropes are compared for four
 binaries only, read from measured points the corpus carries.
 
+\subsection{Designing a column for a real mixture}\label{sec:edu-column-design}
+
+\noindent\textit{\small Tool:} \code{tool=column-design}.  \textit{\small
+Case it starts from:} \file{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water}
+(one point of the design curve; the page reads a recorded table of the whole
+curve and of the ideal control).
+
+\subsubsection*{The question}
+
+\emph{I hold a feed and two product purities.  Can a column do it, how tall,
+with how much reflux, at what cost --- and how far can I trust the shortcut
+that gave me the first guess when the mixture is strongly non-ideal?}
+
+The page answers in four cards, in the order a design meets them, on two binary
+mixtures at 1\,atm: ethanol/water (NRTL, with its azeotrope) and the ideal
+benzene/toluene as the \emph{control}.  \textbf{Card~1, feasibility:} the
+engine's boiling and condensing temperatures of the mixture, the feed and the
+distillate asked for, and the lever rule $D/F=(z-x_B)/(x_D-x_B)$; past the
+azeotrope the card says that no column can make the product.  The link at the
+foot of the step opens the residue curve page for the ternary case.
+\textbf{Card~2, the design curve:} with both key purities fixed, for each
+integer stage count $N$ the reflux ratio $R$ at which the rigorous column meets
+the specification; the curve $R(N)$ has two asymptotes, the minimum reflux (many
+stages) and the minimum stages (large reflux), and every point is on
+specification.  \textbf{Card~3, the cost optimum:} capital (the engine's Turton
+total-module cost of shell, trays, condenser, reboiler and reflux drum) rises
+with $N$, the heat bill falls with $R$, and their sum has a minimum; two
+sliders, the price of heat and the capital charge, move it.  \textbf{Card~4, the
+shortcut as a control:} Fenske--Underwood--Gilliland on the same mixture and the
+same products, beside the rigorous result, with the ratios rigorous over
+shortcut for both mixtures and a table for ethanol/water as the distillate is
+asked closer to the azeotrope.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The rigorous curve is a \emph{recorded run}.  Each point is a \code{designSpec}
+(two unknowns, the reflux ratio and the distillate rate; two targets, the
+column's own \code{x\_D\_LK} and \code{x\_B\_HK}) around a
+\code{model simultaneous} column, about twenty MESH solves, so the page does not
+repeat it in the browser: \file{bin/curate/c501\_column\_design\_table.py} runs
+\code{choupoSolve} once per stage count and writes the table the page reads
+(\file{gui/src/case/columnDesignRecorded.json}); the case above reproduces any
+row by changing \code{nStages} and \code{feedStage}.  The recording also holds
+the engine's tray-hydraulic diameter, its Turton costs, the reboiler and
+condenser duties and utility prices, the shortcut column's Fenske, Underwood and
+Gilliland answers on the same products, and the engine's own boiling and
+condensing temperatures.
+
+The page computes the lever rule, the annualised cost $C_A=f_c C_\mathrm{inst}
++ h\,p_E Q_\mathrm{reb} + C_\mathrm{cool}$, the position of its minimum over the
+recorded stage counts, and the ratios; it says so beside each figure.
+Where the azeotrope is drawn it is read as the crossing of the engine's bubble
+and dew curves on a scan of thirty compositions, interpolated linearly.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+On ethanol/water drag the distillate purity past the azeotrope: the card turns
+from reachable to unreachable, and no number of stages repairs it.  Switch to the
+ideal control and every purity is reachable.  In card~2 read the two asymptotes
+and notice that the stage count at which the curve leaves the axis is far from
+the shortcut's Fenske value on the real mixture and close to it on the control.
+In card~3 raise the price of heat and watch the star move to more stages and a
+smaller reflux; then raise the capital charge and watch it move back.  In card~4
+compare the two ratios of the control and of ethanol/water, and read the last
+table downwards: the nearer the distillate is asked to the azeotrope, the larger
+the shortcut's error.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading the cost optimum as a price.}  The shape and position of the
+minimum are the lesson; its depth depends on a capital charge, a heat price and
+operating hours that the page states and cannot know.  And the rigorous minimum
+reflux on the page is the recorded curve's own floor, an upper bound of the true
+$R_\mathrm{min}$, not a pinch calculation.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Two binary mixtures stand for the general case: no ternary, no entrainer, no
+side draws.  The recorded column is the simultaneous one with constant molar
+overflow and an ideal-gas vapour.  The feed enters at a fixed fraction of the
+column, a little above the best feed stage at every $N$.  The exchanger areas
+come from declared $U$ and LMTD.  The pinch-point minimum reflux of a non-ideal
+column (the pinch in the rectifying section and, past an azeotrope, the boundary
+value method) is the next step for the engine.
+\declaredanchor{ch:column-design}
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

@@ -3889,6 +3889,89 @@
           }
         }
       ]
+    },
+    "column-design": {
+      "references": [
+        {
+          "text": "Levy, S. G.; Van Dongen, D. B.; Doherty, M. F. (1985). Design and synthesis of homogeneous azeotropic distillations. 2. Minimum reflux calculations for nonideal and azeotropic columns. Industrial & Engineering Chemistry Fundamentals 24(4), 463–474.",
+          "doi": "10.1021/i100020a011",
+          "note": "The pinch-point minimum reflux of a non-ideal column, including past an azeotrope: the calculation the page names as the engine's next step.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/i100020a011: authors (Levy, Van Dongen, Doherty), title, container, volume 24, pages 463-474 and year 1985 matched (column-design EduTool)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Julka, V.; Doherty, M. F. (1990). Geometric behavior and minimum flows for nonideal multicomponent distillation. Chemical Engineering Science 45(7), 1801–1822.",
+          "doi": "10.1016/0009-2509(90)87057-y",
+          "note": "The geometric theory of minimum flows for non-ideal mixtures: why the minimum reflux of an azeotropic column is set by a pinch and not by the feed's volatility.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(90)87057-y: authors (Julka, Doherty), title, container, volume 45, pages 1801-1822 and year 1990 matched (column-design EduTool)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Doherty, M. F.; Perkins, J. D. (1978). On the dynamics of distillation processes—I. Chemical Engineering Science 33(3), 281–301.",
+          "doi": "10.1016/0009-2509(78)80086-4",
+          "note": "The residue curve equation dx/dξ = x − y*, and the classification of its singular points.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(78)80086-4: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Fenske, M. R. (1932). Fractionation of Straight-Run Pennsylvania Gasoline. Ind. Eng. Chem. 24(5), 482–485.",
+          "doi": "10.1021/ie50269a003",
+          "note": "Minimum stages at total reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50269a003: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Underwood, A. J. V. (1949). Fractional Distillation of Multicomponent Mixtures. Ind. Eng. Chem. 41(12), 2844–2847.",
+          "doi": "10.1021/ie50480a044",
+          "note": "The theta equations for minimum reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50480a044: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gilliland, E. R. (1940). Multicomponent Rectification: Estimation of the Number of Theoretical Plates as a Function of the Reflux Ratio. Ind. Eng. Chem. 32(9), 1220–1223.",
+          "doi": "10.1021/ie50369a035",
+          "note": "The stages-against-reflux correlation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50369a035: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the liquid model every map on this page is computed with.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf, p. 139 read (recommended alpha_12 and tabulated alphas); Crossref 10.1002/aic.690140124 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "Bare-module costing and the total-module and grass-roots factors.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
     }
   }
 }

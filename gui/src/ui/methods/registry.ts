@@ -85,7 +85,8 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement";
+  | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
+  | "column-design";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1435,6 +1436,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "recycle gets round a boundary -- on NRTL maps the engine computes "
       + "for five ternaries, with each pair's fit grade shown, a pressure "
       + "control, and published azeotropes beside the engine's.",
+  },
+  //  C501 (2026-11-25): column design for a REAL mixture, the ideal one as its
+  //  control.  Four cards: feasibility (the lever rule and the azeotrope), the
+  //  rigorous R against N curve at a fixed specification (a RECORDED engine
+  //  run of a designSpec per stage count), the cost optimum, and the shortcut
+  //  beside the rigorous result.  gui/src/case/columnDesign.ts holds the
+  //  arithmetic, the recording is bin/curate/c501_column_design_table.py.
+  {
+    id: "column-design", blurb: "Reflux against stages, cost optimum and the shortcut's error, real mixture.",
+    label: "Column design (real mixture)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    theory: "ch:column-design",
+    teaches: "The general case of column design with the ideal mixture as its "
+      + "control: what a simple column can make from a feed (the lever rule, "
+      + "and the azeotrope no column crosses); the rigorous curve of reflux "
+      + "against stage count at a fixed specification, with its two "
+      + "asymptotes; the cost optimum of stages against energy and how the "
+      + "price of heat moves it; and the shortcut set beside the rigorous "
+      + "result, agreeing on the ideal mixture and parting near the azeotrope.",
   },
   {
     id: "levenspiel", blurb: "Compare PFR and CSTR volumes for the same conversion.", label: "Reactor sizing (Levenspiel)",
