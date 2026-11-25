@@ -34,10 +34,18 @@ export type { LessonStep, LessonLimit };
 
 /** The sentence the card must show, whatever else changes. */
 export const ENGINE_STATUS =
-  "Choupo's engine does not yet offer this method.  An opt-in "
-  + "`method bayesian;` is being built and measured against `sqp`; this card "
-  + "will cite that measurement if the method is offered.  What you see here "
-  + "is a one-variable teaching sketch run in your browser, not the engine.";
+  "Choupo's engine offers this method, opt-in: `method bayesian;` (case "
+  + "optim08_bayesian_membrane; Theory Guide, Bayesian optimisation).  "
+  + "Measured against `sqp` (median of five seeds, random starts, to within "
+  + "1 % of the best known value): on the cheap membrane case optim04 it needed 15 "
+  + "simulations against 25 for `sqp`, but reached 0.1 % on only 2 of 5 seeds; "
+  + "on the expensive reactive MTBE column (about 20 s per simulation) it "
+  + "needed 23 against 22, and 14 to 18 of its 25 runs failed, because its "
+  + "space-filling start spends the budget where the column does not "
+  + "converge (a failed run never enters the model as a number).  It has no "
+  + "multipliers: finish with `method sqp` from its best point.  What you see "
+  + "here is a one-variable teaching sketch run in your browser, not the "
+  + "engine.";
 
 export const BAYES_STEPS: readonly LessonStep[] = [
   {
@@ -246,14 +254,15 @@ u &= \frac{f_{\min} - \hat y}{s}
       + "optimisation returns a point, not multipliers, so it gives no "
       + "shadow prices, so a constraint's value at the optimum is not part of "
       + "what it tells you.",
-    note: "The comparison with the engine's own methods waits for the "
-      + "measurement that is being made.  Until then this card makes no claim "
-      + "about how the two compare in Choupo.",
+    note: "The comparison with the engine's own methods is the measurement "
+      + "quoted in the engine-status line of this card (optim04 and the MTBE "
+      + "column); this sketch makes no further claim about how the two "
+      + "compare in Choupo.",
   },
 ];
 
 export const BAYES_LIMITS: readonly LessonLimit[] = [
-  { id: "not-in-engine", title: "The engine does not offer this method yet.",
+  { id: "not-in-engine", title: "In the engine it is opt-in, and not always the faster tool.",
     body: ENGINE_STATUS },
   { id: "one-variable", title: "One variable only.",
     body: "Everything is drawn on one axis so the posterior can be seen.  "

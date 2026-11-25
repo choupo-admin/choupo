@@ -16857,6 +16857,147 @@ continuous, with a purity constraint --- in a single run, against
 \code{initialPollSize}, \code{tau}.
 
 % ---------------------------------------------------------------------
+\section{Bayesian optimisation for an expensive simulation}\label{ch:bayesopt}
+
+SQP (§\ref{ch:sqp}) and MADS (§\ref{ch:mads}) spend simulations on
+slopes or on polling; when one simulation is a minutes-long flowsheet
+the number of simulations is the whole cost.  \emph{Bayesian
+optimisation} keeps every result, fits a statistical model of the
+responses to them, and runs next the point where the model says a
+simulation is most likely to pay.  Choupo's \code{solver::bayesOpt} is
+selected explicitly, \code{method bayesian;}, never as a fall-back.  The
+problem is
+\begin{equation}
+  \min_{\xv}\; f(\xv)
+  \quad\text{s.t.}\quad g_k(\xv)\le 0,\;\; k=1..m,
+  \qquad \mathbf{lo}\le\xv\le\mathbf{hi},
+  \label{eq:bo-nlp}
+\end{equation}
+every $f$ and $g_k$ a black box; equality constraints are refused by
+name (the method has no way to hold one).
+
+\subsection{What was read}\label{sec:bo-sources}
+\textbf{Read, from the publishers' PDFs} (2026-11-24/25): Rasmussen and
+Williams \cite{RasmussenWilliams2006}, chapter~2 (Algorithm~2.1,
+eqs.~2.25, 2.26, 2.30) and chapter~5 (the squared-exponential covariance
+with one length scale per variable, eqs.~5.1--5.2, and the log marginal
+likelihood, eq.~5.8); Jones, Schonlau and Welch \cite{JonesSchonlauWelch1998}
+(expected improvement, eqs.~14--15, and their stopping rule); Gardner
+et~al.\ \cite{Gardner2014} §3.1--3.2 (the constrained acquisition: the
+expected improvement over the best \emph{feasible} point, weighted by
+the probability of feasibility, a product of univariate Gaussian
+distribution functions for independent constraints).  \textbf{Not read}:
+Schonlau, Welch and Jones \cite{SchonlauWelchJones1998} (the same
+product, cited from \cite{Gardner2014}).
+
+\subsection{The Gaussian-process surrogate}\label{sec:bo-gp}
+Inputs are scaled to $[0,1]^n$ by the box and each response is
+standardised (zero mean, unit variance).  The covariance of two points is
+\begin{equation}
+  k(\mathbf{u},\mathbf{u}') = \sigma_f^2
+  \exp\!\Bigl(-\tfrac12\sum_{i=1}^{n}
+  \frac{(u_i-u_i')^2}{\ell_i^2}\Bigr),
+  \label{eq:bo-kernel}
+\end{equation}
+with a noise term $\sigma_n^2\delta_{pq}$ on the diagonal
+(R\&W eq.~5.1 with $M_2=\mathrm{diag}(\boldsymbol\ell)^{-2}$, eq.~5.2).
+$\sigma_n^2\ge10^{-8}$ in standardised units: a solved flowsheet carries
+solver noise, and the floor keeps $K$ factorable.  With
+$K=K(X,X)$, $\mathbf{k}_\ast=\mathbf{k}(\mathbf{u}_\ast)$ and
+$K_y=K+\sigma_n^2 I=LL^{\mathsf T}$ (Cholesky), the prediction at a new
+point is (R\&W Algorithm~2.1)
+\begin{align}
+  \bar f_\ast &= \mathbf{k}_\ast^{\mathsf T}K_y^{-1}\mathbf{y},
+  \label{eq:bo-mean}\\
+  \mathbb V[f_\ast] &= k(\mathbf{u}_\ast,\mathbf{u}_\ast)
+     - \mathbf{k}_\ast^{\mathsf T}K_y^{-1}\mathbf{k}_\ast,
+  \label{eq:bo-var}
+\end{align}
+eqs.~2.25 and 2.26, and the log marginal likelihood
+\begin{equation}
+  \ln p(\mathbf{y}\,|\,X,\boldsymbol\theta)
+  = -\tfrac12\mathbf{y}^{\mathsf T}K_y^{-1}\mathbf{y}
+    -\sum_i \ln L_{ii} - \tfrac n2\ln 2\pi,
+  \label{eq:bo-lml}
+\end{equation}
+eq.~2.30 (equivalently eq.~5.8).  The hyperparameters
+$\boldsymbol\theta=(\boldsymbol\ell,\sigma_f^2,\sigma_n^2)$ are chosen by
+maximising eq.~\eqref{eq:bo-lml} over log-bounds
+($0.02\le\ell_i\le10$, $0.05\le\sigma_f^2\le20$,
+$10^{-8}\le\sigma_n^2\le0.1$) by a coordinate pattern search; this is
+Choupo's choice, printed at every fit.  A jitter is added to the diagonal
+only if the Cholesky factor fails (escalating by $\times100$ from
+$10^{-10}$) and is printed.  The objective and each $g_k$ have their own
+surrogate.
+
+\subsection{Expected improvement and the probability of feasibility}\label{sec:bo-ei}
+With $f_{\min}$ the best \emph{feasible} value so far and
+$Y\sim\mathcal N(\bar f_\ast,s^2)$, $s^2=\mathbb V[f_\ast]$, the expected
+improvement $\mathbb E\,\max(f_{\min}-Y,0)$ (JSW eq.~14) has the closed form
+(JSW eq.~15)
+\begin{equation}
+  \mathrm{EI}(\mathbf{u}) = s\,\bigl[z\,\Phi(z)+\varphi(z)\bigr],
+  \qquad z=\frac{f_{\min}-\bar f_\ast}{s},
+  \label{eq:bo-ei}
+\end{equation}
+$\Phi$ and $\varphi$ the standard normal distribution and density
+functions ($\mathrm{EI}=\max(f_{\min}-\bar f_\ast,0)$ if $s\to0$).  The
+probability that every constraint holds, for independent surrogates,
+is the product
+\begin{equation}
+  P_{\mathrm{feas}}(\mathbf{u}) = \prod_{k=1}^m
+  \Phi\!\Bigl(\frac{\tau-\bar g_{k\ast}}{s_{g_k}}\Bigr),
+  \label{eq:bo-pf}
+\end{equation}
+$\tau=10^{-6}$ the feasibility tolerance (Gardner et~al.\ §3.2), and the
+next simulation maximises $\alpha=\mathrm{EI}\cdot P_{\mathrm{feas}}$
+(§3.1).  Two choices the papers leave open: while \emph{no} feasible
+point is known, $\alpha=P_{\mathrm{feas}}$ alone (EI has no $f_{\min}$);
+and a \emph{failed} simulation (non-convergence, a non-zero exit, a
+closure above the conservation band --- the same guard as \code{sqp} and
+\code{mads}) enters no surrogate as a number but multiplies $\alpha$ by
+$1-\exp(-\tfrac12 d^2/L^2)$, $d$ the scaled distance to the nearest failed
+point, $L=0.10$.  $\alpha$ is maximised over a seeded random candidate
+cloud refined by pattern search; an integer variable is rounded before
+$\alpha$ is read.  The start design is the declared start plus a
+seeded, shifted Halton sequence ($2n+2$ points).  The run stops at the
+budget (counted in simulations), or when $\alpha$ falls below
+\code{eiTol} times the range of the observed objective (the idea of JSW's
+rule, with the range in place of $f$ because a duty or a recovery may sit
+near zero).
+
+\subsection{A worked self-check}\label{sec:bo-selfcheck}
+As for SQP and MADS, \code{verifyBayesOpt} runs before every Bayesian run
+and aborts it on a miss: the Branin function (three global minima,
+$f^\star=0.397887$) and a constrained two-variable problem, each against
+its published optimum within a stated tolerance and budget.
+
+\paragraph{Power and limit.} \textbf{Power:} no derivative, a global
+look, few simulations when one simulation is dear and the response is
+smooth over the box.  \textbf{Limit:} it has \emph{no multipliers}: no
+shadow prices and no KKT certificate --- finish with \code{method sqp} from
+its best point, which gives both.  It rarely finishes the last digits (in a
+random-start comparison on the membrane case of \code{optim08} it reached
+0.1\,\% of the best value on 2 of 5 seeds).  It is the \emph{wrong tool} where the box holds a region in
+which the simulation does not converge: on the reactive MTBE column
+(\code{column19}, about 20\,s per simulation) it needed 23 simulations to
+come within 1\,\% against 22 for \code{sqp} (median of five seeds), and 14
+to 18 of its 25 runs failed, because the space-filling start spends its
+budget where the column does not run.  The measurements are in
+\code{docs/audits/2026-11-24-c499-results.md}.
+
+\subsection*{What you see in Choupo}
+\code{method bayesian;} makes \code{OptimizationDriver} announce the
+self-check, then print for every simulation the next point, the
+prediction \emph{before} it (mean and 95\,\% band), the expected
+improvement and the probability of feasibility, and, after it, the
+outcome; the end prints the coverage of the band, the failed evaluations
+by cause, and states that there are no multipliers.  Options:
+\code{budget}, \code{seed}, \code{eiTol}, \code{nInit}.  Worked example:
+\file{optim08\_bayesian\_membrane}, the problem of
+\file{optim04\_membrane\_recovery\_scaling}.
+
+% ---------------------------------------------------------------------
 \section{Runge-Kutta 4 for the PFR}\label{ch:rk4}
 
 \begin{whatyoulllearn}
@@ -35924,6 +36065,27 @@ Digabel, S., ``OrthoMADS: a deterministic MADS instance with orthogonal
 directions'', \emph{SIAM J. Optim.} \textbf{20}(2), 948--966 (2009). NOT
 READ (paywalled); the Householder construction is as described in
 \cite{AuditADS}.
+
+\bibitem{RasmussenWilliams2006} Rasmussen, C. E., \& Williams, C. K. I.,
+\emph{Gaussian Processes for Machine Learning}, MIT Press (2006), chapters 2
+and 5. READ (the authors' PDF of the chapters, 2026-11-25): Algorithm 2.1 and
+eqs.\ 2.25, 2.26, 2.30, 5.1, 5.2, 5.8.
+
+\bibitem{JonesSchonlauWelch1998} Jones, D. R., Schonlau, M., \& Welch, W. J.,
+``Efficient global optimization of expensive black-box functions'',
+\emph{J. Global Optim.} \textbf{13}, 455--492 (1998). READ (publisher's PDF,
+2026-11-24): eqs.\ 14--15.
+
+\bibitem{Gardner2014} Gardner, J. R., Kusner, M. J., Xu, Z., Weinberger, K. Q.,
+\& Cunningham, J. P., ``Bayesian optimization with inequality constraints'',
+\emph{Proc.\ ICML}, PMLR \textbf{32}(2), 937--945 (2014). READ (the PMLR PDF,
+2026-11-25): §3.1--3.2.
+
+\bibitem{SchonlauWelchJones1998} Schonlau, M., Welch, W. J., \& Jones, D. R.,
+``Global versus local search in constrained optimization of computer
+models'', in \emph{New Developments and Applications in Experimental Design},
+IMS Lecture Notes--Monograph Series \textbf{34}, 11--25 (1998). NOT READ;
+cited from \cite{Gardner2014}.
 
 \bibitem{AuditGranular} Audet, C., Le Digabel, S., \& Tribes, C., ``The mesh
 adaptive direct search algorithm for granular and discrete variables'',
