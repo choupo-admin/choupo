@@ -111,7 +111,16 @@ int CoolingTower::solve(const DictPtr& dict,
             " condensable itself -- no carrier to hold the humidity.");
 
     const Component& condensable = thermo.comp(iW);
-    const Component& carrier     = thermo.comp(iC);
+    //  THE DRY GAS IS THE WHOLE MIXTURE, NOT ITS MAJORITY (external review 4,
+    //  2026-11-25).  Until then only the largest dry component entered the
+    //  molar mass, the humid heat and the dry-gas flow, so adding O2 to N2
+    //  changed no KPI and the exhaust announced saturated left at 79.9 % RH.
+    //  Now the carrier is the mixture of every component but the condensable:
+    //  mole fractions w_i = y_i / sum(y_dry), M = sum w_i M_i, cp = sum w_i cp_i
+    //  at the mean air T.  A single carrier takes every sum with one term
+    //  (w = 1 exactly), byte-identical.
+    scalar yDry = 0.0;
+    for (std::size_t i = 0; i < n; ++i) if (i != iW && yAir[i] > 0.0) yDry += yAir[i];
 
     // ---- Property refusals, each naming component and slot -----------------
     auto need = [](bool ok, const std::string& what)
@@ -126,8 +135,10 @@ int CoolingTower::solve(const DictPtr& dict,
          condensable.name() + " needs an ideal-gas Cp (vapour humid heat).");
     need(condensable.Hvap_Tb() > 0.0,
          condensable.name() + " needs a latent heat (Hvap).");
-    need(carrier.hasCpIdealGas(),
-         carrier.name() + " needs an ideal-gas Cp (dry-air humid heat).");
+    for (std::size_t i = 0; i < n; ++i)
+        if (i != iW && yAir[i] > 0.0)
+            need(thermo.comp(i).hasCpIdealGas(),
+                 thermo.comp(i).name() + " needs an ideal-gas Cp (dry-air humid heat).");
 
     // ---- Inlet states ------------------------------------------------------
     const scalar F_L  = waterDict->lookupScalar("F", Dims::molarFlow);   // kmol/s
@@ -138,9 +149,11 @@ int CoolingTower::solve(const DictPtr& dict,
     const scalar T_Gin = airDict->lookupScalar("T", Dims::temperature);
 
     const scalar Mv = condensable.MW();                                  // kg/kmol
-    const scalar Mc = carrier.MW();
+    scalar Mc = 0.0;                                                     // kg/kmol dry mixture
+    for (std::size_t i = 0; i < n; ++i)
+        if (i != iW && yAir[i] > 0.0) Mc += (yAir[i] / yDry) * thermo.comp(i).MW();
 
-    const scalar G_dry = F_air * yAir[iC] * Mc;                          // kg/s dry
+    const scalar G_dry = F_air * yDry * Mc;                          // kg/s dry
     const scalar L_in  = F_L * zW[iW] * Mv;                             // kg/s water
     if (G_dry <= 0.0 || L_in <= 0.0)
         throw std::runtime_error("CoolingTower: a zero water or dry-air flow"
@@ -162,7 +175,11 @@ int CoolingTower::solve(const DictPtr& dict,
     const scalar T0   = 273.15;
     const scalar lam0 = condensable.Hvap_latent(T0) / Mv * 1000.0;       // J/kg
     const scalar Tmid_air = 0.5 * (T_Gin + T_Lin);
-    const scalar cpc  = carrier.cpIdealGas().Cp(Tmid_air)     / Mc * 1000.0;  // J/(kg.K)
+    scalar cpcMol = 0.0;                                                 // J/(mol.K) dry mixture
+    for (std::size_t i = 0; i < n; ++i)
+        if (i != iW && yAir[i] > 0.0)
+            cpcMol += (yAir[i] / yDry) * thermo.comp(i).cpIdealGas().Cp(Tmid_air);
+    const scalar cpc  = cpcMol / Mc * 1000.0;                            // J/(kg.K)
     const scalar cpv  = condensable.cpIdealGas().Cp(Tmid_air) / Mv * 1000.0;
     const scalar cpL  = condensable.cpLiquid().Cp(0.5 * (T_Lin + T0 + 25.0))
                         / Mv * 1000.0;                                   // J/(kg.K)

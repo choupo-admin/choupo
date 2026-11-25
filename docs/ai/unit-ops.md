@@ -3057,6 +3057,12 @@ heat), and a heat capacity it must default (a salt with no
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 operation { maxExhaustHumidity 0.95; }   // optional
 ```
+Every solid of the feed counts (mass, moisture ratio, sensible heat), in any
+component order.  A `maxExhaustHumidity` the gas cannot meet even with nothing
+evaporated is REFUSED by name with the feasible range (before, the exhaust left
+above the cap while the run announced the cap).  `convectiveDryer` dries ONE
+solid and refuses a second by name; `coolingTower` prices the whole dry-gas
+mixture (molar mass, humid heat), not its majority component.
 Use `solidDryer` when the moisture is sorbed (an isotherm governs it);
 `evaporativeDryer` when it is free surface water (a crystal loses it by
 plain evaporation).
