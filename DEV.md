@@ -5663,6 +5663,33 @@ accepts today, and that is a policy call.
 > pode tirar de lá para o Choupo (Edutools e correlações)").**  A reading general, report private in the literature
 > folder; correlations with page and primary source (the books are secondary), at most eight tools, his criticisms
 > of simulators turned into tests, the layout rules against the PEQ layout.
+> DONE 2026-11-25 (private report, Studies/2026-11-25-moran; the parts read and not read are listed there).
+> Three of its claims were read back in the tree by the architect: Pipe refuses a gas (Pipe.cpp:182), the
+> sheets' margins, the PEQ's 6.096 m tubes.  The clearance gaps are hand arithmetic.  Kept: C503 (with its
+> measurement), C506, C507.  Later candidates, no item: batch heating time in closed form, a defaults tornado,
+> pump speed and parallel duty, a standby declaration in costing, an origin tag on design-guide rules, the
+> velocity note.  Not taken: copied tables, the fireball block (its printed equation is not dimensionless), the
+> pump power as printed (the efficiency multiplies), the argument from authorship.
+
+> **C506. A COMPRESSIBLE GAS LINE (from C505; C35 item 8).**  Isothermal, mean density, derived and compared with
+> the exact isothermal solution; the band where constant density misleads; then its tool.  After 2 December.
+
+> **C507. THE EXCHANGER'S SERVICE CLEARANCE IN THE LAYOUT CHECKER (from C505).**  Tube length plus a declared
+> clearance at the channel end, a finding with a name; the PEQ would raise it.  After 2 December: it moves the
+> demonstration plant's layout.  Fact (tube length) and convention (the clearance) are said apart.
+
+> **C508-C512. EQUIPMENT PAGES INSPIRED BY A PRACTITIONER'S BOOKS (Vitor, 2026-11-25: "é só para te inspirares!
+> Aquilo não é para copiares! ... Vê se o nosso EduTool de secadores pode beneficiar ... Vê o resto!").**  Two
+> reading generals took the equipment chapters the first reading had skipped (private: IDEAS-solids-separations.md,
+> IDEAS-rotating-valves-heat-piping.md).  C508, in build: the dryer pages, led by "Why did it not dry?" (air,
+> time or isotherm, ordered from engine KPIs).  C509, in build: the control valve and its loop gain (page only;
+> the engine's `valve` has no Cv, C214 W5).  C510 compressor selection, C511 filter cycle, C512 fines and solid
+> temperature in the spray dryer: after 2 December.  Read back by the architect: the gains (2.8, 33.8), the dryer
+> goldens, evapDryer02's false sentence, the idle cyclone.
+
+> **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
+> packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
+> from primaries, one correlation (Onda or Billet-Schultes) measured against published data.  Meets C319.
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão
