@@ -1968,8 +1968,8 @@
     },
     "check_gibbs_interior_point": {
       "exit": 0,
-      "claim": "check_gibbs_interior_point: OK -- 24 reactor solves agree with elementPotential (amounts 1e-06 of max(n, 1e-09 N), pi 1e-06, pi = -lambda 1e-08, adiabatic T 1e-05 K) in both variants of R1, and 7 refusals name their slice",
-      "seconds": 1.6
+      "claim": "check_gibbs_interior_point: OK -- 26 reactor solves agree with elementPotential (amounts 1e-06 of max(n, 1e-25 N), pi 1e-06, pi = -lambda 1e-08, adiabatic T 1e-05 K) in both variants of R1, the phase boundary holds at 0.84 / 0.8336 / 0.834 bar, and 7 refusals name their slice",
+      "seconds": 2.2
     }
   }
 }

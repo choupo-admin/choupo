@@ -16256,6 +16256,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.H"
   ],
@@ -30671,7 +30672,8 @@
   "src/unitOperations/reactor/gibbsMethod/ElementPotential.H": [
    "src/propertyOps/GibbsMapOp.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
-   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/InteriorPointGibbs.cpp"
   ],
   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H": [
    "src/applications/choupoSolve/main.cpp",

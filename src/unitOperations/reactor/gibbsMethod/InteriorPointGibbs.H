@@ -48,21 +48,24 @@ Description
     z_i and z_i -> 0 for a species present.
 
     THE TWO VARIANTS OF REVIEW R1, MEASURED (sec:gibbs-interior-point):
-      pureCondensedOnly  NO barrier on the species of the gas phase (the
+      condensedPhases    NO barrier on the species of the gas phase (the
                          entropy term n ln(n/N) already repels zero; only the
                          fraction to the boundary keeps n > 0, NLPProblem::
-                         isGuardOnly); a barrier on the ideal liquid, a phase
-                         that can vanish.  The primal-dual Newton on the true
-                         KKT conditions: no mu/n error on a trace species, no
-                         polish needed.
-      everyAmount        a barrier on every amount, then the element-potential
-                         polish of design sec. 2.9: every amount recomputed
-                         from pi = -lambda and finished by the existing Newton
-                         (gibbsGasSolve) on the gas, whose largest change is
-                         printed.  Selectable with `interiorPoint { barrier
-                         everyAmount; }`.
-    In BOTH the polish is computed and its largest change is reported; only
-    everyAmount publishes the polished amounts.
+                         isGuardOnly); a barrier on the amounts of the
+                         condensed phase (the ideal liquid MIXTURE: a phase
+                         that can vanish).  The primal-dual Newton on the true
+                         KKT conditions: no mu/n error on a gas trace species.
+                         THE DEFAULT.
+      everyAmount        a barrier on every amount.  Selectable with
+                         `interiorPoint { barrier everyAmount; }`.
+    THE FINISH, the same for both (design sec. 2.9: the interior point gives
+    the multipliers and the phase set, the existing Newton finishes).  The
+    liquid is decided NOT at the barrier-biased interior-point point (there a
+    real liquid of a few per cent carries z = mu/w and looks like a ghost) but
+    at the polished gas-only state on the FULL element totals, by
+    elementPotential's own test y P > f: absent, that state is the answer;
+    present, the element-potential two-phase solve finishes it.  The largest
+    change the finish makes to the interior point's own amounts is reported.
 
     NOT IN THIS SLICE, refused by name: a pure solid (slice B2), a fugacity
     model (an equation of state other than the ideal gas; slice B3).  A
@@ -74,7 +77,7 @@ Description
 
         interiorPoint
         {
-            barrier        pureCondensedOnly;   // | everyAmount
+            barrier        condensedPhases;   // | everyAmount
             barrierUpdate  monotone;            // adaptive: slice A3, refused
             globalization  filter;              // merit: slice A4, refused
             log            ipLog.csv;           // optional; refused in data/standards
@@ -98,7 +101,7 @@ class InteriorPointGibbs : public GibbsMethod
 public:
     struct Options
     {
-        bool        barrierOnEveryAmount = false;   //- false: pureCondensedOnly (the default)
+        bool        barrierOnEveryAmount = false;   //- false: condensedPhases (the default)
         std::string log;                            //- the per-iteration CSV, empty: none
     };
 

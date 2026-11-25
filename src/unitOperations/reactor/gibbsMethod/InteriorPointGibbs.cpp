@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "InteriorPointGibbs.H"
+#include "ElementPotential.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -38,6 +39,7 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
@@ -258,107 +260,136 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
     if (onIter)
         for (const auto& row : r.trace.rows) onIter(static_cast<int>(row.iteration), row.infDu, row.alphaPr);
 
-    //  THE LIMIT OF THE BARRIER-FREE VARIANT, MEASURED (gibbs06_thermal_nox, 1800 K, lean): a species at
-    //  ~1e-40 of the feed (here CH4) contributes ~1e-43 to G/RT, so the objective cannot SEE the step that
-    //  corrects it, the filter accepts only round-off in theta and the run stops "restoration failed" at a
-    //  FEASIBLE point with its dual infeasibility at 1e-3.  That point is exactly what the element-potential
-    //  polish exists for (design sec. 2.9): pi = -lambda is close, the Newton in ln n finishes it.  So a
-    //  feasible stop is RESCUED by the polish, announced, published only if the polish converges.
-    const bool rescue = !r.converged()
-        && (r.status == solver::IPStatus::RestorationFailed || r.status == solver::IPStatus::StepTooSmall)
-        && r.constraintViolation <= 1.0e-8;
-    if (!r.converged() && !rescue)
+    //  The last iterate of the interior point as the answer a NON-converged return carries (elementPotential
+    //  does the same: the caller prints the failure, the adiabatic outer Newton backtracks).
+    const auto lastIterate = [&](const std::string& cause)
     {
+        for (std::size_t i = 0; i < N; ++i) eq.nGas[i] = r.x[i] * N0;
+        for (std::size_t k = 0; k < K; ++k) eq.nLiq[cond[k]] = r.x[N + k] * N0;
+        eq.Ntotal_gas = eq.Ntotal_liq = 0.0;
+        for (scalar v : eq.nGas) eq.Ntotal_gas += v;
+        for (scalar v : eq.nLiq) eq.Ntotal_liq += v;
         eq.converged = false;
         eq.residual = r.kktError;
-        eq.notConvergedCause = std::string("the interior-point run ended \"") + solver::statusName(r.status)
-            + "\": " + r.message;
-        reportBrief_ = "  interiorPoint: NOT CONVERGED (" + std::string(solver::statusName(r.status)) + ")\n";
+        eq.notConvergedCause = cause;
+        reportBrief_ = "  interiorPoint: NOT CONVERGED -- " + cause + "\n";
         reportDetail_ = reportBrief_ + "    iteration trace:\n      " + solver::IPTrace::headerLine() + "\n";
         for (const auto& row : r.trace.rows) reportDetail_ += "      " + solver::IPTrace::format(row) + "\n";
         kpis_.clear();
         return eq;
-    }
+    };
 
-    //  ---- THE PHASE SET.  The liquid is present iff the tangent-plane sum of the ideal liquid reaches 1:
-    //  with pi = -lambda, d_k = g_k/RT + ln(f_k/P0) - (A_k . pi), x_k = exp(-d_k) is the liquid that
-    //  would be in equilibrium with the gas, and sum_k exp(-d_k) >= 1 is Michelsen's condition for it.
-    //  A liquid amount the barrier left at mu/z below that is a GHOST, set to zero (and its mass is
-    //  what the polish below reports).
+    //  THE LIMIT OF THE BARRIER-FREE VARIANT, MEASURED (gibbs06_thermal_nox, 1800 K, lean): a species at
+    //  ~1e-40 of the feed (here CH4) contributes ~1e-43 to G/RT, so the objective cannot SEE the step that
+    //  corrects it and the run stops "restoration failed" at a FEASIBLE point with its dual infeasibility
+    //  at 1e-3.  That point is what the finish below is for (design sec. 2.9): pi = -lambda is close, the
+    //  Newton in ln n completes it.  So a feasible stop is RESCUED, announced, and published only if the
+    //  finish converges.
+    const bool rescue = !r.converged()
+        && (r.status == solver::IPStatus::RestorationFailed || r.status == solver::IPStatus::StepTooSmall)
+        && r.constraintViolation <= 1.0e-8;
+    if (!r.converged() && !rescue)
+        return lastIterate(std::string("the interior-point run ended \"") + solver::statusName(r.status) + "\": " + r.message);
+    const std::string rescueNote = rescue
+        ? std::string("the interior-point run ended \"") + solver::statusName(r.status) + "\" at a FEASIBLE point ("
+          "the line search found no step; restoration entered " + std::to_string(r.restorations) + " time(s)) with the dual infeasibility at "
+          + sci(r.kktError, 2) + " -- a trace amount the objective cannot see; the element-potential Newton from pi = -lambda finished it"
+        : std::string();
+    if (rescue && AdvisoryLog::instance().add("solver", "info", "gibbs interiorPoint", rescueNote + "."))
+        std::cerr << "[solver] gibbs interiorPoint at T = " << T << " K: " << rescueNote << " (announced once per run).\n";
+
     sVector lambda = r.lambda;
     sVector piIP(M);
     for (std::size_t j = 0; j < M; ++j) piIP[j] = -lambda[j];                       // THE BRIDGE
-    scalar tpd = 0.0;
-    for (std::size_t k = 0; k < K; ++k)
-    {
-        scalar Api = 0.0;
-        for (std::size_t j = 0; j < M; ++j) Api += p.A[j][cond[k]] * piIP[j];
-        tpd += std::exp(-(gl[k] - Api));
-    }
-    const bool liquidPresent = K > 0 && tpd > 1.0 - 1.0e-7;
-    scalar ghostMass = 0.0;
-    if (K > 0 && !liquidPresent)
-        for (std::size_t k = 0; k < K; ++k) ghostMass += r.x[N + k] * N0;
-
-    for (std::size_t i = 0; i < N; ++i) eq.nGas[i] = r.x[i] * N0;
-    if (liquidPresent)
-        for (std::size_t k = 0; k < K; ++k) eq.nLiq[cond[k]] = r.x[N + k] * N0;
+    sVector nGasIP(N), nLiqIP(N, 0.0);
     scalar NgIP = 0.0, NlIP = 0.0;
-    for (scalar v : eq.nGas) NgIP += v;
-    for (scalar v : eq.nLiq) NlIP += v;
+    for (std::size_t i = 0; i < N; ++i) { nGasIP[i] = r.x[i] * N0; NgIP += nGasIP[i]; }
+    for (std::size_t k = 0; k < K; ++k) { nLiqIP[cond[k]] = r.x[N + k] * N0; NlIP += nLiqIP[cond[k]]; }
     if (!(NgIP > 1.0e-8 * N0))
-        throw std::runtime_error("GibbsReactor (model interiorPoint): the gas phase vanished at the"
-            " optimum (" + sci(NgIP) + " mol/s of " + sci(N0) + " fed) -- a whole phase disappearing is"
-            " the stated limit of the barrier-free variant (design record sec. 8, R1; stage C).  Use"
-            " `model elementPotential;` or `reactiveFlash`.");
+        return lastIterate("the gas phase vanished at the optimum (" + sci(NgIP) + " mol/s of " + sci(N0) + " fed) -- a whole"
+            " phase disappearing is the stated limit of the barrier-free variant (design record sec. 8, R1; stage C); use"
+            " `model elementPotential;` or `reactiveFlash`");
 
-    //  ---- THE POLISH (design sec. 2.9): the amounts recomputed from pi = -lambda and finished by the
-    //  existing element-potential Newton on the gas, whose seed this is.  Always COMPUTED, so its largest
-    //  change is a measurement; PUBLISHED only under `barrier everyAmount`.
-    sVector bGas = p.b;
-    for (std::size_t k = 0; k < K; ++k)
-        for (std::size_t j = 0; j < M; ++j) bGas[j] -= p.A[j][cond[k]] * eq.nLiq[cond[k]];
+    //  ---- THE FINISH (design sec. 2.9: the interior point gives the multipliers and the phase set, the existing
+    //  Newton finishes).  The phase set is decided NOT at the barrier-biased interior-point point -- there the
+    //  liquid carries z = mu/w and a real liquid of a few per cent of the feed looks like the barrier's ghost --
+    //  but at the polished GAS-ONLY state on the FULL element totals, by elementPotential's own test, y_c P > f_c
+    //  (here summed over the ideal liquid's species):
+    //    absent  -> that gas-only state IS the answer (exact closure);
+    //    present -> the element-potential two-phase solve (ElementPotential) finishes it.
     sVector seed(M + 1);
     for (std::size_t j = 0; j < M; ++j) seed[j] = piIP[j];
-    seed[M] = std::log(NgIP);
-    GibbsEquilibrium pol = gibbsGasSolve(p, T, gRT, bGas, {}, {}, &seed);
-    scalar polishRel = 0.0, polishAbs = 0.0, piDiff = 0.0;
-    std::string polishSpecies = "-";
-    if (pol.converged)
+    seed[M] = std::log(NgIP + NlIP);
+    const GibbsEquilibrium gasOnly = gibbsGasSolve(p, T, gRT, p.b, {}, {}, &seed);
+    if (!gasOnly.converged)
+        return lastIterate("the element-potential Newton on the full element totals did not converge from pi = -lambda ("
+                           + gasOnly.notConvergedCause + ")");
+    scalar sumY = 0.0;                      // sum_k y_k P / f_k at the gas-only state (> 1: a liquid forms)
+    for (std::size_t k = 0; k < K; ++k)
+        sumY += gasOnly.nGas[cond[k]] / gasOnly.Ntotal_gas * p.P
+              / thermo.pureLiquidReference(p.compIdx[cond[k]], T, p.P);
+    const bool presentFinished = K > 0 && sumY > 1.0;
+    const bool presentIP = K > 0 && NlIP > 1.0e-7 * N0;     // the interior point's own verdict (a barrier ghost is ~1e-9)
+    const scalar niter = gasOnly.iterations;
+    std::string finish;
+    bool published = true;
+    if (!presentFinished)
     {
-        for (std::size_t i = 0; i < N; ++i)
+        eq = gasOnly;
+        eq.nLiq.assign(N, 0.0);
+        finish = "the polished GAS-ONLY state on the full element totals (no liquid: sum y P/f = " + sci(sumY, 8) + " <= 1)";
+    }
+    else
+    {
+        const GibbsEquilibrium two = ElementPotential().equilibrium(p, T);
+        if (two.converged && two.twoPhase && two.supersaturatedNotCondensed.empty())
         {
-            const scalar nP = pol.nGas[i], nI = eq.nGas[i];
-            polishAbs = std::max(polishAbs, std::abs(nP - nI) / N0);
-            if (nP > 1.0e-30 * N0)
-            {
-                const scalar rel = std::abs(nP - nI) / nP;
-                if (rel > polishRel) { polishRel = rel; polishSpecies = names[i]; }
-            }
+            eq = two;
+            finish = "the element-potential TWO-PHASE solve (a liquid forms: sum y P/f = " + sci(sumY, 8) + " > 1); phase set and multipliers "
+                     "from the interior point, amounts finished by the element-potential Newton";
         }
-        for (std::size_t j = 0; j < M; ++j) piDiff = std::max(piDiff, std::abs(pol.pi[j] - piIP[j]));
+        else if (presentIP)
+        {   // a MIXED liquid (elementPotential carries one pure liquid): the interior point's liquid, the gas polished on what remains
+            sVector bGas = p.b;
+            for (std::size_t k = 0; k < K; ++k)
+                for (std::size_t j = 0; j < M; ++j) bGas[j] -= p.A[j][cond[k]] * nLiqIP[cond[k]];
+            sVector seed2(M + 1);
+            for (std::size_t j = 0; j < M; ++j) seed2[j] = piIP[j];
+            seed2[M] = std::log(NgIP);
+            eq = gibbsGasSolve(p, T, gRT, bGas, {}, {}, &seed2);
+            eq.nLiq = nLiqIP;
+            finish = "the interior point's MIXED ideal liquid with the gas polished on the remaining atoms (elementPotential carries one pure "
+                     "liquid only); the liquid's trace species keep the barrier error mu/w";
+            published = eq.converged;
+        }
+        else
+            return lastIterate("a liquid forms at the polished gas-only state (sum y P/f = " + sci(sumY, 8) + " > 1) and neither finish can carry it ("
+                               + (two.notConvergedCause.empty() ? two.supersaturatedNotCondensed : two.notConvergedCause)
+                               + "): refused rather than publish a state that drops matter");
     }
-    const bool usePolish = (everyAmount || rescue) && pol.converged;
-    if (rescue && !pol.converged)
-    {
-        eq.converged = false;
-        eq.notConvergedCause = std::string("the interior-point run ended \"") + solver::statusName(r.status)
-            + "\" and the element-potential polish from pi = -lambda did not converge either";
-        reportBrief_ = reportDetail_ = "  interiorPoint: NOT CONVERGED (" + std::string(solver::statusName(r.status)) + ", polish failed)\n";
-        kpis_.clear();
-        return eq;
-    }
-    if (everyAmount && !rescue && !pol.converged)
-        throw std::runtime_error("GibbsReactor (model interiorPoint, barrier everyAmount): the element-potential"
-            " polish did not converge from pi = -lambda (" + pol.notConvergedCause + ")");
-    if (usePolish) eq.nGas = pol.nGas;
-
-    eq.Ntotal_gas = 0.0;  eq.Ntotal_liq = 0.0;
+    if (!published)
+        return lastIterate("the gas polish of the mixed liquid did not converge (" + eq.notConvergedCause + ")");
+    eq.Ntotal_gas = eq.Ntotal_liq = 0.0;
     for (scalar v : eq.nGas) eq.Ntotal_gas += v;
     for (scalar v : eq.nLiq) eq.Ntotal_liq += v;
-    eq.twoPhase = liquidPresent && eq.Ntotal_liq > 0.0;
-    eq.pi = usePolish ? pol.pi : piIP;
+    const bool liquidPresent = eq.Ntotal_liq > 0.0;
+    eq.twoPhase = liquidPresent;
+    eq.iterations = static_cast<int>(r.iterations);
     eq.converged = true;
+
+    //  The largest change the finish made to the interior point's amounts (gas species above 1e-25 of the feed).
+    scalar polishRel = 0.0, polishAbs = 0.0, piDiff = 0.0;
+    std::string polishSpecies = "-";
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        polishAbs = std::max(polishAbs, std::abs(eq.nGas[i] - nGasIP[i]) / N0);
+        if (eq.nGas[i] > 1.0e-25 * N0)
+        {
+            const scalar rel = std::abs(eq.nGas[i] - nGasIP[i]) / eq.nGas[i];
+            if (rel > polishRel) { polishRel = rel; polishSpecies = names[i]; }
+        }
+    }
+    for (std::size_t j = 0; j < M; ++j) piDiff = std::max(piDiff, std::abs(eq.pi[j] - piIP[j]));
     scalar res = 0.0;
     for (std::size_t j = 0; j < M; ++j)
     {
@@ -367,13 +398,11 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
         res = std::max(res, std::abs(s));
     }
     eq.residual = res;
-
-    //  An independent last look, the one every method gives: a condensable the answer left supersaturated.
-    {
+    {   //  An independent last look, the one every method gives: a condensable the answer left supersaturated.
         std::vector<bool> condensed(N, false);
-        if (liquidPresent)
-            for (std::size_t k = 0; k < K; ++k) condensed[cond[k]] = true;
-        eq.supersaturatedNotCondensed = supersaturatedCondensables(p, eq, T, condensed);
+        for (std::size_t i = 0; i < N; ++i) condensed[i] = eq.nLiq[i] > 0.0;
+        const std::string sup = supersaturatedCondensables(p, eq, T, condensed);
+        if (!sup.empty()) eq.supersaturatedNotCondensed = sup;
     }
 
     // ---- the record --------------------------------------------------------------------------
@@ -420,24 +449,22 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
           << "), " << M << " element balances, analytic gradient and Hessian; "
           << r.iterations << " iterations, " << r.inertiaCorrections << " inertia corrections, "
           << r.restorations << " restorations, final mu " << sci(muFinal, 2) << ", KKT error " << sci(r.kktError, 2) << "\n"
-          << (rescue ? "    RESCUED BY THE POLISH: the run ended \"" + std::string(solver::statusName(r.status)) + "\" at a feasible point with the dual infeasibility at "
-                       + sci(r.kktError, 2) + " (a trace amount the objective cannot see); the element-potential Newton from pi = -lambda finished it\n" : std::string())
+          << (rescue ? "    RESCUED: " + rescueNote + "\n" : std::string())
           << "    THE BRIDGE  pi = -lambda  (the multiplier of each element balance IS minus its element potential):\n";
     for (std::size_t j = 0; j < M; ++j)
     {
         const std::string e = j < p.elements.size() ? p.elements[j] : std::to_string(j + 1);
-        brief << "      " << e << "   lambda = " << sci(lambda[j], 10) << "   pi = -lambda = " << sci(piIP[j], 10);
-        if (pol.converged) brief << "   polished pi = " << sci(pol.pi[j], 10);
-        brief << "\n";
+        brief << "      " << e << "   lambda = " << sci(lambda[j], 10) << "   pi = -lambda = " << sci(piIP[j], 10)
+              << "   finished pi = " << sci(eq.pi[j], 10) << "\n";
     }
-    brief << "    polish: element-potential Newton from pi = -lambda, "
-          << (pol.converged ? std::to_string(pol.iterations) + " iterations" : std::string("did not converge"))
-          << "; largest change " << sci(polishRel, 2) << " relative (" << polishSpecies << "), "
-          << sci(polishAbs, 2) << " of the feed, pi " << sci(piDiff, 2)
-          << (usePolish ? "  [published]" : "  [reported, not applied]") << "\n";
+    brief << "    finish: " << finish << "; the element-potential Newton from pi = -lambda took " << niter << " iterations on the full totals\n"
+          << "    largest change the finish made: " << sci(polishRel, 2) << " relative (" << polishSpecies << "), "
+          << sci(polishAbs, 2) << " of the feed, pi " << sci(piDiff, 2) << "\n";
     if (K)
-        brief << "    liquid: IDEAL mixture of " << K << " condensable" << (K > 1 ? "s" : "") << " (Raoult; an activity model of the package is not read); tangent-plane sum "
-              << sci(tpd, 8) << (liquidPresent ? " (>= 1 - 1e-7): present" : " < 1: absent (barrier ghost " + sci(ghostMass, 2) + " mol/s dropped)") << "\n";
+        brief << "    liquid: IDEAL mixture of " << K << " condensable" << (K > 1 ? "s" : "") << " (Raoult; an activity model of the package is not read); "
+              << (liquidPresent ? "present" : "absent") << (presentIP == presentFinished ? "; the interior point's own verdict agrees"
+                  : std::string("; the interior point's own verdict (") + (presentIP ? "present" : "absent")
+                    + ", read at its barrier-biased point) DISAGREES -- the finished verdict stands") << "\n";
     detail << brief.str() << "    iteration trace (mu, scaled dual infeasibility, element-balance infeasibility theta, complementarity, step lengths):\n"
            << "      " << solver::IPTrace::headerLine() << "\n";
     for (const auto& row : r.trace.rows) detail << "      " << solver::IPTrace::format(row) << "\n";
@@ -451,6 +478,8 @@ GibbsEquilibrium InteriorPointGibbs::equilibrium(const GibbsProblem& p, scalar T
     kpis_["ip_barrierOnEveryAmount"] = everyAmount ? 1.0 : 0.0;
     kpis_["ip_rescuedByPolish"] = rescue ? 1.0 : 0.0;
     kpis_["ip_polishLargestRelativeChange"] = polishRel;
+    kpis_["ip_polishIterations"] = niter;      // Newton iterations from pi = -lambda: the bridge's quality
+    kpis_["ip_phaseVerdictsDisagree"] = presentIP == presentFinished ? 0.0 : 1.0;
     for (std::size_t j = 0; j < M; ++j)
         kpis_["ip_lambda_" + (j < p.elements.size() ? p.elements[j] : std::to_string(j + 1))] = lambda[j];
     return eq;
@@ -480,11 +509,11 @@ InteriorPointGibbs::Options InteriorPointGibbs::readBlock(const DictPtr& block)
             throw std::runtime_error("GibbsReactor: unknown key `" + key + "` in `interiorPoint { }`; the block"
                 " reads barrier, barrierUpdate, globalization and log (no tolerance or maxIter key exists: the"
                 " tolerances are the optimizer's own and are printed in its header).");
-    const std::string bar = block->lookupWordOrDefault("barrier", "pureCondensedOnly");
+    const std::string bar = block->lookupWordOrDefault("barrier", "condensedPhases");
     if (bar == "everyAmount") o.barrierOnEveryAmount = true;
-    else if (bar != "pureCondensedOnly")
+    else if (bar != "condensedPhases")
         throw std::runtime_error("GibbsReactor: `interiorPoint { barrier " + bar + "; }` -- the values are"
-            " `pureCondensedOnly` (no barrier on the species of the gas phase; the default, review R1 variant b)"
+            " `condensedPhases` (no barrier on the species of the gas phase; the default, review R1 variant b)"
             " and `everyAmount` (a barrier on every amount, then the element-potential polish; variant a).");
     const std::string upd = block->lookupWordOrDefault("barrierUpdate", "monotone");
     if (upd != "monotone")

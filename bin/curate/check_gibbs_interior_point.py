@@ -24,29 +24,46 @@ gas + ideal-liquid Gibbs reactor is switched to interiorPoint (and its
 `newtonLog` dropped).  Both run; per reactor, from the KPIs:
   (a) every gas amount y_i N_gas and liquid amount x_i N_liq agree with the
       element-potential method's to REL of the larger of the amount and FLOOR x
-      the unit's total moles (REL = 1e-6, FLOOR = 1e-9; see the measured table
-      printed by --table: the element-potential answer is itself only closed to
-      |F| <= 1e-8 mol/s and its liquid is a bisection, so 1e-8 relative cannot be
-      asked of the REFERENCE; the interior point closes its element balances to
-      1e-12);
-  (b) the published element potentials agree to 1e-6 relative of their scale, and
-      the multiplier the run publishes (ip_lambda_<element>) is minus the
-      published one, pi = -lambda, to 1e-8 relative of the scale;
-  (c) on an adiabatic reactor the outlet T agrees within 1e-6 K;
+      the unit's total moles (REL = 1e-6, FLOOR = 1e-25: trace species down to
+      1e-25 of the feed are compared RELATIVELY, which holds gibbs06's radicals
+      and NO).  1e-8 relative is not asked: the element-potential answer is
+      itself only closed to |F| <= 1e-8 mol/s and its liquid is a bisection.
+      The published amounts are the Newton's finish; what holds the INTERIOR
+      POINT's own amounts is (g): the largest change the finish makes to them
+      (ip_polishLargestRelativeChange, species above 1e-25 of the feed) is
+      <= 1e-6 in the default variant on every case that was not rescued;
+  (b) the published element potentials agree to 1e-6 relative of their scale
+      (the comparison with the independent method is the real test), and the
+      raw multiplier the interior point returns (ip_lambda_<element>) is minus
+      the published pi to 1e-8 of the scale.  This IS the bridge test: the
+      published pi is the Newton's, found independently of the multiplier's sign
+      (the Newton is seeded from pi = -lambda but re-seeds itself if that fails,
+      so the seed cannot carry the check -- measured, which is why an iteration
+      count is not used); a sign error in the NLP's constraint or in the bridge
+      makes pi + lambda = 2 pi;
+  (c) on an adiabatic reactor the outlet T agrees within DT = 1e-5 K: the outer
+      Newton on T stops at 1e-2 W in the energy balance, about 1e-6 K of noise
+      between two inner solvers (measured 1.2e-6 on gibbs06_h2_flame_radicals);
   (d) the model that cannot run is REFUSED by name with the slice that carries
       it: gibbs11's graphite (B2), gibbs10 and gibbs13 on an SRK package (B3),
       `barrierUpdate adaptive` (A3), `globalization merit` (A4), an unknown key,
       the block under another model, and the log inside data/standards.
   (e) both variants of review R1 run (`barrier everyAmount` is switched in a
-      third copy) and agree with the default; their iteration counts and the
-      largest polish change are in the table.
-
+      third copy) and agree with the default;
+  (f) THE PHASE BOUNDARY (the blocker of the independent review: the liquid was
+      decided at the barrier-biased interior-point point and a real liquid of a
+      few per cent of the feed, with its matter, was dropped at exit 0): gibbs14
+      at 0.84 bar (liquid present, two outlets: amounts and liquid equal
+      elementPotential's), at 0.8336 bar (just below the dew point, one outlet:
+      outlet moles = feed moles to 1e-10) and at 0.834 bar with one outlet
+      (just above it: BOTH methods refuse, naming the liquid formed).
 SABOTAGES (by hand, restored with cp and make all; results in the slice report):
-  S1  InteriorPointGibbs.cpp: eq.pi = +lambda  -> (b) FAILS on every case
-  S2  the polish removed under `everyAmount` (usePolish = false) -> (a) FAILS on
+  S1  InteriorPointGibbs.cpp: the element balances written b - A n (the multiplier flips sign; the amounts
+      do not move) -> (b) FAILS on every case: pi + lambda = 2 pi
+  S2  everyAmount publishes the interior point's own amounts instead of the finish -> (a) FAILS on
       the trace species of gibbs06_h2_flame_radicals (H2O2, HO2)
-  S3  the liquid's tangent-plane test removed (the barrier ghost kept) -> (a)
-      FAILS on gibbs07 and claus01's liquid amount.
+  S3  the liquid decided from the interior point's own amount (a liquid under 1 % of the feed is a
+      ghost: the old rule) -> (f) FAILS at 0.84, 0.8336 and 0.834 bar.
 """
 import json
 import re
@@ -67,7 +84,7 @@ CASES = {
     "gibbs06_thermal_nox": (), "gibbs07_wgs_cooled": (), "gibbs12_element_potential_newton": ("coking",),
     "claus01_thermal_stage": (),
 }
-REL, FLOOR, PI_REL, BRIDGE_REL, DT = 1e-6, 1e-9, 1e-6, 1e-8, 1e-5
+REL, FLOOR, PI_REL, BRIDGE_REL, DT = 1e-6, 1e-25, 1e-6, 1e-8, 1e-5
 
 
 def units_of(text):
@@ -112,7 +129,7 @@ def amounts(k, species):
     return gas, liq
 
 
-def compare(tag, ref, got, failures, rows):
+def compare(tag, ref, got, failures, rows, near_boundary=False):
     species = [x[2:] for x in ref if x.startswith("y_")]
     g0, l0 = amounts(ref, species)
     g1, l1 = amounts(got, species)
@@ -134,9 +151,11 @@ def compare(tag, ref, got, failures, rows):
         failures.append(f"{tag}: amount {wsp} differs by {worst:.2e} (limit {REL:g})")
     if dpi > PI_REL:
         failures.append(f"{tag}: element potentials differ by {dpi:.2e} (limit {PI_REL:g})")
-    lim = BRIDGE_REL * (10 if "everyAmount" in tag else 1)   # there the published pi is the POLISHED one: it differs by the polish
+    lim = BRIDGE_REL * (10 if "everyAmount" in tag else 1) * (1000 if near_boundary else 1)   # near the dew point the liquid is small and its barrier error mu/w is not   # there the published pi is the POLISHED one: it differs by the polish
     if bridge > lim:
         failures.append(f"{tag}: pi != -lambda, off by {bridge:.2e} (limit {lim:g})")
+    if "everyAmount" not in tag and not got.get("ip_rescuedByPolish") and got["ip_polishLargestRelativeChange"] > (1e-3 if near_boundary else 1e-6):
+        failures.append(f"{tag}: the finish changes the interior point's own amounts by {got['ip_polishLargestRelativeChange']:.2e} (limit {1e-3 if near_boundary else 1e-6:g})")
     if dT > DT:
         failures.append(f"{tag}: outlet T differs by {dT:.2e} K (limit {DT:g})")
 
@@ -161,6 +180,40 @@ def main():
                 compare(f"{case}.{unit}", outs["ref"][unit], outs["ip"][unit], failures, rows)
                 if unit in outs["ev"]:
                     compare(f"{case}.{unit} [everyAmount]", outs["ref"][unit], outs["ev"][unit], failures, rows)
+    # (f) THE PHASE BOUNDARY (review blocker: a real liquid under a few % of the feed was taken for the barrier's
+    # ghost and dropped with its matter, exit 0).  gibbs14 (1 CO : 3 H2O, 350 K) has its dew point at ~0.8337 bar.
+    def boundary(P, one_outlet, model):
+        def mk(c):
+            fd = c / "system" / "flowsheetDict"
+            gatekit.edit(fd, "P          1.0 bar;", "P          %s bar;" % P)
+            if one_outlet:
+                gatekit.edit(fd, "outputs     ( gas  condensate );", "outputs     ( gas );")
+                (c / "0" / "condensate").unlink()
+            if model == "elementPotential":
+                gatekit.edit(fd, r"model\s+interiorPoint;", "model       elementPotential;", regex=True)
+                gatekit.edit(fd, r"interiorPoint\s*\{[^}]*\}", "", regex=True)
+        return mk
+    for P, one, tag in (("0.84", False, "liquid present, two outlets"), ("0.8336", True, "liquid absent, one outlet")):
+        outs = {}
+        for model in ("elementPotential", "interiorPoint"):
+            with gatekit.probe_copy(G + "gibbs14_interior_point", strip=("expected",)) as c:
+                boundary(P, one, model)(c)
+                rc, o = gatekit.run(solve, c)
+                if rc != 0:
+                    failures.append(f"phase boundary {P} bar ({tag}) {model}: exit {rc}: " + o.strip().splitlines()[-1][:160])
+                outs[model] = kpis(o).get("wgs")
+        if all(outs.values()):
+            compare(f"gibbs14 @ {P} bar ({tag})", outs["elementPotential"], outs["interiorPoint"], failures, rows, near_boundary=True)
+            k = outs["interiorPoint"]
+            if abs(k["N_out_mol_s"] - k["N_in_mol_s"]) > 1e-7 * k["N_in_mol_s"]:
+                failures.append(f"phase boundary {P} bar ({tag}): the outlet holds {k['N_out_mol_s']!r} of "
+                                f"{k['N_in_mol_s']!r} mol/s fed -- matter was dropped")
+    for model in ("elementPotential", "interiorPoint"):     # a liquid that forms with no outlet for it: BOTH refuse the same way
+        with gatekit.probe_copy(G + "gibbs14_interior_point", strip=("expected",)) as c:
+            boundary("0.834", True, model)(c)
+            rc, o = gatekit.run(solve, c)
+            if rc == 0 or "a LIQUID formed" not in o:
+                failures.append(f"phase boundary 0.834 bar, one outlet, {model}: exit {rc} -- must refuse naming the liquid formed")
     # (d) refusals by name
     def refused(label, base, edit_fn, needles, model="interiorPoint"):
         with gatekit.probe_copy(G + base, strip=("expected",)) as c:
@@ -185,7 +238,7 @@ def main():
             print("%-52s %9.2e %-8s %9.2e %9.2e %8.1e %4d %9.2e" % r)
     return gatekit.verdict("check_gibbs_interior_point", failures,
                            f"{len(rows)} reactor solves agree with elementPotential (amounts {REL:g} of max(n, {FLOOR:g} N), "
-                           f"pi {PI_REL:g}, pi = -lambda {BRIDGE_REL:g}, adiabatic T {DT:g} K) in both variants of R1, and 7 refusals name their slice")
+                           f"pi {PI_REL:g}, pi = -lambda {BRIDGE_REL:g}, adiabatic T {DT:g} K) in both variants of R1, the phase boundary holds at 0.84 / 0.8336 / 0.834 bar, and 7 refusals name their slice")
 
 
 if __name__ == "__main__":

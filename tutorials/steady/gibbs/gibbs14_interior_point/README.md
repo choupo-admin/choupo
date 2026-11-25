@@ -20,16 +20,17 @@ different road, and that road is what this case shows.
 * **The bridge.**  The multipliers `lambda` of the three element balances ARE the element
   potentials of gibbs07, with the opposite sign: `pi = -lambda` (Theory Guide
   `sec:gibbs-interior-point`).  The run prints `lambda`, `pi = -lambda` and the `pi` the
-  element-potential Newton reaches when started from it (it needs 0 iterations: it is
-  already there).  The KPIs `lambda_C`, `lambda_H`, `lambda_O` are `pi RT` exactly as in gibbs07; `ip_lambda_C`
+  element-potential Newton reaches when started from it.  That Newton FINISHES the answer: the liquid is
+  decided at its gas-only state on the full element totals and, being present, the element-potential two-phase
+  solve publishes the amounts (so they are gibbs07's).  The KPIs `lambda_C`, `lambda_H`, `lambda_O` are `pi RT` exactly as in gibbs07; `ip_lambda_C`
   is the raw multiplier, **-17.26**<!--golden: kpi wgs ip_lambda_C -->.
 
 ## 2. Things to try
 
-* `barrier everyAmount;` in the `interiorPoint` block: a barrier on every amount, then the element-potential
-  polish (which is published).  Same answer, more iterations; compare the iteration counts.  The case
-  `gibbs06_h2_flame_radicals` makes the difference large: with a barrier the radicals are off by up to
-  2 % until the polish.
+* `barrier everyAmount;` in the `interiorPoint` block: a barrier on every amount.  Same answer (the finish is
+  the same), more iterations; compare the iteration counts.  The case `gibbs06_h2_flame_radicals` makes the
+  difference visible: with a barrier the interior point's own radicals are off by up to 2 % until the
+  finish (the run prints the largest change it made).
 * Put `model elementPotential;` back: the amounts agree with this run to 2e-7 (the element-potential
   method closes its element balance only to 1e-8 mol/s and finds the liquid by bisection).
 

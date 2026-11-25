@@ -61,7 +61,7 @@ units
 
         interiorPoint
         {
-            barrier        pureCondensedOnly;   // the default: no barrier on the gas species
+            barrier        condensedPhases;   // the default: no barrier on the gas species
             barrierUpdate  monotone;
             globalization  filter;
             log            ipLog.csv;
