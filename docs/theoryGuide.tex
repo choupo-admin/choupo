@@ -33300,6 +33300,103 @@ half of the check that a comparison of apparent compositions alone would
 miss.
 \end{tutoriallink}
 
+\subsection{When the column does not converge: which of four things it is}\label{sec:column-diagnosis}
+
+A Newton that stops without converging used to say that it stopped, and in
+the worst case which \emph{row} of a flattened system it found singular.
+That row is an index into a vector that no student wrote: it is the
+$(j\,m + i)$-th equation of a system in which stage $j$, component $i$ and
+the kind of equation have been folded into one integer, and the folding is
+different in the constant-molal-overflow layout ($m = n$ unknowns per stage)
+and in the full MESH ($m = n + 2$).  Since C184 a column that fails prints a
+\code{[diagnosis]} block that answers a better question: \emph{what kind of
+failure is this?}  It runs \emph{after} the failure, reads the residual and
+the best iterate the Newton returned, and moves no converged number.  The
+verdict is one of four letters, or an honest \emph{could not tell}.
+
+\paragraph{(A) The specification is physically infeasible.}  Only the
+\emph{declared} numbers can show this, never an unconverged iterate.  With
+the distillate rate $D$, the side draws $U_{\mathrm{draw}}$ and the total
+feed $F$, the overall balance leaves the bottoms
+\begin{equation}
+B = F - D - U_{\mathrm{draw}},
+\end{equation}
+and a specification with $D \le 0$, $B \le 0$ or a negative reflux ratio $R$
+has no solution whatever the stages do.  The same holds when the constant-molal-overflow
+flows themselves go non-positive, $V_j \le 0$ or $L_j < 0$ (a draw that
+starves a stage).  These are refused \emph{before} any Newton exists, with the
+numbers in kmol/h.  What is deliberately \emph{not} used: the best iterate's
+component flows.  A first version called a specification ``probably
+infeasible'' when the unconverged iterate carried a negative distillate
+component; on a 50-stage benzene/toluene column at $R = 60$ --- a feasible,
+merely hard column --- the same signs appear at $\|F\| = 0.7$, so an iterate
+that has not converged cannot testify to the specification.  A purity that
+the feed cannot reach at the given reflux is \emph{not} detected, because
+\code{distillateRate} with \code{refluxRatio} declares no purity: such a
+column converges with an impure distillate, as it should.
+
+\paragraph{(B) Thermodynamic data missing, or a stage that could not be
+priced.}  The stage pricing already turns a refusal it provokes mid-solve
+(an out-of-domain property at a trial state) into an infeasible trial and
+keeps the first message.  If the column then fails, that message is the
+evidence for (B), together with any residual that cannot be evaluated at the
+best iterate itself.  Extrapolation \emph{notices} (a vapour pressure
+evaluated outside its declared \code{Trange}) are listed as notes under every
+other verdict but are \emph{not} a cause by themselves: a benzene/toluene
+column at atmospheric pressure raises them and converges.
+
+\paragraph{(C) The system is ill-conditioned or singular.}  The Jacobian
+$J$ of the residual at the best iterate is built by central differences and
+equilibrated by scaling rows then columns,
+\begin{equation}
+\hat A = R\,J\,C, \qquad R_{ii} = 1\Big/\max_j |J_{ij}|, \quad
+C_{jj} = 1\Big/\max_i |R_{ii}J_{ij}|,
+\end{equation}
+so that a stage in kmol/s and a temperature in kelvin do not look
+ill-conditioned merely for their units.  The smallest singular value comes
+from inverse iteration on $\hat A^{\mathsf T}\hat A$, whose inverse is
+$\hat A^{-1}\hat A^{-\mathsf T}$ (two triangular solves per step from one LU),
+and the largest from the power method;
+\begin{equation}
+\kappa = \sigma_{\max}/\sigma_{\min}.
+\end{equation}
+The right singular vector $v$ of the weakest direction names the
+\emph{least-determined unknowns} (its two largest entries), and
+$u \propto \hat A^{-\mathsf T} v$ names the \emph{weakest equations}; both are
+translated to the column's words: ``the material balance of methanol on stage
+9 (the feed stage)'', ``the temperature of stage 18 (the reboiler)''.  The
+physics line is read from the value of the least-determined unknown: a mole
+fraction below $10^{-6}$ is ``all but absent'' (a near-pure stage or a trace
+component, whose balance has no sensitivity to its own fraction); a flow that
+has gone to zero is a stage running dry.  The verdict is (C) when
+$\kappa > 10^{9}$ or a pivot vanishes.  The threshold is not derived from a
+source: it is the reciprocal of the Jacobian's own accuracy (a central
+difference at a relative step of $10^{-6}$ is good to about $10^{-9}$), above
+which the direction of the Newton step is not meaningful.  The analysis is
+dense, $O(n^3)$, and is skipped past 1500 unknowns (the run says so).
+
+\paragraph{(D) An implementation fault.}  A residual or a derivative that is
+not a finite number at the best iterate, an equation that contains none of the
+unknowns, or an unknown that appears in no equation, is a defect of the
+model's own equations and not of the case; the diagnosis says so rather than
+asking the student to change a spec.
+
+\paragraph{Could not tell.}  If none of the above applies, the verdict says
+so and lists what was tried and what it found (``the Jacobian is not
+singular, so the failure is not a singularity'').  The Wang--Henke
+bubble-point method has no simultaneous Jacobian: it can report (A) and
+``could not tell'' only.
+
+\begin{pitfall}
+A diagnosis is a reading, not a proof, and it is checked on constructed
+systems whose cause is known (a spec with no bottoms, a refused stage, two
+identical equations, a NaN residual, a well-posed failure), not on every real
+column.  The plant that started this work (two fullMESH columns and a recycle,
+failing with ``singular at row 87'') is the case it was written for; whether the
+letter it prints there is the \emph{right} one is a judgement the owner of that
+plant makes.  A column that converges prints nothing of this.
+\end{pitfall}
+
 % ---------------------------------------------------------------------
 \section{The enthalpy-concentration diagram: putting energy inside the
 geometry}\label{ch:ponchon}

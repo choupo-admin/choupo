@@ -938,6 +938,9 @@
   "Factor": [
    "src/thermo/transport/StokesEinstein.H"
   ],
+  "Facts": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "Family": [
    "src/thermo/electrolyte/ReactiveVLE.H"
   ],
@@ -1254,6 +1257,9 @@
   ],
   "Law": [
    "src/thermo/RecordLaws.H"
+  ],
+  "Layout": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
   ],
   "LayoutAccess": [
    "src/core/ResultRecords.H"
@@ -2750,6 +2756,9 @@
   ],
   "Var": [
    "src/outerDriver/OptimizationDriver.H"
+  ],
+  "Verdict": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
   ],
   "VerifyResult": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
@@ -4430,7 +4439,6 @@
    "src/postProcessing/layout/TypicalTrain.H",
    "src/postProcessing/views/RunPublications.H",
    "src/postProcessing/views/Views.H",
-   "src/reporting/BalanceAlarm.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
    "src/result/ClosureVariable.H",
@@ -4827,7 +4835,6 @@
    "src/postProcessing/views/BatchPublications.H",
    "src/postProcessing/views/DynamicPublications.H",
    "src/postProcessing/views/Views.H",
-   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ComponentIdentity.H",
    "src/result/ResultEmitter.H",
@@ -5196,20 +5203,17 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
-   "src/outerDriver/ClosureGuard.H",
    "src/outerDriver/ConstraintSpec.H",
    "src/outerDriver/OptimizationDriver.H",
    "src/outerDriver/OuterDriver.H",
    "src/outerDriver/ResponseExtractor.H",
    "src/postProcessing/PostProcessor.H",
-   "src/reporting/BalanceAlarm.H",
    "src/result/ClosureVariable.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/ActiveSetQP.H",
    "src/solver/Convergence.H",
-   "src/solver/MADS.H",
    "src/solver/NelderMead.H",
    "src/solver/NewtonRaphson.H",
    "src/solver/SQP.H",
@@ -9497,7 +9501,6 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
-   "src/reporting/BalanceAlarm.H",
    "src/reporting/BalanceMath.H",
    "src/reporting/ClosureByConstruction.H",
    "src/reporting/MassBalanceReport.H",
@@ -10155,10 +10158,6 @@
   "src/solver/LU.cpp": [
    "src/core/Types.H",
    "src/solver/LU.H"
-  ],
-  "src/solver/MADS.cpp": [
-   "src/core/Types.H",
-   "src/solver/MADS.H"
   ],
   "src/solver/NelderMead.cpp": [
    "src/core/Types.H",
@@ -13606,6 +13605,10 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.H",
    "src/unitOperations/crystallisation/Crystalliser.H"
   ],
+  "src/unitOperations/distillation/ColumnDiagnosis.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "src/unitOperations/distillation/DistillationColumn.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -13655,6 +13658,7 @@
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/UnitTypedProperties.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/PackingDelft.H",
@@ -21118,7 +21122,6 @@
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/DominantEigenvalue.cpp",
    "src/solver/LU.cpp",
-   "src/solver/MADS.cpp",
    "src/solver/NelderMead.cpp",
    "src/solver/NewtonND.cpp",
    "src/solver/NewtonRaphson.cpp",
@@ -21287,6 +21290,7 @@
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
@@ -21575,9 +21579,6 @@
    "src/postProcessing/layout/LineSheets.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp"
-  ],
-  "src/outerDriver/ClosureGuard.H": [
-   "src/outerDriver/OptimizationDriver.cpp"
   ],
   "src/outerDriver/ConstraintSpec.H": [
    "src/outerDriver/OptimizationDriver.cpp",
@@ -22319,12 +22320,8 @@
    "src/propertyOps/Yang2020.cpp"
   ],
   "src/reporting/BalanceAlarm.H": [
-   "src/applications/choupoSolve/main.cpp",
-   "src/dynamicDriver/DynamicDriver.cpp",
-   "src/outerDriver/OptimizationDriver.cpp",
    "src/reporting/ElementBalanceReport.cpp",
-   "src/reporting/EnergyBalanceReport.cpp",
-   "src/reporting/MassBalanceReport.cpp"
+   "src/reporting/EnergyBalanceReport.cpp"
   ],
   "src/reporting/BalanceMath.H": [
    "src/reporting/ElementBalanceReport.cpp",
@@ -23181,10 +23178,6 @@
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NewtonND.cpp"
-  ],
-  "src/solver/MADS.H": [
-   "src/outerDriver/OptimizationDriver.cpp",
-   "src/solver/MADS.cpp"
   ],
   "src/solver/NelderMead.H": [
    "src/outerDriver/OptimizationDriver.cpp",
@@ -29699,6 +29692,10 @@
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp"
+  ],
+  "src/unitOperations/distillation/ColumnDiagnosis.H": [
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp"
   ],
   "src/unitOperations/distillation/ColumnTypedProperties.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
