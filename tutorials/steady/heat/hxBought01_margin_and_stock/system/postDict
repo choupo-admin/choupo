@@ -120,12 +120,46 @@ sizing
                         {
                             source  "this case's own assumption: a length series in whole feet and a shell series in round decimetres, no manufacturer's list was consulted";
                             reason  "to show a bought size above the required one; replace both lists with your supplier's before buying";
-                            tubeLengths ( { length 3.048 m; } { length 3.658 m; }
-                                          { length 4.877 m; } { length 6.096 m; } );
-                            shellIDs    ( { insideDiameter 0.30 m; } { insideDiameter 0.35 m; }
-                                          { insideDiameter 0.40 m; } { insideDiameter 0.45 m; }
-                                          { insideDiameter 0.50 m; } { insideDiameter 0.60 m; }
-                                          { insideDiameter 0.80 m; } );
+                            // one entry per line: the EduTool overrides each `length` by its place
+                            tubeLengths
+                            (
+                                {
+                                    length 3.048 m;
+                                }
+                                {
+                                    length 3.658 m;
+                                }
+                                {
+                                    length 4.877 m;
+                                }
+                                {
+                                    length 6.096 m;
+                                }
+                            );
+                            shellIDs
+                            (
+                                {
+                                    insideDiameter 0.30 m;
+                                }
+                                {
+                                    insideDiameter 0.35 m;
+                                }
+                                {
+                                    insideDiameter 0.40 m;
+                                }
+                                {
+                                    insideDiameter 0.45 m;
+                                }
+                                {
+                                    insideDiameter 0.50 m;
+                                }
+                                {
+                                    insideDiameter 0.60 m;
+                                }
+                                {
+                                    insideDiameter 0.80 m;
+                                }
+                            );
                         }
                     }
                 }
