@@ -184,8 +184,13 @@ export function columnStageModel(unit: UnitSpec, kpis: Kpis | undefined,
     .filter((c) => c.startsWith("x_") || c.startsWith("y_"))
     .map((c) => c.slice(2));
   const names = [...new Set(comps)];
-  const declaredLK = typeof eff["lightKey"] === "string" ? eff["lightKey"] as string
+  //  C504: `lightKey` / `heavyKey` in `operation {}` are the keys the run's
+  //  x_D_LK / x_B_HK are published for; the efficiency / packing blocks keep
+  //  their own (total-reflux) `lightKey`.
+  const declaredLK = typeof op["lightKey"] === "string" ? op["lightKey"] as string
+    : typeof eff["lightKey"] === "string" ? eff["lightKey"] as string
     : typeof pack["lightKey"] === "string" ? pack["lightKey"] as string : undefined;
+  const declaredHK = typeof op["heavyKey"] === "string" ? op["heavyKey"] as string : undefined;
 
   if (profile.xAxis === "z") {
     const z = col(profile, "z") ?? [];
@@ -225,7 +230,7 @@ export function columnStageModel(unit: UnitSpec, kpis: Kpis | undefined,
     const richest = (j: number) => names.reduce((a, b) =>
       (xs(b)?.[j] ?? -1) > (xs(a)?.[j] ?? -1) ? b : a);
     if (!lk) { lk = richest(0); keysFrom = "profile"; }
-    hk = richest(n - 1);
+    hk = declaredHK ?? richest(n - 1);
     if (hk === lk) hk = names.find((c) => c !== lk);
   }
   if (keysFrom !== "declared")
