@@ -92,8 +92,27 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row H01 "Carbon tetrachloride":
+//  delta_d = 8.65, delta_p = 0.0, delta_h = 0.0 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    17693.4;        // Pa^0.5   = 8.65 (cal/cm3)^0.5, Table I row H01
+    dP    0.0;        // Pa^0.5   = 0.0
+    dH    0.0;        // Pa^0.5   = 0.0
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row H01 (Carbon tetrachloride); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row H01; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (two transcriptions diffed); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     MW
     {
         origin        literature;
