@@ -261,6 +261,9 @@ const PropertyOriginsTool = lazy(() =>
 const FourWaysMixtureTool = lazy(() =>
   import("./methods/FourWaysMixtureTool.js")
     .then((m) => ({ default: m.FourWaysMixtureTool })));
+const InteriorPointTool = lazy(() =>
+  import("./methods/InteriorPointTool.js")
+    .then((m) => ({ default: m.InteriorPointTool })));
 const StiffChemistryTool = lazy(() =>
   import("./methods/StiffChemistryTool.js")
     .then((m) => ({ default: m.StiffChemistryTool })));
@@ -468,6 +471,9 @@ const FilterPressTool = lazy(() =>
 const GasLineTool = lazy(() =>
   import("./methods/GasLineTool.js")
     .then((m) => ({ default: m.GasLineTool })));
+const HowManyPhasesTool = lazy(() =>
+  import("./methods/HowManyPhasesTool.js")
+    .then((m) => ({ default: m.HowManyPhasesTool })));
 const LubScaleupTool = lazy(() =>
   import("./methods/LubScaleupTool.js")
     .then((m) => ({ default: m.LubScaleupTool })));
@@ -712,6 +718,7 @@ export function MethodsWorkspace() {
             : tool === "sentence-to-decision" ? <SentenceToDecisionTool />
             : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
             : tool === "stiff-chemistry" ? <StiffChemistryTool />
+            : tool === "interior-point" ? <InteriorPointTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />
@@ -779,6 +786,7 @@ export function MethodsWorkspace() {
             : tool === "calculated-to-bought" ? <CalculatedToBoughtTool />
             : tool === "filter-press-cycle" ? <FilterPressTool />
             : tool === "gas-line" ? <GasLineTool />
+            : tool === "how-many-phases" ? <HowManyPhasesTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
             : tool === "least-squares" ? <LeastSquaresTool />

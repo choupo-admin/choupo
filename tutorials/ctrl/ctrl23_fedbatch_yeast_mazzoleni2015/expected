@@ -1,0 +1,49 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     ExpFeed                MV_final         5.810215e-05       1e-4
+kpi     ExpFeed                PV_final         0                  1e-4
+kpi     ExpFeed                SP_final         5.810215e-05       1e-4
+kpi     balance                energy_balance_available 1                  1e-4
+kpi     balance                energy_closure_rel 3.25753563777e-14  abs:3e-07
+kpi     balance                energy_functional_H 1                  1e-4
+kpi     balance                energy_kJ_final  -54275.9280895     1e-4
+kpi     balance                energy_kJ_heat_cum 0                  1e-4
+kpi     balance                energy_kJ_in_cum -38468.6530934     1e-4
+kpi     balance                energy_kJ_initial -15807.2749961     1e-4
+kpi     balance                energy_kJ_out_cum 0                  1e-4
+kpi     balance                energy_residual_kJ -1.76805770025e-09 abs:0.0005428
+kpi     balance                mass_closure_rel 1.55410854116e-14  abs:1e-09
+kpi     balance                mass_kg_final    4.6577532578       1e-4
+kpi     balance                mass_kg_in_cum   3.6420952028       1e-4
+kpi     balance                mass_kg_initial  1.015658055        1e-4
+kpi     balance                mass_kg_out_cum  0                  1e-4
+kpi     balance                mass_residual_kg -7.23865412056e-14 abs:1e-09
+kpi     balance                material_available 1                  1e-4
+kpi     reactor                F_in_final       5.810215e-05       1e-4
+kpi     reactor                F_out_final      0                  1e-4
+kpi     reactor                T_final          303.15             1e-4
+kpi     reactor                density_final    1355.441163        1e-4
+kpi     reactor                level_final      0.437528075681     1e-4
+kpi     reactor                n_carbonMetabolites_final 0.129149899144     1e-4
+kpi     reactor                n_deadCells_final 0.0609308221405    1e-4
+kpi     reactor                n_ethanolMass_final 0.183605783317     1e-4
+kpi     reactor                n_glucoseMass_final 0.493709133852     1e-4
+kpi     reactor                n_glycolysisProducts_final 0.00114374229806   1e-4
+kpi     reactor                n_inhibitor_final 0.00183040567856   1e-4
+kpi     reactor                n_lostMass_final 0.340778676169     1e-4
+kpi     reactor                n_reserves_final 0.0264494826282    1e-4
+kpi     reactor                n_water_final    0.189850419793     1e-4
+kpi     reactor                t_end            176400             1e-4
+kpi     reactor                volume_final     0.00343633747074   1e-4
+kpi     reactor                z_in_carbonMetabolites_final 0                  1e-4
+kpi     reactor                z_in_deadCells_final 0                  1e-4
+kpi     reactor                z_in_ethanolMass_final 0                  1e-4
+kpi     reactor                z_in_glucoseMass_final 0.900467705373     1e-4
+kpi     reactor                z_in_glycolysisProducts_final 0                  1e-4
+kpi     reactor                z_in_inhibitor_final 0                  1e-4
+kpi     reactor                z_in_lostMass_final 0                  1e-4
+kpi     reactor                z_in_reserves_final 0                  1e-4
+kpi     reactor                z_in_water_final 0.0995322946271    1e-4
+source  reactor                liquidDensity    idealMixing[referenceEquation.IAPWS95+flatVliq] exact

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1948,
+  "cases": 1951,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22673,6 +22673,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Signal",
+    "dynamicCSTR",
+    "staircase"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/ChemicalPlantTutorial": {
    "application": "choupoSolve",
    "thermo": {
@@ -24887,6 +24903,20 @@
    "hasGolden": true
   },
   "tutorials/props/scan/binary01_lle_water_nbutanol": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanBinary"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIQUAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/scan/binary04_tangent_plane_water_nbutanol": {
    "application": "choupoProps",
    "ops": [
     "propertyScanBinary"
@@ -28414,6 +28444,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gibbs/gibbs14_interior_point": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "unitModels": [
+    "interiorPoint"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/condenser01_film_nusselt": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31359,7 +31403,8 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
-    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "choupoProps": [
     "data/curation/batches/henry_sander",
@@ -32775,6 +32820,7 @@
     "tutorials/props/safety/relief01_ammonia_loop_gas",
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
@@ -33040,6 +33086,7 @@
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction",
+    "tutorials/steady/gibbs/gibbs14_interior_point",
     "tutorials/steady/heat/condenser01_film_nusselt",
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
@@ -33248,7 +33295,8 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
-    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -33548,6 +33596,7 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015",
     "tutorials/unsteady/unsteady01_startup_transient",
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
@@ -33664,6 +33713,7 @@
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction",
+    "tutorials/steady/gibbs/gibbs14_interior_point",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
@@ -34022,7 +34072,8 @@
     "tutorials/steady/economics/economics04_building_royalty_breakeven"
    ],
    "staircase": [
-    "tutorials/ctrl/ctrl17_signal_shapes"
+    "tutorials/ctrl/ctrl17_signal_shapes",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015"
    ],
    "step": [
     "tutorials/ctrl/ctrl09_stream_disturbance",
@@ -35025,6 +35076,7 @@
    "UNIQUAC": [
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol",
     "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water",
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
@@ -36376,6 +36428,7 @@
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
+    "tutorials/ctrl/ctrl23_fedbatch_yeast_mazzoleni2015",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
@@ -38814,7 +38867,8 @@
     "tutorials/props/scan/scan2d01_co2_compressibility"
    ],
    "propertyScanBinary": [
-    "tutorials/props/scan/binary01_lle_water_nbutanol"
+    "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/binary04_tangent_plane_water_nbutanol"
    ],
    "propertyScanTernary": [
     "tutorials/props/scan/ternary01_audit_vlle",

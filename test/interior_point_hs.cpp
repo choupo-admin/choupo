@@ -53,6 +53,14 @@ Standalone test of the interior-point optimizer (slice A2, src/solver/ip/):
      holding NaN: a breakdown is the same news as zero eigenvalues (dc > 0),
      a wrong factorisation is never used, and nothing crashes or is silently
      accepted.
+  5. THE GUARD-ONLY BOUND (slice B1, review R1).  An ideal mixture
+     min sum x_i (g_i + ln x_i) s.t. sum x_i = 1, x >= 0 has the closed answer
+     x_i = exp(-g_i) / sum_j exp(-g_j).  With g_3 = 40 the third amount is
+     1e-17.  With the bound declared a GUARD (isGuardOnly) the run has no
+     bound multiplier and finds x_3 to 1e-6 RELATIVE; with the ordinary barrier
+     the same run leaves x_3 with the error mu / z of design record sec. 2.9.
+     The row prints both and demands the guard row pass and be the better.
+Option `--iterates` (with `-v NAME`): also print the path in x (see g_printIterates).
 Prints one line per check and "INTERIOR_POINT_OK" at the end; exit 1 on a
 failure.  Build (standalone; bin/curate/check_interior_point.py builds and runs it):
     g++ -std=c++17 -O2 -Isrc test/interior_point_hs.cpp src/solver/ip/DenseLDLT.cpp ... (every .cpp of src/solver/ip) -o /tmp/interior_point_hs
@@ -82,6 +90,14 @@ namespace
 using Vec = sVector;
 
 int g_failures = 0;
+
+//  `--iterates`: print every point at which the objective's gradient is asked, as
+//  an `ITERATE x ...` line inside the live trace.  The gradient is evaluated once
+//  at each new accepted iterate, so the lines are the run's path in x; the EduTool
+//  "How does an interior-point method find the minimum?" is recorded from them
+//  (bin/curate/interior_point_edutool_table.py).  Off by default: the output is then
+//  byte-identical to what the gate reads.
+bool g_printIterates = false;
 
 // ---------------------------------------------------------------------------
 //  A function with its hand derivatives.
@@ -169,7 +185,18 @@ public:
         f = obj.val(x);
         return std::isfinite(f);
     }
-    bool objectiveGradient(const Vec& x, Vec& g) const override { touch(x); obj.grad(x, g); return true; }
+    bool objectiveGradient(const Vec& x, Vec& g) const override
+    {
+        touch(x);
+        if (g_printIterates)
+        {
+            std::printf("ITERATE");
+            for (scalar xi : x) std::printf(" %.10g", xi);
+            std::printf("\n");
+        }
+        obj.grad(x, g);
+        return true;
+    }
     bool constraints(const Vec& x, Vec& c) const override
     {
         touch(x);
@@ -933,6 +960,83 @@ bool checkIC()
 
 } // namespace
 
+// ---------------------------------------------------------------------------
+//  5. The guard-only bound
+// ---------------------------------------------------------------------------
+
+//  min sum_i x_i (g_i + ln x_i)   s.t.   sum_i x_i = 1,   x >= 0   (an ideal mixture of one mole).
+//  The Hessian is diag(1/x_i), analytic.
+class MixtureProblem : public NLPProblem
+{
+public:
+    MixtureProblem(Vec g, bool guard) : g_(std::move(g)), guard_(guard) {}
+    std::string name() const override { return guard_ ? "mixture (guard)" : "mixture (barrier)"; }
+    std::size_t numVariables() const override { return g_.size(); }
+    std::size_t numConstraints() const override { return 1; }
+    void variableBounds(Vec& xL, Vec& xU) const override { xL.assign(g_.size(), 0.0); xU.assign(g_.size(), kInf); }
+    Vec startingPoint() const override { return Vec(g_.size(), 1.0 / static_cast<scalar>(g_.size())); }
+    bool isGuardOnly(std::size_t) const override { return guard_; }
+    bool objective(const Vec& x, scalar& f) const override
+    {
+        f = 0.0;
+        for (std::size_t i = 0; i < g_.size(); ++i)
+        {
+            if (!(x[i] > 0.0)) return false;
+            f += x[i] * (g_[i] + std::log(x[i]));
+        }
+        return true;
+    }
+    bool objectiveGradient(const Vec& x, Vec& gr) const override
+    {
+        gr.assign(g_.size(), 0.0);
+        for (std::size_t i = 0; i < g_.size(); ++i)
+        {
+            if (!(x[i] > 0.0)) return false;
+            gr[i] = g_[i] + std::log(x[i]) + 1.0;
+        }
+        return true;
+    }
+    bool constraints(const Vec& x, Vec& c) const override
+    {
+        c.assign(1, -1.0);
+        for (scalar v : x) c[0] += v;
+        return true;
+    }
+    bool constraintJacobian(const Vec&, DenseMatrix& J) const override { J.assign(1, Vec(g_.size(), 1.0)); return true; }
+    bool hessianLagrangian(const Vec& x, scalar sigma, const Vec&, DenseMatrix& W) const override
+    {
+        W.assign(g_.size(), Vec(g_.size(), 0.0));
+        for (std::size_t i = 0; i < g_.size(); ++i) W[i][i] = sigma / x[i];
+        return true;
+    }
+    bool hasExactHessian() const override { return true; }
+
+private:
+    Vec g_;
+    bool guard_;
+};
+
+bool checkGuardOnly()
+{
+    const Vec g = {0.0, 1.5, 40.0};
+    scalar Z = 0.0;
+    for (scalar gi : g) Z += std::exp(-gi);
+    const scalar x3 = std::exp(-40.0) / Z;
+
+    MixtureProblem withGuard(g, true), withBarrier(g, false);
+    const IPResult a = InteriorPoint::solve(withGuard);
+    const IPResult b = InteriorPoint::solve(withBarrier);
+    const scalar errGuard = std::abs(a.x[2] - x3) / x3, errBarrier = std::abs(b.x[2] - x3) / x3;
+    scalar zSum = 0.0;
+    for (scalar z : a.zLower) zSum += std::abs(z);
+    scalar errMain = 0.0;
+    for (int i = 0; i < 2; ++i) errMain = std::max(errMain, std::abs(a.x[i] - std::exp(-g[i]) / Z) / (std::exp(-g[i]) / Z));
+    const bool pass = a.converged() && errGuard < 1e-6 && errMain < 1e-8 && zSum == 0.0 && errBarrier > 10.0 * errGuard;
+    std::printf("GUARD  x3 = %.6e (closed form %.6e)  rel.err guard %.2e  barrier %.2e  main %.2e  sum|z| %.1e  it %zu/%zu  barrier run: %s  %s\n",
+                a.x[2], x3, errGuard, errBarrier, errMain, zSum, a.iterations, b.iterations, statusName(b.status), pass ? "PASS" : "FAIL");
+    return pass;
+}
+
 int main(int argc, char** argv)
 {
     bool verbose = false;
@@ -941,6 +1045,7 @@ int main(int argc, char** argv)
     {
         const std::string a = argv[i];
         if (a == "-v") verbose = true;
+        else if (a == "--iterates") g_printIterates = true;
         else only = a;
     }
 
@@ -966,6 +1071,9 @@ int main(int argc, char** argv)
 
         std::printf("== Algorithm IC ==\n");
         if (!checkIC()) ++g_failures;
+
+        std::printf("== guard-only bound (B1, R1) ==\n");
+        if (!checkGuardOnly()) ++g_failures;
     }
 
     if (g_failures == 0) std::printf("INTERIOR_POINT_OK\n");

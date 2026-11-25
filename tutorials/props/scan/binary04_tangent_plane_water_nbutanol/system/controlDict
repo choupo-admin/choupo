@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  How many phases? -- water / 1-butanol at 298.15 K, the tangent plane.
+
+    The same system and the same cited UNIQUAC set as binary01, with the
+    optional `stability` block of propertyScanBinary switched on: besides
+    g_mix and the two coexisting liquids, the activities of both components
+    on a 100-node grid, the activities in the two liquids, the tangent-plane
+    distance of the declared feed (z(water) = 0.80, inside the gap) and the
+    verdict of the engine's own Michelsen test on it.  The golden pins that
+    verdict and its distances.  See README.md. */
+application   choupoProps;
+description   "How many phases? Water + 1-butanol at 298.15 K: g_mix, activities and the Michelsen tangent-plane distance via propertyScanBinary (stability block), cited Winkelman 2009 UNIQUAC";
+verbosity     2;

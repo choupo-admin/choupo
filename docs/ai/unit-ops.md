@@ -669,7 +669,7 @@ rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 
 ### `gibbsReactor`
 Equilibrium by direct Gibbs minimisation with atom-balance
-constraints.  Three selectable `model`s:
+constraints.  Four selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
   condensable; + a pure solid, see below).  A gas below its dew point with
   NO species supersaturated on its own -- a MIXED liquid -- is refused by
@@ -679,6 +679,31 @@ constraints.  Three selectable `model`s:
 - `directMin`         (multi-start Nelder-Mead on the reaction-extent
   null space; its vapour carries the declared EoS's ln phi, so an SRK
   package is not minimised as an ideal gas -- C173).
+- `interiorPoint`     (the minimisation solved by Choupo-IP, the primal-dual
+  interior-point filter line search of `src/solver/ip/`: min G/RT over the gas
+  amounts and the ideal-liquid amounts of the condensables s.t. the element
+  balances, analytic gradient and Hessian, no primal seed needed; gas + IDEAL
+  liquid (several condensables allowed: Raoult, an activity model of the package
+  is not read), ideal-gas package.  The multipliers of the element balances ARE
+  the element potentials, **pi = -lambda** (printed in the run, published as
+  `lambda_<element>` = pi RT and `ip_lambda_<element>`).  REFUSED BY NAME, with the
+  slice that will carry it: a pure solid (B2), a fugacity model / real-gas EoS (B3),
+  `barrierUpdate adaptive` (A3), `globalization merit` (A4), a gas phase that vanishes
+  entirely.  Optional unit-level block, refused under any other `model`:
+  `interiorPoint { barrier condensedPhases | everyAmount; barrierUpdate monotone;
+  globalization filter; log ipLog.csv; }` -- `barrier condensedPhases` (the default)
+  puts NO barrier on the species of the gas phase (the entropy term already repels
+  zero: review R1) and a barrier on the ideal-liquid mixture's amounts; `everyAmount` puts one on every amount.
+  In both the answer is FINISHED by the element-potential Newton from pi = -lambda: the liquid is decided at the polished
+  gas-only state on the full element totals (never at the barrier-biased point); absent -> that state, present -> the
+  element-potential two-phase solve (a mixed liquid keeps the interior point's amounts); a feasible stop on an invisible
+  trace species is rescued the same way and announced.  `log` writes the
+  per-iteration table (mu, theta, inf_du, compl, steps), the bridge and the amounts as
+  a CSV (refused inside `data/standards/`).  The run prints the bridge, the largest
+  change the finish makes and, at verbosity 3, the iteration table.  KPIs
+  `ip_iterations`, `ip_inertiaCorrections`, `ip_restorations`,
+  `ip_polishLargestRelativeChange`.  Theory: `sec:gibbs-interior-point`; witness
+  `tutorials/steady/gibbs/gibbs14_interior_point`; gate `check_gibbs_interior_point`.)
 
 ```
 operation
@@ -2306,7 +2331,7 @@ each channel node):
   `membrane <name>`, key, reason) in its `operationResults` entry, and the case
   tab dims that line in the record (a structured fact, not a log line).  It publishes two named TABLES
   a view draws (`points`: one row per J_v; `pore`: the solved profile), and
-  its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
+  its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent; an optional `stability { feed { <comp> <z>; } }` block adds the tables `activity` (ln gamma and a_i along the grid), `binodalActivity` (a_i in the two liquids), `tpd` (tm(y) of the declared feed, `tm = sum y_i [ln a_i(y) - ln a_i(z)]`) and `stationary` (the verdict of the engine's own `michelsenTPD` on that feed), runs the flash at verbosity 3 so its Michelsen line is in the log, and is absent -> byte-identical output; case `props/scan/binary04_tangent_plane_water_nbutanol`, EduTool `how-many-phases`; Theory Guide `sec:tangent-plane`), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
   `nanofiltran_geraldesAlves2008`: part A code to code, part B Bowen &
   Mohammad's measured CA30 rejections (a comparison with EXPERIMENT, several
   inputs being fits to those data), part C its Table 2 (which carries
@@ -4315,6 +4340,12 @@ under `timeStepping adaptive`.  Examples: `unsteady06_reactor_fill_and_react`
 (fills from a heel while a first-order isomerisation runs; closed form) and
 `ctrl22_reactor_level_and_temperature` (PI level on `F_out` + PI temperature
 on `T_jacket`, one unit, after an inflow step).
+`ctrl23_fedbatch_yeast_mazzoleni2015` is the FED-BATCH form: `outflow { mode flow; F 0.0 kmol/s; }` (nothing leaves),
+a `Signal` `staircase` on `inletField F` for the exponential feed, and a published model of seven pools written as eight
+`type expression` reactions over mass-unit pseudo-components (MW 1: kmol = kg, kmol/m3 = g/l; a molar volume of 1e-9 m3/mol so
+the volume is the water's) with a named `lostMass` component for the mass its efficiencies < 1 take out, so the mass balance
+closes (1.6e-14).  The paper's V(t) is its own; Theory Guide `sec:fedbatch-mazzoleni` says which equations and tables were read.
+A `batchReactor` cannot carry a fed-batch: it has no continuous feed and its volume does not follow a recipe `transfer`.
 `operation { energy isothermal; }` holds T and solves no energy equation
 (announced; the first law is withheld) -- for a vessel with NO reaction and NO
 jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop

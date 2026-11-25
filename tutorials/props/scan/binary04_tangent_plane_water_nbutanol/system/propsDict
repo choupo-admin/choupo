@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  binary04_tangent_plane_water_nbutanol: HOW MANY PHASES?  The same water /
+  1-butanol system and cited UNIQUAC set as binary01, with the optional
+  `stability` block of propertyScanBinary switched on.  Besides the g_mix curve
+  and the two coexisting liquids (tables gmix, binodal) the run publishes the
+  ACTIVITIES of both components along the same 100-node grid (table activity:
+  the iso-activity conditions of equilibrium are read off it), the tangent-plane
+  distance of the declared feed (table tpd: tm(y) = sum y_i [ ln y_i + ln gamma_i(y)
+  - ln z_i - ln gamma_i(z) ]) and the verdict of the engine's own Michelsen test
+  on that feed (table stationary).  The feed is water 0.80, inside the gap, so
+  the test says UNSTABLE: a second liquid is missing.  The page "How many
+  phases?" of the EduTools reads these tables.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      lle;
+        type      propertyScanBinary;
+        state     { T 298.15 K;  P 1 bar; }
+        grid      { n 100; }           // interior nodes x1 = i/100 (the page's feed slider steps on them)
+        feed      { water 0.80; }      // the flash feed, inside the asymmetric gap
+        stability { feed { water 0.80; } }   // the feed the tangent-plane test is run on
+        output    { file binaryLle.csv; }
+    }
+);
+
+//  The tables the page reads and the default views do not write: the phase
+//  fractions of the two liquids, their activities, and the engine's own verdict.
+views
+(
+    { name betas;           type series; op lle; table binodal;         x x1;    y ( beta ); }
+    { name binodalActivity; type series; op lle; table binodalActivity; x x1;    y ( a1 a2 ); }
+    { name stationary;      type series; op lle; table stationary;      x feed1; y ( unstable tmMin y1 ); }
+);

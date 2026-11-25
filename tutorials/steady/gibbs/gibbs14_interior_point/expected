@@ -1,0 +1,50 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  condensate             F                3.96249087882e-05 1e-4
+stream  condensate             T                350              1e-4
+stream  feed                   F                0.000277777777778 1e-4
+stream  feed                   T                350              1e-4
+stream  gas                    F                0.000238152869176 1e-4
+stream  gas                    T                350              1e-4
+kpi     wgs                    F_condensate_kmol_h 0.142649671637   1e-4
+kpi     wgs                    F_in_kmol_h      1                1e-4
+kpi     wgs                    F_out_kmol_h     0.857350329034   1e-4
+kpi     wgs                    N_in_mol_s       0.277777777778   1e-4
+kpi     wgs                    N_liq_mol_s      0.0396249087882  1e-4
+kpi     wgs                    N_out_mol_s      0.277777777964   1e-4
+kpi     wgs                    P                100000           1e-4
+kpi     wgs                    Q_kW             2.20671011796    1e-4
+kpi     wgs                    T                350              1e-4
+kpi     wgs                    converged        1                1e-4
+kpi     wgs                    ip_barrierOnEveryAmount 0                1e-4
+kpi     wgs                    ip_inertiaCorrections 0                1e-4
+kpi     wgs                    ip_iterations    12               1e-4
+kpi     wgs                    ip_lambda_C      -17.2595602489   1e-4
+kpi     wgs                    ip_lambda_H      8.49604056277    1e-4
+kpi     wgs                    ip_lambda_O      89.7440012023    1e-4
+kpi     wgs                    ip_polishLargestRelativeChange 7.57172387732e-08 1e-4
+kpi     wgs                    ip_rescuedByPolish 0                1e-4
+kpi     wgs                    ip_restorations  0                1e-4
+kpi     wgs                    lambda_C         50226.3884709    1e-4
+kpi     wgs                    lambda_H         -24724.0041247   1e-4
+kpi     wgs                    lambda_O         -261160.599908   1e-4
+kpi     wgs                    liquidFraction   0.142649671542   1e-4
+kpi     wgs                    twoPhase         1                1e-4
+kpi     wgs                    x_water          1                1e-4
+kpi     wgs                    y_CO             2.28494695715e-05 1e-4
+kpi     wgs                    y_CO2            0.291573236207   1e-4
+kpi     wgs                    y_H2             0.291573236207   1e-4
+kpi     wgs                    y_water          0.416830678116   1e-4
+boundary global                 H_feeds_kW       -64.3163920531   1e-4
+boundary global                 Q_boundary_kW    2.20671011796    1e-4
+boundary global                 H_products_kW    -62.1096819351   1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 2.20671011796    1e-4
+utility wgs                    heating.steamLP.duty_kW 2.20671011796    1e-4
+utility wgs                    heating.steamLP.T 350              1e-4
+utility wgs                    heating.steamLP.kg_s 0.00100947397894 1e-4
+utility wgs                    heating.steamLP.eur_h 0.0953298770959  1e-4
+kpi     wgs                    ip_phaseVerdictsDisagree 0                1e-4
+kpi     wgs                    ip_polishIterations 4                1e-4

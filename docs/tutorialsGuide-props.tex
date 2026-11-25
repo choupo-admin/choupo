@@ -5742,6 +5742,38 @@ THE FIGURE (C480). The g\_mix curve, the two coexisting liquids found by the liq
 \end{tutgolden}
 
 \clearpage
+\tutentry{binary04\_tangent\_plane\_water\_nbutanol}{tutorials/props/scan/binary04\_tangent\_plane\_water\_nbutanol}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{lle}\\[-1pt]{\tiny propertyScanBinary}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{betas}\\[-1pt]{\tiny series}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{binodalActivity}\\[-1pt]{\tiny series}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{stationary}\\[-1pt]{\tiny series}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{How many phases? Water + 1-butanol at 298.15 K: g\_mix, activities and the Michelsen tangent-plane distance via propertyScanBinary (stability block), cited Winkelman 2009 UNIQUAC}
+\begin{tutnarrative}
+HOW MANY PHASES? The same water / 1-butanol system and cited UNIQUAC set as binary01, with the optional `stability` block of propertyScanBinary switched on. Besides the g\_mix curve and the two coexisting liquids (tables gmix, binodal) the run publishes the ACTIVITIES of both components along the same 100-node grid (table activity: the iso-activity conditions of equilibrium are read off it), the tangent-plane distance of the declared feed (table tpd: tm(y) = sum y\_i [ ln y\_i + ln gamma\_i(y) - ln z\_i - ln gamma\_i(z) ]) and the verdict of the engine's own Michelsen test on that feed (table stationary). The feed is water 0.80, inside the gap, so the test says UNSTABLE: a second liquid is missing. The page "How many phases?" of the EduTools reads these tables.
+
+\end{tutnarrative}
+\tutreadme{A solver has found two liquids with equal activities in both components. Is that the answer? Equal fugacities are only a $\ast$necessary$\ast$ condition of equilibrium at fixed T and P. The trivial solution (two identical "phases", K = 1) meets them at every composition, a split that is only a local minimum of the Gibbs energy can meet them, and so can a split into the wrong number of phases. The equilibrium state is the global minimum of G, and what tells a solver that a phase is $\ast$absent$\ast$ from its answer is Michelsen's tangent-plane test: draw the tangent to g\_mix at the feed z and ask whether the curve dips below it anywhere.}
+\tutreadme{This case is [binary01\_lle\_water\_nbutanol](../binary01\_lle\_water\_nbutanol/) (the same water / 1-butanol system, the same cited UNIQUAC set of Winkelman et al., Fluid Phase Equilibria 284 (2009) 71-79, Table 2, 298.15 K, 1 bar) with the optional stability block of propertyScanBinary switched on. The EduTool $\ast$How many phases? Gibbs energy and the tangent plane$\ast$ reads its tables.}
+\tutreadme{The feed defaults to the flash feed. A case without the block is byte-for-byte what it was: binary01's tables, CSV and printed output are unchanged. With it, besides gmix and binodal, the operation publishes}
+\tutreadme{and the flash is run at verbosity 3, so the log carries its own Michelsen line beside the two liquids it found.}
+\tutreadme{The feed z = 0.80 (20 mol \% butanol) lies inside the miscibility gap. The engine's test says UNSTABLE -- a phase is absent from a one-liquid answer -- with a lowest tangent-plane distance of tm\_min = -0.0366 (the engine's own modified form, 1 + sum Y (ln Y + ln gamma - h - 1), whose value at a stationary point is 1 - sum Y) at an incipient phase of y1 = 0.9821, i.e. the water-rich liquid. The page's own distance tm(y), computed from the activity table, goes down to -0.0359 at y1 = 0.98 on the 100-node grid (the same sign; the two forms are not equal in value away from a stationary point and are quoted separately).}
+\tutreadme{The flash then finds the two liquids, printed in the log and tabulated in binodal: x1 = 0.980798 and 0.509981 (water-rich and butanol-rich), phase fractions 0.615991 and 0.384009 for the feed z = 0.80 (the lever rule on the two compositions gives the same), with equal activities in both liquids (binodalActivity: a1 = 0.985495 and a2 = 0.595831 in each). These binodal numbers are the log's and the CSV's; the golden pins the verdict and the distances above.}
+\begin{tutgolden}
+\goldrow{diag}{lle}{T}{298.15}
+\goldrow{diag}{lle}{split}{1}
+\goldrow{diag}{lle}{tpdFeed1}{0.8}
+\goldrow{diag}{lle}{tpdGridMin}{-0.0358661218654}
+\goldrow{diag}{lle}{tpdGridMinY1}{0.98}
+\goldrow{diag}{lle}{tpdTmMin}{-0.0365841479999}
+\goldrow{diag}{lle}{tpdTrialY1}{0.982076027194}
+\goldrow{diag}{lle}{tpdUnstable}{1}
+\end{tutgolden}
+
+\clearpage
 \tutentry{hxy01\_ethanol\_water\_1atm}{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

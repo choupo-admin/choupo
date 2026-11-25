@@ -62,7 +62,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
-  | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry"
+  | "database-to-parameters" | "open-molecular-tools" | "stiff-chemistry" | "interior-point"
   | "sentence-to-decision" | "optimizers" | "why-did-it-not-dry"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
@@ -89,7 +89,8 @@ export type MethodToolId =
   | "column-design"
   | "control-valve" | "compressor-choice" | "calculated-to-bought"
   | "filter-press-cycle"
-  | "gas-line";
+  | "gas-line"
+  | "how-many-phases";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2206,6 +2207,29 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:sqp",
   },
   {
+    //  HOW AN INTERIOR-POINT METHOD FINDS THE MINIMUM (2026-11-25): the iterations of
+    //  Choupo-IP (src/solver/ip/) as pictures for a student with weak algebra: a
+    //  cushion along the walls that deflates, a list of points never to go back to,
+    //  a check that the ground is a bowl, and the Gibbs reactor's price tags.  A
+    //  NOTES page; every number is a RECORDED engine run (the page runs nothing).
+    id: "interior-point", blurb: "See an interior-point optimizer work: cushion, filter, bowl check.",
+    label: "How does an interior-point method find the minimum?",
+    discipline: "Flowsheeting & numerics",
+    kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
+    teaches: "What the engine's interior-point optimizer does at each iteration, "
+      + "told in pictures: a cushion (the barrier) along every wall that pushes the "
+      + "iterates back and slowly deflates as the run closes on a wall; a list of "
+      + "points the method must not be worse than (the filter) and the phase that "
+      + "first gets back inside the rules (restoration); a check that the ground is "
+      + "a bowl and not a saddle, with the stiffness added until it is (the inertia "
+      + "correction); the Gibbs reactor's multipliers as the element potentials; why "
+      + "a mixture needs no cushion on its gas species (review R1, with the table of "
+      + "the finishing corrections); and a published test optimum that is not the "
+      + "minimum.  Every number is a recorded run.",
+    theory: "sec:ip-barrier",
+  },
+  {
     id: "least-squares", blurb: "See what a fitted parameter is worth, and when it is not.",
     label: "Least squares: what a fitted parameter is worth",
     discipline: "Property data & parameters", kind: "construction",
@@ -2977,6 +3001,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "numbers equal to the recorded run of pipe09_isothermal_gas_line at the case's own "
       + "flow and length.",
     theory: "sec:pipe-gasline",
+  },
+  //  COMMISSIONED 2026-11-25 (SESSIONS.md, the how-many-phases EduTool): at
+  //  fixed T and P equilibrium is the GLOBAL minimum of G; equal fugacities are
+  //  only necessary (the trivial K = 1 pair, a local split, the wrong number of
+  //  phases also meet them) and Michelsen's tangent-plane test decides whether a
+  //  phase is absent.  Every curve is a table of the engine's own run of
+  //  tutorials/props/scan/binary04_tangent_plane_water_nbutanol (the optional
+  //  `stability` block of propertyScanBinary).
+  {
+    id: "how-many-phases", blurb: "Find out why equal fugacities do not prove a split.",
+    label: "How many phases? Gibbs energy and the tangent plane",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page"],
+    teaches: "Why equilibrium is the global minimum of the Gibbs energy and equal fugacities are only "
+      + "necessary: the molar Gibbs energy of mixing of water and n-butanol with its two humps, the common "
+      + "tangent through the two coexisting liquids and the lever rule on a feed you move, the activities "
+      + "whose equality has a trivial solution and a true one, and Michelsen's tangent-plane distance along "
+      + "a trial composition, negative somewhere when a phase is absent.  Every curve is the engine's own "
+      + "run of a propertyScanBinary case; the page adds the lever rule and the tangent algebra.",
+    theory: "sec:tangent-plane",
   },
 ];
 

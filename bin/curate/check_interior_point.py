@@ -82,6 +82,20 @@ of rows below the expected fails the gate.
       step, no crash) on a matrix holding NaN, and keeps dc > 0 after a
       singular first iteration.
 
+  (e) THE GUARD-ONLY BOUND (slice B1, design record sec. 8 review R1).  A
+      variable may declare its lower bound a GUARD (NLPProblem::isGuardOnly): the
+      fraction to the boundary keeps it positive, but there is no barrier term,
+      no bound multiplier and no complementarity entry.  THE REAL DEFECT: the
+      Gibbs reactor's species of a present gas phase carry n ln(n/N), whose
+      derivative already repels zero; a log barrier on top of it leaves every
+      TRACE amount with the error mu/n of sec. 2.9 (a species at 1e-17 of the
+      feed is off by orders of magnitude, "restoration failed" or a wrong
+      answer at exit 0).  The row GUARD solves an ideal mixture whose third
+      amount is 3.5e-18 against its closed form: the guard run must find it to
+      1e-6 RELATIVE with sum|z| = 0, the barrier run must be worse by a factor
+      10 (measured: 7e-13 against 4e7, and the barrier run ends "restoration
+      failed").
+
 TWO PROBLEMS HAVE THEIR OWN RULE (2026-11-25, stated in the test and in the
 Theory Guide).  HS13: its optimum is a cusp with no KKT point and a cubic
 constraint, so |f - f*| <= 1e-6 at violation 1e-8 is unreachable by ANY solver
@@ -109,6 +123,9 @@ slice report):
   (r3)  the "locally infeasible" exit test of the restoration phase never
         fires: both infeasible problems and WB2000c run to the iteration limit
         -- FAILS (c) and (b).
+  (v)   (slice B1) isGuardOnly ignored by the optimizer (guardL_ always 0): the
+        GUARD row's guard run becomes the barrier run -- its relative error on
+        the third amount is 4e7 and it ends "restoration failed" -- FAILS (e).
   (r3b) the primal infeasibility removed from the stopping test: the
         two-equalities problem reports "converged" and HS6 returns with a
         violation of 1.7e-2 -- FAILS (c) and (b).
@@ -158,6 +175,7 @@ def main():
         hs = {ln.split()[0]: ln for ln in lines if re.match(r"^(HS\d+\w*|WB2000c?|FDHESS|EVALFAIL)\s+(f\*|expected) ", ln)}
         inf = [ln for ln in lines if re.match(r"^INF\d", ln) and "status" in ln]
         ic = [ln for ln in lines if ln.startswith("IC ")]
+        guard = [ln for ln in lines if ln.startswith("GUARD")]
 
         if len(deriv) < 22 or any(not ln.rstrip().endswith("ok") for ln in deriv):
             failures.append(f"derivative checks: {len(deriv)} rows (expected 22) or one failed:\n"
@@ -180,6 +198,9 @@ def main():
         if len(ic) < 6 or any(not ln.rstrip().endswith("ok") for ln in ic):
             failures.append(f"Algorithm IC rows: {len(ic)} (expected 6) or one failed:\n"
                             + "\n".join(ln for ln in ic if not ln.rstrip().endswith("ok")))
+        if len(guard) != 1 or not guard[0].rstrip().endswith("PASS"):
+            failures.append("the guard-only bound row (a barrier-free species must reach a trace amount of 1e-18 "
+                            "to 1e-6 relative, and beat the barrier run):\n" + "\n".join(guard))
         if r.returncode != 0 and not failures:
             failures.append("the test exited non-zero:\n" + out[-1500:])
         if not failures and "INTERIOR_POINT_OK" not in out:
@@ -189,7 +210,7 @@ def main():
         its = [int(m.group(1)) for n in passed for m in [re.search(r"\bit\s+(\d+)\s", hs[n])] if m]
         notes.append(f"{len(passed)} of {len(HS_NAMES)} HS problems to 1e-6 (iterations {min(its) if its else 0}-{max(its) if its else 0}), "
                      f"{len(inf)} infeasible problems ended locally infeasible, {len(ic)} inertia-correction checks, "
-                     f"{len(deriv)} derivative checks")
+                     f"{len(deriv)} derivative checks, guard-only bound {'ok' if len(guard) == 1 and guard[0].rstrip().endswith('PASS') else 'FAILED'}")
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return gatekit.verdict("check_interior_point", failures, "; ".join(notes))

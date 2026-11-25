@@ -3608,6 +3608,20 @@
         }
       ]
     },
+    "interior-point": {
+      "references": [
+        {
+          "text": "Wächter, A.; Biegler, L. T. (2006). On the implementation of an interior-point filter line-search algorithm for large-scale nonlinear programming. Mathematical Programming 106(1), 25–57.",
+          "doi": "10.1007/s10107-004-0559-y",
+          "note": "The algorithm the page draws: the barrier problem, the filter, the restoration phase and the inertia correction. Choupo's code was read against the 2004 preprint of this paper (equation numbers are the preprint's, as the Theory Guide says); the page quotes no equation of it.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/s10107-004-0559-y: authors Wächter and Biegler, title, container Mathematical Programming, volume 106, pages 25-57 and year matched (online 2005, volume year 2006)",
+            "date": "2026-11-25"
+          }
+        }
+      ]
+    },
     "stiff-chemistry": {
       "references": [
         {
@@ -4062,6 +4076,40 @@
           "verified": {
             "method": "catalogue",
             "evidence": "Open Library ISBN 0072848235: title, '7th ed. / Warren L. McCabe, Julian C. Smith, Peter Harriott', McGraw-Hill, 2005 (re-read 2026-11-25, C511); the chapter's content is not read from the book here",
+            "date": "2026-11-25"
+          }
+        }
+      ]
+    },
+    "how-many-phases": {
+      "references": [
+        {
+          "text": "Michelsen, M. L. (1982). The isothermal flash problem. Part I. Stability. Fluid Phase Equilib. 9(1), 1–19.",
+          "doi": "10.1016/0378-3812(82)85001-2",
+          "note": "The tangent-plane criterion of stability that the engine's michelsenTPD implements.  The paper itself was not read for this page: it is cited as the origin of the criterion, and the page's equations are re-derived from the chemical potential and checked against the engine's tables.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0378-3812(82)85001-2: author Michelsen, title 'The isothermal flash problem. Part I. Stability', container Fluid Phase Equilibria, volume 9, pages 1-19, year 1982 matched (the paper not read)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Michelsen, M. L. (1982). The isothermal flash problem. Part II. Phase-split calculation. Fluid Phase Equilibria 9(1), 21–40.",
+          "doi": "10.1016/0378-3812(82)85002-4",
+          "note": "The companion paper: the phase-split calculation that follows a negative stability test.  Not read for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0378-3812(82)85002-4: title 'The isothermal flash problem. Part II. Phase-split calculation', pages 21-40, year 1982 matched (the paper not read)",
+            "date": "2026-11-25"
+          }
+        },
+        {
+          "text": "Winkelman, J. G. M.; Kraai, G. N.; Heeres, H. J. (2009). Binary, ternary and quaternary liquid–liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures. Fluid Phase Equilibria 284(2), 71–79.",
+          "doi": "10.1016/j.fluid.2009.06.013",
+          "note": "The UNIQUAC set for water and 1-butanol (their Table 2, p. 73) that the engine's case uses, and the measured mutual solubilities the case's README compares with.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2009.06.013: authors Winkelman, Kraai, Heeres, title, container Fluid Phase Equilibria, volume 284, pages 71-79, year 2009 matched; the Table 2 parameters are those of the engine's case record nButanol-water.dat",
             "date": "2026-11-25"
           }
         }

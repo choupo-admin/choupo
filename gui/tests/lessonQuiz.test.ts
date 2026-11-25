@@ -130,10 +130,14 @@ import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
 import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
 import { PRESS_QUIZ, PRESS_STEPS } from "../src/ui/methods/filterPressCycleLesson.js";
 import { FilterPressTool } from "../src/ui/methods/FilterPressTool.js";
+import { PHASES_QUIZ, PHASES_STEPS } from "../src/ui/methods/howManyPhasesLesson.js";
+import { HowManyPhasesTool } from "../src/ui/methods/HowManyPhasesTool.js";
 import { GAS_QUIZ, GAS_STEPS } from "../src/ui/methods/gasLineLesson.js";
 import { GasLineTool } from "../src/ui/methods/GasLineTool.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
+import { IPM_QUIZ, IPM_STEPS } from "../src/ui/methods/interiorPointLesson.js";
+import { InteriorPointTool } from "../src/ui/methods/InteriorPointTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
 import { MethaneAssemblyTool } from "../src/ui/methods/MethaneAssemblyTool.js";
@@ -335,6 +339,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     lesson: GAS_STEPS, lessonName: "GAS_STEPS",
     file: "src/ui/methods/GasLineTool.tsx", tool: GasLineTool,
   },
+  "how-many-phases": {
+    quiz: PHASES_QUIZ, quizName: "PHASES_QUIZ",
+    lesson: PHASES_STEPS, lessonName: "PHASES_STEPS",
+    file: "src/ui/methods/HowManyPhasesTool.tsx", tool: HowManyPhasesTool,
+  },
   optimizers: {
     quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",
     lesson: OPT_STEPS_ALL, lessonName: "OPT_STEPS_ALL",
@@ -345,6 +354,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: SC_QUIZ, quizName: "SC_QUIZ",
     lesson: SC_STEPS, lessonName: "SC_STEPS",
     file: "src/ui/methods/StiffChemistryTool.tsx", tool: StiffChemistryTool,
+  },
+  "interior-point": {
+    quiz: IPM_QUIZ, quizName: "IPM_QUIZ",
+    lesson: IPM_STEPS, lessonName: "IPM_STEPS",
+    file: "src/ui/methods/InteriorPointTool.tsx", tool: InteriorPointTool,
   },
   "methane-assembly": {
     quiz: METHANE_QUIZ, quizName: "METHANE_QUIZ",

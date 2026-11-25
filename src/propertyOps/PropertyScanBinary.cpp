@@ -18,6 +18,7 @@ License
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
+#include "solver/StabilityTest.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 
 #include "thermo/RecordResolver.H"
@@ -41,6 +42,13 @@ scalar gmixBinary(const ThermoPackage& thermo, scalar T, scalar x1)
     return constant::R * T
          * ( x1 * (std::log(x1) + std::log(g[0]))
            + x2 * (std::log(x2) + std::log(g[1])) );
+}
+
+//  ln gamma_i at (T, x1) for a binary (the tangent-plane test's building block).
+sVector lnGammaBinary(const ThermoPackage& thermo, scalar T, scalar x1)
+{
+    const sVector g = thermo.activity().gamma(T, sVector{ x1, 1.0 - x1 });
+    return sVector{ std::log(g[0]), std::log(g[1]) };
 }
 
 } // namespace
@@ -118,20 +126,24 @@ int PropertyScanBinary::run(const DictPtr& dict,
     //     it with an optional `feed { <comp> <x1>; }` to place the feed inside
     //     an ASYMMETRIC gap (e.g. water/1-butanol, whose butanol-rich binodal
     //     sits below 50 mol% butanol, so z = 0.5 is outside it).
-    scalar zFeed1 = 0.5;
-    if (dict->found("feed"))
+    //  The mole fraction of component 1 a `feed { <comp> <x>; }` block declares.
+    auto readFeedX1 = [&](const DictPtr& feedDict, scalar dflt) -> scalar
     {
-        auto feedDict = dict->subDict("feed");
+        scalar z1 = dflt;
         const std::string c0 = thermo.comp(0).name();
         const std::string c1 = thermo.comp(1).name();
         if (feedDict->found(c0))
-            zFeed1 = feedDict->lookupScalar(c0);
+            z1 = feedDict->lookupScalar(c0);
         else if (feedDict->found(c1))
-            zFeed1 = 1.0 - feedDict->lookupScalar(c1);
-        if (zFeed1 <= 0.0 || zFeed1 >= 1.0)
+            z1 = 1.0 - feedDict->lookupScalar(c1);
+        if (z1 <= 0.0 || z1 >= 1.0)
             throw std::runtime_error("propertyScanBinary: feed composition for '"
-                + c0 + "' must be in (0,1); got " + std::to_string(zFeed1));
-    }
+                + c0 + "' must be in (0,1); got " + std::to_string(z1));
+        return z1;
+    };
+    scalar zFeed1 = 0.5;
+    if (dict->found("feed"))
+        zFeed1 = readFeedX1(dict->subDict("feed"), zFeed1);
 
     FlashInput in;
     in.F = 1.0;
@@ -141,12 +153,21 @@ int PropertyScanBinary::run(const DictPtr& dict,
 
     FlashOptions opts;
     opts.phaseSet  = PhaseSet::LL;
-    opts.verbosity = (verbosity >= 4) ? verbosity : 0;
+    //  With a `stability` block the flash is run at verbosity 3 so that ITS
+    //  OWN Michelsen line (IsothermalFlash.cpp, "Michelsen TPD stability test")
+    //  is in the log beside the table; without one nothing changes.
+    opts.verbosity = (verbosity >= 4) ? verbosity : (dict->found("stability") ? 3 : 0);
 
     bool split = false;
+    //  The verbose flash leaves the stream in scientific format with 4 figures;
+    //  restore it when WE asked for that verbosity, so the lines below read as before.
+    const bool raisedVerbosity = (opts.verbosity == 3 && verbosity < 3);
+    const std::ios_base::fmtflags streamFlags = std::cout.flags();
+    const std::streamsize streamPrecision = std::cout.precision();
     try
     {
         const FlashSolution sol = IsothermalFlash::solveCore(in, thermo, opts);
+        if (raisedVerbosity) { std::cout.flags(streamFlags); std::cout.precision(streamPrecision); }
         const bool isLL = sol.liquidLiquid;   // the split's KIND, never parsed from `regime`
         if (isLL && sol.x.size() == 2 && sol.y.size() == 2)
         {
@@ -173,6 +194,7 @@ int PropertyScanBinary::run(const DictPtr& dict,
     }
     catch (const std::exception& e)
     {
+        if (raisedVerbosity) { std::cout.flags(streamFlags); std::cout.precision(streamPrecision); }
         std::cout << "[advisory] the liquid-liquid flash did not converge: "
                   << e.what() << " -- no binodal emitted.\n";
     }
@@ -182,11 +204,94 @@ int PropertyScanBinary::run(const DictPtr& dict,
                   << " bar: the chosen activity model predicts MISCIBILITY (no "
                      "liquid-liquid split) -- the g_mix curve stays convex.\n";
 
+    //  (c) OPTIONAL `stability { feed { <comp> <x>; } }` (2026-11-25): the
+    //      tangent-plane picture of "how many phases?".  Absent block -> nothing
+    //      below runs and no output moves.  Three more tables:
+    //        activity    x1, lnGamma1, lnGamma2, a1, a2   (a_i = x_i gamma_i),
+    //                    on the same interior nodes as gmix
+    //        tpd         y1, tm  for the declared feed z:
+    //                    tm(y) = sum_i y_i [ ln y_i + ln gamma_i(y) - ln z_i - ln gamma_i(z) ]
+    //        stationary  the verdict of the ENGINE's own Michelsen test
+    //                    (solver::michelsenTPD, called, not re-implemented) on
+    //                    the first liquid phase: stable / unstable, its lowest
+    //                    tm and the composition of the incipient phase there.
+    //      Its tm is the engine's modified form, 1 + sum Y (ln Y + ln gamma - h - 1),
+    //      which has the sign of tm(y) at a stationary point; both are printed.
+    const bool wantStability = dict->found("stability");
+    extraTables_.clear();
+    if (wantStability)
+    {
+        auto sd = dict->subDict("stability");
+        const scalar zS = sd->found("feed") ? readFeedX1(sd->subDict("feed"), zFeed1)
+                                            : zFeed1;
+        PublishedTable actTab, tpdTab, statTab, binActTab;
+        actTab.name = "activity";
+        actTab.description = "ln gamma and activity of both components along composition (the same interior nodes as gmix)";
+        actTab.columns = { { "x1", "-" }, { "lnGamma1", "-" }, { "lnGamma2", "-" },
+                           { "a1", "-" }, { "a2", "-" } };
+        tpdTab.name = "tpd";
+        tpdTab.description = "the tangent-plane distance tm(y) / RT of the declared feed along the trial composition y1 (same nodes)";
+        tpdTab.columns = { { "y1", "-" }, { "tm", "-" } };
+        statTab.name = "stationary";
+        statTab.description = "the engine's Michelsen test on the declared feed: the lowest tangent-plane distance it found (its own form, 1 + sum Y (ln Y + ln gamma - h - 1)) and the incipient phase there";
+        statTab.columns = { { "feed1", "-" }, { "unstable", "-" }, { "tmMin", "-" }, { "y1", "-" } };
+
+        binActTab.name = "binodalActivity";
+        binActTab.description = "the activities of both components in each coexisting liquid of the flash (equal in the two rows at equilibrium: the iso-activity conditions); no rows when there is no split";
+        binActTab.columns = { { "x1", "-" }, { "lnGamma1", "-" }, { "lnGamma2", "-" },
+                              { "a1", "-" }, { "a2", "-" } };
+        for (const auto& r : binTab.rows)
+        {
+            const sVector lb = lnGammaBinary(thermo, T, r[0]);
+            binActTab.rows.push_back({ r[0], lb[0], lb[1],
+                                       r[0] * std::exp(lb[0]), (1.0 - r[0]) * std::exp(lb[1]) });
+        }
+        const sVector lnGz = lnGammaBinary(thermo, T, zS);
+        const scalar hz1 = std::log(zS) + lnGz[0];
+        const scalar hz2 = std::log(1.0 - zS) + lnGz[1];
+        scalar tmGridMin = 0.0, yAtGridMin = 0.0;
+        for (std::size_t i = 1; i < g; ++i)
+        {
+            const scalar x1 = static_cast<scalar>(i) / static_cast<scalar>(g);
+            const sVector lg = lnGammaBinary(thermo, T, x1);
+            actTab.rows.push_back({ x1, lg[0], lg[1],
+                                    x1 * std::exp(lg[0]), (1.0 - x1) * std::exp(lg[1]) });
+            const scalar tm = x1 * (std::log(x1) + lg[0] - hz1)
+                            + (1.0 - x1) * (std::log(1.0 - x1) + lg[1] - hz2);
+            tpdTab.rows.push_back({ x1, tm });
+            if (tm < tmGridMin) { tmGridMin = tm; yAtGridMin = x1; }
+        }
+        const auto liqs = thermo.phasesOfType("liquid");
+        if (liqs.empty())
+            throw std::runtime_error("propertyScanBinary: `stability` needs a liquid phase in the thermoPackage");
+        const solver::StabilityResult st = solver::michelsenTPD(
+            thermo.phase(liqs[0]), T, P_bar, sVector{ zS, 1.0 - zS });
+        const scalar yEng = st.trialY.size() == 2 ? st.trialY[0] : 0.0;
+        statTab.rows.push_back({ zS, st.unstable ? 1.0 : 0.0, st.tmMin, yEng });
+        std::cout << "[tangentPlane] feed x1 = " << zS << " at " << T << " K, " << P_bar
+                  << " bar: Michelsen test says " << (st.unstable ? "UNSTABLE (a phase is missing)"
+                                                                   : "STABLE (one liquid)")
+                  << ", tm_min = " << st.tmMin << " at y1 = " << yEng << "\n";
+        diag_["tpdFeed1"]     = zS;
+        diag_["tpdUnstable"]  = st.unstable ? 1.0 : 0.0;
+        diag_["tpdTmMin"]     = st.tmMin;
+        diag_["tpdTrialY1"]   = yEng;
+        diag_["tpdGridMin"]   = tmGridMin;
+        diag_["tpdGridMinY1"] = yAtGridMin;
+        extraTables_.push_back(std::move(actTab));
+        extraTables_.push_back(std::move(tpdTab));
+        extraTables_.push_back(std::move(binActTab));
+        extraTables_.push_back(std::move(statTab));
+    }
+    stability_ = wantStability;
+
     csv.close();
     split_ = split;
     tables_.clear();
     tables_.push_back(std::move(curveTab));
     tables_.push_back(std::move(binTab));
+    for (auto& t : extraTables_) tables_.push_back(std::move(t));
+    extraTables_.clear();
     diag_["split"] = split ? 1.0 : 0.0;
     diag_["T"]     = T;
     if (verbosity >= 2)
@@ -207,6 +312,16 @@ std::string PropertyScanBinary::defaultViews(const std::string& op) const
         out += " { name tangent; label \"common tangent\"; op " + op + "; table binodal; x x1; y gmix; style lines; }"
                " { name binodal; label \"coexisting liquids (binodal)\"; op " + op + "; table binodal; x x1; y gmix; style markers; }";
     out += " ); }\n";
+    if (stability_)
+    {
+        out += "{ name activity; type series; title \"" + op + ": activity of both components against composition -- the iso-activity conditions\";"
+               " xAxis { label \"mole fraction of " + comp1_ + ", x1\"; } yAxis { label \"activity a_i = x_i gamma_i\"; }"
+               " series ( { name a1; label \"a1\"; op " + op + "; table activity; x x1; y a1; style lines; }"
+               " { name a2; label \"a2\"; op " + op + "; table activity; x x1; y a2; style lines; } ); }\n";
+        out += "{ name tpd; type series; title \"" + op + ": tangent-plane distance of the declared feed along the trial composition\";"
+               " xAxis { label \"trial mole fraction of " + comp1_ + ", y1\"; } yAxis { label \"tm(y) / RT\"; }"
+               " series ( { name tm; label \"tm(y)\"; op " + op + "; table tpd; x y1; y tm; style lines; } ); }\n";
+    }
     return out;
 }
 

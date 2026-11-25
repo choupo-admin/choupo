@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor' (the vessel), Mazzoleni et al.
+  2015 Table 3, CEN.PK113-7D column: G0 = 20 g, E0 = 0, P0 = 5e-5 g, C_M0 =
+  0.023 g, I0 = R0 = D0 = 0, in V0 = 1 l of medium (Methods: "initially 1 l of
+  medium with 2 % w/v glucose").  The grams are kmol of the mass-unit
+  components; the water is the amount that fills 1 l at 303.15 K on the case's
+  own density, `totalMoles` is their sum and the fractions below are each
+  amount over it.  The temperature of the culture is NOT stated in the paper
+  (30 C is the plate-incubation value of its viability count): 303.15 K is a
+  declared assumption, and it enters only through the density of the water.
+\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           303.15;
+    P           101325.0;
+    totalMoles  7.5290050000e-02;       // kmol
+    molarComposition
+    {
+        water                7.3405449990e-01;
+        glucoseMass          2.6563935075e-01;
+        glycolysisProducts   6.6409837688e-07;
+        ethanolMass          0.0000000000e+00;
+        carbonMetabolites    3.0548525336e-04;
+        reserves             0.0000000000e+00;
+        inhibitor            0.0000000000e+00;
+        deadCells            0.0000000000e+00;
+        lostMass             0.0000000000e+00;
+    }
+}

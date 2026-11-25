@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl23_fedbatch_yeast_mazzoleni2015 / postDict -- the case's TWO figures
+  (DEV.md 4c C487; grammar: docs/design/a-post-processing-dictionary.md).
+
+    culture   "How much yeast is there, and how much of it is alive?"  The cell
+              pools of the vessel in kmol (every pool is a mass-unit
+              component, 1 kmol = 1 kg): the carbon metabolites C_M (the
+              cell material), the reserves R and the dead cells D, from 0 to
+              49 h.  The feed starts at 17 h; the dead cells appear after 41 h.
+    medium    "When does the feed outrun the yeast?"  Glucose and ethanol in the
+              vessel in kmol (= kg) on the left axis, the volume of the broth in m3 on
+              the right: the glucose stays near zero until about 41 h, then the
+              ethanol made by overflow metabolism and the unconsumed glucose
+              accumulate.  Compare Fig 4 of Mazzoleni et al. 2015 (those are
+              concentrations in g/l; the figure here is the amount in the vessel).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    culture;
+        type    series;
+        title   "How much yeast is there, and how much of it is alive?";
+        note    "Carbon metabolites (the cell material), reserves and dead cells in the vessel, kmol (= kg). The feed starts at 17 h; the cell material peaks near 137 g at 42 h and then falls as the dead cells appear.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "amount in the vessel (1 kmol = 1 kg)"; unit "kmol"; scale linear; }
+        series
+        (
+            { name cm; label "carbon metabolites C_M"; unitOp reactor; table trajectory; x t; y n_carbonMetabolites; style lines; }
+            { name res; label "reserves R"; unitOp reactor; table trajectory; x t; y n_reserves; style lines; }
+            { name dead; label "dead cells D"; unitOp reactor; table trajectory; x t; y n_deadCells; style lines; }
+        );
+    }
+    {
+        name    medium;
+        type    series;
+        title   "When does the feed outrun the yeast?";
+        note    "Glucose and ethanol in the vessel (kmol = kg, left) and the volume of the broth (m3, right). Glucose is held near zero until about 41 h; then ethanol and unconsumed glucose accumulate.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "amount in the vessel (1 kmol = 1 kg)"; unit "kmol"; scale linear; }
+        yAxis2  { label "broth volume"; unit "m3"; scale linear; }
+        series
+        (
+            { name glc; label "glucose G"; unitOp reactor; table trajectory; x t; y n_glucoseMass; style lines; }
+            { name eth; label "ethanol E"; unitOp reactor; table trajectory; x t; y n_ethanolMass; style lines; }
+            { name vol; label "volume V"; unitOp reactor; table trajectory; x t; y volume; style lines; axis right; }
+        );
+    }
+);

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl23_fedbatch_yeast_mazzoleni2015 / system/controlDict
+
+  WHAT THIS CASE IS: the aerobic fed-batch of S. cerevisiae CEN.PK113-7D of
+  Mazzoleni et al. 2015 (Microb. Cell Fact. 14:109), Fig 4 -- a 17 h batch on 20
+  g/l glucose, then an exponential feed of 500 g/l glucose at 0.16 1/h until
+  49 h -- run with the paper's seven balances (Eq 1-7), rate laws (Table 1) and
+  parameters (Table 4), none of them fitted here.  Narrative and what was read:
+  README.md and system/flowsheetDict.
+
+  TIME.  The driver integrates in seconds (176400 s = 49 h).  RK4 at 2 s: the
+  fastest mode is the glucose pool, whose uptake gain is v_G B/k_G (about 2000
+  per hour at 100 g of cells), a time constant of 2 s at the end of the run,
+  and RK4 is stable to 2.78 times it.
+\*---------------------------------------------------------------------------*/
+
+tier          tutorial;
+application   choupoCtrl;
+description   "Fed-batch of S. cerevisiae CEN.PK113-7D on glucose, the seven balances and the rate laws of Mazzoleni et al. 2015 (Table 4 parameters, nothing fitted): 17 h of batch, then an exponential glucose feed of 0.16 1/h to 49 h in a variable-volume vessel";
+verbosity     2;
+
+startTime       0;        // s
+endTime         176400;   // s   49 h (Table 3, t_END)
+deltaT          2.0;      // s
+writeInterval   1800;     // s   one row per half hour
+
+solutionControl
+{
+    write           true;
+}

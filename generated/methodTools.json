@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 110,
-  "registryTools": 110,
+  "liveTools": 112,
+  "registryTools": 112,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1382,6 +1382,19 @@
       "href": "/app/?workspace=methods&tool=optimizers"
     },
     {
+      "id": "interior-point",
+      "label": "How does an interior-point method find the minimum?",
+      "blurb": "See an interior-point optimizer work: cushion, filter, bowl check.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "What the engine's interior-point optimizer does at each iteration, told in pictures: a cushion (the barrier) along every wall that pushes the iterates back and slowly deflates as the run closes on a wall; a list of points the method must not be worse than (the filter) and the phase that first gets back inside the rules (restoration); a check that the ground is a bowl and not a saddle, with the stiffness added until it is (the inertia correction); the Gibbs reactor's multipliers as the element potentials; why a mixture needs no cushion on its gas species (review R1, with the table of the finishing corrections); and a published test optimum that is not the minimum.  Every number is a recorded run.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=interior-point"
+    },
+    {
       "id": "least-squares",
       "label": "Least squares: what a fitted parameter is worth",
       "blurb": "See what a fitted parameter is worth, and when it is not.",
@@ -1738,6 +1751,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=gas-line"
+    },
+    {
+      "id": "how-many-phases",
+      "label": "How many phases? Gibbs energy and the tangent plane",
+      "blurb": "Find out why equal fugacities do not prove a split.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Why equilibrium is the global minimum of the Gibbs energy and equal fugacities are only necessary: the molar Gibbs energy of mixing of water and n-butanol with its two humps, the common tangent through the two coexisting liquids and the lever rule on a feed you move, the activities whose equality has a trivial solution and a true one, and Michelsen's tangent-plane distance along a trial composition, negative somewhere when a phase is absent.  Every curve is the engine's own run of a propertyScanBinary case; the page adds the lever rule and the tangent algebra.",
+      "origins": [
+        "engine",
+        "page"
+      ],
+      "href": "/app/?workspace=methods&tool=how-many-phases"
     }
   ]
 }

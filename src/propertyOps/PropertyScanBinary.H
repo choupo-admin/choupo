@@ -38,6 +38,15 @@ Class
     dome.  No fit: the tangent points come from the engine flash, the curve from
     the same gamma model.  A miscible system (no LL split) is reported honestly.
 
+    OPTIONAL `stability { feed { <comp> <z>; } }` (2026-11-25, the how-many-
+    phases EduTool): absent, nothing below changes.  Present, the operation
+    publishes three more tables on the same grid -- `activity` (ln gamma and
+    a_i = x_i gamma_i), `tpd` (the tangent-plane distance tm(y) of the declared
+    feed along the trial composition) and `stationary` (the verdict of the
+    engine's own Michelsen test, solver::michelsenTPD, on that feed) -- plus
+    `binodalActivity` (a_i in each coexisting liquid), and runs the flash at
+    verbosity 3 so its Michelsen line is in the log.
+
     Output (LONG-form CSV; the GUI's binary-LLE plot reads it):
 
         x1,gmix_J_per_mol,role,beta
@@ -90,6 +99,8 @@ public:
 
 private:
     std::vector<PublishedTable> tables_;
+    std::vector<PublishedTable> extraTables_;
+    bool        stability_ = false;
     bool        split_ = false;
     std::string comp1_;
     inline static const std::string type_ = "propertyScanBinary";

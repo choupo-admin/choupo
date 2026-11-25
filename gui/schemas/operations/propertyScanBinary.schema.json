@@ -43,6 +43,18 @@
       "title": "LL-flash feed",
       "description": "`{ <component> <z>; }` — a composition inside the gap; the flash resolves both binodal branches from it."
     },
+    "stability": {
+      "type": "object",
+      "title": "Tangent-plane (stability) block",
+      "description": "`{ feed { <component> <z>; } }` — OPTIONAL. Switches on the how-many-phases tables: `activity` (ln gamma and the activities along the grid, the iso-activity conditions), `binodalActivity` (the activities in the two coexisting liquids), `tpd` (the tangent-plane distance tm(y) of the declared feed along the trial composition) and `stationary` (the verdict of the engine's own Michelsen test on that feed). The feed defaults to the flash feed. Absent: nothing is computed and no output changes.",
+      "properties": {
+        "feed": {
+          "type": "object",
+          "title": "Feed of the stability test",
+          "description": "`{ <component> <z>; }` — the composition the tangent plane is drawn at."
+        }
+      }
+    },
     "output": {
       "type": "object",
       "title": "CSV output",

@@ -101,6 +101,18 @@ public:
 
     virtual sVector startingPoint() const = 0;
 
+    //  GUARD-ONLY LOWER BOUND (slice B1, design record sec. 8, review R1).  A
+    //  variable that has a finite lower bound and NO upper one may declare the
+    //  bound a GUARD: the fraction-to-the-boundary rule keeps the iterate
+    //  strictly inside it, but there is no barrier term for it, no bound
+    //  multiplier (z = 0 identically) and no entry in the complementarity
+    //  error.  It is for a variable whose own objective already repels the
+    //  bound -- a species of a present mixture phase, whose n ln(n/N) has the
+    //  derivative ln(n/N) -> -infinity at 0, so the bound is never active and a
+    //  barrier would only add the error mu/n of design record sec. 2.9.  The
+    //  default is the ordinary barrier of Algorithm A.
+    virtual bool isGuardOnly(std::size_t /*i*/) const { return false; }
+
     //  Each evaluation returns false when it FAILS (a NaN, a thermodynamic
     //  routine that refuses, a log of a negative number); the optimizer
     //  rejects the trial point and halves the step (L1, after Algorithm A).
@@ -140,6 +152,7 @@ public:
     bool hessianLagrangian(const sVector& x, scalar sigma, const sVector& lambda,
                            DenseMatrix& W) const override;
     bool hasExactHessian() const override { return base_.hasExactHessian(); }
+    bool isGuardOnly(std::size_t i) const override { return i < n_ ? base_.isGuardOnly(i) : false; }
     std::string variableName(std::size_t i) const override;
     std::string constraintName(std::size_t j) const override { return base_.constraintName(j); }
 
@@ -177,6 +190,7 @@ public:
     bool hessianLagrangian(const sVector& x, scalar sigma, const sVector& lambda,
                            DenseMatrix& W) const override;
     bool hasExactHessian() const override { return base_.hasExactHessian(); }
+    bool isGuardOnly(std::size_t i) const override { return base_.isGuardOnly(free_[i]); }
     std::string variableName(std::size_t i) const override { return base_.variableName(free_[i]); }
     std::string constraintName(std::size_t j) const override { return base_.constraintName(j); }
 
@@ -210,6 +224,7 @@ public:
     bool hessianLagrangian(const sVector& x, scalar sigma, const sVector& lambda,
                            DenseMatrix& W) const override;
     bool hasExactHessian() const override { return base_.hasExactHessian(); }
+    bool isGuardOnly(std::size_t i) const override { return base_.isGuardOnly(i); }
     std::string variableName(std::size_t i) const override { return base_.variableName(i); }
     std::string constraintName(std::size_t j) const override { return base_.constraintName(j); }
 

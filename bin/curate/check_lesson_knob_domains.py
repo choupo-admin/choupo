@@ -278,6 +278,9 @@ DOMAINS = [
      "a press's dead time (discharge and cleaning) is positive and has no upper physical bound; the engine refuses a "
      "negative `cleaningTime` (CakeFilter.cpp, the batchPress argument check); the box runs from 5 to 90 min, the page's own choice around the case's "
      "authored 20 min (C511)", False),
+    (M + "HowManyPhasesTool.tsx", "feed", 0.0, 1.0,
+     "a mole fraction lies in [0, 1]; the box runs from 0.02 to 0.98, the engine's interior nodes of "
+     "the grid (the page's own choice: the ends x = 0 and 1 are not sampled because ln x diverges)", False),
     (M + "GasLineTool.tsx", "flow", 0.0, 676.0,
      "a flow is positive; above 676.49 kmol/h the page's own inlet (8 bar, 300 K, N2, 50 mm) is at or beyond the "
      "isothermal sonic limit P_in <= G sqrt(c), which the engine stops at the entrance (Pipe.cpp:886-888); the box "

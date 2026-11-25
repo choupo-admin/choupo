@@ -226,7 +226,12 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T_K,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
                                const std::function<void(int,scalar,scalar)>& onIter = {},
-                               const GibbsLog& log = {});
+                               const GibbsLog& log = {},
+                               const std::vector<scalar>* seedX0 = nullptr);
+//  `seedX0` (optional, M + 1 numbers: the element potentials pi and ln N)
+//  REPLACES the least-squares seed at the feed; the Newton, its residual and
+//  its tolerance are unchanged.  It is how the interiorPoint method polishes
+//  its answer (InteriorPointGibbs.cpp); absent, the call is what it always was.
 
 //  THE PRIMAL SEED OF THE ELEMENT-POTENTIAL NEWTON (2026-09-27).
 //
@@ -304,6 +309,20 @@ public:
     GibbsEquilibrium solve(const GibbsProblem& p, scalar T_K,
                            const IterHook& onIter = {},
                            const GibbsLog& log = {}) const;
+
+    //- Does the method carry a pure solid phase?  The bisection of
+    //  GibbsSolidPhase.cpp sits OUTSIDE each fluid method, so every method
+    //  does by default; `interiorPoint` (slice B1) says no and `solve`
+    //  REFUSES a declared solid by name, naming the slice that will carry it.
+    virtual bool supportsPureSolids() const { return true; }
+
+    //- What the last `equilibrium` call has to say about itself, for the
+    //  reactor's report: a short block (`detailed` false) or the iteration
+    //  table too.  Empty: nothing (every method but interiorPoint).
+    virtual std::string report(bool /*detailed*/) const { return {}; }
+
+    //- KPIs of the last call that the reactor publishes beside its own.
+    virtual std::map<std::string, scalar> extraKpis() const { return {}; }
 
     // ---- Run-time selection (explicit registry) ------------------------
     using Factory = std::function<std::unique_ptr<GibbsMethod>()>;

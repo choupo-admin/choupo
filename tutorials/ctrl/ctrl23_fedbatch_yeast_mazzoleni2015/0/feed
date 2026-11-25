@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: the 500 g/l glucose solution
+  of Mazzoleni et al. 2015, Table 3 (c_F, CEN.PK113-7D), per litre of solution:
+  0.5 kmol of the mass-unit component glucoseMass (= 500 g) and 0.055267 kmol of
+  water.  The flow below is the paper's F0 (Table 2) = M_F mu / (c_F y_R) =
+  3.66 x 0.16 / 250 = 2.3424e-3 l/h, times the 0.555267 kmol per litre: the
+  Signal controllers of system/flowsheetDict multiply it by the exponential.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water                3.596039e-08 kmol/s;
+    glucoseMass          3.253333e-07 kmol/s;
+    glycolysisProducts   0.000000e+00 kmol/s;
+    ethanolMass          0.000000e+00 kmol/s;
+    carbonMetabolites    0.000000e+00 kmol/s;
+    reserves             0.000000e+00 kmol/s;
+    inhibitor            0.000000e+00 kmol/s;
+    deadCells            0.000000e+00 kmol/s;
+    lostMass             0.000000e+00 kmol/s;
+}
+T               303.15 K;
+P               101325.0 Pa;

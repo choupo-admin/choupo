@@ -35,6 +35,8 @@ Description
 
 #include "solver/ip/Globalization.H"
 
+#include <limits>
+
 #include <algorithm>
 #include <cmath>
 
@@ -86,15 +88,22 @@ FilterGlobalization::Verdict FilterGlobalization::test(const Current& k, scalar 
     //  Step A-5 of Algorithm A, filter check: the trial must be acceptable to the filter.
     if (inFilter(thetaTrial, phiTrial)) return Verdict::Reject;
 
+    //  ROUND-OFF ALLOWANCE (Choupo's choice, slice B1; not in L1).  Near the answer the decrease the Armijo
+    //  condition (20) asks for is below the round-off of phi itself: a Gibbs problem at 1800 K has |phi| ~ 1e2
+    //  and a decrease of ~1e-16, so (20) can never hold and the run stopped "restoration failed" at a
+    //  feasible point with a KKT error of 1e-7 (gibbs06_thermal_nox).  phi is compared to within
+    //  10 eps_mach |phi|, the allowance a double-precision line search needs to reach its own tolerance.
+    const scalar slack = 10.0 * std::numeric_limits<scalar>::epsilon() * std::abs(k.phi);
+
     //  Sufficient decrease, case I: (19) holds and theta(x_k) <= theta_min -> Armijo (20).
     if (k.theta <= k.thetaMin && switching(k, alpha))
-        return phiTrial <= k.phi + p_.etaPhi * alpha * k.gradPhiDx ? Verdict::AcceptPhi : Verdict::Reject;
+        return phiTrial <= k.phi + p_.etaPhi * alpha * k.gradPhiDx + slack ? Verdict::AcceptPhi : Verdict::Reject;
 
     //  Case II: the margins (18).
     if (thetaTrial <= (1.0 - p_.gammaTheta) * k.theta || phiTrial <= k.phi - p_.gammaPhi * k.theta)
     {
         //  The filter is enlarged unless (19) and (20) both hold (L1 Algorithm A, the filter-augmentation step).
-        const bool armijo = phiTrial <= k.phi + p_.etaPhi * alpha * k.gradPhiDx;
+        const bool armijo = phiTrial <= k.phi + p_.etaPhi * alpha * k.gradPhiDx + slack;
         return switching(k, alpha) && armijo ? Verdict::AcceptPhi : Verdict::AcceptTheta;
     }
     return Verdict::Reject;

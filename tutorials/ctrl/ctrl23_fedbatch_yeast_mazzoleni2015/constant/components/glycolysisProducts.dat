@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Component: glycolysisProducts -- a MASS-UNIT PSEUDO-COMPONENT, NOT A MOLECULE:
+  P, glycolysis products inside the cells (Eq 2).
+
+  Mazzoleni et al. 2015 (Microb. Cell Fact. 14:109) write their seven balances
+  in GRAMS.  Every state of this case is therefore one of these records with
+  MW = 1 g/mol, so that 1 kmol is 1 kg and a concentration in kmol/m3 is a
+  concentration in g/l: a rate law and a stoichiometric coefficient then read in
+  the paper's own units, and a mass balance IS the mole balance.  Nothing here
+  is measured and no molecular property is claimed.  The volume is (almost) zero
+  on purpose: the paper's medium volume V is the volume of the liquid that was
+  fed (its Table 2), not of the dissolved matter.  The heat capacity is a
+  water-like author-set value (the model has no energy balance).  All eight
+  pseudo-components carry the SAME formation datum, so the heat of every
+  reaction written over them is zero by construction: the case is isothermal and
+  carries no metabolic heat (the paper models none).
+\*---------------------------------------------------------------------------*/
+
+name           glycolysisProducts;
+CAS            00-00-0;              // none: not a real substance
+reviewStatus   unverified;           // a bookkeeping unit, nothing to verify against
+MW             1.0;                  // g/mol      one mass unit (header)
+role           nonvolatile;
+dissociation   1;
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "by construction: a mass-unit bookkeeping pseudo-component with no vapour (header)"; status accepted; }
+}
+Vliq           1.0e-9;               // m^3/mol    author-set: ~0, the dissolved matter adds no volume (header)
+
+standardThermochemistry
+{
+    dHf_298    0.0;                  // J/mol   the same for all eight: reaction heat = 0 (header)
+    s_298      0.0;                  // J/(mol K)
+    referenceState      pureLiquid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (4.18);            // J/(mol K) = 4.18 J/(g K), water-like, author-set
+    Trange        (273.15  373.15);
+}

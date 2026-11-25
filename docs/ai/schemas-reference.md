@@ -1204,6 +1204,7 @@ Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g_mix ac
 | `state` | ✓ | object | — | `{ T ...; P ...; }` — the temperature and pressure of the map. |
 | `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
 | `feed` |   | object | — | `{ <component> <z>; }` — a composition inside the gap; the flash resolves both binodal branches from it. |
+| `stability` |   | object | — | `{ feed { <component> <z>; } }` — OPTIONAL. Switches on the how-many-phases tables: `activity` (ln gamma and the activities along the gri… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `propertyScanTernary`  (propertyScanTernary operation)

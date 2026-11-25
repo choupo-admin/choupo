@@ -137,6 +137,20 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
     }
     if (solid.empty()) return equilibrium(p, T, onIter, log);   // the unchanged path
 
+    if (!supportsPureSolids())
+    {
+        std::string names;
+        for (std::size_t i : solid)
+            names += (names.empty() ? "" : ", ") + thermo.comp(p.compIdx[i]).name();
+        throw std::runtime_error("GibbsReactor (model " + name() + "): the species "
+            + names + " is a PURE SOLID (`referenceState pureSolid;`), and the "
+            + name() + " method carries no solid phase in slice B1 -- a solid as a"
+            " bounded variable whose multiplier is -ln a_s is slice B2 of the"
+            " interior-point plan (docs/design/interior-point.md sec. 7).  Use"
+            " `model elementPotential;`, which tests the solid by a bisection on its"
+            " amount, or drop the solid from `species`.");
+    }
+
     const auto nameOf = [&](std::size_t i) -> std::string
         { return thermo.comp(p.compIdx[i]).name(); };
 
