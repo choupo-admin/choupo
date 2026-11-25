@@ -1247,8 +1247,8 @@ Psychrometric chart for ANY carrier + condensable pair, generated from the packa
 | `TminC` |   | number | - | Chart span start, in degrees CELSIUS (this op's axis convention); defaults to 0. |
 | `TmaxC` |   | number | - | Chart span end, degrees Celsius; defaults to 150. |
 | `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
-| `relativeHumidity` |   | array[number] | — | Which constant-RH curves to draw. |
-| `wetBulb` |   | array[number] | — | Which wet-bulb temperature lines to draw. |
+| `relativeHumidity` |   | array[number] | % | Which constant-RH curves to draw, in PERCENT (20 means 20 % relative humidity; the engine divides by 100).  Default 10 20 ... 90.  A frac… |
+| `wetBulb` |   | array[number] | degC | Which adiabatic-saturation / wet-bulb temperature lines to draw, in degrees Celsius.  Decimals are kept (20.1 and 20.9 are two curves). |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `pump`  (pump operation)

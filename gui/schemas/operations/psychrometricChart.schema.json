@@ -53,18 +53,20 @@
       "items": {
         "type": "number",
         "exclusiveMinimum": 0,
-        "maximum": 1
+        "maximum": 100
       },
-      "title": "RH curves",
-      "description": "Which constant-RH curves to draw."
+      "title": "RH curves [%]",
+      "unit": "%",
+      "description": "Which constant-RH curves to draw, in PERCENT (20 means 20 % relative humidity; the engine divides by 100).  Default 10 20 ... 90.  A fraction such as 0.2 is read as 0.2 %."
     },
     "wetBulb": {
       "type": "array",
       "items": {
         "type": "number"
       },
-      "title": "Wet-bulb lines",
-      "description": "Which wet-bulb temperature lines to draw."
+      "title": "Wet-bulb lines [degC]",
+      "unit": "degC",
+      "description": "Which adiabatic-saturation / wet-bulb temperature lines to draw, in degrees Celsius.  Decimals are kept (20.1 and 20.9 are two curves)."
     },
     "output": {
       "type": "object",

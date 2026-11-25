@@ -622,13 +622,76 @@ int PinchPass::run(SimulationResult& result)
         return { c.Thi - c.Tlo > 1.0e-9, c };
     };
 
+    //  THE TARGETS OF A POPULATION, recomputed from scratch (third external
+    //  review, 2026-11-25).  The clipping above uses the FIRST pinch only, so
+    //  with several pinches a pair could be feasible at dTmin and still cross
+    //  a later pinch, turning the targets 0/10 kW into 5/15 kW unflagged.
+    //  Rather than clip by every pinch, each candidate is judged by the thing
+    //  that matters: the targets of the population AFTER the match.  The
+    //  match is the counter-current one the Q_max bound assumes: the hot
+    //  stream is cooled from its top, the cold stream heated from its
+    //  bottom, by Q on both.  Same problem-table arithmetic as above.
+    auto targetsOf = [&](const std::vector<Segment>& pop)
+        -> std::pair<scalar, scalar>
+    {
+        std::set<scalar, std::greater<scalar>> bd;
+        for (const auto& q : pop)
+        {
+            const scalar sh = q.hot ? hs : cs;
+            bd.insert(q.Tlo + sh); bd.insert(q.Thi + sh);
+        }
+        std::vector<scalar> Tb(bd.begin(), bd.end());
+        scalar cas = 0.0, mn = 0.0;
+        for (std::size_t i = 0; i + 1 < Tb.size(); ++i)
+        {
+            const scalar mid = 0.5 * (Tb[i] + Tb[i + 1]);
+            scalar a = 0.0, b = 0.0;
+            for (const auto& q : pop)
+            {
+                const scalar sh = q.hot ? hs : cs;
+                if (q.Tlo + sh <= mid && mid <= q.Thi + sh)
+                    (q.hot ? a : b) += q.CP;
+            }
+            cas += (a - b) * (Tb[i] - Tb[i + 1]);
+            mn = std::min(mn, cas);
+        }
+        return { -mn + 0.0, cas - mn };
+    };
+    //  The population with `Q` [W] moved from hot piece H to cold piece C.
+    auto afterMatch = [&](const Segment& H, const Segment& C, scalar Q)
+    {
+        std::vector<Segment> out;
+        bool dropH = false, dropC = false;
+        for (const auto& q : segs)
+        {
+            const bool isH = !dropH && q.hot && q.unit == H.unit
+                && q.Tlo <= H.Tlo + 1.0e-9 && q.Thi >= H.Thi - 1.0e-9;
+            const bool isC = !dropC && !q.hot && q.unit == C.unit
+                && q.Tlo <= C.Tlo + 1.0e-9 && q.Thi >= C.Thi - 1.0e-9;
+            if (!isH && !isC) { out.push_back(q); continue; }
+            //  cut the matched interval out of the segment, keep the rest
+            const scalar a = isH ? H.Thi - Q / q.CP : C.Tlo;
+            const scalar b = isH ? H.Thi            : C.Tlo + Q / q.CP;
+            (isH ? dropH : dropC) = true;
+            Segment lo = q, hi = q;
+            lo.Thi = std::min(q.Thi, a);
+            hi.Tlo = std::max(q.Tlo, b);
+            if (lo.Thi - lo.Tlo > 1.0e-9) out.push_back(lo);
+            if (hi.Thi - hi.Tlo > 1.0e-9) out.push_back(hi);
+        }
+        return out;
+    };
+    const auto baseTargets = targetsOf(segs);
+    const scalar penTol = 1.0e-9 * throughput + 1.0e-6;       // [W]
+
     struct Row
     {
         std::string region, hotU, coldU, feas, rule, limit, rec;
-        scalar Qmax = 0.0;
+        scalar Qmax = 0.0, penalty = 0.0, QmaxMER = 0.0;
+        bool mer = true;
     };
     std::vector<Row> rows;
-    std::size_t admissible = 0;
+    std::size_t admissible = 0, merCompatible = 0;
 
     for (const bool above : { true, false })
     {
@@ -684,14 +747,52 @@ int PinchPass::run(SimulationResult& result)
                 else
                     r.limit = "cold stream duty exhausted";
 
+                //  Penalty at Q_max: the rise of the hot-utility target (=
+                //  that of the cold one) once this match is made.  The
+                //  largest duty that leaves the targets alone is found by
+                //  bisection (the penalty is taken as non-decreasing in Q;
+                //  an independent scan checks that in the test).
+                r.penalty = 0.0; r.QmaxMER = r.Qmax; r.mer = true;
+                if (r.Qmax > 1.0e-9)
+                {
+                    auto penaltyAt = [&](scalar Q) -> scalar
+                    {
+                        const auto t = targetsOf(afterMatch(H, C, Q));
+                        return t.first - baseTargets.first;
+                    };
+                    r.penalty = penaltyAt(r.Qmax);
+                    if (r.penalty <= penTol) r.penalty = 0.0;   // rounding, not a rise
+                    r.mer = r.penalty <= penTol;
+                    if (!r.mer)
+                    {
+                        scalar lo = 0.0, hi = r.Qmax;
+                        for (int it = 0; it < 60; ++it)
+                        {
+                            const scalar m = 0.5 * (lo + hi);
+                            (penaltyAt(m) <= penTol ? lo : hi) = m;
+                        }
+                        r.QmaxMER = lo < 1.0e-3 ? 0.0 : lo;   // [W]: below a milliwatt is the bisection tolerance, not a duty
+                    }
+                }
                 if (r.Qmax <= 1.0e-9)
                     r.rec = "not admissible";
+                else if (!r.mer)
+                {
+                    std::ostringstream o;
+                    o << "temperature-feasible at dTmin but NOT compatible"
+                         " with maximum energy recovery: the full "
+                      << r.Qmax / 1.0e3 << " kW raises both utility targets"
+                         " by " << r.penalty / 1.0e3 << " kW (at most "
+                      << r.QmaxMER / 1.0e3 << " kW leaves them alone)";
+                    r.rec = o.str();
+                }
                 else if (pinchMatch && !cpOk)
                     r.rec = "thermodynamically admissible candidate"
                             " (away from the pinch only)";
                 else
                     r.rec = "thermodynamically admissible candidate";
                 if (r.Qmax > 1.0e-9) ++admissible;
+                if (r.Qmax > 1.0e-9 && r.mer) ++merCompatible;
                 rows.push_back(std::move(r));
             }
         }
@@ -705,8 +806,17 @@ int PinchPass::run(SimulationResult& result)
     //  column is not additive, and the CP rule compares CP_hot with CP_cold.
     std::cout << "[pinch] candidate matches: feasibility assessment of "
               << rows.size() << " hot x cold pair(s), " << admissible
-              << " temperature-feasible; each Q_max is the limit of its own"
+              << " temperature-feasible, " << merCompatible
+              << " of them compatible with maximum energy recovery at their"
+                 " full Q_max (the others raise the utility targets: see the"
+                 " penalty column); each Q_max is the limit of its own"
                  " pair, NOT additive -> reports/pinch/candidateMatches.csv\n";
+    if (nPinches > 1)
+        std::cout << "[pinch] SEVERAL PINCHES (" << nPinches << "): the"
+                     " abovePinch/belowPinch labels and the CP rule refer to"
+                     " the hottest one (T* = " << Tpinch << " K); whether a"
+                     " match keeps the targets is decided for ALL pinches by"
+                     " recomputing the targets after it (targetPenalty_kW).\n";
     //  Without a pinch the two lines below are not the coursework violations
     //  (the temperature they are measured from is an end of the range): they
     //  are the utility duty the TARGET says the problem does not need.
@@ -748,12 +858,14 @@ int PinchPass::run(SimulationResult& result)
 
     std::ofstream mcsv("reports/pinch/candidateMatches.csv");
     mcsv << "region,hotStream,coldStream,temperatureFeasible,pinchRule,"
-            "maximumCandidateDuty_kW,limitingReason,recommendation\n"
+            "maximumCandidateDuty_kW,limitingReason,recommendation,"
+            "targetPenalty_kW,maximumTargetPreservingDuty_kW\n"
          << std::setprecision(10);
     for (const auto& r : rows)
         mcsv << r.region << "," << r.hotU << "," << r.coldU << ","
              << r.feas << "," << r.rule << "," << r.Qmax / 1.0e3 << ","
-             << r.limit << "," << r.rec << "\n";
+             << r.limit << "," << r.rec << ","
+             << r.penalty / 1.0e3 << "," << r.QmaxMER / 1.0e3 << "\n";
 
     // ---- 4b. the classification, as a WORD, and what the page annotates ----
     //  H_pinch is the heat flow at the pinch on the slid composite axis (the
@@ -812,6 +924,7 @@ int PinchPass::run(SimulationResult& result)
     k["Q_excluded_kW"]     = excludedW / 1.0e3;
     k["candidates_total"]      = static_cast<scalar>(rows.size());
     k["candidates_admissible"] = static_cast<scalar>(admissible);
+    k["candidates_mer_compatible"] = static_cast<scalar>(merCompatible);
     k["violation_heat_below_pinch_kW"] = heatBelow / 1.0e3;
     k["violation_cool_above_pinch_kW"] = coolAbove / 1.0e3;
     return 0;

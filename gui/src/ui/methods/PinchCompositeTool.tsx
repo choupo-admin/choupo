@@ -197,22 +197,29 @@ export interface CandidateMatch {
   maximumCandidateDuty_kW: number;
   limitingReason: string;
   recommendation: string;
+  /** Rise of both utility targets if the full Q_max is made (kW); 0 = compatible
+   *  with maximum energy recovery.  Absent in a file from an older engine. */
+  targetPenalty_kW?: number;
+  maximumTargetPreservingDuty_kW?: number;
 }
 
 const MATCHES_HEADER =
   "region,hotStream,coldStream,temperatureFeasible,pinchRule,"
   + "maximumCandidateDuty_kW,limitingReason,recommendation";
+const MATCHES_HEADER_MER = MATCHES_HEADER
+  + ",targetPenalty_kW,maximumTargetPreservingDuty_kW";
 
 /** candidateMatches.csv rows, verbatim.  The engine writes no quoting and no
  *  field of its contains a comma, so a plain 8-field split IS the writer's
  *  format; a row of any other arity is skipped rather than misread. */
 export function parseCandidateMatches(csv: string): CandidateMatch[] {
   const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
-  if (lines.length < 1 || lines[0] !== MATCHES_HEADER) return [];
+  if (lines.length < 1 || (lines[0] !== MATCHES_HEADER && lines[0] !== MATCHES_HEADER_MER)) return [];
+  const nFields = lines[0] === MATCHES_HEADER_MER ? 10 : 8;
   const out: CandidateMatch[] = [];
   for (const line of lines.slice(1)) {
     const f = line.split(",");
-    if (f.length !== 8) continue;
+    if (f.length !== nFields) continue;
     const Q = Number(f[5]);
     if (!Number.isFinite(Q)) continue;
     out.push({
@@ -221,6 +228,10 @@ export function parseCandidateMatches(csv: string): CandidateMatch[] {
       pinchRule: f[4]!,
       maximumCandidateDuty_kW: Q,
       limitingReason: f[6]!, recommendation: f[7]!,
+      ...(nFields === 10
+        ? { targetPenalty_kW: Number(f[8]),
+            maximumTargetPreservingDuty_kW: Number(f[9]) }
+        : {}),
     });
   }
   return out;
@@ -229,8 +240,11 @@ export function parseCandidateMatches(csv: string): CandidateMatch[] {
 /** Why a row is visibly flagged: not temperature-feasible at dTmin, or a
  *  pinch match whose CP rule the engine marked VIOLATED (still admissible —
  *  away from the pinch only, in the engine's own words).  Null = plain row. */
-export function candidateFlag(m: CandidateMatch): "infeasible" | "cpRuleViolated" | null {
+export function candidateFlag(m: CandidateMatch): "infeasible" | "costsEnergy" | "cpRuleViolated" | null {
   if (!m.temperatureFeasible) return "infeasible";
+  //  feasible at dTmin yet raises the utility targets (several pinches): flagged
+  //  before the CP rule, because it is the stronger statement.
+  if ((m.targetPenalty_kW ?? 0) > 1e-9) return "costsEnergy";
   if (m.pinchRule.includes("VIOLATED")) return "cpRuleViolated";
   return null;
 }
@@ -642,6 +656,8 @@ function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits
                       styles={CHIP_STYLES}>
                       {flag === "infeasible"
                         ? "not temperature-feasible at dTmin"
+                        : flag === "costsEnergy"
+                        ? `feasible at dTmin, but raises both utility targets by ${u.Q(m.targetPenalty_kW ?? 0, 1)} ${u.qLabel}`
                         : "CP rule violated at the pinch"}
                     </Badge>
                   ) : (
@@ -663,6 +679,10 @@ function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits
         feasible row is a thermodynamically admissible candidate — the table
         ranks nothing and recommends no network.  A violated CP rule keeps its
         away-from-pinch duty; an infeasible row is listed, never dropped.
+        With several pinches a feasible pair can still cross a pinch other
+        than the one the region labels name: such a row is flagged with the
+        rise in the utility targets it causes, recomputed from the problem
+        table after the match.
       </Text>
     </Box>
   );
