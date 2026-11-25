@@ -72,18 +72,18 @@ H2	tutorials/plant/acetonePlant		33.18	NO-STREAMS
 H2	tutorials/plant/ammonia02_full_plant	250.00	33.18	GAS-ONLY
 N2	tutorials/plant/ammonia02_full_plant	250.00	126.2	GAS-ONLY
 Ar	tutorials/plant/ammonia02_full_plant	250.00	150.86	GAS-ONLY
-H2	tutorials/plant/ammoniaPEQ02_feasibility150bar	253.15	33.18	GAS-ONLY
-N2	tutorials/plant/ammoniaPEQ02_feasibility150bar	253.15	126.2	GAS-ONLY
-Ar	tutorials/plant/ammoniaPEQ02_feasibility150bar	253.15	150.86	GAS-ONLY
-H2	tutorials/plant/ammoniaPEQ02_feasibility50bar	253.15	33.18	GAS-ONLY
-N2	tutorials/plant/ammoniaPEQ02_feasibility50bar	253.15	126.2	GAS-ONLY
-Ar	tutorials/plant/ammoniaPEQ02_feasibility50bar	253.15	150.86	GAS-ONLY
-H2	tutorials/plant/ammoniaPEQ03_basicDesign		33.18	NO-STREAMS
-N2	tutorials/plant/ammoniaPEQ03_basicDesign		126.2	NO-STREAMS
-Ar	tutorials/plant/ammoniaPEQ03_basicDesign		150.86	NO-STREAMS
-H2	tutorials/plant/ammoniaPEQ_baseCase	253.15	33.18	GAS-ONLY
-N2	tutorials/plant/ammoniaPEQ_baseCase	253.15	126.2	GAS-ONLY
-Ar	tutorials/plant/ammoniaPEQ_baseCase	253.15	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia03_basicDesign		33.18	NO-STREAMS
+N2	tutorials/plant/greenAmmonia03_basicDesign		126.2	NO-STREAMS
+Ar	tutorials/plant/greenAmmonia03_basicDesign		150.86	NO-STREAMS
+H2	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	150.86	GAS-ONLY
 CH4	tutorials/plant/hda	300.00	190.56	GAS-ONLY
 H2	tutorials/plant/hda	300.00	33.18	GAS-ONLY
 CH4	tutorials/plant/lithiumBrinePlant		190.56	NO-STREAMS
