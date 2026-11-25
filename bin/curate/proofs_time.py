@@ -198,7 +198,14 @@ def t6(case):
     b0 = {k: v for k, v in proofs.view(r['json']).items() if not CUMULATIVE.search(k)}
     b1 = {k: v for k, v in proofs.view(rr['json']).items() if not CUMULATIVE.search(k)}
     worst, wk, viol, n = proofs.compare(b0, b1, 1, 1e-6, label_all=True)
-    return proofs.verdict_from(viol, worst, wk, n, ' [restart from t=%g of %g, tol 1e-6]' % (tm, t_end))
+    cause = ''
+    if viol and 'frozen-dH' in read(Path(r['dir']) / 'out.txt'):
+        # DIAGNOSED 2026-11-25 (batch02/04/06): BatchReactor.cpp:499 resolves dH_rxn at state_.T of the START, which after a
+        # restart is the instant's T, not the charge T the surrogate was pinned at (-2.42812 kJ/mol at 320 K against
+        # -2.41576 at 321.145 K: 0.51 %, and the remaining rise 1.1034 K against 1.0976 K: 0.53 %).  The missing state is
+        # that datum temperature; it is not an integrator tolerance (fixed-step RK4).
+        cause = ' [CAUSE: the adiabatic vessel pins dH_rxn at the charge T (BatchReactor.cpp:499, :1988); a restart re-pins it at the instant T]'
+    return proofs.verdict_from(viol, worst, wk, n, cause + ' [restart from t=%g of %g, tol 1e-6]' % (tm, t_end))
 
 
 FNS = {'T3': t3, 'T4': t4, 'T6': t6}
