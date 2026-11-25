@@ -25,7 +25,7 @@ propertyManifest
         "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
         "components/methanol.dat"  "c0f57fdd6d14b567146f8fb8f54a3d8f5d9ac6b67560cfe4b15c461399d16a03";
         "components/nHexane.dat"  "02c70e7841ee558e774dc77802f5513f8618e442caffe5ae2d316e53da18281b";
-        "components/triethanolamine.dat"  "bb526a7cd8c0455799b81c98ad144854af4fd1f5b926518f0ac581df7c1d8d49";
+        "components/triethanolamine.dat"  "8374451c5a48d11091b19e18afc6581bd3528db1372a7cbda62f04ccdf2c2e99";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
