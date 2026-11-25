@@ -6798,6 +6798,16 @@ void checkServiceClearance(const Dictionary& d, const SimulationResult& r,
         const std::string where = w + " item `" + id + "`";
         const Cand* c = nullptr;
         for (const auto& k : cands) if (k.it->id == id) c = &k;
+        if (!c && refusedSizingOf(r, id))
+        {
+            //  its sizer refused: the item is left unplaced (C79, a `sizingRefused`
+            //  finding already says so), and a refused design never refuses the run
+            announce("info", "layout '" + id + "'",
+                "`" + id + "` is listed in `serviceClearance`, and its sizer refused: it is"
+                " not placed, so its bundle withdrawal is NOT checked");
+            done.insert(id);
+            continue;
+        }
         if (!c)
         {
             std::string all;
