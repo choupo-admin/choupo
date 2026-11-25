@@ -57,6 +57,7 @@ import {
 } from "@mantine/core";
 
 import { caseTabSearch, openAppTab } from "../openInTab.js";
+import { DryerTestsCard } from "./DryerTestsCard.js";
 import { DrawingLegend, DryerDrawing } from "./dryerDrawings.js";
 import { ArrangementCards, ArrangementRuns, ArrangementUses } from "./DryerArrangements.js";
 import {
@@ -579,28 +580,15 @@ export function DryerSelectionTool(): JSX.Element {
             choose between them from the form of the feed, its sensitivity to heat, the scale
             and the mode, each read from Mujumdar's Handbook of Industrial Drying, Perry's
             Handbook, van 't Land's Drying in the Process Industry and Towler's Chemical
-            Engineering Design, at its page.  A shortlist to take to a drying test, not a
+            Engineering Design, at its page, in the drawer at the foot of the page, after what a
+            test must give and the engine's three flow arrangements.  A shortlist to take to a drying test, not a
             design.
           </Text>
         </Box>
 
-        <TypeCards />
-        {step(1)}
-        {step(2)}
-        <FeedFitTable />
-        {step(3)}
-        {step(4)}
-        <Tree />
-        {step(5)}
-        <EnergyBench />
-        <Title order={5}>The seven side by side</Title>
-        <ComparisonTable />
-        {step(6)}
-        <HabitualTables />
-        {step(7)}
-        {step(8)}
+        <DryerTestsCard />
 
-        <Title order={4} data-section="arrangements">Co-current, counter-current, cross-flow</Title>
+        <Title order={4} data-section="arrangements">Co-current, counter-current, cross-flow (steps 9 to 12)</Title>
         <OriginMark of={["engine"]}
           note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />
         {step(9)}
@@ -611,6 +599,37 @@ export function DryerSelectionTool(): JSX.Element {
         <ArrangementRuns />
         {step(12)}
         <ArrangementUses />
+
+        <Box component="details" data-drawer="reference" px="sm" py={8}
+          style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 4 }}>
+          <Box component="summary" style={{ cursor: "pointer" }}>
+            <Text span fw={600}>Reference: the selection tree and the tables of the books</Text>
+            <Text span size="xs" c="dimmed"> (steps 1 to 8: click to open)</Text>
+          </Box>
+          <Text size="sm" mt={6}>
+            This is what the books say; the cards above are what the engine says.  Nothing here is
+            computed by the engine: every fact is a book's at its page, and the energy bench is
+            arithmetic on a book's ranges.
+          </Text>
+          <Stack gap="md" mt={8}>
+            <TypeCards />
+            {step(1)}
+            {step(2)}
+            <FeedFitTable />
+            {step(3)}
+            {step(4)}
+            <Tree />
+            {step(5)}
+            <EnergyBench />
+            <Title order={5}>The seven side by side</Title>
+            <ComparisonTable />
+            {step(6)}
+            <HabitualTables />
+            {step(7)}
+            {step(8)}
+
+          </Stack>
+        </Box>
 
         <LessonQuiz title="Check your understanding" questions={DRYER_SELECTION_QUIZ}
           lesson={DRYER_SELECTION_STEPS} />

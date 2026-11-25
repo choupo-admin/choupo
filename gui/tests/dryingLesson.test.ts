@@ -50,9 +50,9 @@ const prose = (s: string): string => s.replace(/\s+/g, " ");
 const step = (n: number) => DRYING_STEPS.find((s) => s.n === n)!;
 
 describe("the lesson is complete and numbered", () => {
-  it("has five steps, numbered without a gap", () => {
-    expect(DRYING_STEPS).toHaveLength(5);
-    expect(DRYING_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5]);
+  it("has eight steps (five of the curve, three of the cards), numbered without a gap", () => {
+    expect(DRYING_STEPS).toHaveLength(8);
+    expect(DRYING_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
   it("gives every step a title and a body", () => {
@@ -306,7 +306,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  explain.  Two `const lessonStep` would be a second copy of the prose
     //  renderer, which is the shape this file exists to avoid.
     expect(SRC.match(/const lessonStep = /g)).toHaveLength(1);
-    const empty = SRC.indexOf("[1, 2, 3, 4, 5].map(lessonStep)");
+    const empty = SRC.indexOf("[1, 2, 3, 4, 5, 6, 7, 8].map(lessonStep)");
     expect(empty).toBeGreaterThan(0);
     expect(empty).toBeLessThan(SRC.indexOf("{lessonStep(1)}"));
   });

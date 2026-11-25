@@ -445,7 +445,7 @@ describe("the classroom witness — dryer01 bundled and knob-addressable", () =>
       // unit word surviving the override untouched.
       const line = new RegExp(
         `^[ \\t]*${k.key}[ \\t]+123\\.456[ \\t]*`
-        + k.unit.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[ \\t]*;", "m");
+        + (k.dictUnit ?? k.unit).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[ \\t]*;", "m");
       expect(out, `knob '${k.id}' (${k.file}:${k.key})`).toMatch(line);
     }
   });
@@ -462,13 +462,13 @@ describe("the classroom witness — dryer01 bundled and knob-addressable", () =>
       const declared = new RegExp(
         `^[ \\t]*${k.key}[ \\t]+([-+0-9.eE]+)`, "m").exec(raws[k.file]!);
       expect(declared, `knob '${k.id}' has no declared line`).not.toBeNull();
-      expect(Number(declared![1]), `default for knob '${k.id}'`).toBe(k.def);
+      expect(Number(declared![1]), `default for knob '${k.id}'`).toBe((k.dictDef ?? k.def));
       // And writing the default back leaves the declared NUMBER where it was.
       const out = applyScalarOverride(raws[k.file]!,
-        { file: k.file, key: k.key, value: k.def });
+        { file: k.file, key: k.key, value: (k.dictDef ?? k.def) });
       const after = new RegExp(
         `^[ \\t]*${k.key}[ \\t]+([-+0-9.eE]+)`, "m").exec(out);
-      expect(Number(after![1])).toBe(k.def);
+      expect(Number(after![1])).toBe((k.dictDef ?? k.def));
     }
   });
 

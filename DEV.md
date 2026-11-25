@@ -5700,10 +5700,26 @@ accepts today, and that is a policy call.
 > the engine's `valve` has no Cv, C214 W5).  C510 compressor selection, C511 filter cycle, C512 fines and solid
 > temperature in the spray dryer: after 2 December.  Read back by the architect: the gains (2.8, 33.8), the dryer
 > goldens, evapDryer02's false sentence, the idle cyclone.
+> C508 and C509 LANDED 2026-11-25 (239 of 240 plan gates, the self-test left to the nightly tier; GUI 49/0;
+> 20 touched cases).  C508: `why-did-it-not-dry` (air, time or isotherm, ordered from four engine runs), the
+> drying page grown (loading, the last percent, the spray chamber), the selection tables last; evapDryer02's and
+> the sugar plant's sentences corrected.  C509: `control-valve`, seven cards, the authority from an engine run,
+> gains checked by hand; the speed-control card not built.  Seen by the architect in screenshots, not by Vítor.
 
 > **C513. THE COMMON RANDOM PACKINGS (Vitor through the cloud, 2026-11-25).**  The assets hold two structured
 > packings and no random one, and no random-packing correlation exists in src.  After 2 December: records read
 > from primaries, one correlation (Onda or Billet-Schultes) measured against published data.  Meets C319.
+> THE LANDING RULE RE-RULED (Vitor, 2026-11-25: "'Fica para depois da demonstração.' Não fica nada!!!  Porque
+> temos muito tempo até lá!!!").  AGREED: my reason was the demonstration's numbers, and it does not cover work
+> that cannot move them.  What leaves column14, column19, column20 and the PEQ plant unmoved goes now; what moves
+> them goes after its moved rows are listed and seen.  C501, C506, C511 to the cloud; C503, C507, C510, C513 here.
+
+> **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
+> lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
+> electrodialysis (demin_ratio), PhaseChanger (Q_latent_kW) and alpha_mean; the columns are C504.  C516:
+> `converged/` drops the feed's declared phase (stripper01/02) and the engine refuses the speciation block it
+> wrote (marcilla01/02).  C517: claus01 and ammonia01 close in atoms; the few 1e-5 of mass is the record's MW
+> against its formula (S8 256.48 against 256.52): a gate at 1e-4 and the records outside it corrected.
 
 > PRIORITY RAISED (Vitor, 2026-11-24, after C495 and C498 were each found by one of these proofs:
 > "Temos de resolver isto de implementar ASAP as provas dos nove ... mas espera por a outra sessão

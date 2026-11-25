@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column21_design_curve_ethanol_water
+  ===================================
+
+  ONE POINT OF A DESIGN CURVE.  The specification is FIXED -- ethanol 0.85 in
+  the distillate, water 0.99 in the bottoms (mole fractions; 0.85 is below the
+  ethanol/water azeotrope at x_eth ~ 0.894 that no column at 1 atm can pass) --
+  and a designSpec (system/outerDict) finds the reflux ratio R and the
+  distillate rate D that put the rigorous column exactly ON that
+  specification at the stage count written here.  Change `nStages` and
+  `feedStage` and run again: each integer N has its own R, and plotted
+  against N those points are the curve whose two asymptotes are the minimum
+  reflux (N large) and the minimum stages (R large).  The table of the whole
+  curve, and of the same curve for the ideal benzene/toluene control, is
+  recorded by `bin/curate/c501_column_design_table.py` (see README.md).
+
+  Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, saturated liquid -- the
+  stream of column03_azeotrope_mesh.  NRTL liquid, ideal vapour.  Column:
+  `model simultaneous` (MESH Newton).  The two manipulated values are the
+  case's `variables` R and D; their starting values are a guess, the answer
+  is what the designSpec converges to.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    R   3.0;                   // reflux ratio, manipulated by the designSpec
+    D   32.0 kmol/h;           // distillate rate, manipulated by the designSpec
+}
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        30;
+            feedStage      27;
+            refluxRatio    $R;
+            distillateRate $D;
+            P              1.01325 bar;
+
+            //  The diameter is DESIGNED (no `diameter` given): the widest tray
+            //  at 80 % of flood sets the tower, so it grows with the vapour
+            //  traffic -- which is what the reflux ratio sets.  Same hardware
+            //  declaration as column09_tray_hydraulics.
+            hydraulics
+            {
+                trayType               sieve;
+                traySpacing            0.50;     // m
+                weirHeight             0.050;    // m
+                holeDiameter           5.0e-3;   // m
+                holeAreaFraction       0.10;     // A_holes / A_active
+                downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+                weirLengthFraction     0.77;     // l_weir / D  (goes with 0.12)
+                orificeCoefficient     0.84;     // C_o -- read off the Liebson chart
+                floodFraction          0.80;     // design target
+                K2                     30.7;     // weep chart at h_w + h_ow ~ 60 mm
+            }
+        }
+    }
+);

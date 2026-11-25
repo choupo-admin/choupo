@@ -60,7 +60,7 @@ C479	85	falta o enquadramento económico
 C482	35	1 das 3 partes
 C485	75	faltam três das máquinas
 C491	40	2 das 5 provas medidas
-C492	20	seis provas medidas em 40 casos, num ramo
+C492	40	seis provas em todos os casos estacionários, num ramo
 C494	95	no main; falta ver a EduTool num ecrã
 C496	50	medido; a revisão pediu 11 correções
 C497	0	remédio identificado, por fazer
@@ -71,9 +71,10 @@ C503	10	margens das folhas contadas
 C504	0	um general em curso
 C506	0	nada construído
 C507	0	nada construído
-C508	10	desenhado; um general a construir
-C509	10	desenhado; um general a construir
 C510	5	desenhado
 C511	0	ideia com números
 C512	0	nada construído
 C513	0	nada construído
+C514	0	um general em curso
+C516	0	um general em curso
+C517	5	causa encontrada

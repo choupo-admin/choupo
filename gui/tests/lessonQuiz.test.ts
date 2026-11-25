@@ -127,6 +127,8 @@ import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectio
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
 import { OPT_QUIZ_ALL, OPT_STEPS_ALL } from "../src/ui/methods/bayesOpt/optimizersWithBayes.js";
+import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
+import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
 import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
@@ -214,6 +216,8 @@ import { LS_QUIZ, LS_STEPS } from "../src/ui/methods/leastSquaresLesson.js";
 import { LeastSquaresTool } from "../src/ui/methods/LeastSquaresTool.js";
 
 import { LETDOWN_QUIZ, LETDOWN_STEPS } from "../src/ui/methods/letdownLesson.js";
+import { CV_QUIZ, CV_STEPS } from "../src/ui/methods/controlValveLesson.js";
+import { ControlValveTool } from "../src/ui/methods/ControlValveTool.js";
 import { LetdownTool } from "../src/ui/methods/LetdownTool.js";
 
 import { LEVENSPIEL_QUIZ, LEVENSPIEL_STEPS } from "../src/ui/methods/levenspielLesson.js";
@@ -251,6 +255,8 @@ import { ReactionEnthalpyTool } from "../src/ui/methods/ReactionEnthalpyTool.js"
 import { RELAXATION_QUIZ, RELAXATION_STEPS } from "../src/ui/methods/relaxationLesson.js";
 import { RCM_QUIZ, RCM_STEPS } from "../src/ui/methods/residueCurvesLesson.js";
 import { ResidueCurvesTool } from "../src/ui/methods/ResidueCurvesTool.js";
+import { COLUMN_DESIGN_QUIZ, COLUMN_DESIGN_STEPS } from "../src/ui/methods/columnDesignLesson.js";
+import { ColumnDesignTool } from "../src/ui/methods/ColumnDesignTool.js";
 import { SCREEN_QUIZ, SCREEN_SECTIONS } from "../src/ui/methods/routeScreeningLesson.js";
 import { RouteScreeningTool } from "../src/ui/methods/RouteScreeningTool.js";
 import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "../src/ui/methods/rulesOfThumbQuiz.js";
@@ -306,6 +312,11 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  "why-did-it-not-dry": {
+    quiz: WHY_QUIZ, quizName: "WHY_QUIZ",
+    lesson: WHY_STEPS, lessonName: "WHY_STEPS",
+    file: "src/ui/methods/WhyDidItNotDryTool.tsx", tool: WhyDidItNotDryTool,
+  },
   optimizers: {
     quiz: OPT_QUIZ_ALL, quizName: "OPT_QUIZ_ALL",
     lesson: OPT_STEPS_ALL, lessonName: "OPT_STEPS_ALL",
@@ -541,6 +552,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: LS_QUIZ, quizName: "LS_QUIZ", lesson: LS_STEPS, lessonName: "LS_STEPS",
     file: "src/ui/methods/LeastSquaresTool.tsx", tool: LeastSquaresTool,
   },
+  "control-valve": {
+    quiz: CV_QUIZ, quizName: "CV_QUIZ", lesson: CV_STEPS, lessonName: "CV_STEPS",
+    file: "src/ui/methods/ControlValveTool.tsx", tool: ControlValveTool,
+  },
   letdown: {
     quiz: LETDOWN_QUIZ, quizName: "LETDOWN_QUIZ", lesson: LETDOWN_STEPS, lessonName: "LETDOWN_STEPS",
     file: "src/ui/methods/LetdownTool.tsx", tool: LetdownTool,
@@ -624,6 +639,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "residue-curves": {
     quiz: RCM_QUIZ, quizName: "RCM_QUIZ", lesson: RCM_STEPS, lessonName: "RCM_STEPS",
     file: "src/ui/methods/ResidueCurvesTool.tsx", tool: ResidueCurvesTool,
+  },
+  "column-design": {
+    quiz: COLUMN_DESIGN_QUIZ, quizName: "COLUMN_DESIGN_QUIZ",
+    lesson: COLUMN_DESIGN_STEPS, lessonName: "COLUMN_DESIGN_STEPS",
+    file: "src/ui/methods/ColumnDesignTool.tsx", tool: ColumnDesignTool,
   },
   "route-screening": {
     quiz: SCREEN_QUIZ, quizName: "SCREEN_QUIZ", lesson: SCREEN_SECTIONS, lessonName: "SCREEN_SECTIONS",

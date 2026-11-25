@@ -2132,6 +2132,45 @@ Nothing here was read off, or fitted to, any simulator's result.
 \end{tutgolden}
 
 \clearpage
+\tutentry{column21\_design\_curve\_ethanol\_water}{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column.west)+(-1.05,0.00)$) -- ($(column.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column.east)+(0,-0.17)$) -- ($(column.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column.east)+(0,0.17)$) -- ($(column.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{One point of a design curve: ethanol/water column at fixed purities, reflux found by a designSpec}
+\begin{tutnarrative}
+ONE POINT OF A DESIGN CURVE. The specification is FIXED -- ethanol 0.85 in the distillate, water 0.99 in the bottoms (mole fractions; 0.85 is below the ethanol/water azeotrope at x\_eth \textasciitilde{} 0.894 that no column at 1 atm can pass) -- and a designSpec (system/outerDict) finds the reflux ratio R and the distillate rate D that put the rigorous column exactly ON that specification at the stage count written here. Change `nStages` and `feedStage` and run again: each integer N has its own R, and plotted against N those points are the curve whose two asymptotes are the minimum reflux (N large) and the minimum stages (R large). The table of the whole curve, and of the same curve for the ideal benzene/toluene control, is recorded by `bin/curate/c501\_column\_design\_table.py` (see README.md).
+
+Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, saturated liquid -- the stream of column03\_azeotrope\_mesh. NRTL liquid, ideal vapour. Column: `model simultaneous` (MESH Newton). The two manipulated values are the case's `variables` R and D; their starting values are a guess, the answer is what the designSpec converges to.
+
+\end{tutnarrative}
+\tutreadme{The feed is that of column03\_azeotrope\_mesh: 100 kmol/h of ethanol/water, 30/70, a saturated liquid at 1 atm, NRTL liquid and ideal vapour, on model simultaneous. What changes is the question. column03 fixes the reflux ratio and the distillate rate and reads the purities; here the specification is fixed (ethanol 0.85 in the distillate, water 0.99 in the bottoms, both below the azeotrope at about 0.89) and a designSpec (system/outerDict) finds the reflux ratio \$R and the distillate rate \$D (the case's variables) that put the column exactly on it.}
+\tutreadme{At the written 30 stages with the feed on stage 27 the answer is a reflux of 2.3671 and a reboiler duty of 1340.46 kW; the tray hydraulics design a tower of 0.8665 m and the postDict sizes and costs the shell, trays, condenser, reboiler and reflux drum (Turton). The purities come out at 0.85 and 0.99 by construction.}
+\tutreadme{1. A design is a point on a curve. Change nStages (and feedStage, at about nine tenths of the column here) and run again: every integer stage count has its own reflux ratio, all of them on the same specification. Plotted, those points are R(N), with the minimum reflux as the floor at many stages and the minimum stages as the wall at a large reflux. 2. Two unknowns, two targets. The designSpec is a 2 x 2 Newton on the case's \$variables; the targets are the unit's own x\_D\_LK and x\_B\_HK. Compare tutorials/steady/optimisation/designSpec01\_triple\_equal\_areas. 3. The whole curve is recorded, not re-run here. The script bin/curate/c501\_column\_design\_table.py runs this case's procedure at every stage count (and on the ideal benzene/toluene control, and the shortcut column on both) and writes the table the EduTool column-design reads. This case is its row for N = 30.}
+\tutreadme{The column is the simultaneous one with constant molar overflow and an ideal-gas vapour; the exchanger areas come from declared U and LMTD; the feed placement is a fixed fraction of the column, not an optimum. Nothing is validated against a measurement.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0181878306878}
+\goldrow{stream}{bottoms}{T}{370.237402007}
+\goldrow{stream}{distillate}{F}{0.00958994708995}
+\goldrow{stream}{distillate}{T}{351.318932974}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{354.42}
+\goldrow{kpi}{column}{B}{0.0181878306878}
+\goldrow{kpi}{column}{D}{0.00958994708995}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.0018432674994}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-1321.80835406}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{1340.45631829}
+\goldrow{kpi}{column}{Q\_reboiler\_ownEnvelope\_kW}{1372.88962059}
+\goldrow{kpi}{column}{R}{2.36711296207}
+\goldrow{kpi}{column}{T\_bottom}{370.237402007}
+\goldmore{97}
+\end{tutgolden}
+
+\clearpage
 \tutentry{packing01\_schulz\_0p10bar}{tutorials/steady/distillation/packing01\_schulz\_0p10bar}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -3149,7 +3188,7 @@ Wet salt: 20 kmol/h NaCl crystals (1169 kg/h) carrying 15 kmol/h of free water. 
   \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {humidExhaust};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 16.6 wt\% of the water stays on the crystal}
+\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 86 \% of the water stays on the crystal (the product is 16.6 wt\% water, wet basis)}
 \begin{tutnarrative}
 FREE WATER, NOT BOUND WATER.
 
@@ -3159,7 +3198,7 @@ FREE WATER, NOT BOUND WATER.
 
 Limits 2 and 3 are coupled -- evaporation cools the gas, which lowers its carrying capacity -- and the unit bisects on the removed water until the two agree, rather than applying them in sequence and hoping.
 
-THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [energy-limited]: the solid leaves at the gas's WET-BULB temperature, 311.68 K, this model's floor, having given up 36.75 kg/h of water with the exhaust at a\_w 0.886, below its cap, and 16.6 wt\% of the water stays on the crystal -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
+THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [energy-limited]: the solid leaves at the gas's WET-BULB temperature, 311.68 K, this model's floor, having given up 36.75 kg/h of water with the exhaust at a\_w 0.886, below its cap, and 86 \% of the water stays on the crystal (X falls from 0.2312 to 0.1998 kg/kg; the product is 16.6 wt\% water on the wet basis, which is a different number) -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
 
 THE WALL THIS GAS MEETS IS HEAT, AT THE WET BULB -- AND THE CASE'S NAME PREDATES THAT (2026-10-05). The wet solid enters at 298.15 K, BELOW the gas's wet bulb, so part of what the gas pays goes to warming the cake up to it, and what is left evaporates less than the exhaust has room for. The name was given the same morning (DEV.md C35 item 12, it was `evapDryer02\_energy\_limited`), when the floor was still the solid's FEED temperature: then the exhaust reached its cap at T\_out = 310.73 K, BELOW the gas's own wet bulb, and the room wall came first. Vitor's ruling C35 item 7 put the floor at the wet bulb -- a wet solid in a gas cools, or warms, toward it -- and that answer is no longer allowed. Whether the case is renamed back, or its wet solid fed warm (at 330 K, above the wet bulb, the same gas meets the room wall again: the exhaust at its cap at 314.5 K with 49.0 kg/h carried and 51.6 kg/h payable -- the fixture `check\_evaporative\_dryer` arm (a') runs), is Vitor's; DEV.md C35 item 7.
 
