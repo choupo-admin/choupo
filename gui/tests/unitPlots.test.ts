@@ -20,7 +20,7 @@
     DRAWING it: the sector comes from the engine's stamp, the focus from
     `setViewUnit`, the theory from the flowsheet's own destination function.
     The two fixtures transcribe the shapes MEASURED on native runs of
-    ammonia02_full_plant and greenAmmonia03_basicDesign. */
+    ammonia02_full_plant and ammoniaPEQ03_basicDesign. */
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";

@@ -389,7 +389,7 @@ a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy �
 fixed volume the drop goes as (L/D)² (at a declared diameter, as D⁻⁴ to D⁻⁶); nothing
 is clamped.  Absent both keys the bed is
 the constant-pressure march it always was.  The single-reaction path refuses them.
-Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds at the converter's ONE
+Example: `tutorials/plant/ammoniaPEQ03_basicDesign` (three beds at the converter's ONE
 diameter, solved by its DesignSpec as the smallest at which every bed is within its
 1 bar; C66 had each bed at its own L/D 1.5, and at L/D 6 the loop did not converge).
 **A cooled MULTITUBULAR bed** (multi-reaction path, `thermalMode heatExchange`, C69):
@@ -479,7 +479,7 @@ the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>
 Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
 (1968) ammonia law, written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing` (rung 4
 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
-`greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
+`ammoniaPEQ03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
 The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrhenius` only.
 

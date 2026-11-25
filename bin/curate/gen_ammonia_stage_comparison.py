@@ -14,7 +14,7 @@ ENGINE, never typed.
                                                          # (never with --check, which always runs)
 
 WHERE IT IS WRITTEN.  Between two marker lines in
-tutorials/plant/greenAmmonia03_basicDesign/README.md.  The comparison is
+tutorials/plant/ammoniaPEQ03_basicDesign/README.md.  The comparison is
 read by the student who has reached the basic-design rung and asks what
 refining the study changed; that README is the page the GUI opens with the
 case, it carried two hand-written feasibility-vs-basic-design tables of its
@@ -24,8 +24,8 @@ home.  The sequence map in ammoniaRoutes01_screening's README points here.
 WHAT IS RUN.  Three engine runs, each a fresh copy in a temporary directory
 (never the gitignored run outputs of the tutorial tree, which are whatever
 binary ran last):
-  A  greenAmmonia02_feasibility150bar, as committed;
-  C  greenAmmonia03_basicDesign, as committed (its DesignSpec, ~1 min);
+  A  ammoniaPEQ02_feasibility150bar, as committed;
+  C  ammoniaPEQ03_basicDesign, as committed (its DesignSpec, ~1 min);
   B  A with ONE edit to its postDict: the basic design's appraisal TIMELINE
      (construction period, capital schedule, ramp-up, start-up cost --
      read from C's published `economics.timeline`, never typed here).
@@ -91,8 +91,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PLANT = ROOT / "tutorials" / "plant"
-FEAS = "greenAmmonia02_feasibility150bar"
-BASIC = "greenAmmonia03_basicDesign"
+FEAS = "ammoniaPEQ02_feasibility150bar"
+BASIC = "ammoniaPEQ03_basicDesign"
 README = PLANT / BASIC / "README.md"
 BEGIN = "<!-- BEGIN GENERATED: bin/curate/gen_ammonia_stage_comparison.py -->"
 END = "<!-- END GENERATED: bin/curate/gen_ammonia_stage_comparison.py -->"

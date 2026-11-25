@@ -364,10 +364,10 @@ kind: the pipes are lines of the same block, one record per line with an
 summary counts and total.  NOT pinned there: the stream's flow, T, P and vf
 (the `stream` kind pins them in their one home) and the corner points (the
 length and the gate's orthogonality arm hold them).  Appended, none moved:
-52 rows on `ammonia02_full_plant`, 85 on `greenAmmoniaPEQ_baseCase`, 64 on
+52 rows on `ammonia02_full_plant`, 85 on `ammoniaPEQ_baseCase`, 64 on
 `aceticAcid02_plant`; each case run against its golden before the append.
 
-**The cases.**  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` DECLARE
+**The cases.**  `ammoniaPEQ_baseCase` and `aceticAcid02_plant` DECLARE
 a rack, labelled as an author-set assumption for the students to replace
 (the C76 posture); `ammonia02_full_plant` declares none and runs on the
 announced default -- one witness per route.
@@ -488,7 +488,7 @@ case is byte-identical (measured: console, result JSON and every file the
 run writes, on the nine economics cases without a layout, against a build of
 the parent commit; the .ods compared on its content).
 
-WITNESSES.  `ammonia02_full_plant` and `greenAmmoniaPEQ_baseCase` declare
+WITNESSES.  `ammonia02_full_plant` and `ammoniaPEQ_baseCase` declare
 `plot { margin 10 m; }` (ammonia02's became 5 m when its roads were
 declared, §13) and `land { price 50; }` -- a ROUND PLACEHOLDER for
 the students' site, said so in the file, not a market quotation.  Their
@@ -955,7 +955,7 @@ indoor pipe is drawn.  The default rack's route was rejected for the outdoor
 leg: where a pipe enters a building is a fact about the building the router
 cannot know, the same reason roads and fence crossings are declared.
 
-**Byte-identity, measured.**  `ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase`
+**Byte-identity, measured.**  `ammonia02_full_plant`, `ammoniaPEQ_baseCase`
 and `aceticAcid02_plant` were run on a build of the parent commit and on
 this one: stdout, stderr, the result JSON and every file written under
 `converged/`, `design/` and `reports/` identical, paths and the version
@@ -1080,7 +1080,7 @@ the exported page carry a containment table (what it holds, what its rule
 requires, the verdict, the drain) with a link to the Design Guide's new
 section.  Nothing is measured in the GUI.
 
-**The witnesses.**  `greenAmmoniaPEQ_baseCase`: a 4 m bund round the two
+**The witnesses.**  `ammoniaPEQ_baseCase`: a 4 m bund round the two
 refrigerated tanks (their DECLARED 34 m boxes displace 9 248 m3 -- an
 honest box costs wall height), 110 % of the larger tank's `V_R` plus
 100 mm of rain, 20 672 m3 against 20 435 m3; and a 0.2 m-kerbed impounding
@@ -1113,7 +1113,7 @@ GUI: `tests/layoutBunds.test.ts`.
 ## 19. Slice 11 -- a store is on its stream, and a bank is piped by a header (DEV.md 4c C268)
 
 **Asked.**  The architect, on the render of the reference plant
-(`greenAmmoniaPEQ_baseCase`, 2026-11-09): the ten hydrogen-buffer vessels
+(`ammoniaPEQ_baseCase`, 2026-11-09): the ten hydrogen-buffer vessels
 and the two ammonia tanks were placed and drawn, and no pipe reached them;
 `H2Feed` and `ProductNH3` ran past them to the fence.  C240 had recorded the
 same on `ammonia02_full_plant`: one pipe to `T201/vessel1`, seven bullets
@@ -1162,7 +1162,7 @@ header with its main length, where it runs and its branch count.
 (the engine lays the header; the two cannot both hold).  `ports` now accepts
 an item of a store attached to the stream, to move one branch's nozzle.
 
-**The witnesses.**  `greenAmmoniaPEQ_baseCase`: `H2Feed` from the west fence
+**The witnesses.**  `ammoniaPEQ_baseCase`: `H2Feed` from the west fence
 through a main in the aisle between the two rows of buffer vessels (10
 branches) to the make-up mixer; `ProductNH3` from the storage flash through
 a main north of the two tanks, inside the bund (2 branches), to the east

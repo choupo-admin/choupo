@@ -47,9 +47,9 @@ Bare name opened the case.  Run: 41.3 s (the first minute overlapped the start o
 
 Screenshots: `s3-run.png`, `s3-plots.png`, `s3-streams.png`.
 
-## Stop 4 -- greenAmmoniaPEQ_baseCase
+## Stop 4 -- ammoniaPEQ_baseCase
 
-Bare name opened the case (`plant/greenAmmoniaPEQ_baseCase`).  Run: 40.4 to 42.4 s on four runs (two recycle loops, converged).  Header: MASS 99.9971 %, ENERGY residual 1.761 kW (0.00207 %), 162 advisories.
+Bare name opened the case (`plant/ammoniaPEQ_baseCase`).  Run: 40.4 to 42.4 s on four runs (two recycle loops, converged).  Header: MASS 99.9971 %, ENERGY residual 1.761 kW (0.00207 %), 162 advisories.
 
 | sub-step | doc says | on screen | match |
 |---|---|---|---|

@@ -138,7 +138,7 @@ public:
     //  fact a REPORT stamps on the result (the plant-boundary first law,
     //  `globalEnergyBoundary`, above all) reached the console and the report
     //  files and NOT the result block, and a golden could not pin it.
-    //  Measured on greenAmmonia03_basicDesign the day its beds went under a
+    //  Measured on ammoniaPEQ03_basicDesign the day its beds went under a
     //  designSpec: its five pinned `boundary global` rows went MISSING.  A
     //  driver returning `false` leaves the emission to `main.cpp`, which
     //  writes the block after the reports and the caveat block, exactly as the

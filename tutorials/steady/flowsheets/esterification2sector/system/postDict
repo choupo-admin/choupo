@@ -15,7 +15,7 @@
   over a plant with sectors; the regression covered it on FLAT cases only.
 
   That is not a hypothetical gap.  Vitor found it by building the same
-  green-ammonia plant twice, flat and sectored, and comparing: the sectored run
+  ammonia plant twice, flat and sectored, and comparing: the sectored run
   lost every unit's TYPE (its root flowsheetDict lists sector NAMES, not units)
   and with it 9.3 MEUR/yr of compressor electricity, at exit 0, with no
   warning.  Fixed in the same commit as this case.  This file is what stops it

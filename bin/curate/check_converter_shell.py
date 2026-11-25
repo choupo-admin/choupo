@@ -7,7 +7,7 @@
 
 WHY THIS EXISTS (DEV.md 4c C69, 2026-10-12).  A multibed converter is one
 pressure vessel holding its beds and interbed exchangers; the flowsheet still
-computes each as its own block.  `tutorials/plant/greenAmmonia03_basicDesign`
+computes each as its own block.  `tutorials/plant/ammoniaPEQ03_basicDesign`
 groups its three beds and two interbed coolers as the sector CONVERTER, and
 its postDict sizes ONE shell for the sector (`converterShell`), which takes
 over the beds' own shells (baskets, NOT costed) and carries ONE relief valve.
@@ -122,7 +122,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
-CASE = ROOT / "tutorials/plant/greenAmmonia03_basicDesign"
+CASE = ROOT / "tutorials/plant/ammoniaPEQ03_basicDesign"
 ENTRY = "        { unitName CONVERTER;  type converterShell;  material SS316;\n" \
         "          designRules { pressureDesign  166; } }\n"
 

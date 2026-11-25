@@ -763,7 +763,7 @@ front-end computes no equilibrium, balance, size or route.
 \includegraphics[width=0.56\textwidth]{gui_casetree.png}\\[2pt]
 {\small (b)}
 \caption{The browser front-end on a sectored plant,
-\code{tutorials/plant/greenAmmonia03_basicDesign}, run in the page.
+\code{tutorials/plant/ammoniaPEQ03_basicDesign}, run in the page.
 (a)~The Flowsheet view framed on the synthesis loop.  Each stream is
 coloured by its temperature on a continuous scale over the run's own range
 (238--788~K) and drawn with a width proportional to the square root of its
@@ -782,7 +782,7 @@ browser.}
 \label{fig:gui-flow}
 \end{figure}
 % Panel (a): legend "TEMPERATURE 238 513 788 K" read off the capture;
-% CONVERTER "Sector" (tutorials/plant/greenAmmonia03_basicDesign/CONVERTER/
+% CONVERTER "Sector" (tutorials/plant/ammoniaPEQ03_basicDesign/CONVERTER/
 % system/flowsheetDict: units Bed1 InterbedCooler1 Bed2 InterbedCooler2
 % Bed3); tears: the case's system/solverDict (two tears, its
 % flowsheetDict header: "the second tear in system/solverDict"); a sector
@@ -795,7 +795,7 @@ browser.}
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\textwidth]{gui_layout3d.png}
-\caption{The plot plan of \code{tutorials/plant/greenAmmoniaPEQ_baseCase},
+\caption{The plot plan of \code{tutorials/plant/ammoniaPEQ_baseCase},
 popped out of the Reports view into a browser tab of its own -- where
 ParaView would split the window, Choupo opens a tab that redraws when its
 case is run again.  Each item stands where the case's
@@ -831,7 +831,7 @@ from the layout block of the run's result and computes nothing.}
 % flow animation is off (PlantLayout3D.tsx:157-159, `flow: !reduced`), and
 % dollied the camera in from the view's own Fit; its pixels were checked
 % non-blank before saving (capture_gui.mjs).  The secondary containment
-% (DEV.md 4c C134): declared in tutorials/plant/greenAmmoniaPEQ_baseCase/
+% (DEV.md 4c C134): declared in tutorials/plant/ammoniaPEQ_baseCase/
 % system/layoutDict:540-585, checked by readBunds
 % (src/postProcessing/layout/PlantLayout.cpp:3550), published as the run's
 % `layout.bunds` (src/result/ResultEmitter.cpp:1770-1775) and pinned by the

@@ -187,8 +187,8 @@ equations exist for both.  Acetylene and N2O are candidates, not measured.
 | CONST 1000 | membrane27 (RO) | nothing; no `rho_feed` in the case |
 | K (route, once per process) | aceticAcid02_plant | `liquid density: the record's own Vliq at 25 C, with Rackett supplying only the temperature dependence ...` |
 | K+S | aceticAcid02_plant | `[valve] liquid density priced without CO, dimethylEther (mole fraction 8.339e-03) ...`; `[hydraulics] lightsColumn: the tray hydraulics' liquid density ... CO, dimethylEther have no liquid density there` |
-| sizing pass | greenAmmoniaPEQ_baseCase | `[density] inventory 'Separator': stream 'RawLiquid' is liquid at 253.15 K, 140 bar -> rho = 748.86 kg/m3`, and the left-out line naming N2, H2, Ar |
-| pure-fluid route | greenAmmoniaPEQ_baseCase (utility water; IF97 selected by its `utilities/coolingWater.dat:59`) | `density: IAPWS fundamental equation (rho = MW / v_molar)` |
+| sizing pass | ammoniaPEQ_baseCase | `[density] inventory 'Separator': stream 'RawLiquid' is liquid at 253.15 K, 140 bar -> rho = 748.86 kg/m3`, and the left-out line naming N2, H2, Ar |
+| pure-fluid route | ammoniaPEQ_baseCase (utility water; IF97 selected by its `utilities/coolingWater.dat:59`) | `density: IAPWS fundamental equation (rho = MW / v_molar)` |
 | DECL | (read) | Pipe.cpp:243 `[pipe] liquid viscosity: USER OVERRIDE ...`; PipeHeaderSize `muFrom` |
 
 No class prints, beside its value, WHICH source a unit used: the package's
@@ -293,7 +293,7 @@ type, property, source).  As it would print for the three cases run:
   sizing        Separator LetdownHP StorageFlash NH3Storage density kernel, left out N2 H2 Ar     not applied
   sizing (utility side) water                density   pure fluid IF97 v(T, P)                         applied
 ```
-(greenAmmoniaPEQ_baseCase, sectored; no shipped per-unit `thermo {}` override
+(ammoniaPEQ_baseCase, sectored; no shipped per-unit `thermo {}` override
 sits on a liquid-property consumer -- section 9.)
 
 **Result record**: a top-level block `propertySources`, one entry per

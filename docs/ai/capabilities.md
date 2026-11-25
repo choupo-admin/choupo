@@ -232,7 +232,7 @@ batch plan, sizing, clean utilities, costing and economics on top
   the fence and a pipe rack below the exchanger's top is a `serviceClearance`
   finding (`a` the exchanger, `b` the blocker, value the clear length, limit the
   length needed).  A case that declares nothing is ANNOUNCED as not checked.
-  Witness `tutorials/plant/greenAmmoniaPEQ_baseCase` (`pack:layout`).
+  Witness `tutorials/plant/ammoniaPEQ_baseCase` (`pack:layout`).
 * THE LINE LIST (`key:lineDesign` in `system/layoutDict`): one sized
   specification per ROUTED PROCESS pipe -- service (liquid discharge, liquid
   suction before a pump, gas, steam, two-phase), nominal size and schedule
@@ -260,7 +260,7 @@ batch plan, sizing, clean utilities, costing and economics on top
   losses, the pump a line needs, steam and nitrogen lines, structures; no
   spacing or zoning table is shipped (every distance is the case's).
 * Witnesses: `tutorials/plant/aceticAcid02_plant`,
-  `tutorials/plant/greenAmmoniaPEQ_baseCase` (the utility lines and its 24
+  `tutorials/plant/ammoniaPEQ_baseCase` (the utility lines and its 24
   process lines' line list), `tutorials/plant/line01_pumped_drum` (the
   smallest line list, one line worked by hand),
   `tutorials/batch/plant/apalutamide01_tablets` (`pack:layout`).

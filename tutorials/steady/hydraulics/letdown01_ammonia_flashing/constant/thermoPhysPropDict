@@ -22,7 +22,7 @@
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
   of data/standards/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
   COPIED, with that pair file byte for byte, from
-  tutorials/plant/greenAmmonia03_basicDesign for letdown01 (DEV.md 4c C64): the
+  tutorials/plant/ammoniaPEQ03_basicDesign for letdown01 (DEV.md 4c C64): the
   curation/ dossier both name lives in that plant, not here.
 
   C256 (2026-11-09), MEASURED: N2's vapour pressure is consulted above its

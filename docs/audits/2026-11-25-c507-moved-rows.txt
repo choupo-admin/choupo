@@ -1,4 +1,4 @@
-# Golden rows moved by C507 (service clearance), greenAmmoniaPEQ_baseCase ONLY (2026-11-25)
+# Golden rows moved by C507 (service clearance), ammoniaPEQ_baseCase ONLY (2026-11-25)
 # The only change to the case: layoutDict, FEHE x 40 m -> 37.8 m (2.2 m west) so the water cooler's 7.6 m bundle can be pulled toward it, and a new
 # `serviceClearance` block (declaration, not a result).  Re-recorded with `bin/runTests --record`; rows whose value did not change keep their old line.
 # Every closure (mass, elements, energy) is unchanged: nothing outside layout.* moved.

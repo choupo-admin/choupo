@@ -62,7 +62,7 @@
 
   PROMOTED to the standard catalogue 2026-09-08 on Vitor's decision, from the
   case it was curated in.  Reproduce the whole fit with
-  tutorials/plant/greenAmmoniaPEQ_baseCase/curation/Ar-NH3/fit-Ar-NH3.py.
+  tutorials/plant/ammoniaPEQ_baseCase/curation/Ar-NH3/fit-Ar-NH3.py.
 
   The ammonia cases REFERENCE this record through their pins; none holds a
   copy (C421, 2026-11-18).

@@ -17,7 +17,7 @@ No equipment exists yet, so nothing here is sized or costed.
 
 The ammonia cases refine a simulation along **two independent axes**, and
 each case is named by its purpose on one of them. The **project-stage axis**
-follows one green-ammonia plant from screening to basic design: what the
+follows one ammonia plant from screening to basic design: what the
 project must decide at each stage, and the detail that decision needs —
 here the reactor model, the exchangers and the economics all move together.
 The **reactor-model axis** keeps one synthesis loop fixed and changes only
@@ -30,21 +30,21 @@ project is defined, never by the stage a case illustrates or by the model it
 runs, so where a case declares `estimateClass` it is the author's statement
 of maturity.
 
-**The green-ammonia sequence** (project stage; 1200 t/day, the PEQ 2026-27
+**The ammonia sequence** (project stage; 1200 t/day, the PEQ 2026-27
 base data):
 
 | rung | case | illustrated design stage | reactor model | exchangers | economics | what is decided |
 |---|---|---|---|---|---|---|
 | 1 | **this case** | FEL-1, screening | none: each route's overall equation at full conversion, plus the synthesis equilibrium | none | margins on raw materials and on assumed specific energy consumptions, worked in this README from the run's flows | which production routes deserve a feasibility study |
-| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium, 150 bar | duties only, each bought from a utility; pinch targets; areas on an assumed U | Turton capital, the gross margin before and after the energy, a DCF | is the plant feasible, and what does the energy cost |
-| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 400 °C and 50 bar — resting on a catalyst hypothesis | the same | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
-| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
-| — | [`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase) | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
+| 2 | [`ammoniaPEQ02_feasibility150bar`](../ammoniaPEQ02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium, 150 bar | duties only, each bought from a utility; pinch targets; areas on an assumed U | Turton capital, the gross margin before and after the energy, a DCF | is the plant feasible, and what does the energy cost |
+| 2 | [`ammoniaPEQ02_feasibility50bar`](../ammoniaPEQ02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 400 °C and 50 bar — resting on a catalyst hypothesis | the same | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
+| 3 | [`ammoniaPEQ03_basicDesign`](../ammoniaPEQ03_basicDesign) | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
+| — | [`ammoniaPEQ_baseCase`](../ammoniaPEQ_baseCase) | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
 
 What changes between rungs 2 and 3 — consumptions, investment and the NPV,
 each difference traced to what changed between the two stages — is a
 section of the basic-design case's README, generated from the engine's runs
-of both: [From feasibility to basic design](../greenAmmonia03_basicDesign/README.md#from-feasibility-to-basic-design-what-changed-and-why).
+of both: [From feasibility to basic design](../ammoniaPEQ03_basicDesign/README.md#from-feasibility-to-basic-design-what-changed-and-why).
 
 **The reactor-model ladder** (one 200 bar synthesis loop, nothing but the
 converter moves):
@@ -147,7 +147,7 @@ needs, each energy term an **assumed specific consumption** per kg of NH₃.
 screen, round figures of the right order chosen so the arithmetic can run.
 None is market data, and none cites a source, because none was read. The
 first three were the PEQ base case's prices until 2026-11-13; that case
-(`greenAmmoniaPEQ_baseCase/constant/economics`) now carries CITED public
+(`ammoniaPEQ_baseCase/constant/economics`) now carries CITED public
 figures instead (ammonia 0.530, hydrogen 8.0, nitrogen 0.0175 EUR/kg, each
 with its source and arithmetic), and this screen has NOT been re-priced at
 them: its table below is worked at its own round figures, so its margins are
@@ -241,7 +241,7 @@ engine's numbers move.
   "raw materials" row, H₂ 0.799 EUR at 4.50) x 8.0 = 1.4208; nitrogen 0.041 /
   0.05 = 0.82 kg N₂ (the same row, N₂ 0.041 EUR at 0.05) x 0.0175 = 0.0144;
   margin 0.530 - 1.4208 - 0.0144 = -0.905 EUR/kg, against -0.929 EUR/kg in
-  `greenAmmonia02_feasibility150bar` (its `grossMargin_RM`, -360.33 M EUR/yr
+  `ammoniaPEQ02_feasibility150bar` (its `grossMargin_RM`, -360.33 M EUR/yr
   on 387 732 t/yr). The difference, 0.024 EUR/kg, is the hydrogen the loop
   purges and flashes off, which an input-output balance cannot see because it
   sends every hydrogen atom to ammonia.

@@ -53,7 +53,7 @@ In PEQ's fast frame, one mesh of 63 852 indices (21 284 triangles) is drawn ten 
 |---|---|---|---|---|
 | line01_pumped_drum | 2 | 4 | 6 500 | 5.7, 3.4, 3.7 (alone 2.8) |
 | ammonia02_full_plant | 29 | 33 | 51 000 | 5.1, 5.0, 5.0 |
-| greenAmmoniaPEQ_baseCase | 33 | 34 (+13 utility lines) | 450 000 to 520 000 | 389, 507, 558 |
+| ammoniaPEQ_baseCase | 33 | 34 (+13 utility lines) | 450 000 to 520 000 | 389, 507, 558 |
 
 Time is not proportional to items: between ammonia02 and PEQ the item count grows 14 % and the time 80 to 110 times.  It follows the triangle count through a cliff: a 9-fold rise in triangles per frame moves the first answer from 5 s to minutes, because the render loop queues frames faster than the software rasteriser can draw them.
 

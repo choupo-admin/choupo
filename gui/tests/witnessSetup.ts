@@ -106,7 +106,7 @@ function runAsync(cmd: string, args: string[], env: NodeJS.ProcessEnv):
     so two outputs of one case are two readings of ONE run.  The list names a
     case once per output it supplies (195 entries over 49 cases when this was
     written) and each entry used to launch the engine again: swro01 98 times
-    (the sixty sheet outputs and their kin; 0.7 s a run), greenAmmonia03
+    (the sixty sheet outputs and their kin; 0.7 s a run), ammoniaPEQ03
     twice at ~225 s a run, which was the whole wall clock of the setup.
     Now the key of a run is (case directory, application, argument list); every output of the case is
     deleted first, the case runs once, and each declared output is then
@@ -115,7 +115,7 @@ function runAsync(cmd: string, args: string[], env: NodeJS.ProcessEnv):
     Runs are scheduled longest first, so the slowest case starts at once and
     does not become the tail: the order is the case's seconds in
     `build/suiteTimings.csv` when it has a row for it, else `STATIC_WEIGHT`
-    (a measured-once order, greenAmmonia03 first), else the case's own list
+    (a measured-once order, ammoniaPEQ03 first), else the case's own list
     position.
 
     THE WITNESSES RUN N-WIDE (2026-10-26, DEV.md 4c C167).  The cases run side
@@ -126,7 +126,7 @@ function runAsync(cmd: string, args: string[], env: NodeJS.ProcessEnv):
     in the list's order once every run is done, so the log does not depend
     on which run finished first. */
 const STATIC_WEIGHT: Record<string, number> = {
-  greenAmmonia03_basicDesign: 225,   // ~225 s a run under load (2026-11-17)
+  ammoniaPEQ03_basicDesign: 225,   // ~225 s a run under load (2026-11-17)
   ratebased04_schulz_delft_0p02bar: 13,
   edbatch01_constant_current: 6,
   swro01_campoDalias: 1,             // 0.7 s a run

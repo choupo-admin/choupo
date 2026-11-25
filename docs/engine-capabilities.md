@@ -272,7 +272,7 @@ the statement that a sensitivity is not an uncertainty analysis; since
 draws as a tornado in Reports (the engine's rows and order, nothing
 recomputed).  An outer
 `sweep` varies flowsheet paths only; this block is the route for prices, rates
-and the capital.  Witnesses: the two `greenAmmonia02_feasibility*` cases; gate
+and the capital.  Witnesses: the two `ammoniaPEQ02_feasibility*` cases; gate
 `check_economic_sensitivity` (recomputes ends from the published
 `cashFlow.csv`, and holds the cash flow to one home in the source).
 

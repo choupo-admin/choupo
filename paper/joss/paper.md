@@ -91,7 +91,7 @@ The tutorial corpus carries a 1200 t/day green-ammonia plant (bought hydrogen
 and nitrogen compressed into a high-pressure synthesis loop)
 through three stages of design, each a case that runs alone.
 
-*Feasibility* (`tutorials/plant/greenAmmonia02_feasibility150bar`): one
+*Feasibility* (`tutorials/plant/ammoniaPEQ02_feasibility150bar`): one
 Gibbs converter 5 K short of equilibrium, exchangers represented by their
 duties, each duty assigned to the cheapest utility that can serve it. The
 run returns 1180 t/day of ammonia, 180.8 kg of hydrogen per tonne,
@@ -102,7 +102,7 @@ value is -493 MEUR at a hydrogen price of 4.5 EUR/kg. The economic
 sensitivity the case declares answers the obvious question: the hydrogen
 price decides, and at 3.6 EUR/kg the NPV is -25 MEUR.
 
-*Basic design* (`tutorials/plant/greenAmmonia03_basicDesign`): the converter
+*Basic design* (`tutorials/plant/ammoniaPEQ03_basicDesign`): the converter
 becomes three adiabatic catalyst beds on a published rate law, with two
 inter-bed coolers, inside one pressure shell, and every exchanger is
 designed. A design specification solves the three bed volumes (8.95,
@@ -126,7 +126,7 @@ globalEnergyBoundary residual 1.752 kW.  ga03 run: CONVERTER.Bed1/2/3.V_R
 8.951 18.4115 31.6971, $D_converter 2.2283 ("DesignSpec Result",
 largestOf dP_over_allowable = 1.00005), C_UT 6214465, NPV -340927004,
 residual 1.758 kW; 32 files under design/, 15 unit folders.  The layout:
-tutorials/plant/greenAmmoniaPEQ_baseCase (system/layoutDict). -->
+tutorials/plant/ammoniaPEQ_baseCase (system/layoutDict). -->
 
 ## Investigate a model: a limiting current that falls while you watch
 
@@ -173,8 +173,8 @@ effectiveness has not been measured.
    plant if the synthesis loop runs at 50 bar instead of 150 bar, and
    writes the prediction down.
 2. *Prepare.* With an AI assistant, the student prepares the two cases
-   (the corpus carries both: `greenAmmonia02_feasibility150bar` and
-   `greenAmmonia02_feasibility50bar`).
+   (the corpus carries both: `ammoniaPEQ02_feasibility150bar` and
+   `ammoniaPEQ02_feasibility50bar`).
 3. *Run and identify.* The student runs both and reads from the files and
    the log which models and assumptions each used -- among them that the
    50 bar loop rests on a catalyst hypothesis, which the case says.
@@ -192,7 +192,7 @@ comparing more alternatives and to interpretation.
 <!-- ga02_150 vs ga02_50 runs: W_compression_kW 13670 / 6548;
 Q_refrigeration_kW 20243.9 / 31228.9; recycle_ratio 2.275 / 4.179;
 y_NH3_converter 0.197 / 0.151; FCI 41384793 / 35153707.  The catalyst
-hypothesis: greenAmmonia02_feasibility50bar description ("resting on a
+hypothesis: ammoniaPEQ02_feasibility50bar description ("resting on a
 catalyst ...").  The five steps: the reader review's (point "The professor
 teaching with AI"), a stated default for Vitor to keep or replace. -->
 

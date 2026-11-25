@@ -32,7 +32,7 @@ installed machine holds the lot at 0.667, under its declared maximum
 
 ## 2. Five economics rows of the green-ammonia case, by hand
 
-`tutorials/plant/greenAmmonia02_feasibility150bar/expected` on main, from
+`tutorials/plant/ammoniaPEQ02_feasibility150bar/expected` on main, from
 the golden's own stream flows, the case's prices, its stream factor
 (0.90: 28 382 400 s per year) and the records' molar masses.
 

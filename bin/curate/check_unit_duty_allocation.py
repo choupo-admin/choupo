@@ -31,7 +31,7 @@ WHAT THIS CHECKS:
       cooling tower): every boundary heat duty the run publishes (|Q| >= 1 W,
       keys and ports READ from `heatDutyPorts()` in result/EnergyItems.H, never
       typed here) has an allocation row on its port.
-  (c) THE WITNESS.  greenAmmoniaPEQ_baseCase: each interbed cooler's row (the converter's heat since C440) is the
+  (c) THE WITNESS.  ammoniaPEQ_baseCase: each interbed cooler's row (the converter's heat since C440) is the
       DECLARED steamGenerationHP, allocated, its duty the unit's own Q_kW,
       its cost NEGATIVE (a credit); C_UT_credit equals the credit rows times
       the declared operating hours; and the economics' "N duties could not be
@@ -97,7 +97,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 LABEL = "check_unit_duty_allocation"
 
-WITNESS = "tutorials/plant/greenAmmoniaPEQ_baseCase"
+WITNESS = "tutorials/plant/ammoniaPEQ_baseCase"
 SMALL = [
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",

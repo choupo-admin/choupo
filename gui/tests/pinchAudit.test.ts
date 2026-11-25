@@ -32,7 +32,7 @@ License
   VERBATIM below (native choupoSolve, 2026-11-11):
 
     pinch01_four_stream_classic   interior pinch, complete population
-    greenAmmoniaPEQ_baseCase      threshold (no hot utility), one duty
+    ammoniaPEQ_baseCase      threshold (no hot utility), one duty
                                   excluded (Converter Q_kW), the FEHE as
                                   recovered heat
 

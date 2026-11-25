@@ -5,15 +5,15 @@ Branch build/c440-converter, cut from origin/main 57b69ec9a0.
 ## What the slice found about its own premise
 
 The brief asked to wire ONE non-PEQ ammonia plant's converter to the bed and shell sizers.
-`greenAmmonia03_basicDesign` ALREADY was: three `pfr` beds sized by a designSpec on the
+`ammoniaPEQ03_basicDesign` ALREADY was: three `pfr` beds sized by a designSpec on the
 Dyson-Simon rate, one `converterShell` at one diameter, 166 bar g, SS316.  `ammonia02_full_plant`
 has a gibbsReactor on a typed space velocity; beds there would replace the reactor.  The
-architect's ruling (2026-11-19): apply the effectiveness factor to greenAmmonia03's beds, with
+architect's ruling (2026-11-19): apply the effectiveness factor to ammoniaPEQ03's beds, with
 the clamp to Table I's 150 atm column; re-record with reasons.
 
 ## The cause, in one change
 
-`greenAmmonia03_basicDesign/constant/reactions`: the rate was Eq 19 (intrinsic, xi = 1).  It is
+`ammoniaPEQ03_basicDesign/constant/reactions`: the rate was Eq 19 (intrinsic, xi = 1).  It is
 now Eq 40 = Eq 19 x xi (both legs carry xi), xi from Eq 39 on Table I read at max(P, 150 atm)
 (`Pxi`), dp 8 mm declared (6-10 mm window refuses outside), xi window (0,1] announced, H2/N2
 band announced, caveat rewritten.  The law's equilibrium-temperature window is narrowed from
@@ -22,7 +22,7 @@ made forward-minus-reverse cross zero outside Eq 19's equilibrium (the run refus
 approach with "legs do not cross"); at the beds' conversions xi > 0 over 500-1000 K.
 `variables{}` start values in flowsheetDict follow the new converged design point.
 
-## Moved rows, by cause (greenAmmonia03_basicDesign `expected`; 1276 rows, 399 move beyond 1e-4, none added or removed)
+## Moved rows, by cause (ammoniaPEQ03_basicDesign `expected`; 1276 rows, 399 move beyond 1e-4, none added or removed)
 
 Direct (the beds need more catalyst because xi < 1 on the rate):
 
@@ -58,11 +58,11 @@ Consequent, loop and plant (small, all through the bed outlets):
 
 - `ammoniaRate01_dyson_simon`: four rows appended for the new 148.9 atm point (xi 0.478), nothing moved.
 - The converterShell basis text and `T_service` were added earlier in this branch (88ef1bb056).
-- ammoniaReactor01/04, ammoniaRoutes01, ammonia03_quench_converter, greenAmmonia02 x2, ammonia02_full_plant: their files are untouched; they are in the `--scope` pass.
+- ammoniaReactor01/04, ammoniaRoutes01, ammonia03_quench_converter, ammoniaPEQ02 x2, ammonia02_full_plant: their files are untouched; they are in the `--scope` pass.
 
 ## Witness copy that follows the plant
 
-`letdown01_ammonia_flashing` copies greenAmmonia03's `RawLiquid` and `Purge` streams to the digit
+`letdown01_ammonia_flashing` copies ammoniaPEQ03's `RawLiquid` and `Purge` streams to the digit
 (`gui/tests/letdown.test.ts` holds the copy to the plant's own converged file), so `0/RawLiquid`
 and `0/Purge` were refreshed from the plant's new converged/MAIN values (Purge N2 2.4562 -> 2.4589,
 H2 9.5160 -> 9.5253, NH3 0.31626 -> 0.31658 kmol/h; RawLiquid NH3 2927.015 -> 2927.009 kmol/h).

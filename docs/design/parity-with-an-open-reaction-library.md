@@ -176,7 +176,7 @@ limit that matters for parity.  `ABSENT` — searched for and not found.
 | Laminar flames (free, burner, counterflow) | ABSENT ("flame" in `src/` only as the adiabatic flame T of the Gibbs reactor) | `GibbsReactor.cpp:753` |
 | Electrochemistry in process units | IMPLEMENTED for electrodialysis: Nernst, Faraday, predicted limiting current, batch rig | `src/unitOperations/electrochem/` |
 | Butler–Volmer | PARTIAL: documented-but-unused stub; the ED stack says "no Butler-Volmer in v1" | `Electrochem.H:120-134`; `ElectrodialysisStack.cpp:879` |
-| Electrolyser / fuel cell / battery | ABSENT (the green-ammonia plants take H2 as a boundary feed) | `tutorials/plant/greenAmmoniaPEQ_baseCase/system/flowsheetDict:7-18` |
+| Electrolyser / fuel cell / battery | ABSENT (the green-ammonia plants take H2 as a boundary feed) | `tutorials/plant/ammoniaPEQ_baseCase/system/flowsheetDict:7-18` |
 | Plasma | ABSENT (`grep -ri plasma` over `src/`: 0) | — |
 
 ### 1.7 Found on the way (measured, not fixed — no engine code in phase 0)

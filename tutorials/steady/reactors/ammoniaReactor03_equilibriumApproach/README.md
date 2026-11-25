@@ -102,7 +102,7 @@ unchanged except for the key, against the engine as it then stood:
 **And the silent one was the key every surface named** — the GUI schema
 (with a wrong sign and a `minimum: 0` that forbade the endothermic case),
 the generated `docs/ai/schemas-reference.md`, `docs/ai/unit-ops.md`, and
-`tutorials/plant/greenAmmoniaPEQ_baseCase`'s README.  A reader who followed
+`tutorials/plant/ammoniaPEQ_baseCase`'s README.  A reader who followed
 any of them got a number nothing announced.  This case was the witness.
 
 **RETIRED 2026-09-26, on a stated default (DEV.md section 5, the 2026-09-25
@@ -181,7 +181,7 @@ engine does not pre-determine a single band for a class.  Read it there.
 
 `tutorials/plant/ammonia02_full_plant` sized this converter with a
 `designRules` block carrying a literal `volume` and put the provenance in a
-`//` comment beside it (the flagship `greenAmmoniaPEQ_baseCase` did the same
+`//` comment beside it (the flagship `ammoniaPEQ_baseCase` did the same
 until 2026-10-02, when its sizing and costing chain left the base case).
 Measured 2026-10-05: that comment said ~20 000 Nm³/(m³·h) while its own 80 m³
 at its own converter inlet was **11 360** Nm³/(m³·h) — a factor of 1.76 that

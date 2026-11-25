@@ -519,7 +519,7 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "measurement anywhere in this tool.  The corpus cases that declare "
       + "an approach declare an uncalibrated one: `ammoniaReactor03_equilibriumApproach` "
       + "carries a magnitude chosen for the reactor-model ladder, "
-      + "`greenAmmoniaPEQ_baseCase` takes the patent's 5 K at the outlet of its second and third beds "
+      + "`ammoniaPEQ_baseCase` takes the patent's 5 K at the outlet of its second and third beds "
       + "(step 8), and the five "
       + "`gibbsMap` witnesses of the companion survey page declare the key "
       + "at zero so a slider can move it.",

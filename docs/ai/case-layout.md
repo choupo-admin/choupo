@@ -936,7 +936,7 @@ refuses it).  Named and refused: `tubeRupture`,
 `thermalExpansion`.  NOT COSTED: the costing table lists the valve as NOT
 COSTED and the capital total does not move.  Sheet: `design/<unit>/psv`,
 with a `relief {}` block naming each scenario's stream, phase and regime and
-the governing one.  Worked case: `tutorials/plant/greenAmmonia03_basicDesign`.
+the governing one.  Worked case: `tutorials/plant/ammoniaPEQ03_basicDesign`.
 A valve may also protect a SECTOR's own item (`unitName CONVERTER;`, below):
 its `blockedOutlet` streams are the sector's outlets, read from the topology.
 
@@ -1125,7 +1125,7 @@ must stand the item the way it was sized: `layoutDict` `orientation alongX;` (or
 drum, `vertical` for a vertical one, or the layout refuses by name.  The gas viscosity of the droplet check
 comes from `transport { vapour { viscosity { model Chung; } } }`; without it the check is skipped and says
 so.  Worked cases: `tutorials/steady/flash/flash22_drum_sizing_benzene_toluene` (hand calculation in its
-README), `tutorials/plant/greenAmmoniaPEQ_baseCase` (three drums).
+README), `tutorials/plant/ammoniaPEQ_baseCase` (three drums).
 
 **A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
 `type shellTubeHX` has four routes, chosen by what `designRules` declares:
@@ -1175,7 +1175,7 @@ side) and says so; one that boils, or condenses totally, is refused by name.
 Every correlation used outside its window is announced.  On a two-stream
 `heatExchanger` the unit's own declared area and U are published beside the
 design as `A_rated` / `U_rated` and move nothing.  Worked case:
-`tutorials/plant/greenAmmoniaPEQ_baseCase` (all six exchangers).
+`tutorials/plant/ammoniaPEQ_baseCase` (all six exchangers).
 
 **A STORAGE TANK IS ATTACHED TO A BOUNDARY STREAM (2026-10-07).**  A raw
 material or a product tank is equipment the plant buys, and no flowsheet unit
@@ -1207,7 +1207,7 @@ and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
 (pressurised storage) is refused, naming `liquefiedGasStorage` below.  This is a postDict ITEM, not the
 `storageTank` UNIT (`docs/ai/unit-ops.md`): the unit is a buffer inside the
 flowsheet that reports a holdup and has no sizer of its own; the item is the
-tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+tank the plant buys.  Worked case: `tutorials/plant/ammoniaPEQ_baseCase`.
 
 **A TANK A `storageTank` UNIT HOLDS IS LINKED, AND ITS HOLD TIME HAS ONE HOME
 (2026-10-18).**  When the stream is held by a flowsheet `storageTank` unit,
@@ -1281,7 +1281,7 @@ and a unitless autonomy, pressure or temperature refuse by name.  NOT INCLUDED,
 said on every run: the charging compressor from the stream's pressure to
 `maxPressure` and its power, and any renewable-power profile behind the hours.
 Each vessel is placed on a plot plan like any vessel, from its own D and H.
-Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+Worked case: `tutorials/plant/ammoniaPEQ_baseCase`.
 
 A gas store a flowsheet `storageTank` unit holds is LINKED to it exactly as a
 tank is (`unit T101;` in place of `name`, `stream` and `autonomy`, which then
@@ -1384,7 +1384,7 @@ is valued at COST: a component a priced raw material brings in at that price, an
 other at COM_d per kg of product -- never at the sales price.  Published as
 `kpis.economics.WC_*` (pinned by the `kpi` kind), the `economics.workingCapital`
 object, and `reports/economics/workingCapital.csv`, with 0.15 x FCI printed
-beside it for comparison.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+beside it for comparison.  Worked case: `tutorials/plant/ammoniaPEQ_baseCase`.
 
 **THE START-UP YEARS: CONSTRUCTION, RAMP-UP, START-UP COST (2026-10-11).**  Four
 opt-in keys in the same `economics {}` block; a case declaring none of them (and
@@ -1450,7 +1450,7 @@ no correlation between inputs); `kpis.economics.sens_<input>_NPV_low/_high`,
 at each end; the input's `.` written `_`; NaN where there is no IRR or
 payback); `reports/economics/sensitivity.csv`; and the result's
 `economics.sensitivity` block, which the GUI draws as a tornado in Reports.  Worked
-cases: `tutorials/plant/greenAmmonia02_feasibility150bar` and `...50bar`.  An
+cases: `tutorials/plant/ammoniaPEQ02_feasibility150bar` and `...50bar`.  An
 outer `sweep` still varies only FLOWSHEET paths -- this block is how a price, a
 rate or the capital is varied.
 
@@ -1481,7 +1481,7 @@ placement of CAPCOST 2017 ('Cash Flow Analysis' C49 and I63).  It is NOT in TCI
 footer lines in `reports/economics/cashFlow.csv` (and the .ods),
 `kpis.economics.land` / `landArea`, the result's `economics.land` object and a
 `land` cell on each cash-flow row.  Worked cases:
-`tutorials/plant/ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase` (a round
+`tutorials/plant/ammonia02_full_plant`, `ammoniaPEQ_baseCase` (a round
 placeholder price, said so).
 
 **DEBT FINANCING: A LOAN AND THE EQUITY VIEW (2026-10-25, DEV.md 4c C110 G4).**
@@ -1577,7 +1577,7 @@ and the equity view (the loan's interest shield is floored the same way);
 the salvage gain is taxed as before.  Any other word refuses by name.  Measured
 on 2026-11-09, twelve of the fifteen economics cases have a loss year and
 carry the announcement (the green-ammonia plants every operating year: the
-credit is 87 MEUR of `greenAmmoniaPEQ_baseCase`'s NPV); a case's README says
+credit is 87 MEUR of `ammoniaPEQ_baseCase`'s NPV); a case's README says
 which reading its NPV is.  Worked cases: the three tablet plants
 (`tutorials/batch/plant/donepezil01_tablets`: 7 loss years, 2.71 MEUR of the
 NPV; `donepezil02_two_strengths`: all 10; `apalutamide01_tablets`: no loss
@@ -1962,7 +1962,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `elevation` off the item.  Findings (each a draft to move): `utilityClash`,
   `utilityCrossesRoad`, `utilityThroughBund`, `utilityNotRouted` (an end
   indoors).  Published under `layout.utilityLines`, beside the pipes, only when
-  declared.  Witness: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+  declared.  Witness: `tutorials/plant/ammoniaPEQ_baseCase`.
 * THE LINE LIST (C207): a `lineDesign { ... }` block in `system/layoutDict`
   sizes every routed PROCESS pipe (a header's branches excepted; utility lines
   stay unsized).  Nothing is taken by default; every block carries `source` and
@@ -1993,7 +1993,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `transport { liquid { viscosity { } } }` (dissolved gases left out, announced), the
   gas viscosity `transport { vapour { viscosity { model Chung; } } }`.  Witnesses:
   `tutorials/plant/line01_pumped_drum` (hand calculation in its README),
-  `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+  `tutorials/plant/ammoniaPEQ_baseCase`.
 * THE NOZZLE SCHEDULE (C444): a `nozzleDesign { ... }` block in `system/layoutDict`,
   beside `lineDesign` (a nozzle's size is the end of its line; with no `lineDesign` declare `nominalSizes { sizes ( ... ); source; reason; }` in `nozzleDesign` and the nozzles are sized by the items' own criteria alone), adds a
   `nozzles {}` block to every placed item's equipment sheet (`design/<unit>/<tag>`):
@@ -2014,7 +2014,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `layout.nozzles` in the result (golden rows `layout nozzle:<item>:<mark> ...`).
   Not modelled: reinforcement, minimum metal temperature, flange dimensions, bolting,
   instrument and drain connections.  Witnesses: `tutorials/plant/line01_pumped_drum`,
-  `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+  `tutorials/plant/ammoniaPEQ_baseCase`.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint, every
   routed pipe and (C97) every room of a declared `building {}`, grown on
@@ -2317,7 +2317,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   roads, two gates, offices, car park, weighbridge, the one-way truck loop,
   laydown, muster points, fire water, windsock, warehouse, canteen, the
   fence and its labelled crossings),
-  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks),
+  `ammoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks),
   `apalutamide01_tablets` (a GMP building in its `productionBuilding`
   envelope with every process item in a room -- a double-height spray-drying
   suite, the nitrogen loop's technical room, the solution and coating-

@@ -15,7 +15,7 @@
 /*---------------------------------------------------------------------------*\
   compressorChoicePlant -- a RECORDED run, not a live one.
 
-  The reference plant (tutorials/plant/greenAmmoniaPEQ_baseCase) takes about
+  The reference plant (tutorials/plant/ammoniaPEQ_baseCase) takes about
   34 s to solve in the browser, which is longer than a classroom page should
   wait, so the four compressors of the plant are carried here as the numbers
   the engine wrote, and the page labels them so.
@@ -57,7 +57,7 @@ export const PLANT_COMPRESSORS: readonly PlantCompressor[] = [
 
 /** The sentence the page prints under the chart. */
 export const PLANT_RECORD =
-  "the four compressors of greenAmmoniaPEQ_baseCase, from a run of this tree's engine taken on 2026-11-25 "
+  "the four compressors of ammoniaPEQ_baseCase, from a run of this tree's engine taken on 2026-11-25 "
   + "(a scratch copy with an empty `design { }` added to each, so the engine publishes their duties; the "
   + "shipped case is unchanged). RecycleComp's ratio, 1.08, is below the chart's lowest edge: the engine takes "
   + "the first machine whose flow range holds its flow.";

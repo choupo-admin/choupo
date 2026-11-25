@@ -9,7 +9,7 @@
     carries the list, the register says it in ONE line per shell with the
     sector prefix dropped from the stream names, a result with none adds no
     line, and a layout with only such streams still has a register.  The
-    fixture is the converter's four streams of greenAmmoniaPEQ_baseCase (a run
+    fixture is the converter's four streams of ammoniaPEQ_baseCase (a run
     of 2026-11-25). */
 
 import { describe, expect, it } from "vitest";

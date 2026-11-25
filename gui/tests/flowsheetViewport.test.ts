@@ -158,8 +158,8 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
   it("G9: a plant ten times wider than tall is folded into two rows and fits at a third of full size", () => {
     //  The green-ammonia plants were one row of 17 columns (5687 x 543 px,
     //  fit 0.198 in the 1280 x 653 canvas); folded, they fit above 0.3.
-    for (const id of ["plant/greenAmmonia02_feasibility150bar", "plant/greenAmmonia03_basicDesign",
-                      "plant/greenAmmoniaPEQ_baseCase", "plant/aceticAcid02_plant"]) {
+    for (const id of ["plant/ammoniaPEQ02_feasibility150bar", "plant/ammoniaPEQ03_basicDesign",
+                      "plant/ammoniaPEQ_baseCase", "plant/aceticAcid02_plant"]) {
       const v = VIEWS.find((x) => x.id === id)!;
       const z = getViewportForBounds(v.bounds, 1280, 653, 0, Infinity, FLOWSHEET_FIT_PADDING).zoom;
       expect(z, id).toBeGreaterThan(0.3);
@@ -177,15 +177,15 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
       .map((v) => v.id).sort();
     expect(folded).toEqual([
       "plant/aceticAcid02_plant",
-      "plant/greenAmmonia02_feasibility150bar",
-      "plant/greenAmmonia02_feasibility50bar",
-      "plant/greenAmmonia03_basicDesign",
+      "plant/ammoniaPEQ02_feasibility150bar",
+      "plant/ammoniaPEQ02_feasibility50bar",
+      "plant/ammoniaPEQ03_basicDesign",
       //  folds since the unit-card width estimate allows for the name grown at
       //  the overview zoom (toGraph.ts unitCardSize, C266 item 4): its row is wider
-      "plant/greenAmmonia03_basicDesign/CONVERTER",
-      "plant/greenAmmoniaPEQ_baseCase",
+      "plant/ammoniaPEQ03_basicDesign/CONVERTER",
+      "plant/ammoniaPEQ_baseCase",
       //  the same three-bed converter sector, copied into the reference plant by C440
-      "plant/greenAmmoniaPEQ_baseCase/CONVERTER",
+      "plant/ammoniaPEQ_baseCase/CONVERTER",
       "plant/swro01_campoDalias",
       "steady/economics/economics03_startup_years",
       "steady/flowsheets/proxy01_gas_loop",

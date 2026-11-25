@@ -7,7 +7,7 @@ runCase tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP
 Witness of the `standard-state` EduTool (*Enthalpy, the standard state and
 equilibrium: what does the ° mean?*).  Forty-two `propertyPoint` operations
 on hydrogen, one per node of the page's grid — 300 to 1000 K by 100 K, at
-1, 100, 300, 600 and 1000 bar — plus the green-ammonia converter's state
+1, 100, 300, 600 and 1000 bar — plus the ammonia converter's state
 (733.15 K, 150 bar) and its 1 bar twin.  Each publishes the three numbers the
 page separates: `H_ig`, the ideal-gas enthalpy (a function of temperature
 alone, on the elements datum — hydrogen is an element, so it is zero at

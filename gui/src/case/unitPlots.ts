@@ -39,7 +39,7 @@
  *   - a unit the engine did NOT stamp is a member of the plant itself and is
  *     listed directly, under no heading: the units of a FLAT case, and the
  *     plant-level folder units of a sectored one (measured on
- *     greenAmmonia03_basicDesign: `unitSectors` stamps the five CONVERTER
+ *     ammoniaPEQ03_basicDesign: `unitSectors` stamps the five CONVERTER
  *     units and none of the sixteen plant-level ones, FEHE's profile among
  *     them).  No invented "root" sector;
  *   - the order is the plant's DECLARED order (`units` / `sectors` of the

@@ -104,7 +104,7 @@ with tall items at the lane's elevation.
 * Blast radius: the `layout` golden rows of pipe `length` move on every case
   with pipes; the lists are in the commit.  No finding changed verdict.
 * A stream with SEVERAL consumers is still listed `notRouted` (a pipe has two
-  ends).  MEASURED on the four plants with a layout (greenAmmoniaPEQ_baseCase,
+  ends).  MEASURED on the four plants with a layout (ammoniaPEQ_baseCase,
   ammonia02_full_plant, aceticAcid02_plant, swro01_campoDalias): none has one.
 * The router's overshoot to the rack lane was hidden by a collinear merge in
   `tidy()` when the nozzle stood on the same plan line as the fence leg

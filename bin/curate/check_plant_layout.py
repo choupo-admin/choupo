@@ -247,7 +247,7 @@ The risks such a feature carries are specific, and each arm names one:
       area left out of the footprints) and (m) (no clash with an indoor item:
       the shell answers for it) read the item's `room`.
   (p) SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134), on the two
-      witnesses: greenAmmoniaPEQ_baseCase (a BUND round its two refrigerated
+      witnesses: ammoniaPEQ_baseCase (a BUND round its two refrigerated
       tanks, declared boxes, and a kerbed IMPOUNDING slab under the loop's
       three liquid vessels) and ammonia02_full_plant (an IMPOUNDING area
       under the eight T201 bullets, its pit remote).  For every published
@@ -357,7 +357,7 @@ strengthened):
   (C82, arm (j), 2026-10-17; each in PlantLayout.cpp, restored byte for
   byte (sha256 checked) and the engine rebuilt; all CAUGHT on first run):
   S17 the margin left off the plot's x extent                      -> (j)
-     ammonia02, greenAmmoniaPEQ and the flagship fixture: the plot against
+     ammonia02, ammoniaPEQ and the flagship fixture: the plot against
      its recomputation and the golden.
   S18 a vertical cylinder's footprint counted as its square        -> (j)
      the footprint area on all three plants and their golden rows; the
@@ -616,7 +616,7 @@ SCAN_ROOTS = (
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/ammonia02_full_plant",
-    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/plant/ammoniaPEQ_baseCase",
     "tutorials/steady/distillation/column09_tray_hydraulics",
     "constant",
     "system",
@@ -971,13 +971,13 @@ def arm_refusals(work):
 #    * a tall item placed across a tower line's run is announced
 #      `utilityClash` for exactly the lines whose route passes through it,
 #      recomputed here from the published routes.
-PEQ = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+PEQ = ROOT / "tutorials/plant/ammoniaPEQ_baseCase"
 UTILITY_BLOCK = re.compile(r"\nutilityLines\n\(.*?\n\);\n", re.S)
 
 
 def arm_utility(work):
     if not PEQ.exists():
-        fail("(u) the reference plant tutorials/plant/greenAmmoniaPEQ_baseCase is missing")
+        fail("(u) the reference plant tutorials/plant/ammoniaPEQ_baseCase is missing")
         return
     #  Every directory this arm solves is prepared before the first solve and
     #  their runs are started together (prefetch); the checks below are the
@@ -1433,7 +1433,7 @@ def arm_refused_sizer(work):
 # ------------------------------------------------------------ pipes (C80) --
 PIPE_CASES = {
     "ammonia02": WITNESS,
-    "greenAmmoniaPEQ": ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "ammoniaPEQ": ROOT / "tutorials/plant/ammoniaPEQ_baseCase",
     "aceticAcid02": ROOT / "tutorials/plant/aceticAcid02_plant",
     #  DEV.md 4c C97: the one corpus plant with powders and tablets (the
     #  solids rule) and a declared GMP building (its rooms in the plot).
@@ -1706,7 +1706,7 @@ def arm_pipes(work):
                 fail(f"(h) {tag}: {nr['stream']} is not routed BY RULE (solids, indoor,"
                      " two consumers, an unsized unit, an unattached junction) and"
                      " must not be a pipeNotRouted finding")
-        if tag == "greenAmmoniaPEQ":
+        if tag == "ammoniaPEQ":
             #  THE SIX CONVERTER PIPES (2026-11-24): the beds and inter-bed
             #  coolers live inside the placed shell; the two outer pipes land
             #  on it, the four between them are inside it, none is lost
@@ -1778,7 +1778,7 @@ def arm_pipes(work):
     #  DEV.md 4c C268: the stores of the reference plant and the witness are
     #  piped by headers; a plant that lost them would pass the rest silently.
     held = {(t, s): nb for t, s, nb in HEADERS_SEEN}
-    for want in (("greenAmmoniaPEQ", "H2Feed", 10), ("greenAmmoniaPEQ", "ProductNH3", 2),
+    for want in (("ammoniaPEQ", "H2Feed", 10), ("ammoniaPEQ", "ProductNH3", 2),
                  ("ammonia02", "productNH3", 8), ("ammonia02", "productStored", 8)):
         if held.get(want[:2]) != want[2]:
             fail(f"(h) {want[0]}: `{want[1]}` must carry a header with {want[2]} branches;"
@@ -3545,7 +3545,7 @@ def arm_indoor(work):
 
 
 # ------------------------------------------------------- containment (C134) --
-GREEN = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+GREEN = ROOT / "tutorials/plant/ammoniaPEQ_baseCase"
 
 
 def shoelace_area(pts):
@@ -3733,7 +3733,7 @@ def arm_bunds(work):
     #  and their runs are started together (prefetch); the arm then walks its
     #  sequence of checks unchanged, each solve a cache hit or a wait.
     pre = {}
-    for tag, case in (("greenAmmoniaPEQ", GREEN), ("ammonia02", WITNESS)):
+    for tag, case in (("ammoniaPEQ", GREEN), ("ammonia02", WITNESS)):
         pre["bund_" + tag] = prepare(work, "bund_" + tag, case)
     pre["none"] = prepare(work, "bund_none", GREEN, drop_bunds)
     pre["small"] = prepare(work, "bund_small", GREEN, sub("wall        { height 4.5 m; }",
@@ -3764,7 +3764,7 @@ def arm_bunds(work):
                                    lambda _t, e=edit: e(ref_text))
     prefetch(*pre.values())
     # ---- the two witnesses, recomputed ----------------------------------
-    for tag, case, kinds in (("greenAmmoniaPEQ", GREEN, {"bund", "impounding"}),
+    for tag, case, kinds in (("ammoniaPEQ", GREEN, {"bund", "impounding"}),
                              ("ammonia02", WITNESS, {"impounding"})):
         d = pre["bund_" + tag]
         out, err, rc, j, lay = layout_of(d)

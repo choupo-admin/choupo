@@ -14,7 +14,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Pressure letdown: the green-ammonia separator liquid throttled 140 -> 20 -> 1 bar (flashing), and the loop purge 140 -> 2 bar (choked gas)";
+description   "Pressure letdown: the ammonia separator liquid throttled 140 -> 20 -> 1 bar (flashing), and the loop purge 140 -> 2 bar (choked gas)";
 
 verbosity     3;
 

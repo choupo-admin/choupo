@@ -1,7 +1,7 @@
 # C318: the flash drums of the PEQ reference plant sized in detail -- goldens moved
 
 Branch `build/c318-drum-sizing`, cut from `origin/main`. `bin/runTests --scope` over
-`greenAmmoniaPEQ_baseCase` shows 116 moved rows and 3 rows that disappeared; every one is a SIZING,
+`ammoniaPEQ_baseCase` shows 116 moved rows and 3 rows that disappeared; every one is a SIZING,
 COSTING, INVENTORY or LAYOUT row of the three drums (Separator, LetdownHP, StorageFlash) or an
 economics total that adds their cost. **No stream, unit KPI, balance or energy row moved** (the process
 solves before the sizing pass; mass, element and energy closures held). The rows were then updated from
@@ -75,5 +75,5 @@ the sizing by hand (D 1.668 -> 1.676 m vertical, H/D 5.71 -> horizontal D 2.438 
 ## Not moved (checked)
 
 `bin/runTests --scope` over `ammonia03_quench_converter`, `economics03_startup_years`,
-`ammonia02_full_plant`, `greenAmmonia03_basicDesign` (all keep `residenceTime` drums): PASS 4/0, every golden
+`ammonia02_full_plant`, `ammoniaPEQ03_basicDesign` (all keep `residenceTime` drums): PASS 4/0, every golden
 as written; the new code is behind `designRules { drum {} }`.

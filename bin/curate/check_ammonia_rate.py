@@ -16,7 +16,7 @@ copies:
 
     tutorials/props/kinetics/ammoniaRate01_dyson_simon      (+ Eq 39 / Table I)
     tutorials/steady/reactors/ammoniaReactor04_kineticSizing
-    tutorials/plant/greenAmmonia03_basicDesign
+    tutorials/plant/ammoniaPEQ03_basicDesign
 
 A law with three homes is held together HERE, and the anchors that used to
 live in the engine live HERE now -- one home for the numbers is the case;
@@ -95,7 +95,7 @@ branch inside the bench's; the expression grammar has no branch, by design.
 SABOTAGES PERFORMED BY HAND, 2026-10-12 (this rewrite; the eleven of
 2026-09-21 were against the compiled law, which is retired):
 
-  A-S1  Eq 2's 2001.6 -> 2000.6 in greenAmmonia03's copy ONLY.  CAUGHT by
+  A-S1  Eq 2's 2001.6 -> 2000.6 in ammoniaPEQ03's copy ONLY.  CAUGHT by
         (b) -- the copies differ -- and by A3 on that copy.
   A-S2  Table I's 150 atm b4 -26.42469 -> -26.40000 in the bench's copy, a
         constant no anchor reads.  CAUGHT by (c) at all three declared
@@ -128,8 +128,8 @@ LAWS = {
     "bench": CASE / "constant/reactions",
     "ammoniaReactor04_kineticSizing":
         ROOT / "tutorials/steady/reactors/ammoniaReactor04_kineticSizing/constant/reactions",
-    "greenAmmonia03_basicDesign":
-        ROOT / "tutorials/plant/greenAmmonia03_basicDesign/constant/reactions",
+    "ammoniaPEQ03_basicDesign":
+        ROOT / "tutorials/plant/ammoniaPEQ03_basicDesign/constant/reactions",
 }
 SHARED = ("k0_19", "k0_18", "E", "R_DS", "Kelvin", "atmosphere",
           "TK", "Patm", "Ka", "gH2", "gN2", "gNH3", "aN2", "aH2", "aNH3",

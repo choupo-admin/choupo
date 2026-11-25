@@ -10,7 +10,7 @@
   thermoPhysPropDict (v2) -- SRK, vapour root, kij = 0.
 
   THE POINT OF THIS CASE IS THAT NOTHING HERE IS TUNED.  This is the same
-  declaration the green ammonia plant carries: a cubic equation of state with
+  declaration the ammonia plant carries: a cubic equation of state with
   van der Waals one-fluid mixing and NO binary interaction parameter, because
   data/standards/parameters/SRK/ holds no N2-H2 pair.  The engine ANNOUNCES
   kij = 0 rather than defaulting in silence; this case then measures what that

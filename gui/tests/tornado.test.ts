@@ -68,7 +68,7 @@ function econ(inputs: EconomicSensitivityInput[] | undefined, NPV = -500e6): Eco
 
 //  FIXTURE rows (nothing here reads a case): the 150 bar witness's three widest
 //  rows as the golden `sens_` rows had them at the former author-set prices
-//  (greenAmmonia02_feasibility150bar, before 2026-11-13; its prices and ends
+//  (ammoniaPEQ02_feasibility150bar, before 2026-11-13; its prices and ends
 //  are cited public figures now and its rows are different numbers), in the
 //  order the engine published them, plus one narrow row the engine put LAST.
 const H2 = row({ input: "price.H2Feed", kpiKey: "price_H2Feed", baseValue: 4.5,
