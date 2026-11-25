@@ -5628,6 +5628,20 @@ accepts today, and that is a policy call.
 > case are dropped.  One case study, a copy of the MTBE reactive column (expensive, few variables, a
 > constraint, runs that can fail), compared ONCE with `sqp` there in a README table that says what it is;
 > it lands opt-in when it runs and is documented.
+>
+> LANDED ON BRANCH c499-bayesopt (2026-11-25).  `method bayesian;` in OptimizationDriver (same failed-evaluation
+> guard as sqp and mads, ClosureGuard; self-check first; the prediction before and the outcome after each
+> simulation; NO multipliers, says so and recommends `sqp`; equality constraints refused).  The case study is
+> `optim08_bayesian_membrane`, a copy of optim04 (the coordinator's choice, 2026-11-25), NOT the MTBE column: the
+> column's measured numbers (23 simulations against 22 for sqp, median of five seeds; 14-18 of 25 runs failed)
+> are stated in its README as the case where the method is the wrong tool.  Same start, one run per method:
+> bayesian (seed 1, budget 20) 19 simulations to 1e-2 and 0.394105 at 20; sqp 25 simulations, 0.3974514 with its
+> certificate.  Over five seeds from the declared start: 19, 22, 20, 27, 18 (median 20), 1e-3 on one seed of
+> five; from random starts (docs/audits/2026-11-24-c499-results.md): 15 against 25.  Rule 4d: Theory Guide
+> chapter ch:bayesopt (R&W ch. 2 and 5, JSW eqs 14-15, Gardner et al. 3.1-3.2 READ; Schonlau et al. 1998 not),
+> help-index, User Guide, Tutorials Guide, docs/ai, capability index, the EduTool card's status sentence; PDFs
+> rebuilt (theory, user, tutorials).  NOT DONE: the card is not yet plugged into the `optimizers` tool; no
+> Explorer/GUI view of the history; integer variables handled by rounding (announced), not witnessed by a case.
 
 > **C500. THE SOFTENER'S RESIN BECOMES NAMED STREAMS (architect, 2026-11-24, from C498's sweep).**  Rule 4b:
 > no shipped case shows a violated element balance, and a modelling assumption that moves matter becomes a

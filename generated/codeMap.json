@@ -248,6 +248,18 @@
   "BatchVesselRecord": [
    "src/postProcessing/views/BatchPublications.H"
   ],
+  "BayesOptions": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesPoint": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResponse": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResult": [
+   "src/solver/BayesOpt.H"
+  ],
   "BedAnchor": [
    "src/unitOperations/batch/BedTransportCorrelations.H"
   ],
@@ -5208,6 +5220,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/ActiveSetQP.H",
+   "src/solver/BayesOpt.H",
    "src/solver/Convergence.H",
    "src/solver/MADS.H",
    "src/solver/NelderMead.H",
@@ -10142,6 +10155,10 @@
    "src/core/Types.H",
    "src/solver/ActiveSetQP.H",
    "src/solver/NewtonND.H"
+  ],
+  "src/solver/BayesOpt.cpp": [
+   "src/core/Types.H",
+   "src/solver/BayesOpt.H"
   ],
   "src/solver/BlockTridiagonal.cpp": [
    "src/core/Types.H",
@@ -21115,6 +21132,7 @@
    "src/result/ResultEmitter.cpp",
    "src/samples/SampleBehaviour.cpp",
    "src/solver/ActiveSetQP.cpp",
+   "src/solver/BayesOpt.cpp",
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/DominantEigenvalue.cpp",
    "src/solver/LU.cpp",
@@ -22899,6 +22917,10 @@
    "src/solver/ActiveSetQP.cpp",
    "src/solver/SQP.cpp",
    "src/streams/AnalysisReconciler.cpp"
+  ],
+  "src/solver/BayesOpt.H": [
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/solver/BayesOpt.cpp"
   ],
   "src/solver/BlockTridiagonal.H": [
    "src/solver/BlockTridiagonal.cpp",
