@@ -1270,6 +1270,8 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
     //  Where each price came from (C389, PR-07): kept only when the engine
     //  wrote it; a row with no name is dropped.
     ...(shapePriceOrigins(e.priceOrigins)),
+    //  The plant's books (C524): kept only when the engine wrote them.
+    ...(shapeBooks(e.books)),
     //  The annual basis (C264): kept only when the engine wrote it.
     ...(typeof e.operatingHours === "number" && Number.isFinite(e.operatingHours)
       ? { operatingHours: e.operatingHours,
@@ -1278,6 +1280,49 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
             ? { utilityBill: e.utilityBill } : {}) }
       : {}),
   };
+}
+
+//  The three statements (C524), as the engine wrote them; {} when absent or
+//  malformed (a row whose values are not one finite number per year is
+//  dropped, never drawn at zero).
+export function shapeBooks(
+  b: NonNullable<ResultPayload["economics"]>["books"],
+): { books?: NonNullable<Economics["books"]> } {
+  if (!b || !Array.isArray(b.years) || b.years.length === 0) return {};
+  const years = b.years.filter((y) => typeof y === "number");
+  const rowsOf = (v: unknown): NonNullable<Economics["books"]>["balanceSheet"] => {
+    const out: NonNullable<Economics["books"]>["balanceSheet"] = [];
+    for (const r of Array.isArray(v) ? v : []) {
+      if (!r || typeof r.key !== "string" || !Array.isArray(r.values)) continue;
+      if (r.values.length !== years.length
+          || !r.values.every((x: unknown) => typeof x === "number" && Number.isFinite(x))) continue;
+      out.push({
+        key: r.key, label: typeof r.label === "string" ? r.label : r.key,
+        help: typeof r.help === "string" ? r.help : "",
+        subtotal: !!r.subtotal, values: r.values as number[],
+      });
+    }
+    return out;
+  };
+  const c = (b.checks ?? {}) as Record<string, unknown>;
+  const num = (k: string): number => (typeof c[k] === "number" ? (c[k] as number) : NaN);
+  return { books: {
+    basis: typeof b.basis === "string" ? b.basis : "project",
+    years,
+    incomeStatement: rowsOf(b.incomeStatement),
+    balanceSheet: rowsOf(b.balanceSheet),
+    cashFlowStatement: rowsOf(b.cashFlowStatement),
+    checks: {
+      balanceError: num("balanceError"), cashTieError: num("cashTieError"),
+      incomeTieError: num("incomeTieError"),
+      retainedEarningsError: num("retainedEarningsError"),
+      ownersError: num("ownersError"), worstError: num("worstError"),
+      worstIdentity: typeof c.worstIdentity === "string" ? c.worstIdentity : "",
+      worstYear: num("worstYear"), closingCash: num("closingCash"),
+      shareCapitalPaidIn: num("shareCapitalPaidIn"),
+      cashOverdrawn: c.cashOverdrawn === true,
+    },
+  } };
 }
 
 //  The price origins, in the engine's order; {} when it wrote none.
@@ -1561,6 +1606,11 @@ interface ResultPayload {
     discountRate?: number; taxRate?: number;
     projectLife?: number; estimateClass?: number; accLo?: number; accHi?: number;
     operatingHours?: number; operatingHoursFrom?: string; utilityBill?: number;
+    books?: {
+      basis?: string; years?: number[];
+      incomeStatement?: unknown; balanceSheet?: unknown; cashFlowStatement?: unknown;
+      checks?: Record<string, unknown>;
+    };
     land?: { price?: number; area?: number; areaFrom?: string; cost?: number;
       investedAtYear?: number; recoveredAtYear?: number; source?: string; reason?: string };
     cashFlow?: { year: number; investment: number; revenue: number; opex: number;

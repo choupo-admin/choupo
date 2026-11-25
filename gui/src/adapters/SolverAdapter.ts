@@ -1395,6 +1395,35 @@ export interface Economics {
   operatingHours?: number;
   operatingHoursFrom?: string;
   utilityBill?: number;
+  /** THE PLANT'S BOOKS (DEV.md 4c C524): the income statement, balance sheet
+   *  and cash-flow statement of the same appraisal, as the engine wrote them.
+   *  Absent from an older payload -- then no statement is drawn. */
+  books?: EconomicsBooks;
+}
+
+/** One account over all the years of a statement (accounts down, years
+ *  across); `help` is the engine's one-line plain-language definition. */
+export interface BooksRow {
+  key: string;
+  label: string;
+  help: string;
+  subtotal: boolean;
+  values: number[];
+}
+
+/** The three statements, tied together, and the identities that tie them. */
+export interface EconomicsBooks {
+  basis: string;              // "project" | "equity"
+  years: number[];
+  incomeStatement: BooksRow[];
+  balanceSheet: BooksRow[];
+  cashFlowStatement: BooksRow[];
+  checks: {
+    balanceError: number; cashTieError: number; incomeTieError: number;
+    retainedEarningsError: number; ownersError: number; worstError: number;
+    worstIdentity: string; worstYear: number; closingCash: number;
+    shareCapitalPaidIn: number; cashOverdrawn: boolean;
+  };
 }
 
 /** The land as the engine priced it.  `areaFrom` is "layoutPlot" (the plot
