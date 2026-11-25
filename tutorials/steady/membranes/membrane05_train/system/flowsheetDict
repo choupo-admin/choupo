@@ -16,7 +16,7 @@
   they fall element by element as the flow drops.
 
   The pedagogical point is the per-element DEGRADATION reported in the KPIs
-  (recovery_elemK, c_ret_elemK): element 1 sees fresh feed (high P, low c)
+  (recovery_elemK, c_ret_<solute>_elemK): element 1 sees fresh feed (high P, low c)
   and recovers the most; the last element sees concentrated, lower-pressure
   brine (P dropped by friction + the inter-element connector loss) and
   recovers far less.  The train recovery is the cumulative sum --- higher
@@ -36,9 +36,9 @@
                                                 + 2 connector losses)
 
   The per-element DEGRADATION (the teaching point) reads off the KPIs:
-      recovery_elem1   17.4 %   c_ret_elem1  0.697   (fresh feed)
-      recovery_elem2   28.7 %   c_ret_elem2  0.807   (cumulative)
-      recovery_elem3   35.7 %   c_ret_elem3  0.894   (cumulative)
+      recovery_elem1   17.4 %   c_ret_NaCl_elem1  0.697   (fresh feed)
+      recovery_elem2   28.7 %   c_ret_NaCl_elem2  0.807   (cumulative)
+      recovery_elem3   35.7 %   c_ret_NaCl_elem3  0.894   (cumulative)
   The retentate concentration climbs element to element while each
   successive element adds less recovery: a single SW30HR element at this
   feed recovers ~17.4 %, the second adds ~11.3 %, the third only ~7 % --- the
