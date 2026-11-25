@@ -1155,6 +1155,11 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
                  ...(n.indoor === true ? { indoor: true } : {}),
                  ...(a ? { anchor: a } : {}) };
       }),
+    ...(Array.isArray(l.insideShell) && l.insideShell.length > 0
+      ? { insideShell: l.insideShell.map((n) => ({
+            stream: str(n.stream), item: str(n.item),
+            fromUnit: str(n.fromUnit), toUnit: str(n.toUnit) })) }
+      : {}),
   };
 }
 
@@ -1484,6 +1489,7 @@ interface ResultPayload {
     notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
                   solids?: boolean; indoor?: boolean;
       anchor?: unknown[] }[];
+    insideShell?: { stream?: string; item?: string; fromUnit?: string; toUnit?: string }[];
     utilityLines?: { id?: string; name?: string; service?: string; family?: string;
       fromKind?: string; from?: string; toKind?: string; to?: string;
       fromPort?: LayoutPortInfo; toPort?: LayoutPortInfo; lane?: number; tier?: number;

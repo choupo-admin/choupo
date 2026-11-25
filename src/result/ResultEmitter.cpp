@@ -1931,6 +1931,21 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << " }";
         }
         os << (L.notRouted.empty() ? "]" : "\n    ]");
+        //  Streams inside a placed shell: listed, no pipe.  Emitted only when
+        //  there are some, so no other case's layout block moves.
+        if (!L.insideShell.empty())
+        {
+            os << ",\n    \"insideShell\": [";
+            for (std::size_t i = 0; i < L.insideShell.size(); ++i)
+            {
+                const auto& n = L.insideShell[i];
+                os << (i ? ",\n" : "\n") << "      { \"stream\": " << esc(n.stream)
+                   << ", \"item\": " << esc(n.item)
+                   << ", \"fromUnit\": " << esc(n.fromUnit)
+                   << ", \"toUnit\": " << esc(n.toUnit) << " }";
+            }
+            os << "\n    ]";
+        }
         //  UTILITY LINES (DEV.md 4c C268 slice 2): only when the case declares
         //  any, so no earlier result moves.  One line per record with an `"id"`
         //  (`utility:<name>`); the numbers the golden `layout` kind pins

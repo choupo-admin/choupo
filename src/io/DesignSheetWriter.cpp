@@ -601,6 +601,24 @@ std::size_t write(const std::string&                       caseRoot,
                 }
                 o << "    );\n";
             }
+            if (!cp.chart.empty())
+            {
+                o << "    //  the machine chart the selection read (Brown 2005, Fig 1-2, p.3)\n";
+                o << "    inletFlow_cfm   " << num(cp.inletCfm) << ";\n";
+                o << "    overallRatio    " << num(cp.overallRatio) << ";\n";
+                o << "    chart\n    (\n";
+                for (const auto& r : cp.chart)
+                {
+                    o << "        {\n            machine     " << r.name << ";\n"
+                      << "            cell        \"" << r.cell << "\";\n"
+                      << "            Qmin_cfm    " << num(r.Qmin) << ";\n"
+                      << "            Qmax_cfm    " << num(r.Qmax) << ";\n"
+                      << "            rMin        " << num(r.rMin) << ";\n"
+                      << "            rMaxAtQmin  " << num(r.rMaxLeft) << ";\n"
+                      << "            rMaxAtQmax  " << num(r.rMaxRight) << ";\n        }\n";
+                }
+                o << "    );\n";
+            }
             if (!cp.notes.empty())
             {
                 o << "    notes\n    (\n";

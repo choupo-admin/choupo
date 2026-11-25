@@ -178,6 +178,11 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
           {reg.solids.map((s, i) => <span key={s}>{i ? ", " : ""}<code>{s}</code></span>)}.
         </Text>
       )}
+      {reg.insideShell.map((s) => (
+        <Text key={s.item} size="xs" c="dimmed" mt={4} data-testid="inside-shell">
+          {s.line}.
+        </Text>
+      ))}
       {reg.indoor.length > 0 && (
         <Text size="xs" c="dimmed" mt={4} component="div">
           Inside the building (indoor piping is not routed):
@@ -492,7 +497,7 @@ export function PlantLayoutTables({ layout, sectioned = false }: {
             layout.roadNetwork ? `${layout.roadNetwork.length.toFixed(0)} m,`
               + ` ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved` : undefined)}
       {wrap("findings", !!findingsTable, findingsTable, `${findings.length}`)}
-      {wrap("pipes", nPipes > 0 || (layout.notRouted?.length ?? 0) > 0 || nUtility > 0,
+      {wrap("pipes", nPipes > 0 || (layout.notRouted?.length ?? 0) > 0 || (layout.insideShell?.length ?? 0) > 0 || nUtility > 0,
             <><PipeRegister layout={layout} /><UtilityRegister layout={layout} /></>,
             `${nPipes} routed` + (nUtility > 0 ? `, ${nUtility} utility lines` : ""))}
       {wrap("items", true, itemsTable, `${layout.items.length} placed`)}

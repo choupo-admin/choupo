@@ -396,6 +396,19 @@ void apply(EquipmentSizing&         d,
     }
     cs.machine = machine;
     noteDeclared("machine");
+    //  C510: hand the chart the selection just read to the sheet, so the page
+    //  draws the engine's own rectangles (one home, this table).
+    cs.inletCfm = cfm;
+    cs.overallRatio = rTotal;
+    for (const auto& r : regions)
+        cs.chart.push_back({ r.name, r.cell, r.Qmin, r.Qmax, r.rMin, r.rMaxLeft, r.rMaxRight });
+    cs.notes.push_back("machine chart (Brown 2005, Fig 1-2, p.3): each region is a box read off the"
+                       " figure, good to about 3 % of an edge; its upper ratio edge is a straight"
+                       " line on the log-log axes between the two corners; where several regions"
+                       " hold the point the order of the list is the tie-break (the book gives none);"
+                       " below ratio 1.4 the figure draws nothing and the first machine whose flow"
+                       " range holds the point is taken; outside every region the reciprocating"
+                       " machine is taken. The chart is a convention of a book, not a law.");
 
     //  ---- 2. THE LIMITS AND THE EFFICIENCY, by machine ---------------------
     const std::string who2 = "compressor";

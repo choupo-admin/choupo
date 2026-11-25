@@ -907,6 +907,8 @@ export interface PlantLayout {
    *  convention, not a vendor's nozzle schedule (engine-written, once). */
   portConvention?: string;
   notRouted?: LayoutNotRouted[];
+  /** Streams inside a placed shell: no pipe, one line in the register. */
+  insideShell?: LayoutInsideShell[];
   /** UTILITY LINES (DEV.md 4c C268 slice 2): the lines the case declared
    *  (cooling water, refrigerant, flare header), routed on the rack above
    *  the process pipes and checked like them.  Absent when the case declares
@@ -1190,6 +1192,16 @@ export interface LayoutPlot {
  *  reachable end, where the 3D view marks the missing pipe -- absent when
  *  neither end is reachable.  A missing pipe must never look like a finished
  *  drawing. */
+/** A stream whose two ends are units inside the SAME placed shell (a
+ *  converter's catalyst beds): no pipe, listed apart by the engine
+ *  (`layout.insideShell`).  `item` is the shell's item id. */
+export interface LayoutInsideShell {
+  stream: string;
+  item: string;
+  fromUnit: string;
+  toUnit: string;
+}
+
 export interface LayoutNotRouted {
   stream: string;
   reason: string;

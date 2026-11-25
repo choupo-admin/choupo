@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  Raoult DECLARED, not defaulted (gamma = 1 identically).
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( water  Ca  Mg  Na  K  Cl  SO4  HCO3 );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( Ca Mg Na K Cl SO4 HCO3 );
+        maxMassFraction 0.005;
+        reason          "the membrane feed's dissolved ions keep their mass and add no volume to the feed's liquid density (their mass fraction is at most 0.0014); a membrane unit asks the package for the feed density and a solute with no liquid volume needs this declared reading (C402: the 1000 kg/m3 the unit used to type is gone); the engine's own bound on it is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}

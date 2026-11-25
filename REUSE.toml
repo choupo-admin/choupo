@@ -23,6 +23,7 @@ path = [
   "gui/src/ui/methods/lessonReferences.json",
   "gui/src/case/methaneAssemblyChain.json",
   "gui/src/case/methaneAssemblyPoints.json",
+  "gui/src/case/columnDesignRecorded.json",
   "gui/tests/fixtures/*.json",
   "gui/tests/fixtures/*.csv",
   ".claude/settings.json",

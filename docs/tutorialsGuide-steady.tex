@@ -1411,17 +1411,19 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
   \draw[->] ($(column10.east)+(0,0.17)$) -- ($(column10.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The same column, built too narrow: every tray floods -- and it still converges}
+\tutwhat{The same column, built too narrow: its seven rectifying trays flood -- and it still converges}
 \begin{tutnarrative}
-the SAME column as column09, built 1.10 m wide instead of the 1.316 m that column09 designed for it.
+the SAME column as column09, built 1.03 m wide instead of the 1.222 m that column09 designed for it.
 
-Nothing about the separation changes. The distillate is still 98.12 \% benzene, the bottoms still 98.12 \% toluene, the MESH equations converge exactly as before, and every number in the stream table is identical. The column is a perfectly good column -- on paper.
+Nothing about the separation changes. The distillate is still 95.10 \% benzene, the bottoms still 95.10 \% toluene (the feed enters two-phase, 70 \% vapour, at 370 K and 1 atm), the MESH equations converge exactly as before, and every number in the stream table is identical. The column is a perfectly good column -- on paper.
 
-It floods. The worst tray runs at 114.5 \% of its entrainment-flooding velocity: the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
+It floods. The worst tray, stage 7 just above the feed, runs at 112.6 \% of its entrainment-flooding velocity, and the other six rectifying trays are above 100 \% too (104.7 to 111.7 \%): the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. The stripping trays carry less vapour and stay at 67-71 \%. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
 
 This is the whole reason hydraulics exists as a separate pass. A converged solution is not a feasible column, and the stage equations have no way of knowing the difference. Widen it (column09), space the trays further apart, or cut the reflux -- but do not believe the stream table until a tray can pass the traffic it carries.
 
-Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
+Note the downcomer, too: the backup reaches 253.8 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
+
+(Header re-read 2026-11-25 against the engine's own run: it had said 1.10 m, 114.5 \%, 98.12 \% and 268.5 mm, numbers of a column fed as a saturated liquid and designed at 1.316 m; the golden has pinned 98.7 \% at 1.10 m since its first recording, 2026-11-18. The diameter was narrowed so that the engine's own number shows the flooding the lesson is about.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -2129,6 +2131,45 @@ Nothing here was read off, or fitted to, any simulator's result.
 \goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{7650.97142322}
 \goldrow{kpi}{mtbeColumn}{R}{1.75623043453}
 \goldmore{29}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column21\_design\_curve\_ethanol\_water}{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column.west)+(-1.05,0.00)$) -- ($(column.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column.east)+(0,-0.17)$) -- ($(column.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column.east)+(0,0.17)$) -- ($(column.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{One point of a design curve: ethanol/water column at fixed purities, reflux found by a designSpec}
+\begin{tutnarrative}
+ONE POINT OF A DESIGN CURVE. The specification is FIXED -- ethanol 0.85 in the distillate, water 0.99 in the bottoms (mole fractions; 0.85 is below the ethanol/water azeotrope at x\_eth \textasciitilde{} 0.894 that no column at 1 atm can pass) -- and a designSpec (system/outerDict) finds the reflux ratio R and the distillate rate D that put the rigorous column exactly ON that specification at the stage count written here. Change `nStages` and `feedStage` and run again: each integer N has its own R, and plotted against N those points are the curve whose two asymptotes are the minimum reflux (N large) and the minimum stages (R large). The table of the whole curve, and of the same curve for the ideal benzene/toluene control, is recorded by `bin/curate/c501\_column\_design\_table.py` (see README.md).
+
+Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, saturated liquid -- the stream of column03\_azeotrope\_mesh. NRTL liquid, ideal vapour. Column: `model simultaneous` (MESH Newton). The two manipulated values are the case's `variables` R and D; their starting values are a guess, the answer is what the designSpec converges to.
+
+\end{tutnarrative}
+\tutreadme{The feed is that of column03\_azeotrope\_mesh: 100 kmol/h of ethanol/water, 30/70, a saturated liquid at 1 atm, NRTL liquid and ideal vapour, on model simultaneous. What changes is the question. column03 fixes the reflux ratio and the distillate rate and reads the purities; here the specification is fixed (ethanol 0.85 in the distillate, water 0.99 in the bottoms, both below the azeotrope at about 0.89) and a designSpec (system/outerDict) finds the reflux ratio \$R and the distillate rate \$D (the case's variables) that put the column exactly on it.}
+\tutreadme{At the written 30 stages with the feed on stage 27 the answer is a reflux of 2.3671 and a reboiler duty of 1340.46 kW; the tray hydraulics design a tower of 0.8665 m and the postDict sizes and costs the shell, trays, condenser, reboiler and reflux drum (Turton). The purities come out at 0.85 and 0.99 by construction.}
+\tutreadme{1. A design is a point on a curve. Change nStages (and feedStage, at about nine tenths of the column here) and run again: every integer stage count has its own reflux ratio, all of them on the same specification. Plotted, those points are R(N), with the minimum reflux as the floor at many stages and the minimum stages as the wall at a large reflux. 2. Two unknowns, two targets. The designSpec is a 2 x 2 Newton on the case's \$variables; the targets are the unit's own x\_D\_LK and x\_B\_HK. Compare tutorials/steady/optimisation/designSpec01\_triple\_equal\_areas. 3. The whole curve is recorded, not re-run here. The script bin/curate/c501\_column\_design\_table.py runs this case's procedure at every stage count (and on the ideal benzene/toluene control, and the shortcut column on both) and writes the table the EduTool column-design reads. This case is its row for N = 30.}
+\tutreadme{The column is the simultaneous one with constant molar overflow and an ideal-gas vapour; the exchanger areas come from declared U and LMTD; the feed placement is a fixed fraction of the column, not an optimum. Nothing is validated against a measurement.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0181878306878}
+\goldrow{stream}{bottoms}{T}{370.237402007}
+\goldrow{stream}{distillate}{F}{0.00958994708995}
+\goldrow{stream}{distillate}{T}{351.318932974}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{354.42}
+\goldrow{kpi}{column}{B}{0.0181878306878}
+\goldrow{kpi}{column}{D}{0.00958994708995}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.0018432674994}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-1321.80835406}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{1340.45631829}
+\goldrow{kpi}{column}{Q\_reboiler\_ownEnvelope\_kW}{1372.88962059}
+\goldrow{kpi}{column}{R}{2.36711296207}
+\goldrow{kpi}{column}{T\_bottom}{370.237402007}
+\goldmore{97}
 \end{tutgolden}
 
 \clearpage
@@ -8718,6 +8759,47 @@ Until 2026-11-13 this case did not close: the outlet search walked the low end o
 \end{tutgolden}
 
 \clearpage
+\tutentry{hxBought01\_margin\_and\_stock}{tutorials/steady/heat/hxBought01\_margin\_and\_stock}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column17) at (0.0,-0.0) {\textbf{column17}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column17.west)+(-1.05,0.00)$) -- ($(column17.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column17.east)+(0,-0.17)$) -- ($(column17.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column17.east)+(0,0.17)$) -- ($(column17.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{From the calculated to the bought: the condenser of column17\_exchanger\_design with a declared 10 \% area margin and a declared stock of tube lengths and shell diameters; the sheet shows calculated, required with margin and bought area, and the cost follows the bought one}
+\begin{tutnarrative}
+column17\_exchanger\_design's column, unchanged; system/postDict adds a DESIGN MARGIN and a STOCK LIST to the condenser, so its sheet shows the calculated, the required and the bought area (C503).
+
+The flowsheet below is column09's to the last key: the same benzene/toluene feed, the same 15 stages, the same reflux, the same tray hydraulics. What changes is system/postDict, and the sheets it writes for the two exchangers. Read column09 first; this case is the next question.
+
+column09 sizes its condenser and reboiler as A = Q/(U LMTD), with U and the LMTD TYPED by the author -- a first estimate, not a design. Here both are DESIGNED on the same route a flowsheet exchanger has (a Kern shell-and-tube design: the bundle declared, the tube count solved, U a RESULT of the films, the wall and the fouling), and the process side of each is priced by a PHASE-CHANGE film instead of a single-phase one:
+
+the CONDENSER condenses the overhead on the outside of horizontal tubes, cooling water inside: Nusselt's laminar film, the condensate of one tube falling on the next (h\_1 N\textasciicircum{}-1/4 at the deepest tier); the REBOILER boils the bottoms as a pool around a tube bundle (a kettle), LP steam condensing inside: Rohsenow's nucleate flux, HELD UNDER the Zuber critical heat flux.
+
+NOTHING ABOUT THE PROCESS SIDE IS TYPED. The temperatures are the column's own (the top tray's dew point and the distillate's bubble point; the bottoms' bubble point), and every property a film needs -- density, viscosity, conductivity, heat capacity, surface tension, latent heat -- comes from constant/thermoPhysPropDict. That is why this case's package declares LIQUID transport models where column09's declares only a surface tension: delete one and the exchanger it prices refuses by name.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{381.514100302}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{354.247899371}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column17}{B}{0.0138888888889}
+\goldrow{kpi}{column17}{D}{0.0138888888889}
+\goldrow{kpi}{column17}{L\_rect}{0.0277777777778}
+\goldrow{kpi}{column17}{L\_strip}{0.0361877251337}
+\goldrow{kpi}{column17}{Q\_condensate\_m3\_s}{0.00403798363642}
+\goldrow{kpi}{column17}{Q\_condenser\_kW}{-1315.09269215}
+\goldrow{kpi}{column17}{Q\_reboiler\_kW}{679.407961112}
+\goldrow{kpi}{column17}{Q\_reboiler\_ownEnvelope\_kW}{772.533850417}
+\goldmore{203}
+\end{tutgolden}
+
+\clearpage
 \tutentry{hxWorkflow1\_design\_from\_duty}{tutorials/steady/heat/hxWorkflow1\_design\_from\_duty}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -11221,6 +11303,55 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{kpi}{column01}{Q\_reboiler\_ownEnvelope\_kW}{1207.01661916}
 \goldrow{kpi}{column01}{R}{2.9015625}
 \goldmore{16}
+\end{tutgolden}
+
+\clearpage
+\tutentry{optim08\_bayesian\_membrane}{tutorials/steady/optimisation/optim08\_bayesian\_membrane}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (0.0,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(vessel.west)+(-1.05,0.00)$) -- ($(vessel.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Brackish RO: the optim04 problem solved by the opt-in Bayesian method (Gaussian process, 20 simulations, within 1 percent of the best known value)}
+\begin{tutnarrative}
+HOW HARD can we push recovery before the membrane scales?
+
+The flagship CONSTRAINED-OPTIMISATION case. Same brackish-RO vessel and scaling physics as tutorials/steady/membranes/membrane07\_scaling\_si (6 x 8-inch elements, the \textasciitilde{}1500 mg/L groundwater analysis, the bulk-vs-wall saturation-index audit), but now we ASK the engine the design question the audit only diagnosed:
+
+maximise water\_recovery varying feed pressure and the (continuous) module count subject to NO mineral scaling at the membrane wall: maxSI\_gypsum\_wall <= 0 maxSI\_calcite\_wall <= 0 (rigorous Davies saturation index -- smoother than the Stiff-Davis/Langelier chart fit)
+
+Recovery and wall saturation pull AGAINST each other: every extra \% recovery concentrates the retentate and drives the WALL composition (bulk x polarisation) further into supersaturation. The optimum therefore sits ON the scaling limit -- at least one of the two constraints is ACTIVE, with a strictly positive Lagrange multiplier (the shadow price: how much more recovery one unit of scaling head-room would buy). That is exactly what the SQP trace prints.
+
+GOLDEN-CHECKED regression: the SQP now converges to a CERTIFIED KKT optimum (||grad L||inf \textasciitilde{} 3e-8, all feasibility 0, complementarity \textasciitilde{}1e-8, calcite-wall constraint ACTIVE with lambda \textasciitilde{} 1.14 > 0). Because this is a certified stationary point -- not a guessed answer -- its KPIs are pinned in `expected`, which ALSO guards against a regression to the singular-QP failure a readiness review caught earlier (a "QP subproblem failed: KKT system singular -- LICQ failure" at iteration 1 that left the design infeasible). The KPIs still inherit the polarisation + Davies model assumptions; the golden locks the answer THIS model gives at the certified optimum, not an independent ground truth. (If the engine ever fails to converge again, the optimum block prints an explicit "NO KKT certificate ... NOT a certified optimum" block -- never the misleading all-zeros certificate it used to forge on the failure path.)
+
+Two design variables, written through \$references so the SQP can drive them and the trace shows their canonical-SI values.
+
+\end{tutnarrative}
+\tutreadme{The problem is that of optim04\_membrane\_recovery\_scaling (maximise brackish-RO water recovery over the feed pressure and the number of modules, subject to the gypsum and calcite wall-scaling limits), solved by the OPT-IN method method bayesian;.}
+\tutreadme{1. Every simulation result is kept. 2. A Gaussian process (a smooth statistical model of the function, with an error band) is fitted to the results, one for the objective and one for each constraint. 3. The next simulation is where the model says the gain is largest: the $\ast$expected improvement$\ast$ over the best feasible value so far, times the $\ast$probability that every constraint holds$\ast$. 4. The run prints that prediction (mean and 95 \% band) BEFORE the simulation and the outcome after it, so you see when the model was wrong. 5. It pays off when one simulation is expensive and the response is smooth; it has NO multipliers (no shadow prices, no KKT certificate), so finish with method sqp from its best point.}
+\tutreadme{Theory: Theory Guide, "Bayesian optimisation for an expensive simulation". Options: options \{ budget 20; seed 1; eiTol 0; \} (nInit, default 2n+2 start points, the first being the declared initial). Failed evaluations never enter the model as numbers.}
+\tutreadme{The history is optimization\_history.csv in each case. Simulations to come within a fraction tol of the best known feasible value f$\ast$ = 0.3974520224 (best of a 862-point grid of this case): the first feasible row with (f$\ast$ - best)/f$\ast$ <= tol.}
+\tutreadme{Read it plainly: from a good start, sqp is as cheap here and lands on the optimum with its certificate and its shadow prices. Over five seeds of the Bayesian method (budget 30, same start) it came within 1e-2 after 19, 22, 20, 27 and 18 simulations (median 20) and within 1e-3 on one seed of five (24). In a separate comparison from random starts in the box (protocol docs/audits/2026-11-24-c499-protocol.md, results docs/audits/2026-11-24-c499-results.md, median of five seeds) the Bayesian method needed 15 simulations to 1e-2 against 25 for sqp with central differences, and reached 1e-3 on only 2 of 5 seeds (sqp: median 53). This case costs about 0.01 s per simulation, so the count is the only thing it shows; it is not a case where the method is needed.}
+\tutreadme{On tutorials/steady/distillation/column19\_mtbe\_reactive\_mesh (reactive full-MESH column, about 20 s per simulation; minimise the reboiler duty over the boil-up ratio [2, 6] and the pressure [5, 9] bar with conversion >= 0.985; best known 4654.55 kW) the Bayesian method needed 23 simulations to come within 1e-2 against 22 for sqp (median of five seeds), so it was NOT cheaper. 14 to 18 of its 25 simulations FAILED: the space-filling start spends its budget in the part of the box where the column does not converge (a failed run is counted, shown, and never used as a number). The method pays off only where the whole box can be simulated. Source: docs/audits/2026-11-24-c499-results.md, table (b).}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.194444444431}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.0766865108647}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.117757933566}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_avg}{0.346803422178}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem1}{0.446908635683}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem2}{0.411796167139}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem3}{0.377448281131}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem4}{0.343543748658}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem5}{0.310136333516}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem6}{0.277306770816}
+\goldrow{kpi}{vessel}{Gamma\_Ca\_elem7}{0.257981387968}
+\goldmore{156}
 \end{tutgolden}
 
 \clearpage

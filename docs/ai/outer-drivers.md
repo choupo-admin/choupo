@@ -94,7 +94,7 @@ point failed).  Sweep responses accept stream fields `F, T, P, vf` only
 ## 2. `type designSpec;` — meet N specs with N knobs
 
 Canonical cases: `tutorials/steady/rotating/compressor02_designspec_pout`
-(1×1), `tutorials/steady/optimisation/designSpec01_triple_equal_areas` (2×2).
+(1×1), `tutorials/steady/optimisation/designSpec01_triple_equal_areas` (2×2). A rigorous column held on two key purities (the reflux ratio and the distillate rate as the two unknowns, `column.x_D_LK` and `column.x_B_HK` as the targets) is `tutorials/steady/distillation/column21_design_curve_ethanol_water` (2×2).
 
 **The `$variable` pattern (required).**  The driver does NOT manipulate raw
 dict paths.  Each knob is a case-level `$variable`, declared in the
@@ -165,14 +165,14 @@ report  { file designspec_history.csv; }    // optional; iteration history
 * After convergence the simulator is replayed once at the design point, so
   the case ends with the full converged output (and `reports{}` run on it).
 
-## 3. `type optimization;` — Nelder-Mead / SQP / MADS min/max
+## 3. `type optimization;` — Nelder-Mead / SQP / MADS / Bayesian min/max
 
 Canonical cases: `tutorials/steady/optimisation/optim01_column_reflux`
 (KPI objective), `optim02_process_cost` (cost objective via postDict).
 
 ```
 type    optimization;
-method  nelderMead;                        // | `sqp` (smooth, constrained, shadow prices) | `mads` (derivative-free, constrained, integers native)
+method  nelderMead;                        // | `sqp` (smooth, constrained, shadow prices) | `mads` (derivative-free, constrained, integers native) | `bayesian` (opt-in, Gaussian process, for an EXPENSIVE simulation; no multipliers)
 
 variables                                  // 1..n knobs, RAW dict paths
 (
@@ -239,6 +239,29 @@ what was read and every deviation).  Same `variables`, `objective` and
   `docs/audits/2026-11-24-optimizer-comparison.md`); choose it for what `sqp` cannot take.
 * Witness: `tutorials/steady/optimisation/optim07_mads_mixed_column` (stages integer +
   reflux continuous + purity constraint, one run, against `optim06`'s enumeration).
+
+### `method bayesian;` (C499) — an expensive simulation, few runs
+
+A Gaussian-process surrogate of the objective and of each constraint (`src/solver/BayesOpt.H` says
+what was read), the next simulation chosen by expected improvement times the probability of
+feasibility; the budget counts SIMULATIONS.  Same `variables`, `objective` and `constraints`
+(inequalities only: an equality is refused by name).
+
+* `options { budget 40; seed 499; eiTol 1e-4; nInit 0; }` — `nInit` 0 means 2n+2 start points
+  (the declared `initial` plus a seeded Halton design).  Same seed, same run.
+* A FAILED evaluation (non-convergence, non-zero exit, the closure guard) is never a number in
+  a model; the run counts it and steers away from it.
+* It prints, per simulation, the next point, the prediction BEFORE the run (mean and 95 % band),
+  the expected improvement and the probability of feasibility, and after the run the outcome and
+  the coverage of the band.  A self-check (Branin, a constrained 2-D problem) runs first.
+* NO multipliers: no shadow prices, no KKT certificate.  Finish with `method sqp` from its best
+  point.
+* MEASURED (median of five seeds, simulations to within 1 % of the best known value): optim04
+  (0.01 s per simulation) 15 against 25 for `sqp`, but 0.1 % reached on 2 of 5 seeds; the reactive
+  MTBE column column19 (about 20 s per simulation) 23 against 22, with 14 to 18 of its 25 runs
+  failed.  It is the WRONG tool where part of the box does not converge.
+  `docs/audits/2026-11-24-c499-results.md`.
+* Witness: `tutorials/steady/optimisation/optim08_bayesian_membrane`.
 
 ## 4. Parameter estimation
 

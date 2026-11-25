@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column06_fullMESH -- the figure the case's own question needs (DEV.md 4c C477).
+
+  The lesson: the full MESH solves energy balances on every stage, so its internal flows
+  follow the real latent heats; for benzene/toluene the result is close to the constant-
+  molal-overflow column02, not equal to it.
+
+  The plot: the benzene liquid and vapour mole fractions by stage and the stage temperature.
+  The stage flows V_j and L_j (the energy-consistent quantities the lesson is about) are
+  NOT published by the engine as a profile today, so they cannot be drawn: the nearest
+  honest figure is the composition and temperature the full MESH produced.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Full MESH: benzene by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the marker is the feed stage (8). Read it: the same staircase as column01/column02; the header puts the full-MESH distillate at about 0.978 against the constant-molal-overflow 0.981, a gap too small to see on this axis. The V_j and L_j profiles are not published, so the energy-consistent flows are not drawn.";
+        series
+        (
+            { name x_benzene; label "liquid on the stage"; unitOp column06; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name y_benzene; label "vapour leaving the stage"; unitOp column06; table profile; x stage; y y_benzene; style linesMarkers; }
+            { name x_benzene_8; label "feed stage (8)"; unitOp column06; table profile; select { stage 8; } x stage; y x_benzene; style markers; }
+        );
+    }
+    {
+        name    temperature_by_stage;
+        type    profile;
+        title   "Full MESH: temperature by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "stage temperature"; unit "K"; scale linear; }
+        note    "Stage 1 is the top; the last stage is the reboiler; the marker is the feed stage (8). Read it: the temperature rises from the benzene boiling point at the top to the toluene-rich bottom, steepest where the composition changes fastest.";
+        series
+        (
+            { name T; label "stage temperature"; unitOp column06; table profile; x stage; y T; style linesMarkers; }
+            { name T_8; label "feed stage (8)"; unitOp column06; table profile; select { stage 8; } x stage; y T; style markers; }
+        );
+    }
+);

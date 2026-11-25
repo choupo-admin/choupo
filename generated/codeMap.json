@@ -248,6 +248,18 @@
   "BatchVesselRecord": [
    "src/postProcessing/views/BatchPublications.H"
   ],
+  "BayesOptions": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesPoint": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResponse": [
+   "src/solver/BayesOpt.H"
+  ],
+  "BayesResult": [
+   "src/solver/BayesOpt.H"
+  ],
   "BedAnchor": [
    "src/unitOperations/batch/BedTransportCorrelations.H"
   ],
@@ -385,6 +397,9 @@
   ],
   "ChapmanEnskog": [
    "src/thermo/transport/ChapmanEnskog.H"
+  ],
+  "ChartRegion": [
+   "src/core/ResultRecords.H"
   ],
   "CheckResult": [
    "src/thermo/equationOfState/ReferenceFluid.H"
@@ -938,6 +953,9 @@
   "Factor": [
    "src/thermo/transport/StokesEinstein.H"
   ],
+  "Facts": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "Family": [
    "src/thermo/electrolyte/ReactiveVLE.H"
   ],
@@ -1256,6 +1274,9 @@
   "Law": [
    "src/thermo/RecordLaws.H"
   ],
+  "Layout": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "LayoutAccess": [
    "src/core/ResultRecords.H"
   ],
@@ -1290,6 +1311,9 @@
    "src/core/ResultRecords.H"
   ],
   "LayoutFinding": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutInsideShell": [
    "src/core/ResultRecords.H"
   ],
   "LayoutItem": [
@@ -2752,6 +2776,9 @@
   ],
   "Var": [
    "src/outerDriver/OptimizationDriver.H"
+  ],
+  "Verdict": [
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
   ],
   "VerifyResult": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
@@ -5210,6 +5237,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/ActiveSetQP.H",
+   "src/solver/BayesOpt.H",
    "src/solver/Convergence.H",
    "src/solver/MADS.H",
    "src/solver/NelderMead.H",
@@ -10145,6 +10173,10 @@
    "src/solver/ActiveSetQP.H",
    "src/solver/NewtonND.H"
   ],
+  "src/solver/BayesOpt.cpp": [
+   "src/core/Types.H",
+   "src/solver/BayesOpt.H"
+  ],
   "src/solver/BlockTridiagonal.cpp": [
    "src/core/Types.H",
    "src/solver/BlockTridiagonal.H",
@@ -13608,6 +13640,10 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.H",
    "src/unitOperations/crystallisation/Crystalliser.H"
   ],
+  "src/unitOperations/distillation/ColumnDiagnosis.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H"
+  ],
   "src/unitOperations/distillation/DistillationColumn.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -13657,6 +13693,7 @@
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/UnitTypedProperties.H",
+   "src/unitOperations/distillation/ColumnDiagnosis.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/PackingDelft.H",
@@ -21123,6 +21160,7 @@
    "src/result/ResultEmitter.cpp",
    "src/samples/SampleBehaviour.cpp",
    "src/solver/ActiveSetQP.cpp",
+   "src/solver/BayesOpt.cpp",
    "src/solver/BlockTridiagonal.cpp",
    "src/solver/DominantEigenvalue.cpp",
    "src/solver/LU.cpp",
@@ -21295,6 +21333,7 @@
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingBS.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
@@ -22908,6 +22947,10 @@
    "src/solver/ActiveSetQP.cpp",
    "src/solver/SQP.cpp",
    "src/streams/AnalysisReconciler.cpp"
+  ],
+  "src/solver/BayesOpt.H": [
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/solver/BayesOpt.cpp"
   ],
   "src/solver/BlockTridiagonal.H": [
    "src/solver/BlockTridiagonal.cpp",
@@ -29708,6 +29751,10 @@
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp"
+  ],
+  "src/unitOperations/distillation/ColumnDiagnosis.H": [
+   "src/unitOperations/distillation/ColumnDiagnosis.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp"
   ],
   "src/unitOperations/distillation/ColumnTypedProperties.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",

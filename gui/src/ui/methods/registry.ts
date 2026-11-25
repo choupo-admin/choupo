@@ -86,7 +86,9 @@ export type MethodToolId =
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
   | "fault-diagnosis" | "how-do-we-know-k" | "methane-assembly" | "transfer-unit" | "loop-placement"
-  | "control-valve";
+  | "column-design"
+  | "control-valve" | "compressor-choice" | "calculated-to-bought"
+  | "filter-press-cycle";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1248,6 +1250,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "inventory, throughput, quality.",
     theory: "ch:dyn-cstr",
   },
+  //  COMMISSIONED (C263, built C510): "which compressor, and how far can I turn
+  //  it down?".  A CONSTRUCTION on two live engine runs (the air machine of
+  //  compressor03 and the ammonia plant's make-up compressor, both sized) plus
+  //  a RECORDED run of the reference plant's four compressors.  The engine
+  //  publishes the machine chart it selects from (Brown 2005 Fig 1-2) in its
+  //  design sheet and the page draws THAT; the seven practitioner questions
+  //  are AUTHORED text; the surge flow and the shut-off head are the
+  //  student's, because the engine has no characteristic map (so surge itself,
+  //  speed control and suction throttling are not built, and the page says why).
+  {
+    id: "compressor-choice", blurb: "Duty as volume and ratio, machine chart, highest pressure, anti-surge cost.",
+    label: "Which compressor, and how far can I turn it down?",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "A compressor is chosen from the gas as it enters the machine (a volume flow) and a pressure "
+      + "ratio, not from kilograms and kilowatts: two gases with the same volume and ratio need nearly the same power "
+      + "and very different heads. The engine's own machine chart, drawn from its design sheet, shows which families "
+      + "can take a duty and how it breaks a tie; seven practitioner questions (authored) say what the chart does not; "
+      + "a one-section ceiling shows the highest pressure a blocked discharge can reach and the relief that implies; and "
+      + "two engine runs price the anti-surge recycle at part load, cooled and hot. No surge line is computed: the engine "
+      + "holds no characteristic map, and the page says so.",
+    theory: "sec:compressor-choice",
+  },
   //  COMMISSIONED 2026-11-25 (C509): "why does a correctly sized valve still
   //  control badly?".  A CONSTRUCTION with two engine runs in the browser
   //  (pumpSystem01 swept over the flow: the pump's rise and the line's drop
@@ -1458,6 +1483,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "recycle gets round a boundary -- on NRTL maps the engine computes "
       + "for five ternaries, with each pair's fit grade shown, a pressure "
       + "control, and published azeotropes beside the engine's.",
+  },
+  //  C501 (2026-11-25): column design for a REAL mixture, the ideal one as its
+  //  control.  Four cards: feasibility (the lever rule and the azeotrope), the
+  //  rigorous R against N curve at a fixed specification (a RECORDED engine
+  //  run of a designSpec per stage count), the cost optimum, and the shortcut
+  //  beside the rigorous result.  gui/src/case/columnDesign.ts holds the
+  //  arithmetic, the recording is bin/curate/c501_column_design_table.py.
+  {
+    id: "column-design", blurb: "Reflux against stages, cost optimum and the shortcut's error, real mixture.",
+    label: "Column design (real mixture)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    theory: "ch:column-design",
+    teaches: "The general case of column design with the ideal mixture as its "
+      + "control: what a simple column can make from a feed (the lever rule, "
+      + "and the azeotrope no column crosses); the rigorous curve of reflux "
+      + "against stage count at a fixed specification, with its two "
+      + "asymptotes; the cost optimum of stages against energy and how the "
+      + "price of heat moves it; and the shortcut set beside the rigorous "
+      + "result, agreeing on the ideal mixture and parting near the azeotrope.",
   },
   {
     id: "levenspiel", blurb: "Compare PFR and CSTR volumes for the same conversion.", label: "Reactor sizing (Levenspiel)",
@@ -2153,7 +2198,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "convergence theory for non-smooth functions.  Then the shipped "
       + "integer-stages case optim06 read row by row, the multiplier checked "
       + "against the engine by moving the limit, and a decision card with "
-      + "McKinnon's counter-example.",
+      + "McKinnon's counter-example.  A last section sketches Bayesian "
+      + "optimisation (a Gaussian-process model and expected improvement) "
+      + "for the case where one simulation is the expensive thing, with the "
+      + "engine's measured comparison against sqp stated in one sentence.",
     theory: "ch:sqp",
   },
   {
@@ -2868,6 +2916,47 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "distance is a compatibility indicator, never a saturation "
       + "concentration.",
     theory: "ch:hansen-mixture",
+  },
+  //  COMMISSIONED 2026-11-24 (DEV.md 4c C503), from a reading of a practitioner's
+  //  design book: a calculation gives a minimum specification and a purchase
+  //  gives a size.  The exchanger is the engine's (a declared design margin and
+  //  a declared stock list in the shell-and-tube sizer, three areas side by
+  //  side, the cost on the bought one); the pipe's next nominal size and the
+  //  compressor driver's margin are read from the engine's line list and
+  //  sizer.  The minimum pipe bore, the rating at the student's margin and the
+  //  cover test are the page's arithmetic and say so.
+  {
+    id: "calculated-to-bought", blurb: "Round an exchanger, pipe and driver up to what you can buy.",
+    label: "From the calculated to the bought",
+    discipline: "Process design & economics", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "That a calculation yields a minimum specification and a purchase yields a size: "
+      + "a condenser designed by the engine with a margin you set and a stock of tube lengths "
+      + "and shells the case declares, the calculated, required and bought areas side by side "
+      + "with the cost priced on the bought one; the margin as a decision about an uncertainty "
+      + "you must name, with the cheapest swept margin that covers it; the pipe's next nominal "
+      + "size and the flow area it adds over the smallest bore the velocity window allows; and "
+      + "the compressor driver's margin with a frame ladder you declare.",
+    theory: "sec:hx-bought",
+  },
+  //  COMMISSIONED 2026-11-25 (DEV.md 4c C511): a plate-and-frame press has a
+  //  dead time; the average rate over a whole cycle peaks, and flatly.  The
+  //  engine's own press (filter02_caco3_pressWashing) gives K_p, B, the wash
+  //  and the cycle; the curve is algebra on them (filterCycle.ts) and six more
+  //  engine runs of the same case sit on it.
+  {
+    id: "filter-press-cycle", blurb: "Find the cake size that gives a press its best rate.",
+    label: "When do I open the press?",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page"],
+    teaches: "The filter-press cycle: Ruth's constant-pressure law (t/V a straight line in V, its "
+      + "slope and intercept the engine's own K_p and B), the cycle as filtration, washing and a dead "
+      + "time, and the average rate over the whole cycle, which has a maximum where the time that "
+      + "grows as V squared equals the dead time.  The page moves the dead time and draws the average "
+      + "rate against the volume per cycle with six engine runs of the case on the curve, marks the "
+      + "optimum and the case's own cycle, and shows how flat the peak is: opening at half or at twice "
+      + "the best volume loses exactly the same share.",
+    theory: "sec:cakeFilter-batchPress",
   },
 ];
 

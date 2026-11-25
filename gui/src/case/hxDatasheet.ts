@@ -620,7 +620,24 @@ export function kernDatasheetHtml(unitName: string, d: KernDesign): string {
     row2("Area required = Q/(U·F·LMTD)", v.q("A_required", "m2", 1)),
     row2("Area installed (all shells)", aCell && costedOn === "A"
       ? { ...aCell, note: "this is the area the cost below is priced on" } : aCell),
-    row2("Overdesign", (() => { const o = v.val("overdesign"); return o ? word(`${(o.value * 100).toFixed(2)} %`, v.who("overdesign")) : null; })()),
+    //  C503: with a declared margin and/or stock list the sheet shows the
+    //  three numbers side by side; the leftover below is then measured from
+    //  the CALCULATED area (key `overdesign`, unchanged), and is named for
+    //  what it is: the surplus of whole tubes and a stock length, not a margin.
+    ...(v.val("A_bought") !== undefined ? [
+      row2("Area calculated (smallest bundle that delivers the duty)", v.q("A_calculated", "m2", 1)),
+      row2("Area required with the declared margin", (() => {
+        const c = v.q("A_margined", "m2", 1);
+        const m = v.val("designMargin");
+        return c ? { ...c, note: m ? `calculated x (1 + ${(m.value * 100).toFixed(1)} %), the margin the case declares with its reason` : "no margin declared" } : null;
+      })()),
+      row2("Area bought (installed)", (() => {
+        const c = v.q("A_bought", "m2", 1);
+        return c ? { ...c, note: "the next bundle, tube length and shell the case's stock offers that meets the required area; the cost is priced on it" } : null;
+      })()),
+      ...(v.val("shellID_bought") !== undefined ? [row2("Shell bought (stock inside diameter)", v.q("shellID_bought", "m", 3))] : []),
+    ] : []),
+    row2("Rounding surplus (installed over calculated)", (() => { const o = v.val("overdesign"); return o ? word(`${(o.value * 100).toFixed(2)} %`, v.who("overdesign")) : null; })()),
     ...(rated ? [
       row2("Rated area of the unit", (() => { const c = v.q("A_rated", "m2", 1); return c ? { ...c, note: "the flowsheet converged on this area and its U — NOT costed; the design above is" } : null; })()),
       row2("Rated U of the unit", v.q("U_rated", "W/m2/K", 1)),

@@ -649,6 +649,10 @@ struct End
     std::string unit;      // flowsheet unit, empty at a battery limit
     Pt          point;     // the nozzle, the junction node; empty at a limit
     std::string why;       // why it cannot be reached (kind empty)
+    //  The unreachable end is a unit the layout SHOULD have placed: its
+    //  sizer refused, or it is sized and none of its items is on the plan.
+    //  An unsized unit and an unattached junction are by-rule absences.
+    bool        placeable = false;
     //  C100: the end stands INSIDE the declared building -- an item a room
     //  lists (`room` its room), or a junction piped only to such items.
     bool        indoor = false;
@@ -799,6 +803,30 @@ scalar stageFraction(const EquipmentSizing* sz, const LayoutItem& shell,
     return 0.5;
 }
 
+//  THE SHELL A UNIT LIVES IN (the six unrouted converter pipes, 2026-11-24).
+//  A converterShell is ONE placed item around the units of a SECTOR
+//  (ConverterShellSize: the members are the sector's units, read from the
+//  topology by the sector STAMP, never listed again), and its sizing says it
+//  encloses baskets (`encloses`).  So a unit that has no item of its own and
+//  whose sector stamp lies in the sector of such a shell lives in that shell:
+//  a stream ending at it ends at the shell, and a stream with both ends in
+//  the same shell is inside it.  This is the ONE home of that membership --
+//  the declaration is the sizer's and the stamp the flatten seam's; nothing
+//  here is guessed from a name.  Returns the shell's unit (sector) name, or
+//  empty.
+std::string shellHostOf(const SimulationResult& r, const FlatUnit& fu)
+{
+    if (fu.sector.empty()) return "";
+    for (const auto& entry : r.sizings)
+    {
+        const EquipmentSizing& s = entry.second;
+        if (s.encloses.empty()) continue;
+        if (fu.sector == s.unitName || fu.sector.rfind(s.unitName + ".", 0) == 0)
+            return s.unitName;
+    }
+    return "";
+}
+
 void routePipes(const Dictionary& d, const SimulationResult& r,
                 PlantLayoutRecord& rec, const FindingSink& addFinding)
 {
@@ -819,6 +847,22 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         if (s.notPlacedBecause.empty()) sizedOf[s.unitName].push_back(id);
     std::map<std::string, std::string> typeOf;
     for (const auto& u : r.topology) typeOf[u.name] = u.type;
+    //  Units inside a placed shell: unit -> the shell's unit, and the unit's
+    //  rank among the shell's members (topology order) for its nozzle height.
+    std::map<std::string, std::string> hostOf;
+    std::map<std::string, std::pair<int, int>> rankIn;   // unit -> (k, n)
+    {
+        std::map<std::string, int> count;
+        for (const auto& u : r.topology)
+        {
+            if (placedOf.count(u.name)) continue;
+            const std::string h = shellHostOf(r, u);
+            if (h.empty() || !placedOf.count(h) || placedOf[h].empty()) continue;
+            hostOf[u.name] = h;
+            rankIn[u.name] = { count[h]++, 0 };
+        }
+        for (auto& [u, kn] : rankIn) kn.second = count[hostOf[u]];
+    }
 
     //  THE STORES ATTACHED TO A STREAM (DEV.md 4c C268).  A store sized by
     //  the postDict on a boundary stream (`storage`, `gasStorage`, DEV.md 4c
@@ -1315,7 +1359,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
     //  Where a unit's reference x stands, to face a nozzle toward the other end.
     auto refX = [&](const std::string& unit, bool sourceEnd) -> scalar {
         if (unit.empty()) return sourceEnd ? rack.xStart : rack.xEnd;
-        auto p = placedOf.find(unit);
+        auto p = placedOf.find(hostOf.count(unit) ? hostOf[unit] : unit);
         if (p != placedOf.end() && !p->second.empty()) return p->second.front()->x;
         auto j = jx.find(unit);
         return j != jx.end() ? j->second : kNaN;
@@ -1348,7 +1392,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             if (c != crossingSide.end() && c->second == "north") return  1e18;
             return rack.y;
         }
-        auto p = placedOf.find(unit);
+        auto p = placedOf.find(hostOf.count(unit) ? hostOf[unit] : unit);
         if (p != placedOf.end() && !p->second.empty()) return p->second.front()->y;
         return jx.count(unit) ? rack.y : kNaN;
     };
@@ -1569,7 +1613,10 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             return e;
         }
         e.unit = unit;
-        auto p = placedOf.find(unit);
+        //  A unit INSIDE a placed shell (shellHostOf): its pipe lands on the
+        //  shell's side, at the height of the unit's place in the stack.
+        const bool inShell = hostOf.count(unit) > 0;
+        auto p = placedOf.find(inShell ? hostOf[unit] : unit);
         if (p != placedOf.end())
         {
             //  THE NOZZLE (C229): the pipe lands on a PORT -- see THE PORTS
@@ -1593,6 +1640,25 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                                    + " -> item " + it->id + ", side " + decl.face;
                             ruled = true;
                         }
+            if (!ruled && inShell)
+            {
+                const auto kn = rankIn[unit];
+                const scalar n = std::max(1, kn.second);
+                const scalar centre = 1.0 - (scalar(kn.first) + 0.5) / n;
+                //  `inlet` is true at the stream's SOURCE, i.e. the unit's
+                //  OUTLET (lower); the consumer end is the unit's inlet
+                //  (upper): the stack is fed from the top
+                const scalar f = centre + (inlet ? -0.25 : 0.25) / n;
+                q.item = p->second.front(); q.port = "shell"; q.face = "side";
+                q.frac = std::min(0.95, std::max(0.05, f));
+                q.origin = "convention";
+                q.role = "unit `" + unit + "` lives inside the placed shell `"
+                       + q.item->id + "` (the sizer's `encloses` and the sector"
+                       " stamp, shellHostOf): the pipe lands on the shell's"
+                       " side at the unit's place " + std::to_string(kn.first + 1)
+                       + " of " + std::to_string(kn.second) + " in the stack";
+                ruled = true;
+            }
             if (!ruled) ruled = roleOf(unit, stream, inlet, q);
             if (!ruled)
             {
@@ -1605,7 +1671,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             //  A HEADER (C268): the item is one of N parallel items of its
             //  unit, so the pipe ends in a main along their row with a branch
             //  to each -- never in the first item alone.
-            if (q.origin != "default")
+            if (q.origin != "default" && !inShell)
             {
                 const auto sibs = siblingsOf(unit, q.item);
                 if (!sibs.empty())
@@ -1684,12 +1750,16 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         }
         auto sz = sizedOf.find(unit);
         if (refusedSizingOf(r, unit))
+        {
+            e.placeable = true;
             e.why = "unit `" + unit + "`'s sizer refused (see the sizing"
                     " table), so it has no item on the plot plan";
+        }
         else if (sz != sizedOf.end())
         {
             std::string ids;
             for (const auto& id : sz->second) ids += (ids.empty() ? "" : ", ") + id;
+            e.placeable = true;
             e.why = "unit `" + unit + "` is sized (" + ids + ") but none of"
                     " its items is placed on the plot plan";
         }
@@ -1779,6 +1849,19 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             continue;
         }
         const std::string to = cs.empty() ? "" : cs.front();
+        //  A stream with BOTH ends in the same shell is inside it: no pipe
+        //  (the catalyst beds and the inter-bed exchange of a converter).
+        if (hostOf.count(from) && hostOf.count(to) && hostOf[from] == hostOf[to])
+        {
+            if (overrides.count(s))
+                refuse("pipes `" + s + "`: an override routes a pipe, and this"
+                       " stream runs inside the shell `" + hostOf[from]
+                       + "` between `" + from + "` and `" + to
+                       + "`, which is no pipe -- remove the override");
+            rec.insideShell.push_back({ s, placedOf[hostOf[from]].front()->id,
+                                        from, to });
+            continue;
+        }
         //  Each side nozzle faces the other end of the pipe (C229).
         const scalar xa = refX(from, true), xb = refX(to, false);
         const int signA = (std::isnan(xb) || std::isnan(xa) || xb >= xa) ? 1 : -1;
@@ -1802,6 +1885,19 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                                reach && !reach->indoor ? reach->point : Pt{} };
             n.indoor = reach && reach->indoor;   // C100: marked nowhere, as above
             rec.notRouted.push_back(n);
+            //  A pipe to a unit the layout SHOULD have placed (sized but
+            //  unplaced, or its sizer refused) is a FINDING, with its reason:
+            //  "0 findings" must never stand beside such a pipe missing from
+            //  the plan (2026-11-24).  A stream to an UNSIZED unit (a dryer
+            //  with no sizer), a junction with no placed neighbour, solids,
+            //  an end indoors and a stream with two consumers are listed
+            //  above by RULE, not a finding (narrowed 2026-11-25).
+            const End* bad = (a.kind.empty() && a.placeable) ? &a
+                           : (b.kind.empty() && b.placeable) ? &b : nullptr;
+            if (bad)
+                addFinding("pipeNotRouted", s, bad == &a ? from : to, 0.0, 0.0,
+                           "warning", "stream `" + s + "` is NOT ROUTED: "
+                           + bad->why);
             continue;
         }
         //  ---- AN END INDOORS (DEV.md 4c C100) ---------------------------
@@ -4858,6 +4954,17 @@ bool isInternal(const EquipmentSizing& s, const SimulationResult& r,
                 host = "a basket inside the converter shell `" + oid + "`";
                 return true;
             }
+    //  A unit that lives inside a placed shell (shellHostOf: the sector stamp
+    //  inside a converterShell's sector), such as the converter's inter-bed
+    //  coolers, has its items inside it too.
+    for (const auto& u : r.topology)
+        if (u.name == s.unitName)
+        {
+            const std::string h = shellHostOf(r, u);
+            if (h.empty() || h == s.unitName) break;
+            host = "inside the converter shell of sector `" + h + "`";
+            return true;
+        }
     return false;
 }
 
@@ -5507,7 +5614,11 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                   << " not routed; rack at y = " << num(rec.pipeRack.y)
                   << " m, elevation " << num(rec.pipeRack.elevation) << " m ("
                   << (rec.pipeRack.declared ? "declared" : "stated default")
-                  << ")\n";
+                  << ")"
+                  << (rec.insideShell.empty() ? std::string()
+                      : "; " + std::to_string(rec.insideShell.size())
+                        + " stream(s) inside a placed shell, no pipe")
+                  << "\n";
         for (const auto& p : rec.pipes)
             std::cout << "  " << std::left << std::setw(22)
                       << (p.branch.empty() ? p.stream : p.stream + " @ " + p.branch
@@ -5525,6 +5636,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         for (const auto& n : rec.notRouted)
             std::cout << "  " << std::left << std::setw(22) << n.stream
                       << "not routed: " << n.reason << "\n";
+        for (const auto& n : rec.insideShell)
+            std::cout << "  " << std::left << std::setw(22) << n.stream
+                      << "inside shell " << n.item << ": " << n.fromUnit
+                      << " -> " << n.toUnit << " (no pipe)\n";
         if (!rec.utilityLines.empty())
         {
             scalar ut = 0;

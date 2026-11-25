@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The optim04 problem (maximise brackish-RO water recovery up to the wall-
+  scaling limit) solved by the OPT-IN Bayesian method (`method bayesian;`).
+
+  A Gaussian-process surrogate of the objective and of each constraint is
+  fitted to the simulations run so far; the next simulation is the point with
+  the largest expected improvement times the probability that both scaling
+  constraints hold.  The budget counts SIMULATIONS.  The run prints, point by
+  point, the prediction made BEFORE the simulation and the outcome after it.
+
+  It has NO multipliers: no shadow prices and no KKT certificate.  Finish with
+  `method sqp` from the best point it prints (compare optim04).  Tools by cost
+  of one simulation: see the README of this case.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  bayesian;
+
+variables
+(
+    {
+        path     streams.feed.P;      // channel target (forum #53): the feed INLET pressure
+        min      10.0 bar;
+        max      30.0 bar;
+        initial  14.0 bar;
+    }
+    {
+        path     variables.nMods;
+        min      3.0;
+        max      9.0;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     vessel.water_recovery;
+    sense    maximise;
+}
+
+constraints
+(
+    {
+        kpi      vessel.maxSI_gypsum_wall;
+        atMost   0.0;
+    }
+    {
+        kpi      vessel.maxSI_calcite_wall;
+        atMost   0.0;
+    }
+);
+
+options
+{
+    budget    20;
+    seed      1;
+    eiTol     0;          // the budget is the stop (a surrogate stopping early left 2 % on the table here)
+}
+
+report
+{
+    file        optimization_history.csv;
+}

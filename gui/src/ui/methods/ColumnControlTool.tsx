@@ -280,8 +280,8 @@ export function drumStreams(
   kpis: KpiRow | undefined,
 ): { L: number; D: number; ratio: number; larger: "reflux" | "distillate" } | null {
   //  `L_rect` is published by the WangHenke branch only
-  //  (DistillationColumn.cpp:1993); `model simultaneous` — the witness —
-  //  publishes `R` = L/D and `D` (:4440-4441), and L = R*D is the definition
+  //  (DistillationColumn.cpp:1995); `model simultaneous` — the witness —
+  //  publishes `R` = L/D and `D` (:4526-4527), and L = R*D is the definition
   //  of the reflux ratio, so the same comparison is read from those.
   const D = kpis?.["D"];
   const Lk = kpis?.["L_rect"], Rk = kpis?.["R"];

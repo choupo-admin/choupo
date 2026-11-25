@@ -842,6 +842,19 @@ does not lower it).  The package must declare liquid `viscosity` and
 `transport {}`, or the item refuses by name.  Worked case:
 `tutorials/steady/distillation/column17_exchanger_design`.
 
+**A DESIGN MARGIN AND A STOCK LIST (C503, 2026-11-25; opt-in).**  Inside the same
+`design {}`: `margin { area 0.10; reason "..."; }` (the duty times 1 + area, the
+reason REQUIRED and naming the uncertainty) and `stock { source "..."; reason
+"..."; tubeLengths ( { length 3.658 m; } { length 6.096 m; } ); shellIDs (
+{ insideDiameter 0.35 m; } ... ); }` (the case's own list; the engine carries no
+vendor table).  The run finds, per listed length, the smallest bundle that
+delivers the duty times (1 + area), BUYS the length of smallest installed area
+and the smallest listed shell that holds the bundle, and the sheet shows
+`A_calculated`, `A_margined`, `A_bought` (the area the cost is priced on),
+`designMargin`, `shellID_bought`, `tubeLength_calculated`.  `overdesign` keeps its
+key and is the rounding surplus over the calculated area.  Neither block: the
+design is unchanged.  Worked case: `tutorials/steady/heat/hxBought01_margin_and_stock`.
+
 **A PLUG-FLOW CATALYST BED IS A SHELL AND A CATALYST CHARGE (2026-09-26).**
 `type pfr` sizes the unit's OWN `V_R` -- the volume the PFR integrated, which
 is the outer driver's answer when a `designSpec` solves it -- and never
@@ -1880,6 +1893,17 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   a missing pipe never looks like a finished drawing; one that reaches
   neither end is not marked at all (no point of the plan is its) and is
   listed in words beside the view and in the pipe register.
+  A UNIT INSIDE A PLACED SHELL (converter beds and inter-bed coolers; the
+  converterShell's `encloses` + the unit's sector stamp, `shellHostOf`) has no
+  nozzle of its own: a pipe ending at it lands on the shell's side at the
+  unit's height in the stack; a stream with BOTH ends inside the same shell
+  is listed in `layout.insideShell`, no pipe.  A process pipe with an end
+  that has no place on the plan is `notRouted` AND a `pipeNotRouted` finding
+  with the reason ONLY when the end is a unit the layout should have placed
+  (sized but unplaced, or its sizer refused); solids, indoor, two-consumer
+  streams and a stream to an UNSIZED unit or an unattached junction are
+  rules, not findings.  The GUI's pipe register says the `insideShell`
+  streams in one line per shell.
   SOLIDS ARE NOT PIPED (C97): a stream with no fluid phase that carries a
   solid -- a powder, granules, tablets -- is listed as not routed, "solids
   only: moved in containers or by conveyor", with `solids` set and no

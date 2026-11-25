@@ -526,13 +526,13 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/steady/rotating/compressor03_staged_design",
     file: "design/compressor1",
-    readBy: ["compression.test.ts"],
+    readBy: ["compression.test.ts", "compressorChoice.test.ts", "calculatedToBought.test.ts"],
     dir: true,
   },
   {
     caseDir: "tutorials/plant/ammonia02_full_plant",
     file: "design/makeupComp",
-    readBy: ["compression.test.ts"],
+    readBy: ["compression.test.ts", "compressorChoice.test.ts"],
     dir: true,
   },
   //  THE STREAM CARD AGAINST THE STREAMS TABLE on a solid-carrying case
@@ -787,6 +787,28 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     caseDir: "tutorials/batch/combustion/methane06_assembled",
     file: "log.choupoBatch",
     readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  //  FROM THE CALCULATED TO THE BOUGHT (C503): the condenser's design sheet with
+  //  the declared margin and stock, the line list of the pumped drum, both read
+  //  through the page's own readers (compressor03's sheet is the compression
+  //  EduTool's entry above, read by this test as well).
+  {
+    caseDir: "tutorials/steady/heat/hxBought01_margin_and_stock",
+    file: "design/column17/condenser",
+    readBy: ["calculatedToBought.test.ts"],
+  },
+  {
+    caseDir: "tutorials/plant/line01_pumped_drum",
+    file: "reports/lines/lineList.csv",
+    readBy: ["calculatedToBought.test.ts"],
+  },
+  //  The filter-press cycle page (C511): the engine's own run of the press,
+  //  whose K_p, B, wash and cycle the page's algebra is held to.
+  {
+    caseDir: "tutorials/steady/solids/filter02_caco3_pressWashing",
+    file: "log.choupoSolve",
+    readBy: ["filterPressCycle.test.ts"],
     stdout: true,
   },
 ];

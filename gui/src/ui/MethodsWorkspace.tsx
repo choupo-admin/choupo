@@ -369,6 +369,9 @@ const ElectrolyteModelsTool = lazy(() =>
 const ResidueCurvesTool = lazy(() =>
   import("./methods/ResidueCurvesTool.js")
     .then((m) => ({ default: m.ResidueCurvesTool })));
+const ColumnDesignTool = lazy(() =>
+  import("./methods/ColumnDesignTool.js")
+    .then((m) => ({ default: m.ColumnDesignTool })));
 const AdsorptionIsothermsTool = lazy(() =>
   import("./methods/AdsorptionIsothermsTool.js")
     .then((m) => ({ default: m.AdsorptionIsothermsTool })));
@@ -414,6 +417,9 @@ const LetdownTool = lazy(() =>
 const ControlValveTool = lazy(() =>
   import("./methods/ControlValveTool.js")
     .then((m) => ({ default: m.ControlValveTool })));
+const CompressorChoiceTool = lazy(() =>
+  import("./methods/CompressorChoiceTool.js")
+    .then((m) => ({ default: m.CompressorChoiceTool })));
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
@@ -453,6 +459,12 @@ const OptimizersTool = lazy(() =>
 const WhyDidItNotDryTool = lazy(() =>
   import("./methods/WhyDidItNotDryTool.js")
     .then((m) => ({ default: m.WhyDidItNotDryTool })));
+const CalculatedToBoughtTool = lazy(() =>
+  import("./methods/CalculatedToBoughtTool.js")
+    .then((m) => ({ default: m.CalculatedToBoughtTool })));
+const FilterPressTool = lazy(() =>
+  import("./methods/FilterPressTool.js")
+    .then((m) => ({ default: m.FilterPressTool })));
 const LubScaleupTool = lazy(() =>
   import("./methods/LubScaleupTool.js")
     .then((m) => ({ default: m.LubScaleupTool })));
@@ -731,6 +743,7 @@ export function MethodsWorkspace() {
             : tool === "pool-fire" ? <PoolFireTool />
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
+            : tool === "column-design" ? <ColumnDesignTool />
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
             : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />
@@ -746,6 +759,7 @@ export function MethodsWorkspace() {
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "control-valve" ? <ControlValveTool />
+            : tool === "compressor-choice" ? <CompressorChoiceTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "syngas" ? <SyngasTool />
@@ -759,6 +773,8 @@ export function MethodsWorkspace() {
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "optimizers" ? <OptimizersTool />
             : tool === "why-did-it-not-dry" ? <WhyDidItNotDryTool />
+            : tool === "calculated-to-bought" ? <CalculatedToBoughtTool />
+            : tool === "filter-press-cycle" ? <FilterPressTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
             : tool === "least-squares" ? <LeastSquaresTool />

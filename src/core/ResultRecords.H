@@ -238,6 +238,21 @@ struct CompressorService
     std::vector<std::string> declared;
     //  Limits of the method that apply to THIS design, said once.
     std::vector<std::string> notes;
+    //  THE MACHINE CHART THE SELECTION READ (C510): the region rectangles of
+    //  Brown 2005 Fig 1-2 (p.3) and the duty point they were asked about, so a
+    //  reader of the sheet draws the SAME chart without a second copy of the
+    //  corners.  Words and numbers of the `compressor {}` block only: no
+    //  `sizing {}` value is added, so no golden row moves.
+    struct ChartRegion
+    {
+        std::string name, cell;          // machine, the figure's own label
+        scalar Qmin = 0, Qmax = 0;       // inlet actual flow [cfm]
+        scalar rMin = 0;                 // lower ratio edge
+        scalar rMaxLeft = 0, rMaxRight = 0;   // upper ratio edge at Qmin and Qmax
+    };
+    std::vector<ChartRegion> chart;
+    scalar                   inletCfm = 0;       // the duty's actual inlet flow [cfm]
+    scalar                   overallRatio = 0;   // P_out / P_in
 
     bool present() const { return !machine.empty(); }
 };
@@ -1228,6 +1243,13 @@ struct LayoutUtilityLine
     std::string reason;
 };
 
+//  A stream whose two ends are units inside the SAME placed shell (a
+//  converter's beds and inter-bed exchange): no pipe, listed by name.
+struct LayoutInsideShell
+{
+    std::string stream, item, fromUnit, toUnit;
+};
+
 struct LayoutNotRouted
 {
     std::string stream;
@@ -1667,6 +1689,7 @@ struct PlantLayoutRecord
     std::vector<LayoutJunction>        junctions;
     std::vector<LayoutPipe>            pipes;
     std::vector<LayoutNotRouted>       notRouted;
+    std::vector<LayoutInsideShell>     insideShell;
     //  C207: the line list (empty unless the case declares `lineDesign {}`).
     std::vector<LineSheet>             lines;
     std::string                        lineBasis;   // the declared rules, in words

@@ -16857,6 +16857,147 @@ continuous, with a purity constraint --- in a single run, against
 \code{initialPollSize}, \code{tau}.
 
 % ---------------------------------------------------------------------
+\section{Bayesian optimisation for an expensive simulation}\label{ch:bayesopt}
+
+SQP (§\ref{ch:sqp}) and MADS (§\ref{ch:mads}) spend simulations on
+slopes or on polling; when one simulation is a minutes-long flowsheet
+the number of simulations is the whole cost.  \emph{Bayesian
+optimisation} keeps every result, fits a statistical model of the
+responses to them, and runs next the point where the model says a
+simulation is most likely to pay.  Choupo's \code{solver::bayesOpt} is
+selected explicitly, \code{method bayesian;}, never as a fall-back.  The
+problem is
+\begin{equation}
+  \min_{\xv}\; f(\xv)
+  \quad\text{s.t.}\quad g_k(\xv)\le 0,\;\; k=1..m,
+  \qquad \mathbf{lo}\le\xv\le\mathbf{hi},
+  \label{eq:bo-nlp}
+\end{equation}
+every $f$ and $g_k$ a black box; equality constraints are refused by
+name (the method has no way to hold one).
+
+\subsection{What was read}\label{sec:bo-sources}
+\textbf{Read, from the publishers' PDFs} (2026-11-24/25): Rasmussen and
+Williams \cite{RasmussenWilliams2006}, chapter~2 (Algorithm~2.1,
+eqs.~2.25, 2.26, 2.30) and chapter~5 (the squared-exponential covariance
+with one length scale per variable, eqs.~5.1--5.2, and the log marginal
+likelihood, eq.~5.8); Jones, Schonlau and Welch \cite{JonesSchonlauWelch1998}
+(expected improvement, eqs.~14--15, and their stopping rule); Gardner
+et~al.\ \cite{Gardner2014} §3.1--3.2 (the constrained acquisition: the
+expected improvement over the best \emph{feasible} point, weighted by
+the probability of feasibility, a product of univariate Gaussian
+distribution functions for independent constraints).  \textbf{Not read}:
+Schonlau, Welch and Jones \cite{SchonlauWelchJones1998} (the same
+product, cited from \cite{Gardner2014}).
+
+\subsection{The Gaussian-process surrogate}\label{sec:bo-gp}
+Inputs are scaled to $[0,1]^n$ by the box and each response is
+standardised (zero mean, unit variance).  The covariance of two points is
+\begin{equation}
+  k(\mathbf{u},\mathbf{u}') = \sigma_f^2
+  \exp\!\Bigl(-\tfrac12\sum_{i=1}^{n}
+  \frac{(u_i-u_i')^2}{\ell_i^2}\Bigr),
+  \label{eq:bo-kernel}
+\end{equation}
+with a noise term $\sigma_n^2\delta_{pq}$ on the diagonal
+(R\&W eq.~5.1 with $M_2=\mathrm{diag}(\boldsymbol\ell)^{-2}$, eq.~5.2).
+$\sigma_n^2\ge10^{-8}$ in standardised units: a solved flowsheet carries
+solver noise, and the floor keeps $K$ factorable.  With
+$K=K(X,X)$, $\mathbf{k}_\ast=\mathbf{k}(\mathbf{u}_\ast)$ and
+$K_y=K+\sigma_n^2 I=LL^{\mathsf T}$ (Cholesky), the prediction at a new
+point is (R\&W Algorithm~2.1)
+\begin{align}
+  \bar f_\ast &= \mathbf{k}_\ast^{\mathsf T}K_y^{-1}\mathbf{y},
+  \label{eq:bo-mean}\\
+  \mathbb V[f_\ast] &= k(\mathbf{u}_\ast,\mathbf{u}_\ast)
+     - \mathbf{k}_\ast^{\mathsf T}K_y^{-1}\mathbf{k}_\ast,
+  \label{eq:bo-var}
+\end{align}
+eqs.~2.25 and 2.26, and the log marginal likelihood
+\begin{equation}
+  \ln p(\mathbf{y}\,|\,X,\boldsymbol\theta)
+  = -\tfrac12\mathbf{y}^{\mathsf T}K_y^{-1}\mathbf{y}
+    -\sum_i \ln L_{ii} - \tfrac n2\ln 2\pi,
+  \label{eq:bo-lml}
+\end{equation}
+eq.~2.30 (equivalently eq.~5.8).  The hyperparameters
+$\boldsymbol\theta=(\boldsymbol\ell,\sigma_f^2,\sigma_n^2)$ are chosen by
+maximising eq.~\eqref{eq:bo-lml} over log-bounds
+($0.02\le\ell_i\le10$, $0.05\le\sigma_f^2\le20$,
+$10^{-8}\le\sigma_n^2\le0.1$) by a coordinate pattern search; this is
+Choupo's choice, printed at every fit.  A jitter is added to the diagonal
+only if the Cholesky factor fails (escalating by $\times100$ from
+$10^{-10}$) and is printed.  The objective and each $g_k$ have their own
+surrogate.
+
+\subsection{Expected improvement and the probability of feasibility}\label{sec:bo-ei}
+With $f_{\min}$ the best \emph{feasible} value so far and
+$Y\sim\mathcal N(\bar f_\ast,s^2)$, $s^2=\mathbb V[f_\ast]$, the expected
+improvement $\mathbb E\,\max(f_{\min}-Y,0)$ (JSW eq.~14) has the closed form
+(JSW eq.~15)
+\begin{equation}
+  \mathrm{EI}(\mathbf{u}) = s\,\bigl[z\,\Phi(z)+\varphi(z)\bigr],
+  \qquad z=\frac{f_{\min}-\bar f_\ast}{s},
+  \label{eq:bo-ei}
+\end{equation}
+$\Phi$ and $\varphi$ the standard normal distribution and density
+functions ($\mathrm{EI}=\max(f_{\min}-\bar f_\ast,0)$ if $s\to0$).  The
+probability that every constraint holds, for independent surrogates,
+is the product
+\begin{equation}
+  P_{\mathrm{feas}}(\mathbf{u}) = \prod_{k=1}^m
+  \Phi\!\Bigl(\frac{\tau-\bar g_{k\ast}}{s_{g_k}}\Bigr),
+  \label{eq:bo-pf}
+\end{equation}
+$\tau=10^{-6}$ the feasibility tolerance (Gardner et~al.\ §3.2), and the
+next simulation maximises $\alpha=\mathrm{EI}\cdot P_{\mathrm{feas}}$
+(§3.1).  Two choices the papers leave open: while \emph{no} feasible
+point is known, $\alpha=P_{\mathrm{feas}}$ alone (EI has no $f_{\min}$);
+and a \emph{failed} simulation (non-convergence, a non-zero exit, a
+closure above the conservation band --- the same guard as \code{sqp} and
+\code{mads}) enters no surrogate as a number but multiplies $\alpha$ by
+$1-\exp(-\tfrac12 d^2/L^2)$, $d$ the scaled distance to the nearest failed
+point, $L=0.10$.  $\alpha$ is maximised over a seeded random candidate
+cloud refined by pattern search; an integer variable is rounded before
+$\alpha$ is read.  The start design is the declared start plus a
+seeded, shifted Halton sequence ($2n+2$ points).  The run stops at the
+budget (counted in simulations), or when $\alpha$ falls below
+\code{eiTol} times the range of the observed objective (the idea of JSW's
+rule, with the range in place of $f$ because a duty or a recovery may sit
+near zero).
+
+\subsection{A worked self-check}\label{sec:bo-selfcheck}
+As for SQP and MADS, \code{verifyBayesOpt} runs before every Bayesian run
+and aborts it on a miss: the Branin function (three global minima,
+$f^\star=0.397887$) and a constrained two-variable problem, each against
+its published optimum within a stated tolerance and budget.
+
+\paragraph{Power and limit.} \textbf{Power:} no derivative, a global
+look, few simulations when one simulation is dear and the response is
+smooth over the box.  \textbf{Limit:} it has \emph{no multipliers}: no
+shadow prices and no KKT certificate --- finish with \code{method sqp} from
+its best point, which gives both.  It rarely finishes the last digits (in a
+random-start comparison on the membrane case of \code{optim08} it reached
+0.1\,\% of the best value on 2 of 5 seeds).  It is the \emph{wrong tool} where the box holds a region in
+which the simulation does not converge: on the reactive MTBE column
+(\code{column19}, about 20\,s per simulation) it needed 23 simulations to
+come within 1\,\% against 22 for \code{sqp} (median of five seeds), and 14
+to 18 of its 25 runs failed, because the space-filling start spends its
+budget where the column does not run.  The measurements are in
+\code{docs/audits/2026-11-24-c499-results.md}.
+
+\subsection*{What you see in Choupo}
+\code{method bayesian;} makes \code{OptimizationDriver} announce the
+self-check, then print for every simulation the next point, the
+prediction \emph{before} it (mean and 95\,\% band), the expected
+improvement and the probability of feasibility, and, after it, the
+outcome; the end prints the coverage of the band, the failed evaluations
+by cause, and states that there are no multipliers.  Options:
+\code{budget}, \code{seed}, \code{eiTol}, \code{nInit}.  Worked example:
+\file{optim08\_bayesian\_membrane}, the problem of
+\file{optim04\_membrane\_recovery\_scaling}.
+
+% ---------------------------------------------------------------------
 \section{Runge-Kutta 4 for the PFR}\label{ch:rk4}
 
 \begin{whatyoulllearn}
@@ -28980,7 +29121,10 @@ $10^3$--$10^4$ cfm with the upper ratio edge sloping from 20 to 13.8 (straight o
 Where several contain the point the order is centrifugal, axial, screw,
 reciprocating (a tie-break the book does not give); a point outside every
 region takes the reciprocating machine (p.~5) and says so.  \texttt{machine}
-overrides the choice.
+overrides the choice.  The sheet's \texttt{compressor \{ chart ( \dots ) \}}
+block publishes the region rectangles, the duty's inlet flow and its overall
+ratio and the rule in words, so a reader draws the chart the engine used and
+holds no corner of its own (\S\ref{sec:compressor-choice}).
 
 \begin{center}\small
 \begin{tabular}{llll}
@@ -29014,6 +29158,86 @@ speed selection, the axial hub/tip check, the reciprocating gas-gravity and
 low-pressure multipliers (Tables 3-1, 3-2), standard motor sizes, surge and
 turndown.  The witness is \file{tutorials/steady/rotating/compressor03\_staged\_design},
 whose README repeats one stage by hand.
+
+\subsection{Choosing the machine, and what a blocked discharge does}\label{sec:compressor-choice}
+
+\emph{Which compressor, and how far can I turn it down?}  The arithmetic of the
+EduTools page \code{tool=compressor-choice}, on the engine's own sheets.
+
+\paragraph{The duty is a volume and a ratio.}  The gas power of one section is
+$W=\dot m H/\eta_p$ with the head $H=(Z R_s T_1/m)(r^{m}-1)$ (Brown Eq.\ 2.73
+and 2.78, $m=(n-1)/n$).  The mass flow is $\dot m=\rho Q=P_1 Q/(Z R_s T_1)$, so
+\begin{equation}
+  W \;=\; \frac{P_1\,Q}{m\,\eta_p}\left(r^{m}-1\right):
+  \label{eq:compressor-volume-ratio}
+\end{equation}
+the specific gas constant, and with it the molar mass, cancels.  Two gases with
+the same actual inlet volume, ratio and suction state need nearly the same power
+and very different mass flows and heads per kilogram (the weight of the gas comes
+back only through $m$ and $Z$); the head per kilogram is what limits a
+centrifugal impeller.  The machine is therefore chosen from $Q$ and $r$, as the
+chart of Fig.~1-2 does.
+
+\paragraph{The chart, as the engine publishes it.}  A region holds the duty
+when $Q_{\min}\le Q\le Q_{\max}$ and $r_{\min}\le r\le r_{\max}(Q)$, the upper
+edge being a straight line on the log-log axes between its two corners,
+\begin{equation}
+  r_{\max}(Q)=r_L\left(\frac{r_R}{r_L}\right)^{\ln(Q/Q_{\min})/\ln(Q_{\max}/Q_{\min})}.
+  \label{eq:compressor-chart-edge}
+\end{equation}
+The engine takes the first region of its list that holds the point (a
+tie-break the book does not give); below $r=1.4$, where the figure draws
+nothing, the first machine whose flow range holds $Q$; outside every region the
+reciprocating machine; above $10^6$ cfm it refuses.  The corners are the
+engine's reading of the figure, good to about $3\,\%$ of an edge, and the page
+reads them from the sheet.  The chart is a convention of a book, not a law.
+
+\paragraph{The seven questions.}  A grid of seven questions a plant engineer
+asks beyond the chart (smoothness of delivery, a lubricant-free gas path,
+turndown, the highest ratio of one machine, a lighter gas, driver speed, how
+often it is opened) with a tendency for each machine and one sentence of reason
+is on the page.  It is \emph{authored}: written for the lesson in its own words
+from general practice, no source read for any cell.
+
+\paragraph{The highest pressure.}  A positive-displacement machine keeps
+displacing its volume against a closed discharge until its driver, its casing or a
+relief valve stops it, so the relief valve must pass its whole flow.  The page
+prices the \emph{driver} limit with the engine's own staging (equal section
+ratios, the intercoolers' pressure drop, every section cooled back to the
+intercooler temperature, the exponent of stage~1 held): the largest overall ratio
+at which
+\begin{equation}
+  W_d=\frac{(1+\mu)\,\dot m\,Z R_s T_1}{m\,\eta_p}\sum_{i=1}^{N}\left(r_i^{m}-1\right)
+  \label{eq:compressor-driver-ceiling}
+\end{equation}
+equals the sheet's \texttt{driverRating} $W_d$; the design ratio sits below it by
+the $110\,\%$ margin.  A centrifugal machine climbs only to its shut-off head,
+taken as $k$ times the design head with $k$ \emph{the student's} (the engine has
+no characteristic map): a section's head is proportional to $r^{m}-1$, so a
+section ratio $r_1$ becomes $(1+k(r_1^{m}-1))^{1/m}$ and the overall ratio is scaled
+by that gain over $N$ sections.  Both are estimates for the lesson, not a rating:
+the efficiency is held at its design value and the casing and rod-load limits of
+a real machine are not in them.  The relief a blocked discharge asks is the
+Overpressure page's question (the EduTools page \code{tool=overpressure}).
+
+\paragraph{The cost of the anti-surge recycle.}  A centrifugal machine must pass
+a minimum flow.  With $f_s$ the surge flow as a fraction of the design flow
+(\emph{the student's}: the engine has no map) and $\mu_s$ a margin, the machine
+passes $Q_t=\max(Q_d,f_s(1+\mu_s)Q_{\mathrm{des}})$ for a demand $Q_d$; the share
+$\varphi=(Q_t-Q_d)/Q_t$ goes round the recycle valve.  The page asks the engine
+to compress $Q_t$ (the air machine's feed scaled in its declared ratio) and
+prints the single-pass power, the discharge temperature and the energy per
+kilogram delivered against the design.  An uncooled recycle raises the suction
+temperature to $T_{\mathrm{mix}}=(1-\varphi)T_f+\varphi T_{\mathrm{out}}$, a
+constant heat capacity and one step of the iteration, and the engine is run again
+at it.  Surge itself is a dynamic instability set by the map and the volume
+downstream and is not computed; speed control and suction throttling need the
+same map, and cylinder unloading a source not yet read.
+
+\paragraph{Limits.}  The chart's edges are a reading; the plant's four
+compressors on the chart are a recorded run; the surge flow and the shut-off
+head are declared; the ceiling is one set of arithmetic on the engine's staging;
+the grid is authored.
 
 % ---------------------------------------------------------------------
 \section{Pipe pressure drop: Darcy--Weisbach and the friction
@@ -32001,6 +32225,53 @@ temperatures), printable to PDF; the raw numbers also export to a
 spreadsheet.  Open, cited, and reproducible --- the black box a commercial
 tool hands you, opened.
 
+\subsection{From the calculated to the bought: margin and stock}\label{sec:hx-bought}
+The design loop above ends on the smallest tube count that just delivers the
+duty, so the area it reports, $A_\mathrm{calc}=|Q|/(U F\,\Delta T_\mathrm{lm})$,
+is a \emph{minimum specification}: nothing a plant can buy has exactly that
+area.  Two decisions stand between it and the equipment, and a case may declare
+either, both or neither (\code{design \{ margin \{\} stock \{\} \}}); with
+neither declared the design is the one above, number for number.
+
+\paragraph{The margin is a decision about an uncertainty.}
+\code{margin \{ area $m$; reason "..."; \}} asks the loop to deliver the duty
+times $(1+m)$ instead of the duty.  The required area is
+\begin{equation}
+   A_\mathrm{req} = (1+m)\,A_\mathrm{calc},
+   \label{eq:hx-margin}
+\end{equation}
+and the bundle is the smallest tube count whose $U F\,\Delta T_\mathrm{lm}\,A$
+reaches $(1+m)\,|Q|$ (the coefficient $U$ is recomputed for the larger bundle, so
+the installed area is not exactly $A_\mathrm{req}$).  The \code{reason} is
+required text: a margin with no named uncertainty behind it (a film correlation
+good to about ten percent, a fouling allowance that is typical and not
+measured) is a number nobody can defend or remove.
+
+\paragraph{The stock list is the case's, with its source.}
+\code{stock \{ source "..."; reason "..."; tubeLengths ( \{ length $L$; \} \ldots );
+shellIDs ( \{ insideDiameter $D$; \} \ldots ); \}} lists what can be bought.  For
+every listed tube length the loop finds the smallest bundle that meets the
+required duty; the \emph{bought} bundle is the one with the smallest installed
+area (the shorter length on a tie).  The bought shell is the smallest listed inside
+diameter that holds the bundle's Sinnott diameter; the bundle is not enlarged
+to fill a larger shell, and the run says so.  The engine ships no vendor table: the
+lists are the case's own assumptions, and the tutorial's lists are marked as such.
+
+\paragraph{Three numbers side by side.}  The sheet and the result publish
+\code{A\_calculated}, \code{A\_margined} $=(1+m)A_\mathrm{calc}$ and
+\code{A\_bought} (the installed area, which the cost is priced on), with
+\code{designMargin} and, when a shell list is declared, \code{shellID\_bought}.
+The leftover $A_\mathrm{bought}/A_\mathrm{calc}-1$ keeps its key
+\code{overdesign} and is named on the sheet the \emph{rounding surplus}: it is
+what whole tubes and a stock length add, not a margin anybody chose.  The cost
+follows the bought area, so the margin has a price, and the next subsection's
+question --- which margin is worth buying --- is the case's to answer for its
+own uncertainty.  Worked case: \file{hxBought01\_margin\_and\_stock} (the
+condenser of \file{column17\_exchanger\_design} with a 10\,\% margin: calculated
+42.40\,m$^2$, required 46.64\,m$^2$, bought 46.70\,m$^2$ on a 6.096\,m length in a
+0.35\,m shell).  Source: \file{src/postProcessing/sizing/ShellTubeHX.cpp}; the EduTool
+\emph{From the calculated to the bought} runs it live.
+
 % ---------------------------------------------------------------------
 \section{The water cooling tower: Merkel's enthalpy driving force}\label{ch:coolingTower}
 
@@ -32883,6 +33154,97 @@ asymptotes, and the rigorous stage ladder beside it.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Designing a column: the reflux--stage curve and its cost optimum}\label{ch:column-design}
+
+\begin{whatyoulllearn}
+Why a column design is a point on a curve $R(N)$ at a fixed specification and
+what its two asymptotes are; how the engine finds a point of that curve (a
+\code{designSpec} on the reflux ratio and the distillate rate against the two
+key purities); why the annualised cost has a minimum and what moves it; and why
+the shortcut of Section~\ref{ch:fug} agrees with the rigorous column for an
+ideal mixture and fails near an azeotrope, and by how much.
+\end{whatyoulllearn}
+
+\subsection*{The specification fixes the curve}
+
+Let a column of $N$ equilibrium stages (the reboiler the last one, a total
+condenser outside the count) be given a feed and two product specifications, the
+light-key mole fraction $x_D^{*}$ of the distillate and $x_B^{*}$ of the bottoms.
+The two unknowns that remain are the reflux ratio $R$ and the distillate rate
+$D$, and the engine's \code{designSpec} solves
+\begin{equation}\label{eq:column-design-g}
+\mathbf{g}(R,D;N)=\begin{pmatrix}x_D(R,D;N)-x_D^{*}\\ x_B(R,D;N)-x_B^{*}\end{pmatrix}=\mathbf{0}
+\end{equation}
+by a damped Newton iteration in $(R,D)$ with a finite-difference Jacobian, each
+residual evaluation being one solution of the simultaneous MESH column
+(\file{src/outerDriver/DesignSpec.cpp}, \code{solver::newtonND}; the purities are
+the column's \code{x\_D\_LK} and \code{x\_B\_HK} KPIs).  Repeated for each integer
+$N$ it gives the curve $R(N)$, every point of which is on specification.  The
+mass balance fixes only the ratio $D/F=(z-x_B^{*})/(x_D^{*}-x_B^{*})$; the
+\emph{stages} and the \emph{reflux} that deliver the split are what
+Eq.~\eqref{eq:column-design-g} finds.
+
+\subsection*{Two asymptotes}
+
+$R(N)$ falls monotonically with $N$ towards a floor, the minimum reflux
+$R_\mathrm{min}$, where a pinch forms in the column and added stages stop
+helping; and as $R\to\infty$ (total reflux) $N$ falls to a floor, the minimum
+stages $N_\mathrm{min}$.  For an ideal mixture the first is Underwood's
+\cite{Underwood1948} (Section~\ref{ch:fug}) and the second Fenske's \cite{Fenske1932}.  For a non-ideal mixture
+$R_\mathrm{min}$ is set by a pinch that may lie away from the feed, at the
+tangent of the operating line with the equilibrium curve in the rectifying
+section, and past an azeotrope by the boundary value construction
+\cite{LevyDoherty1985,JulkaDoherty1990}; that calculation is the next
+step for the engine, and the curve's own floor, the reflux at the largest
+recorded $N$, is an upper bound of it.
+
+\subsection*{The cost optimum}
+
+\begin{equation}\label{eq:column-design-cost}
+C_A(N)=f_c\,C_\mathrm{inst}(N)+h\,p_E\,Q_\mathrm{reb}(N)+C_\mathrm{cool}(N)
+\end{equation}
+with $f_c$ the capital charge (a capital-recovery factor
+$i(1+i)^n/[(1+i)^n-1]$ for an interest rate $i$ and a life $n$),
+$C_\mathrm{inst}$ the installed cost, $h$ the yearly hours, $p_E$ the price of the
+reboiler's heat and $Q_\mathrm{reb}$ its duty.  The engine supplies
+$C_\mathrm{inst}$ as the Turton total-module cost (bare module with contingency
+and fee \cite{Turton}) of the five items the tray hydraulics sized, the
+duties, and the utility prices; the page adds $f_c$, $p_E$ and $h$.  $C_\mathrm{inst}$
+rises with $N$ (a taller shell, more trays) and $Q_\mathrm{reb}$ falls with it
+(a smaller $R$), so $C_A$ has an interior minimum.  Raising $p_E$ moves it to a
+larger $N$ and a smaller $R$.
+
+\subsection*{The shortcut as a control}
+
+The shortcut freezes one relative volatility $\alpha=K_\mathrm{LK}/K_\mathrm{HK}$ at
+the feed's bubble point and returns $N_\mathrm{min}^{\mathrm{FUG}}$,
+$R_\mathrm{min}^{\mathrm{FUG}}$ and a Gilliland \cite{Gilliland1940} $N(R)$.  Its error on a mixture is
+measured by
+\begin{equation}\label{eq:column-design-ratio}
+\rho_R=\frac{R^{\mathrm{rig}}(N_\mathrm{big})}{R_\mathrm{min}^{\mathrm{FUG}}},\qquad
+\rho_N=\frac{N_\mathrm{min}^{\mathrm{rig}}}{N_\mathrm{min}^{\mathrm{FUG}}},
+\end{equation}
+both of which are near one for a mixture whose volatility is nearly constant and
+grow as the distillate is asked closer to an azeotrope, where $\alpha\to1$ and
+the frozen value is the feed's, far larger.
+
+\subsection*{Validity and what is in-sample}
+
+The recorded curves are for two binary mixtures at 1\,atm, the real one with the
+catalogue NRTL pair and an ideal-gas vapour, the column with constant molar
+overflow, the feed at a fixed fraction of the column.  The ideal control is the
+same column and the same procedure on the benzene/toluene pair with ideal
+activity; the agreement of the shortcut there is a property of that mixture, not
+a calibration.  Nothing is fitted to the recorded numbers.
+
+\begin{tutoriallink}
+\file{tutorials/steady/distillation/column21\_design\_curve\_ethanol\_water} --- one
+point of the curve, a \code{designSpec} on a rigorous column.  EduTools $\to$
+\emph{Column design (real mixture)} --- the four cards on a recorded table of the
+whole curve, its cost optimum and the shortcut beside it.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Rigorous distillation by simultaneous MESH
 Newton}\label{ch:mesh}
 
@@ -33286,6 +33648,103 @@ $10^{-9}$ relative --- \emph{and so does its ion inventory}, which is the
 half of the check that a comparison of apparent compositions alone would
 miss.
 \end{tutoriallink}
+
+\subsection{When the column does not converge: which of four things it is}\label{sec:column-diagnosis}
+
+A Newton that stops without converging used to say that it stopped, and in
+the worst case which \emph{row} of a flattened system it found singular.
+That row is an index into a vector that no student wrote: it is the
+$(j\,m + i)$-th equation of a system in which stage $j$, component $i$ and
+the kind of equation have been folded into one integer, and the folding is
+different in the constant-molal-overflow layout ($m = n$ unknowns per stage)
+and in the full MESH ($m = n + 2$).  Since C184 a column that fails prints a
+\code{[diagnosis]} block that answers a better question: \emph{what kind of
+failure is this?}  It runs \emph{after} the failure, reads the residual and
+the best iterate the Newton returned, and moves no converged number.  The
+verdict is one of four letters, or an honest \emph{could not tell}.
+
+\paragraph{(A) The specification is physically infeasible.}  Only the
+\emph{declared} numbers can show this, never an unconverged iterate.  With
+the distillate rate $D$, the side draws $U_{\mathrm{draw}}$ and the total
+feed $F$, the overall balance leaves the bottoms
+\begin{equation}
+B = F - D - U_{\mathrm{draw}},
+\end{equation}
+and a specification with $D \le 0$, $B \le 0$ or a negative reflux ratio $R$
+has no solution whatever the stages do.  The same holds when the constant-molal-overflow
+flows themselves go non-positive, $V_j \le 0$ or $L_j < 0$ (a draw that
+starves a stage).  These are refused \emph{before} any Newton exists, with the
+numbers in kmol/h.  What is deliberately \emph{not} used: the best iterate's
+component flows.  A first version called a specification ``probably
+infeasible'' when the unconverged iterate carried a negative distillate
+component; on a 50-stage benzene/toluene column at $R = 60$ --- a feasible,
+merely hard column --- the same signs appear at $\|F\| = 0.7$, so an iterate
+that has not converged cannot testify to the specification.  A purity that
+the feed cannot reach at the given reflux is \emph{not} detected, because
+\code{distillateRate} with \code{refluxRatio} declares no purity: such a
+column converges with an impure distillate, as it should.
+
+\paragraph{(B) Thermodynamic data missing, or a stage that could not be
+priced.}  The stage pricing already turns a refusal it provokes mid-solve
+(an out-of-domain property at a trial state) into an infeasible trial and
+keeps the first message.  If the column then fails, that message is the
+evidence for (B), together with any residual that cannot be evaluated at the
+best iterate itself.  Extrapolation \emph{notices} (a vapour pressure
+evaluated outside its declared \code{Trange}) are listed as notes under every
+other verdict but are \emph{not} a cause by themselves: a benzene/toluene
+column at atmospheric pressure raises them and converges.
+
+\paragraph{(C) The system is ill-conditioned or singular.}  The Jacobian
+$J$ of the residual at the best iterate is built by central differences and
+equilibrated by scaling rows then columns,
+\begin{equation}
+\hat A = R\,J\,C, \qquad R_{ii} = 1\Big/\max_j |J_{ij}|, \quad
+C_{jj} = 1\Big/\max_i |R_{ii}J_{ij}|,
+\end{equation}
+so that a stage in kmol/s and a temperature in kelvin do not look
+ill-conditioned merely for their units.  The smallest singular value comes
+from inverse iteration on $\hat A^{\mathsf T}\hat A$, whose inverse is
+$\hat A^{-1}\hat A^{-\mathsf T}$ (two triangular solves per step from one LU),
+and the largest from the power method;
+\begin{equation}
+\kappa = \sigma_{\max}/\sigma_{\min}.
+\end{equation}
+The right singular vector $v$ of the weakest direction names the
+\emph{least-determined unknowns} (its two largest entries), and
+$u \propto \hat A^{-\mathsf T} v$ names the \emph{weakest equations}; both are
+translated to the column's words: ``the material balance of methanol on stage
+9 (the feed stage)'', ``the temperature of stage 18 (the reboiler)''.  The
+physics line is read from the value of the least-determined unknown: a mole
+fraction below $10^{-6}$ is ``all but absent'' (a near-pure stage or a trace
+component, whose balance has no sensitivity to its own fraction); a flow that
+has gone to zero is a stage running dry.  The verdict is (C) when
+$\kappa > 10^{9}$ or a pivot vanishes.  The threshold is not derived from a
+source: it is the reciprocal of the Jacobian's own accuracy (a central
+difference at a relative step of $10^{-6}$ is good to about $10^{-9}$), above
+which the direction of the Newton step is not meaningful.  The analysis is
+dense, $O(n^3)$, and is skipped past 1500 unknowns (the run says so).
+
+\paragraph{(D) An implementation fault.}  A residual or a derivative that is
+not a finite number at the best iterate, an equation that contains none of the
+unknowns, or an unknown that appears in no equation, is a defect of the
+model's own equations and not of the case; the diagnosis says so rather than
+asking the student to change a spec.
+
+\paragraph{Could not tell.}  If none of the above applies, the verdict says
+so and lists what was tried and what it found (``the Jacobian is not
+singular, so the failure is not a singularity'').  The Wang--Henke
+bubble-point method has no simultaneous Jacobian: it can report (A) and
+``could not tell'' only.
+
+\begin{pitfall}
+A diagnosis is a reading, not a proof, and it is checked on constructed
+systems whose cause is known (a spec with no bottoms, a refused stage, two
+identical equations, a NaN residual, a well-posed failure), not on every real
+column.  The plant that started this work (two fullMESH columns and a recycle,
+failing with ``singular at row 87'') is the case it was written for; whether the
+letter it prints there is the \emph{right} one is a judgement the owner of that
+plant makes.  A column that converges prints nothing of this.
+\end{pitfall}
 
 % ---------------------------------------------------------------------
 \section{The enthalpy-concentration diagram: putting energy inside the
@@ -36202,6 +36661,27 @@ Algorithm for Nonsmooth Optimization)'', arXiv:2009.01037, Table~1. READ:
 CB3, 2 variables, optimal value 2 (the chained form of arXiv:2404.16273
 gives $2(n-1)$). Published optimum of CB3 used by \code{verifyMADS}.
 
+\bibitem{RasmussenWilliams2006} Rasmussen, C. E., \& Williams, C. K. I.,
+\emph{Gaussian Processes for Machine Learning}, MIT Press (2006), chapters 2
+and 5. READ (the authors' PDF of the chapters, 2026-11-25): Algorithm 2.1 and
+eqs.\ 2.25, 2.26, 2.30, 5.1, 5.2, 5.8.
+
+\bibitem{JonesSchonlauWelch1998} Jones, D. R., Schonlau, M., \& Welch, W. J.,
+``Efficient global optimization of expensive black-box functions'',
+\emph{J. Global Optim.} \textbf{13}, 455--492 (1998). READ (publisher's PDF,
+2026-11-24): eqs.\ 14--15.
+
+\bibitem{Gardner2014} Gardner, J. R., Kusner, M. J., Xu, Z., Weinberger, K. Q.,
+\& Cunningham, J. P., ``Bayesian optimization with inequality constraints'',
+\emph{Proc.\ ICML}, PMLR \textbf{32}(2), 937--945 (2014). READ (the PMLR PDF,
+2026-11-25): §3.1--3.2.
+
+\bibitem{SchonlauWelchJones1998} Schonlau, M., Welch, W. J., \& Jones, D. R.,
+``Global versus local search in constrained optimization of computer
+models'', in \emph{New Developments and Applications in Experimental Design},
+IMS Lecture Notes--Monograph Series \textbf{34}, 11--25 (1998). NOT READ;
+cited from \cite{Gardner2014}.
+
 \bibitem{Andrade1930} Andrade, E. N. da C., ``The Viscosity of Liquids'',
 \emph{Nature} \textbf{125}, 309--310, 1930.  The two-constant
 $\ln\mu = A + B/T$ form, as given in Reid, Prausnitz \& Poling, 4th ed.\
@@ -36997,6 +37477,17 @@ one whose root bracket the engine refuses to guess at.
 \textbf{32}, 1220, 1940.  The empirical $N(R)$ correlation between the
 Fenske and Underwood limits.  Choupo evaluates it in the Molokanov
 closed form, for which this repository records no reference at all.
+
+\bibitem{LevyDoherty1985} Levy, S. G., Van Dongen, D. B., \& Doherty, M. F.,
+``Design and synthesis of homogeneous azeotropic distillations. 2. Minimum
+reflux calculations for nonideal and azeotropic columns,'' \emph{Ind. Eng.
+Chem. Fundam.}\ \textbf{24}(4), 463--474 (1985).
+doi:\code{10.1021/i100020a011}.
+
+\bibitem{JulkaDoherty1990} Julka, V., \& Doherty, M. F., ``Geometric behavior
+and minimum flows for nonideal multicomponent distillation,'' \emph{Chem.
+Eng. Sci.}\ \textbf{45}(7), 1801--1822 (1990).
+doi:\code{10.1016/0009-2509(90)87057-y}.
 
 \bibitem{CurtisPowellReid1974} Curtis, A. R., Powell, M. J. D. \& Reid,
 J. K., \emph{J. Inst. Maths Applics} \textbf{13}, 117, 1974.  The

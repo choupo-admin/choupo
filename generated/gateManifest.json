@@ -1945,6 +1945,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- CHECKED: HEAD 142c1f6dc7 is SYNCED with origin/integ/worktree-agent-a5c22562aa834596f (origin is an ancestor of HEAD, after a fresh fetch), and none of the recycler-overlay sentinel files has lost its sentinel.  NOT CHECKED: untracked files, the content of any tracked file beyond those sentinels, whether HEAD is the commit you meant, the recycler itself, and the window between this proof and the action it guards (git's own non-fast-forward refusal is the backstop there).",
       "seconds": 1.0
+    },
+    "check_column_diagnosis": {
+      "exit": 0,
+      "claim": "check_column_diagnosis: OK -- a column that does not converge names (A) an infeasible specification, (B) a stage that could not be priced, (C) a singular or ill-conditioned system with its stage, equation and physics, (D) a faulty equation, or says it could not tell and what it tried (probe holds each, no text carries a row number, extrapolation notices alone are not a cause); a distillate equal to the feed is refused as (A); the hard 50-stage column is diagnosed (-); a converged column prints none.  NOT covered: the letter for a real column beyond these; an infeasibility only the equilibrium reach shows; failures before the first Newton iterate",
+      "seconds": 20.7
     }
   }
 }

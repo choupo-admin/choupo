@@ -1019,6 +1019,16 @@ fouling}\label{ux3b4t_min-lmtd-correction-fouling}}
   \textbf{Fouling}: add R\_f \(\approx\) 0.0002 (clean liquid) to 0.0005--0.001
   m\textsuperscript{2}K/W (cooling water, fouling organics); this can dominate 1/U and is
   why a glass-box run should report the clean-vs-fouled area split.
+\item
+  \textbf{Calculated is not bought}: the sized area is a minimum
+  specification. Declare a margin only against an uncertainty you can name
+  (a film correlation good to about \(\pm\)10 \%, a typical rather than measured
+  fouling allowance), and declare the stock you can buy (tube lengths, shell
+  diameters) with where the list came from; the sheet then shows calculated,
+  required and bought area side by side and the cost follows the bought one.
+  A margin with no named uncertainty is a number nobody can remove. Hypothesis
+  to run: \texttt{hxBought01\_margin\_and\_stock}, margin 0 to 30 \%, and watch
+  what the next stock length does to the cost.
 \end{itemize}
 
 \hypertarget{heat-integration--pinch-analysis}{%
@@ -2907,7 +2917,26 @@ that code:
   Every material stream is \textbf{routed} orthogonally over one pipe
   rack (declared, or a stated default that is announced), or listed as
   not routed with its reason; each route\textquotesingle s length is
-  published.
+  published. A unit that lives \textbf{inside a placed shell} (the beds
+  and inter-bed coolers of a converter, which the converter shell
+  \emph{encloses}; membership is the sizer\textquotesingle s
+  \texttt{encloses} plus the unit\textquotesingle s sector stamp, never a
+  guess from a name) has no nozzle of its own: a pipe that ends at it
+  lands on the shell\textquotesingle s side, at the height of the
+  unit\textquotesingle s place in the stack (the feed to the first bed
+  high, the effluent of the last low), and a stream with \emph{both} ends
+  inside the same shell is listed as \textbf{inside the shell}, with no
+  pipe; the pipe register of the application says it in one line (``inside
+  the shell \texttt{CONVERTER/shell}: Bed1Out, Bed2Feed, \ldots'') instead of
+  leaving those streams out. A process pipe whose end is a unit the layout
+  \emph{should} have placed --- one that is sized but has none of its items
+  on the plot plan, or whose sizer refused --- is listed as not routed
+  \emph{and} is a \textbf{finding}, \texttt{pipeNotRouted}, with the reason,
+  so the plan can never read ``0 findings'' beside such a missing pipe. (Not
+  findings, because they are rules and not failures: a stream of solids,
+  a pipe with an end indoors, a stream with two consumers, a stream to a
+  unit that has no sizer --- a dryer with none, a junction piped to no placed
+  item --- which the layout has nothing to place for.)
 \item
   \textbf{Utility lines} the case declares (cooling water, refrigerant,
   flare header; \S\ref{utility-lines}) are routed on the same rack, on

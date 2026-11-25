@@ -34,6 +34,7 @@ License
 #include "solver/ActiveSetQP.H"
 #include "solver/MADS.H"
 #include "solver/NelderMead.H"
+#include "solver/BayesOpt.H"
 #include "solver/SQP.H"
 #include "streams/StreamOverrides.H"
 
@@ -222,8 +223,9 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     if      (method == "nelderMead") method_ = Method::NelderMead;
     else if (method == "sqp")        method_ = Method::Sqp;
     else if (method == "mads")       method_ = Method::Mads;
+    else if (method == "bayesian")   method_ = Method::Bayesian;
     else throw std::runtime_error("OptimizationDriver: method must be"
-        " 'nelderMead', 'sqp' or 'mads' (got '" + method + "')");
+        " 'nelderMead', 'sqp', 'mads' or 'bayesian' (got '" + method + "')");
 
     // -----------------------------------------------------------------
     //  variables  ( {path; min; max; initial;}... );
@@ -319,7 +321,7 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     constraints_ = parseConstraints(d, "OptimizationDriver");
     if (!constraints_.empty() && method_ == Method::NelderMead)
         throw std::runtime_error("OptimizationDriver: `constraints` require"
-            " method 'sqp' or 'mads' (Nelder-Mead is unconstrained; add a"
+            " method 'sqp', 'mads' or 'bayesian' (Nelder-Mead is unconstrained; add a"
             " penalty term or switch to sqp / mads)");
 
     // -----------------------------------------------------------------
@@ -416,6 +418,12 @@ int OptimizationDriver::run()
     {
         resolveStarts();
         return runMads();
+    }
+    //  The Bayesian method rounds an integer variable itself (announced).
+    if (method_ == Method::Bayesian)
+    {
+        resolveStarts();
+        return runBayesian();
     }
     for (const auto& v : vars_)
         if (v.isInt) return runIntegerEnumeration();
@@ -1404,6 +1412,210 @@ int OptimizationDriver::runSqp()
     if (emitJson_) emitResultJson(std::cout, finalResult);
 
     return R.converged ? 0 : 1;
+}
+
+// ===========================================================================
+//  Bayesian back-end (C499): a Gaussian-process surrogate, expected
+//  improvement x probability of feasibility, the budget counted in
+//  SIMULATIONS (src/solver/BayesOpt.H).  Opt-in; it has no multipliers, so no
+//  shadow prices and no KKT certificate -- it says so and recommends `method
+//  sqp` from its best point.  `options { budget 40; seed 499; eiTol 1e-4; }`.
+// ===========================================================================
+int OptimizationDriver::runBayesian()
+{
+    {
+        const scalar err = solver::verifyBayesOpt(0);
+        std::cout << "  [self-check]  Bayesian optimiser, Branin and a constrained"
+                     " 2-D problem against their published optima, worst |df| = "
+                  << std::scientific << std::setprecision(2) << err
+                  << "   (gate passed)\n";
+    }
+    for (const auto& c : constraints_)
+        if (c.op == Constraint::Op::Equals)
+            throw std::runtime_error("OptimizationDriver(bayesian): equality"
+                " constraints are not supported (the method has no multipliers"
+                " and no way to hold an equality); use `method sqp`");
+    const bool costNeedsPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
+    if (costNeedsPost && !postDict_)
+        throw std::runtime_error("OptimizationDriver: objective requires a"
+            " post-processing chain, but the case has no system/postDict");
+    const bool needPost = costNeedsPost || (postDict_ != nullptr);
+
+    const std::size_t n = vars_.size();
+    const std::size_t nIneq = constraints_.size();
+
+    solver::BayesOptions bo;
+    bo.budget = 40;
+    if (outerDict_->found("options"))
+    {
+        auto op = outerDict_->subDict("options");
+        if (op->found("budget")) bo.budget = static_cast<int>(op->lookupScalar("budget"));
+        if (op->found("seed"))   bo.seed   = static_cast<unsigned>(op->lookupScalar("seed"));
+        if (op->found("eiTol"))  bo.eiTol  = op->lookupScalar("eiTol");
+        if (op->found("nInit"))  bo.nInit  = static_cast<int>(op->lookupScalar("nInit"));
+    }
+    bo.feasTol = 1.0e-6;
+    bo.isInt.assign(n, false);
+    sVector lo(n), hi(n);
+    bo.x0.assign(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        lo[i] = vars_[i].lo;
+        hi[i] = vars_[i].hi;
+        bo.x0[i] = vars_[i].x0;
+        bo.isInt[i] = vars_[i].isInt;
+    }
+
+    std::cout << "\n=======================  Optimisation (Bayesian)  ==================\n"
+              << "  method:        bayesian  (Gaussian process, expected improvement x"
+                 " probability of feasibility)\n"
+              << "  budget:        " << bo.budget << " simulations, seed " << bo.seed << "\n";
+    for (const auto& v : vars_)
+        std::cout << "    " << v.path << "   range [" << v.lo << ", " << v.hi
+                  << "]   first design point " << v.x0 << "\n";
+    std::cout << "  objective:     '" << objPath_ << "'   "
+              << (objSense_ == Sense::Minimise ? "minimise" : "maximise") << "\n"
+              << "====================================================================\n";
+
+    std::ostringstream sink;
+    auto evaluate = [&](const sVector& x) -> solver::BayesResponse
+    {
+        ++ledger_.total;
+        solver::BayesResponse out;
+        out.g.assign(nIneq, 0.0);
+        auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+        StreamOverrides ov;
+        for (const auto& [fp, fv] : fixedVars_)
+            if (fp.rfind("streams.", 0) == 0)
+                 ov.set(StreamOverrides::fromDictPath(fp), fv);
+            else clone->setScalarAtPath(fp, fv);
+        for (std::size_t i = 0; i < n; ++i)
+            if (vars_[i].path.rfind("streams.", 0) == 0)
+                ov.set(StreamOverrides::fromDictPath(vars_[i].path), x[i]);
+            else
+                clone->setScalarAtPath(vars_[i].path, x[i]);
+        auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
+        auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
+        Fail kind = Fail::None;
+        std::string cause;
+        try
+        {
+            auto result = simulator_(clone, ov);
+            cause = simulationFailure(result);
+            if (!cause.empty()) kind = Fail::NotConverged;
+            else if (closureViolated(result, cause)) kind = Fail::Closure;
+            else
+            {
+                if (needPost)
+                {
+                    auto chain = PostProcessor::buildChain(postDict_);
+                    for (auto& pp : chain) PostProcessor::runOrThrow(*pp, result);
+                }
+                const scalar f = extractObjective(result, objKind_, objPath_);
+                out.f = (objSense_ == Sense::Maximise) ? -f : f;
+                for (std::size_t q = 0; q < nIneq; ++q)
+                {
+                    const auto& c = constraints_[q];
+                    const scalar resp = extractResponse(result, c.path, "constraint");
+                    out.g[q] = (c.op == Constraint::Op::AtMost) ? (resp - c.rhs)
+                                                                : (c.rhs - resp);
+                }
+                bool fin = std::isfinite(out.f);
+                for (scalar v : out.g) fin = fin && std::isfinite(v);
+                if (!fin)
+                {
+                    kind  = Fail::NonFinite;
+                    cause = "the objective or a constraint response is not finite";
+                }
+            }
+        }
+        catch (const std::exception& e)
+        {
+            kind  = Fail::Threw;
+            cause = std::string("the simulator threw: ") + e.what();
+        }
+        std::cout.rdbuf(coutBuf);
+        std::cerr.rdbuf(cerrBuf);
+        sink.str(""); sink.clear();
+        if (kind != Fail::None)
+        {
+            out.ok = false;
+            out.failCause = cause;
+            noteFailedEvaluation(kind, cause, x);
+        }
+        return out;
+    };
+
+    const auto R = solver::bayesOpt(evaluate, lo, hi, nIneq, bo);
+
+    std::ofstream csv(reportFile_);
+    if (!csv)
+        throw std::runtime_error("OptimizationDriver: cannot open '"
+            + reportFile_ + "' for writing");
+    csv << "sim,f,feasible";
+    for (const auto& v : vars_) csv << "," << v.path;
+    for (const auto& c : constraints_) csv << ",g[" << c.path << "]";
+    csv << ",predMean,predSd,ei,pFeas\n";
+    for (const auto& P : R.history)
+    {
+        csv << P.index << "," << ((objSense_ == Sense::Maximise) ? -P.f : P.f)
+            << "," << (P.feasible ? 1 : 0);
+        for (double v : P.x) csv << "," << v;
+        for (double v : P.g) csv << "," << v;
+        csv << "," << ((objSense_ == Sense::Maximise) ? -P.predMean : P.predMean)
+            << "," << P.predSd << "," << P.ei << "," << P.pFeas << "\n";
+    }
+    csv.close();
+
+    std::cout << "\n=========================  Optimum (Bayesian)  =====================\n"
+              << "  status:        " << (R.feasible ? "FEASIBLE POINT FOUND" : "NO FEASIBLE POINT")
+              << "  (" << R.reason << ")\n"
+              << "  simulator runs: " << ledger_.total << "\n";
+    if (ledger_.failed() > 0)
+        std::cout << "  failed evaluations: " << ledger_.failed() << " of "
+                  << ledger_.total << "  (" << ledger_.byCause()
+                  << ") -- none entered a surrogate as a number\n";
+    std::cout << "  best objective:" << std::scientific << std::setprecision(6) << "  "
+              << ((objSense_ == Sense::Maximise) ? -R.f : R.f) << "\n"
+              << "  best variables:\n";
+    for (std::size_t i = 0; i < R.x.size(); ++i)
+        std::cout << "    " << vars_[i].path << " = " << std::fixed
+                  << std::setprecision(6) << R.x[i] << "\n";
+    std::cout << "  NO multipliers: no shadow prices and no KKT certificate;"
+                 " `method sqp` from this point gives both\n"
+              << "  history:       " << reportFile_
+              << "\n====================================================================\n";
+
+    lastX_ = R.x;
+    lastF_ = (objSense_ == Sense::Maximise) ? -R.f : R.f;
+    lastConverged_ = R.feasible;
+    lastFeasible_  = R.feasible;
+
+    std::cout << "\n[replaying simulator at optimum]\n";
+    auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+    StreamOverrides ov;
+    for (const auto& [fp, fv] : fixedVars_)
+        if (fp.rfind("streams.", 0) == 0)
+             ov.set(StreamOverrides::fromDictPath(fp), fv);
+        else clone->setScalarAtPath(fp, fv);
+    for (std::size_t i = 0; i < n; ++i)
+        if (vars_[i].path.rfind("streams.", 0) == 0)
+            ov.set(StreamOverrides::fromDictPath(vars_[i].path), R.x[i]);
+        else
+            clone->setScalarAtPath(vars_[i].path, R.x[i]);
+    auto finalResult = simulator_(clone, ov);
+    if (const std::string why = simulationFailure(finalResult); !why.empty())
+        throw std::runtime_error("OptimizationDriver(bayesian): the replay at the"
+            " optimum FAILED -- " + why);
+    if (needPost)
+    {
+        auto chain = PostProcessor::buildChain(postDict_);
+        for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
+    }
+    checkReplayClosure(finalResult);
+    setFinalResult(finalResult);
+    if (emitJson_) emitResultJson(std::cout, finalResult);
+    return R.feasible ? 0 : 1;
 }
 
 // ---------------------------------------------------------------------------

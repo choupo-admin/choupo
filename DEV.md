@@ -5702,6 +5702,22 @@ accepts today, and that is a policy call.
 > FIRST SLICE LANDED 2026-11-25: Billet-Schultes (PackingBS), five records, ratebased05; law equal to a second
 > transcription to 7e-16; no measured set in hand.  OPEN: Onda + Bravo-Fair as the cross-check, the 0.03 N/m floor
 > on surface tension (as printed on p. 500, it binds on every organic liquid; announced), C518 the packing pin.
+> BATCH 1125c LANDED 2026-11-25 (full sweep alone, 06:50-07:39: 2039 PASS / 2 FAIL, a restated start and an
+> uncited chapter, both fixed and re-run): C184 slice (1), the A-D diagnosis of a failed column; C477, 15
+> distillation figures; C499, `method bayesian` opt-in with its case study optim08 and the EduTool card (20 runs
+> against 25 for sqp central on the same problem, and the column where it is the wrong tool); C501, the
+> column-design tool and column21; C503, a design margin and a stock list on the exchanger, opt-in, and
+> `calculated-to-bought`; C510, `compressor-choice` on the engine's own chart; C511, the filter-press cycle;
+> the PEQ's converter pipes (36 of 36 routed, its golden alone re-recorded: 46 rows moved, 4 dropped, 84 added,
+> all layout.*); column10 floods again (D 1.10 -> 1.03 m, worst 112.6 %, 4 rows).
+
+> **C519. THE PEQ FEED-EFFLUENT EXCHANGER'S NOZZLES (from the converter pipes, 2026-11-25).**  Once piped, FEHE:N1/N2
+> take the tube side's 166 bar and 760.6 K, above the top class of the SS316 table, so the sheet picks no flange:
+> a material, a design condition, or a sentence.  Before 2 December, the rows listed.
+
+> **C520. CASE HEADERS WHOSE NUMBERS ARE NO LONGER THE RUN'S (from column10, 2026-11-25).**  column09 still carries
+> a liquid feed and old tray numbers; measure every case header's numbers against its golden (the README gate's
+> idea, for headers).
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
@@ -5709,7 +5725,7 @@ accepts today, and that is a policy call.
 > `converged/` drops the feed's declared phase (stripper01/02) and the engine refuses the speciation block it
 > wrote (marcilla01/02).  C517: claus01 and ammonia01 close in atoms; the few 1e-5 of mass is the record's MW
 > against its formula (S8 256.48 against 256.52): a gate at 1e-4 and the records outside it corrected.
-> LANDED 2026-11-25 (batch 1125b, full sweep alone 03:40-04:36: every case passed, 2031 PASS / 6 FAIL, all six of
+> LANDED 2026-11-25 (batch 1125b, full sweep alone 03:38-04:32: every case passed, 2031 PASS / 6 FAIL, all six of
 > prose and counts, fixed and re-run), with C500, C504 and C513's first slice.  MOVED GOLDENS: column keys (x_D_LK,
 > x_B_HK: the declared pair; 3+ components without keys publish x_D_<name>, x_B_<name>); membranes rename
 > c_ret_elem to c_ret_<solute>_elem, same values; vlle03, vlle05, decanter01 move up to 3e-4 because the
@@ -5873,7 +5889,7 @@ accepts today, and that is a policy call.
 > (block 11) overlaps C491/C492; new in it: shift of the energy zero by an atom-linear term, cycle
 > closure, sum(h_i w_i) = sum(dH_r r_r), restart composition.  Its R-013 (nox03 README stale) and two
 > lesson corrections (ReactorLadder "measured" law, Van Heerden's ignition span) go to the cloud.
-> LANDED 2026-11-24 (full sweep, alone, 22:30-23:13: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
+> LANDED 2026-11-24 (full sweep, alone, 22:23-23:05: PASS 1068 / FAIL 2 / 1260 REUSED; the two explained
 > and fixed, then their gates and the cases they reach).  What the sweep taught: (1) a PARTIAL element
 > ledger (a declared composition with unaccounted mass) cannot close better than its data, in choupoSolve and
 > in the dynamic driver: it alarms as PARTIAL-DATA and does not fail the run; (2) membrane08's softener is
@@ -14836,6 +14852,32 @@ accepts today, and that is a policy call.
 > naming the stage and equation (the row of the flattened system maps
 > differently in the CMO and full-MESH layouts).  Gate
 > `check_distillation_seed` (three sabotages).
+> SLICE 1 BUILT 2026-11-24 (branch c184-diagnosis, not landed): THE FEASIBILITY
+> DIAGNOSIS.  `src/unitOperations/distillation/ColumnDiagnosis.{H,cpp}`, called
+> only when a column's Newton returns NOT converged (simultaneous MESH, full
+> MESH; Wang-Henke gets the spec check only).  It prints a `[diagnosis]` block
+> and an advisory: (A) the declared rates leave no bottoms, a negative reflux, a
+> starved stage -- DECLARED numbers only; (B) the stage pricing refused a trial
+> (its first message quoted); (C) the equilibrated Jacobian at the best iterate
+> is singular or above 1e9, the weakest equations and least-determined unknowns
+> NAMED as stage, component and balance with the physics when readable; (D) a
+> non-finite or empty equation; else "could not tell" with what was tried.  No
+> row number anywhere; NewtonND untouched (its NDResult is read, not edited).
+> DECISIONS WITH THEIR REASON: (1) the best iterate's component and stage flows
+> are NOT read for (A): a first version called a feasible 50-stage column at R =
+> 60 "probably infeasible" from the signs an unconverged iterate shows at
+> |F| = 0.7, and was cut back to declared numbers; (2) extrapolation notices are
+> notes, never a cause: a benzene/toluene column raises them and converges, and
+> the first version labelled a hard column (B) on that evidence; (3) the
+> conditioning threshold 1e9 is the reciprocal of the finite-difference
+> Jacobian's own accuracy, not a derived number.  Step 0 (docs/audits/
+> 2026-11-24-c184-step0.md): all 57 corpus column cases converge today;
+> stripper01 and column13 run the BOUNDED Newton (BRAIN was stale), only
+> stripper02 and phase 1 of the reactive columns run the legacy one.  Evidence:
+> 57 cases base vs branch byte-identical (converged/, reports/, exit codes, logs);
+> `bin/runTests --scope` on them PASS 62 / FAIL 0; gate check_column_diagnosis.
+> NOT DONE: slices 2-4; the verdict on a real failing plant; a purity the feed
+> cannot reach is not detected.
 > **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
 > 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
 > estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is
