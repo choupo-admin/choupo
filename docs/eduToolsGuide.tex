@@ -4187,6 +4187,31 @@ controlling opening, $F_L$ and the starting valve's size are the student's or
 the page's declared values, marked as such.
 \declaredanchor{sec:control-valve}
 
+\subsection*{How far can a gas line go? \quad(\code{tool=gas-line})}\label{sec:edu-gas-line}
+A liquid in a pipe loses pressure in a straight line; a gas expands as it loses pressure, speeds up, and loses it
+faster and faster until the steady equation cannot be solved at all.  The page is the engine's gas line
+(\code{pipe} fed an all-vapour inlet; nitrogen, 8~bar, 300~K, 300~m of 50~mm steel pipe, the tutorial
+\code{pipe09\_isothermal\_gas\_line}) with two sliders, the flow and the length.  Three steps and three cards.
+(1)~\emph{The pressure along the line}: the exact isothermal profile, the equation
+$P_1^2 - P_2^2 = cG^2[fL/D + 2\ln(P_1/P_2)]$ inverted at each position, beside the mean-density shortcut (the same
+equation without the logarithm), with the choking pressure $P_\mathrm{ch} = G\sqrt{c}$ and $L_\mathrm{max}$ marked;
+past $L_\mathrm{max}$ the chart stops where the engine stops the run, and the page quotes the engine's advice
+(\code{Pipe.cpp}:893--897).  (2)~\emph{Why the shortcut fails}: the error of its outlet pressure against the length,
+with the engine's 40~\% advisory level marked as \emph{the engine's flag level, not a bound derived from the
+equations}, and a table at six lengths that equals the tutorial's README at the case's flow.  (3)~\emph{The
+isothermal Mach number}: $\mathrm{Ma}_T = u/\sqrt{c} = P_\mathrm{ch}/P$ along the line, equal to $1/\sqrt{\gamma}$ in
+adiabatic terms at choking (for the $\gamma$ of a diatomic ideal gas the page assumes; the engine does not use it),
+and a table of what the model leaves out, each row tied to the engine line that refuses it or says so.  The friction
+factor is Churchill's, as the engine writes it, and moves with the flow because the Reynolds number does; it is the
+same at every section of one line.  At the case's own 45~kmol/h and 300~m the page's numbers equal the tutorial's
+golden to $10^{-7}$ (outlet pressure 5.460~bar exact and 5.480~bar by the shortcut, $L_\mathrm{max}$ = 549.1~m,
+$P_\mathrm{ch}$ = 0.5322~bar, $\mathrm{Ma}_T$ 0.0665 in and 0.0975 out), and an independent hand script and a
+fourth-order Runge--Kutta integration of the differential form agree.  Limits stated on the page: isothermal by
+assumption, $Z$ held at its inlet value, a horizontal line, one diameter, no fittings, nothing past the limit.
+Reference: the compressible-flow chapter of Coulson and Richardson, Vol.~1 (catalogue record only; the chapter was
+not read for the page).  Theory: Section~\ref{sec:pipe-gasline}.
+\declaredanchor{sec:pipe-gasline}
+
 \subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
 Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
 of a staged machine come out equal, and what the real gas adds, worked on the

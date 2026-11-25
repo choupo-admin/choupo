@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 106,
-  "registryTools": 106,
+  "liveTools": 108,
+  "registryTools": 108,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1698,6 +1698,19 @@
         "page"
       ],
       "href": "/app/?workspace=methods&tool=filter-press-cycle"
+    },
+    {
+      "id": "gas-line",
+      "label": "How far can a gas line go?",
+      "blurb": "See how a gas line chokes, and where the textbook shortcut fails.",
+      "discipline": "Hydraulics & control",
+      "teaches": "The compressible isothermal gas line of the engine's pipe: the pressure along the line from the exact equation and from the mean-density shortcut, the shortcut's error against the length with the engine's own 40 % flag level marked as a flag and not a bound, and the isothermal Mach number with the choking pressure and the longest line the flow can use, beyond which the engine stops the run.  Two sliders (flow and length), numbers equal to the recorded run of pipe09_isothermal_gas_line at the case's own flow and length.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=gas-line"
     }
   ]
 }

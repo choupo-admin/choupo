@@ -137,6 +137,10 @@ CLAIMS = [
     (M + "dataReconciliationLesson.ts", "exists and is not built here",
      "a Bayesian fault probability (a prior per meter) in the reconciliation page code",
      [("absent", M + "dataReconciliationRun.ts", r"faultProbab|failurePrior|priorProbab|posteriorFault")]),
+    (M + "gasLineLesson.ts", "Joule-Thomson effects are not modelled",
+     "adiabatic and Joule-Thomson effects in the engine's gas line (a quotation of the engine's own result block)",
+     [("present", "src/unitOperations/hydraulics/Pipe.cpp",
+       r"adiabatic and Joule-Thomson effects are not modelled; Z held at its inlet value")]),
 ]
 
 #  file, needle, why it is false today (the work list of the lesson's fixer)

@@ -3369,7 +3369,9 @@ viscosity: `transport { vapour { viscosity { model Chung; } } }`.  REFUSED by na
 and a two-phase inlet keep their paths byte-identical.  Extra KPIs: `gasLine` (1), `massFlux`, `compressibilityZ`,
 `velocity_out`, `P_choke`, `L_max`, `machIsothermal_in`, `machIsothermal_out`, `P_out_meanDensity`,
 `deltaP_meanDensity`, `meanDensityError_P_out`.  Witness: `tutorials/steady/hydraulics/pipe09_isothermal_gas_line`;
-independent hand computation `bin/curate/gasline_reference.py`.
+independent hand computation `bin/curate/gasline_reference.py`.  The EduTool `gas-line` ("How far can a gas line go?",
+`gui/src/ui/methods/GasLineTool.tsx`) draws the profile, the shortcut's error and the choking limit; its numbers equal the
+witness's golden.
 
 **Gas-liquid two-phase flow (Layer 1).**  When the feed flashes two-phase at
 `(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves;

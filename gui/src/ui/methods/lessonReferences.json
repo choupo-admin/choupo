@@ -4066,6 +4066,19 @@
           }
         }
       ]
+    },
+    "gas-line": {
+      "references": [
+        {
+          "text": "Coulson, J. M.; Richardson, J. F.; with Backhurst, J. R.; Harker, J. H. Coulson & Richardson's Chemical Engineering, Butterworth-Heinemann (1996 record; Volume 1 is Fluid Flow, Heat Transfer and Mass Transfer).",
+          "note": "The textbook the Theory Guide names for the isothermal compressible-flow equation of a gas in a pipe (Theory Guide, sec:pipe-gasline).  The chapter, edition and equation number were NOT read for this page, and no worked example of it is reproduced: the page's evidence is the engine's recorded run and an independent hand script, not agreement with the book.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780750644440 (openlibrary.org/isbn/9780750644440.json, fetched 2026-11-25, C506): title \"Coulson & Richardson's chemical engineering\", by-statement \"J.M. Coulson and J.F. Richardson ; with J.R. Backhurst and J.H. Harker\", publisher Butterworth-Heinemann, 1996, 1045 pages; its contents list names \"v. 1. Fluid flow, heat transfer, and mass transfer\" (5th ed. 1996, 6th ed. 1999).  The record is of the work; no chapter or page is claimed",
+            "date": "2026-11-25"
+          }
+        }
+      ]
     }
   }
 }
