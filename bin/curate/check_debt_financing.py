@@ -77,7 +77,7 @@ WHAT THIS GATE CHECKS:
 
   (h) AN ABSENT BLOCK IS SILENT: economics01 as shipped and economics03
       with its loan removed publish no `financing` object, no debt_/equity_ KPI, no financing.csv,
-      no equity line, and their .ods has one sheet.
+      no equity line, and their .ods has no equity sheet (it carries the appraisal and the three books sheets).
 
   (i) PUBLISHED IMPLIES PINNED: every scalar of the JSON `financing` object
       equals a `debt_*` / `equity_*` KPI (which the golden `kpi` kind pins),
