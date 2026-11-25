@@ -331,8 +331,8 @@
       ]
     }
   ],
-  "liveTools": 103,
-  "registryTools": 103,
+  "liveTools": 104,
+  "registryTools": 104,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1058,6 +1058,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=vanheerden"
+    },
+    {
+      "id": "why-did-it-not-dry",
+      "label": "Why did it not dry?",
+      "blurb": "Find whether air, clock or isotherm stopped a dryer.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Why a dryer leaves its product wet: the two moisture bases (ten percent of what, with each case's own feed and product on both), then four engine runs side by side -- a sugar dryer with plenty of air and with one eighth of it, a crystal dryer with no isotherm, a spray dryer in a short chamber -- each with a verdict (air-limited, time-limited, isotherm-bound or not classified) that only orders the engine's own numbers against tolerances printed beside it, a sweep of the inlet air that shows the cliff, and a tray in five airs of rising humidity whose floor, the equilibrium moisture, no clock passes.  The solid and evaporative dryers are balances without a clock, and the page says so.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=why-did-it-not-dry"
     },
     {
       "id": "drying",

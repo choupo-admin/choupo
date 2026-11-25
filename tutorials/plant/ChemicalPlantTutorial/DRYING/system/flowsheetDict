@@ -10,8 +10,12 @@
   DRYING / system/flowsheetDict   (SECTOR -- COMPOSITE)
 
   Spray dryer -> additional solid drying -> cyclone dust separator.
-  The solid powder goes SD -> BD -> product; the spray-dryer exhaust air
-  (carrying fines) goes SD -> CY, which returns clean air + recovered dust.
+  The solid powder goes SD -> BD -> product.  The spray-dryer exhaust goes
+  SD -> CY, but in THIS run the cyclone is idle: the engine's spray dryer
+  sends every particle to its powder outlet and none to the exhaust, so the
+  exhaust reaches CY as gas only (solidsIn_mass 0 and efficiency 0 in the
+  golden) and Dust is zero.  The cyclone is wired for a dryer that does
+  carry fines out; today none is modelled.
 \*---------------------------------------------------------------------------*/
 
 sectors    ( SD  BD  CY );
@@ -28,7 +32,7 @@ connections
     DryingAir    { to SD/DryingAir; }
     BdAir        { to BD/hotAir; }
     WetPowder    { from SD/WetPowder;    to BD/WetPowder; }   // solid: spray -> extra drying
-    Exhaust      { from SD/Exhaust;      to CY/Exhaust; }     // air (with fines) -> cyclone
+    Exhaust      { from SD/Exhaust;      to CY/Exhaust; }     // exhaust gas, no solids in this run -> cyclone (idle)
     DryPowder    { from BD/DryPowder; }
     Vapour       { from BD/Vapour; }
     ExhaustClean { from CY/ExhaustClean; }

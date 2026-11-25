@@ -301,6 +301,107 @@ n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t -
       + "activity of the declared air — so it moves when you move the air's "
       + "humidity, and that is the knob that raises or lowers the floor.",
   },
+  {
+    n: 6,
+    title: "To dry faster, load less: what the time is proportional to",
+    body: "The flat stretch of the curve is set by the air film, so heating the "
+      + "air harder moves it less than one expects: hotter air raises the wet "
+      + "bulb too, by less than the air's own rise, and the driving force "
+      + "follows the wet bulb.  What does move the whole curve is how much "
+      + "solid sits on each square metre of exposed surface.  Write the dry "
+      + "solid per unit area as the loading L.  The time to reach the corner "
+      + "and the time constant of the tail both carry L as a factor, and "
+      + "nothing else in them depends on the tray, so in this model halving "
+      + "the loading halves every time on the curve and draws the same curve "
+      + "against t/L.  That is the model's law, set by the declared falling-"
+      + "rate curve: a real bed whose falling rate is governed by diffusion "
+      + "inside the material takes longer than the loading says, and only a "
+      + "drying test on the real loading settles by how much.",
+    formula: String.raw`L = \frac{m_s}{A} \qquad t_c = \frac{L}{R_c}\,(X_0 - X_c) \qquad \tau = \frac{L}{R_c}\,(X_c - X_\mathrm{eq})`,
+    where: [
+      { sym: "L", means: "The tray loading: kilograms of dry solid per square "
+        + "metre of exposed surface.", unit: "kg/m²" },
+      { sym: "m_s", means: "The dry-solid charge of the tray.", unit: "kg" },
+      { sym: "A", means: "The exposed drying area.", unit: "m²" },
+      { sym: "t_c", means: "The time at which the moisture reaches the "
+        + "critical value: the end of the constant-rate stretch.", unit: "s" },
+      { sym: "R_c", means: "The constant-rate flux, set by the air.",
+        unit: "kg/(m²·s)" },
+      { sym: "X_0", means: "The starting moisture on the dry basis.",
+        unit: "kg/kg dry solid" },
+      { sym: "X_c", means: "The critical moisture, a declared input.",
+        unit: "kg/kg dry solid" },
+      { sym: "X_\\mathrm{eq}", means: "The floor the air allows.",
+        unit: "kg/kg dry solid" },
+      { sym: "\\tau", means: "The time constant of the falling-rate tail "
+        + "when its curve is linear.", unit: "s" },
+    ],
+    note: "The page does not apply these formulas: it runs the engine at three "
+      + "loadings and draws the engine's moisture against t/L.  That the "
+      + "curves coincide is the engine's own result, and the table beside it "
+      + "shows the break time over L for each.",
+  },
+  {
+    n: 7,
+    title: "The last percent: the time to a specification, read off the curve",
+    body: "Turn the curve on its side and ask how long each moisture takes.  "
+      + "For the linear falling-rate curve, every halving of the free "
+      + "moisture takes the same time, so the last few percent cost as much "
+      + "as the many before them, and the time to a target grows without "
+      + "bound as the target approaches the floor.  The page does not use "
+      + "that formula: for the curve you set, including exponents other than "
+      + "one, it reads the time off the engine's own emitted curve, "
+      + "interpolating between the two samples that bracket the target, and "
+      + "says when the run did not get there.  Which is the more useful "
+      + "statement for a specification: a time, or a floor?  Both: if the "
+      + "target is at or below the floor of the air, no time reaches it.",
+    formula: String.raw`t(\Phi_2) - t(\Phi_1) = \tau\,\ln\frac{\Phi_1}{\Phi_2} \qquad (n = 1,\ \Phi_2 < \Phi_1 \le 1)`,
+    where: [
+      { sym: "t", means: "The time at which the free moisture has fallen to "
+        + "the share in brackets.", unit: "s" },
+      { sym: "\\Phi", means: "The free moisture as a share of its value at the "
+        + "corner: 1 there, 0 on the floor.", unit: "-" },
+      { sym: "\\tau", means: "The time constant of the tail.", unit: "s" },
+    ],
+    note: "For an exponent below one the engine's curve reaches the floor in a "
+      + "finite time, and the formula above is not it: that is an artefact of "
+      + "the curve chosen, which is why the page reads the engine's curve and "
+      + "not the formula.",
+  },
+  {
+    n: 8,
+    title: "The spray chamber: a droplet's clock against the chamber's",
+    body: "A spray dryer's chamber is not sized by the time one droplet needs.  "
+      + "The engine gives the droplet a single size and lets it fall for a "
+      + "time fixed by the chamber's height and its speed.  The runs below "
+      + "show a tall chamber whose residence is several times the sum of the "
+      + "constant-rate time and the falling-rate constant, and a short one "
+      + "that leaves the powder above its floor.  Two things move the time "
+      + "the droplet needs: a coarser spray (a slower wheel), whose falling-"
+      + "rate constant grows faster than its size in the engine's runs "
+      + "(the card prints the exponent it read), and the heat transfer "
+      + "around it.  The page runs the chamber at four heights and two wheel "
+      + "speeds and lays the engine's three times side by side.  The "
+      + "engine's model has one drop size; a real chamber also has to serve "
+      + "the coarse tail and the trajectories near the wall, which no "
+      + "single-size run shows.",
+    formula: String.raw`t_\mathrm{res} = \frac{H}{v_p} \qquad \text{dried when } t_\mathrm{res} \ge t_{cr} + \tau_d`,
+    where: [
+      { sym: "t_\\mathrm{res}", means: "The residence time of a droplet in the "
+        + "chamber.", unit: "s" },
+      { sym: "H", means: "The chamber height.", unit: "m" },
+      { sym: "v_p", means: "The speed at which the droplet falls, from the gas "
+        + "speed and the terminal speed.", unit: "m/s" },
+      { sym: "t_{cr}", means: "The time the droplet spends in its "
+        + "constant-rate period, a result of the engine.", unit: "s" },
+      { sym: "\\tau_d", means: "The falling-rate time constant of the "
+        + "droplet, a result of the engine.", unit: "s" },
+    ],
+    note: "The right-hand condition is a reading rule for the table, not a "
+      + "formula the engine applies: the engine integrates the drying curve "
+      + "over the residence time.  The particle temperature along the chamber "
+      + "is not shown, because the engine does not solve it.",
+  },
 ];
 
 export const DRYING_LIMITS: readonly { id: string; title: string; body: string }[] = [
@@ -449,5 +550,33 @@ export const DRYING_QUIZ: readonly QuizQuestion[] = [
     feedback: "Most of the water usually leaves in the constant-rate period "
       + "and most of the time is spent in the falling-rate one, as "
       + "an exponential tail does (step 5).",
+  },
+  {
+    id: "loading", steps: [6],
+    q: "In this model a tray is reloaded with twice the dry solid per square metre. What happens to the times on its drying curve?",
+    options: [
+      "They are unchanged; the air sets them",
+      "They double, because the break time and the tail's time constant both carry the loading as a factor",
+      "They quadruple",
+      "Only the tail doubles",
+    ],
+    correct: 1,
+    feedback: "Both times are the loading over the constant flux times a "
+      + "moisture difference, so the whole curve stretches by the factor, "
+      + "and moisture against t/L is one curve.  A real bed whose tail is "
+      + "diffusion-controlled can do worse (step 6).",
+  },
+  {
+    id: "last-percent", steps: [7],
+    q: "A specification lies below the equilibrium moisture of the air the dryer is given. How long must the batch run?",
+    options: [
+      "Long enough, the curve gets there eventually",
+      "No time reaches it: the floor is the isotherm at the air's water activity",
+      "Twice as long as the break time",
+      "Until the constant-rate period ends",
+    ],
+    correct: 1,
+    feedback: "The curve approaches the floor and never crosses it; drier "
+      + "product needs drier or hotter air, not time (step 7).",
   },
 ];

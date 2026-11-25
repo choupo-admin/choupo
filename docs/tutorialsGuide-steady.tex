@@ -3149,7 +3149,7 @@ Wet salt: 20 kmol/h NaCl crystals (1169 kg/h) carrying 15 kmol/h of free water. 
   \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {humidExhaust};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 16.6 wt\% of the water stays on the crystal}
+\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 86 \% of the water stays on the crystal (the product is 16.6 wt\% water, wet basis)}
 \begin{tutnarrative}
 FREE WATER, NOT BOUND WATER.
 
@@ -3159,7 +3159,7 @@ FREE WATER, NOT BOUND WATER.
 
 Limits 2 and 3 are coupled -- evaporation cools the gas, which lowers its carrying capacity -- and the unit bisects on the removed water until the two agree, rather than applying them in sequence and hoping.
 
-THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [energy-limited]: the solid leaves at the gas's WET-BULB temperature, 311.68 K, this model's floor, having given up 36.75 kg/h of water with the exhaust at a\_w 0.886, below its cap, and 16.6 wt\% of the water stays on the crystal -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
+THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [energy-limited]: the solid leaves at the gas's WET-BULB temperature, 311.68 K, this model's floor, having given up 36.75 kg/h of water with the exhaust at a\_w 0.886, below its cap, and 86 \% of the water stays on the crystal (X falls from 0.2312 to 0.1998 kg/kg; the product is 16.6 wt\% water on the wet basis, which is a different number) -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
 
 THE WALL THIS GAS MEETS IS HEAT, AT THE WET BULB -- AND THE CASE'S NAME PREDATES THAT (2026-10-05). The wet solid enters at 298.15 K, BELOW the gas's wet bulb, so part of what the gas pays goes to warming the cake up to it, and what is left evaporates less than the exhaust has room for. The name was given the same morning (DEV.md C35 item 12, it was `evapDryer02\_energy\_limited`), when the floor was still the solid's FEED temperature: then the exhaust reached its cap at T\_out = 310.73 K, BELOW the gas's own wet bulb, and the room wall came first. Vitor's ruling C35 item 7 put the floor at the wet bulb -- a wet solid in a gas cools, or warms, toward it -- and that answer is no longer allowed. Whether the case is renamed back, or its wet solid fed warm (at 330 K, above the wet bulb, the same gas meets the room wall again: the exhaust at its cap at 314.5 K with 49.0 kg/h carried and 51.6 kg/h payable -- the fixture `check\_evaporative\_dryer` arm (a') runs), is Vitor's; DEV.md C35 item 7.
 

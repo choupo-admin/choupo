@@ -34592,6 +34592,54 @@ to $N_c$ at $X_c$ --- an honest first approximation that does \emph{not} resolve
 crust diffusion; calibrate $X_c$/the curve against a measured drying curve of the
 real material.
 
+\subsection{Why a dryer fails to dry: the water, the air and the clock}\label{sec:drying-three-ceilings}
+The EduTool \emph{Why did it not dry?} reads three limits off the engine's own runs.  Symbols:
+$w$ wet-basis moisture, $X$ dry-basis moisture (kg water/kg dry solid), $m_s$ dry-solid flow, $G$ dry-gas flow,
+$Y$ gas humidity (kg water/kg dry gas), $Y_{\text{sat}}(T)$ its saturation value, $T_{\text{wb}}$ the wet-bulb temperature of the
+inlet gas, $a_w$ water activity, $X_e$ the isotherm moisture, $t_{\text{res}}$ the residence time, $H$ the chamber height, $v_p$ the particle fall speed.
+
+\paragraph{Equations as implemented.}  The two bases are related by $w=X/(1+X)$, $X=w/(1-w)$ (an identity; the page converts, the engine
+reports both, \code{moisture\_pct\_wb} being $100\,w$ of $X_{\text{final}}$).  A convective dryer is bounded by
+\begin{equation}
+  m_s\,(X_{\text{in}}-X_{\text{out}}) = G\,(Y_{\text{out}}-Y_{\text{in}}),\qquad
+  Y_{\text{out}}\le Y_{\text{sat}}(T_{\text{out}}),\qquad T_{\text{out}}\ge T_{\text{wb}},
+\end{equation}
+the last bound being the unit's own floor: \code{solidDryer} solves its outlet temperature between the gas wet bulb and the inlet
+temperature (\file{SolidDryer.cpp}).  \code{evaporativeDryer} has the same bounds and no isotherm (free water).  The spray dryer alone has a
+clock, $t_{\text{res}}=H/v_p$, a result of the chamber geometry and the particle's fall speed (\file{SprayDryer.cpp}), against the time the
+droplet needs, the constant-rate time plus the falling-rate constant of the drying curve.  The floor of any run is
+$X_e(a_w)$, the case's declared sorption record at the water activity $a_w=p_v/p^{\text{sat}}(T)$ of the air, $p_v=PY/(Y+\varepsilon)$,
+$\varepsilon$ the molar-mass ratio of water to the carrier.
+
+\paragraph{The verdict.}  The page \emph{orders} the engine's numbers, in this order, against declared tolerances: (1) \emph{isotherm-bound}
+if $X_{\text{final}}\le X_e(1+0.01)$; (2) \emph{air-limited} if the exhaust water activity is $\ge 0.99$ or the outlet is within $0.5$~K of
+the gas wet bulb, and the product is above its floor; (3) \emph{time-limited} if the unit has a residence time, rule 2 did not apply and
+$X_{\text{final}}$ exceeds $X_e$ by more than $1\,\%$; otherwise \emph{not classified}, with the reason.  It decides nothing the engine did
+not print, and it prints the numbers it used.
+
+\paragraph{Validity and in-sample statement.}  \code{solidDryer} and \code{evaporativeDryer} carry no kinetics, so
+\emph{time-limited} cannot appear for them; the spray dryer is a single-size model.  The isotherm is a fit, trusted only inside the water
+activities it was fitted over.  Every case on the page is a hypothetical teaching case; the verdict is a classification of the engine's
+numbers, not a diagnosis of a plant.  Source: the unit sources named above; the cases \code{solidDryer01\_sugar},
+\code{solidDryer02\_starved\_air}, \code{evapDryer02\_energy\_limited}, \code{sprayDryer06\_rea} and \code{dryer01\_sucrose\_tray}.
+
+\subsection{Loading, the last percent and the spray chamber}\label{sec:drying-loading-tail-chamber}
+With $L=m_s/A$ the tray loading, the linear falling-rate curve of the tray case gives
+\begin{equation}
+  t_c=\frac{L}{R_c}(X_0-X_c),\qquad \tau=\frac{L}{R_c}(X_c-X_e),\qquad
+  t(\Phi_2)-t(\Phi_1)=\tau\ln\frac{\Phi_1}{\Phi_2}\quad(n=1),
+\end{equation}
+$\Phi=(X-X_e)/(X_c-X_e)$.  Hence in this model the moisture curves of different loadings coincide when drawn against $t/L$, and every halving
+of the free moisture costs the same time, so the last percent costs as much as the many before it and the time to a target grows without
+bound as the target approaches $X_e$.  The page does not apply these formulas: it runs the engine at three loadings and reads the time to a
+level off the emitted $X(t)$ column, interpolating between the two samples that bracket it (for an exponent $n<1$ the curve reaches $X_e$ in
+finite time, an artefact of the declared curve).  A real bed whose falling rate is diffusion-controlled scales faster than $L$; the curve is a
+declared choice, not a mechanism.  For the spray chamber the page runs \code{sprayDryer01\_sugar} at four heights and two wheel speeds and
+shows the residence, the constant-rate time and the falling-rate constant side by side; the exponent of the falling-rate constant against the
+droplet size is read from two runs, not asserted.  The engine's drop size is single (the Sauter mean) and the particle temperature along the chamber
+is an interpolation for display (\file{SprayDryer.cpp}), so it is not shown.  \emph{In-sample statement:} the tray and spray cases are
+hypothetical teaching cases with declared $R_c$, $X_c$ and curve.
+
 \subsection{Continuous convective dryers: co-current, counter-current and cross-flow}\label{sec:dryer-flow-arrangements}
 
 \code{convectiveDryer} (\file{ConvectiveDryer.cpp}) dries a sorbing solid on its characteristic

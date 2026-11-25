@@ -145,6 +145,21 @@ DOMAINS = [
      ("expr", "0.622 * psat_water(k('airT').min) / (101325.0 - psat_water(k('airT').min))"),
      "air humidity ratio cannot exceed saturation at the knob box's coldest air temperature "
      "(Y_sat(300 K) = 0.0225 kg/kg; the knob goes to 0.04, supersaturated air the engine refuses; clamped to 0.02 on 11-22)", False),
+    (M + "WhyDidItNotDryTool.tsx", "airFlow", 0.0, None,
+     "a gas flow through a dryer is positive; the box runs from 20 to 1000 kmol/h, the page's own choice around the "
+     "case's authored 800 (C508)", False),
+    (M + "WhyDidItNotDryTool.tsx", "spec", 0.0, None,
+     "a dry-basis moisture specification is not negative and has no upper physical bound; the slider offers "
+     "0.005 to 0.1 kg/kg, the page's own choice around the tray's floor (C508)", False),
+    (M + "WhyDidItNotDryTool.tsx", "wetPct", 0.0, 100.0,
+     "a wet-basis moisture percentage lies in [0, 100]; at 100 the dry-basis moisture is infinite, so the box stops at 99 (C508)",
+     False),
+    (M + "DryingCards.tsx", "targetX", 0.0, None,
+     "a dry-basis moisture target is not negative; the slider offers 0.01 to 0.3 kg/kg, the page's own choice around the "
+     "tray's corner and floor (C508)", False),
+    (M + "DryingCurveTool.tsx", "area", 0.0, None,
+     "the tray loading (kg of dry solid per m2 of exposed surface) is positive; the box runs from 1 to 20, the page's "
+     "own choice (C508)", False),
     (M + "MerkelTool.tsx", "airMoisture", 0.0,
      ("expr", "(psat_water(k('airT').dflt) / (101325.0 - psat_water(k('airT').dflt))) * k('dryAirFlow').dflt"),
      "the water vapour carried by the default air cannot exceed saturation at its default temperature "
