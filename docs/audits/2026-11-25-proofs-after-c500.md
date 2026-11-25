@@ -81,8 +81,12 @@ plant), about 25 s on a pool of eight.  T5 fits the minute but its subject is re
 reader learns the 47 stream-block kinds and 18 flowsheet layouts it refuses.  Proposal: revisit T4 when its NOT JUDGED
 count has halved.
 
-## Added by the merge of origin/main (2026-11-25, 380 cases)
+## Correction: the binary was stale after the merge (2026-11-25)
 
-Two cases of main refuse in their base run and are counted in the pinned `base run refuses` class as FINDINGS, not as designed refusals:
-`column20_mtbe_kinetic_mesh` (a postDict view declares `kmol/h` for the series `extent_kmol_h`, published in `h`) and
-`optim08_bayesian_membrane` (the `bayesian` method was retired by C496).
+An earlier version of this audit named `column20_mtbe_kinetic_mesh` and `optim08_bayesian_membrane` as two findings of main.
+They were not: the binary had not been rebuilt after origin/main was merged (the `bayesian` method and the `extent_kmol_h`
+view unit exist there).  After `make -j3` the whole corpus was re-run (380 cases): the `base run refuses` class is back at 16.
+`check_proofs` now refuses a stale binary itself by calling `check_build_fresh.py` before it judges anything.
+
+Table of that run (380 cases, 364+... steady and plant): T1 191/2/187, T2 326/4/50, T3 362/2/16, T4 253/0/127, T5 346/0/34,
+T6 325/2/53 (HOLDS / VIOLATES / NOT JUDGED).
