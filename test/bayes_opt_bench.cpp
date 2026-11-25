@@ -55,6 +55,7 @@ Build: bin/buildCode on a scratch COPY of a case that has this file as
 code/bench.cpp (see the protocol).
 \*---------------------------------------------------------------------------*/
 
+#include "outerDriver/ClosureGuard.H"
 #include "outerDriver/ConstraintSpec.H"
 #include "outerDriver/OuterDriver.H"
 #include "outerDriver/ResponseExtractor.H"
@@ -156,10 +157,21 @@ public:
             {
                 auto result = simulator_(clone, ov);
                 const std::string cause = simulationFailure(result);
+                //  A run whose own published mass/element closure breaks the
+                //  band (the optimiser's closure guard, outerDriver/
+                //  ClosureGuard.H) is a FAILED evaluation, like a run that did
+                //  not converge: its objective is not a result.
+                ClosureReading cr;
+                if (cause.empty()) cr = readClosure(result);
                 if (!cause.empty())
                 {
                     out.ok = false;
                     out.failCause = cause;
+                }
+                else if (cr.published && cr.worst > closureBand())
+                {
+                    out.ok = false;
+                    out.failCause = "closure " + cr.key + " breaks the conservation band";
                 }
                 else
                 {
