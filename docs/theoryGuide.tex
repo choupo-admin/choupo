@@ -27645,6 +27645,37 @@ the calcite/gypsum saturation check of Chapter~\ref{ch:electrolytes}
 dropping below zero --- the point of softening ahead of an RO element.
 \end{example}
 
+\subsection{The resin as two named streams}\label{sec:ix-resin-streams}
+
+In a flowsheet the exchange moves matter across the plant boundary: the
+cations the water gives up ($\mathrm{Ca^{2+}}$, $\mathrm{Mg^{2+}}$,
+$\mathrm{K^+}$) go onto the resin and the sodium the resin gives back
+comes off it.  With a single effluent the plant's element ledger shows the
+calcium lost and the sodium created; an assumption that moves matter is a
+\emph{named stream} carrying exactly that matter, so the unit publishes
+three:
+\begin{equation}
+  \dot n_i^{\,\mathrm{taken}} \;=\; \max\!\big(m_i^{\,\mathrm{in}}-m_i^{\,\mathrm{out}},0\big)\,\dot m_w,
+  \qquad
+  \dot n_i^{\,\mathrm{released}} \;=\; \max\!\big(m_i^{\,\mathrm{out}}-m_i^{\,\mathrm{in}},0\big)\,\dot m_w,
+  \label{eq:ix-resin-streams}
+\end{equation}
+with $m_i$ the molality of cation $i$ before and after the exchange
+\eqref{eq:ix-massaction} and $\dot m_w$ the water mass flow (water itself
+does not exchange).  Both flows are non-negative.  The exchange is
+equivalent for equivalent, so
+$\sum_i |z_i|\,\dot n_i^{\mathrm{taken}}=\sum_i |z_i|\,\dot n_i^{\mathrm{released}}$;
+the unit prints the two equivalent flows (\code{resin\_taken\_eq\_h},
+\code{resin\_released\_eq\_h}) and refuses a gap above $10^{-6}$ relative.
+In the case: \code{outputs ( softened resinTaken resinReleased );
+supplies ( resinReleased );}.  \code{resinReleased} is computed by the
+unit but \emph{enters} the plant, so \code{supplies} tells the reports to
+read it as a feed and as an input of the softener; the effluent and the
+taken-up cations leave.  A softener with one outlet is refused with this
+remedy.  Validity: the limiting-equilibrium contactor of this section; the
+heat of exchange stays a reported value and is not applied.
+Source: the balance is the unit's own, \file{docs/design/resin-as-named-streams.md}.
+
 \begin{tutoriallink}
 \file{tutorials/props/electrolyte/softener\_brackish} --- the beaker-scale
 \code{exchange} property op: Gaines--Thomas softening of a hard water,

@@ -199,16 +199,12 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
     //  A PARTIAL ledger (a declared composition with unaccounted mass) cannot
     //  close better than its data: it alarms under its own name, which
     //  choupoSolve does not read as a broken run (C498); the mass balance,
-    //  which needs no composition, still judges it.  An ION EXCHANGER holds
-    //  the cations it exchanged on a resin that is not yet a stream (C500), so
-    //  its plant alarms under RESIN-HOLDUP: printed, never hidden, not a broken
-    //  run until the resin has its named streams.
-    const bool resin = std::any_of(topo.units.begin(), topo.units.end(),
-        [](const auto& u) { return u.type == "ionExchanger"; });
+    //  which needs no composition, still judges it.
+    //  (The RESIN-HOLDUP name that stood here is gone: an ion exchanger's resin
+    //  is two named streams since C500, so its plant closes.)
     if (worst > reporting::elementBandPct)
         reporting::balanceAlarm(
-            eb.partial ? "PARTIAL-DATA ELEMENT"
-            : resin ? "RESIN-HOLDUP ELEMENT" : "ELEMENT", "the plant boundary, element " + worstSym,
+            eb.partial ? "PARTIAL-DATA ELEMENT" : "ELEMENT", "the plant boundary, element " + worstSym,
             "in " + std::to_string(worstIn) + " kmol-atom/h, out "
             + std::to_string(worstOut) + " kmol-atom/h  (off by "
             + std::to_string(worst) + " %)",

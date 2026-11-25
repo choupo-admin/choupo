@@ -52,14 +52,13 @@ THE PIN LEDGER IS MEASURED, NEVER TYPED, AND IT RATCHETS TWO WAYS:
     stopped being true, and it HIDES the next regression on that case;
   * an unpinned case outside BAND fails, which is the point.
 
-WHY ONE PIN IS NOT A DEBT AT ALL, and it must be read before the list is
-used as a list of defects.  `membrane08_softened_scaling` loses 99.99 pp of
-its calcium.  That is a SOFTENER: ion exchange moves calcium onto a resin,
-and a resin is not a stream.  The atoms are conserved; the BOUNDARY is not
-the right control volume for them.  A band alone accuses it.  The ledger does
-not -- it carries the measurement with the reason, exactly as
-`check_energy_closure`'s KNOWN_OPEN carries plants that do not close.  Every
-other entry below is a real, undiagnosed leak.
+THE SOFTENER'S PIN IS GONE (DEV.md 4c C500).  `membrane08_softened_scaling`
+used to lose 99.99 pp of its calcium: ion exchange moved calcium onto a resin
+and the resin was not a stream.  The resin is now two NAMED streams
+(`resinTaken`, `resinReleased`), so the plant closes every element, and the
+defect this gate would catch if it came back is exactly that one -- a unit
+that moves matter somewhere the stream table has no name for.  An
+`ionExchanger` with one outlet is refused by the unit itself.
 
 THE BAND IS PER ELEMENT AND THE PIN IS PER CASE, and that asymmetry is
 deliberate.  `membrane10_dspmde_divalent` loses 0.3977 pp of its magnesium and
@@ -107,22 +106,15 @@ RATCHET = 0.002
 #  typed.  Value = the worst |closure_pct - 100| the case carries, in
 #  percentage points.  Reseed with --seed; do not hand-edit a number.
 KNOWN_OPEN = {
-    "tutorials/steady/membranes/membrane08_softened_scaling": 99.9881,
 }
+#  PAID 2026-11-25 (DEV.md 4c C500): membrane08_softened_scaling left -- the
+#  softener's resin became the named streams resinTaken / resinReleased and
+#  the case closes every element at 100.0000 %.
 #  PAID 2026-10-21 (DEV.md 4c C123, finding 4): extract01 (0.0121 pp) and
 #  extract02 (0.0130 pp) left -- both 100.0000 % on every element.  Their
 #  "leak" was the extractor's cascade stopping at a 1e-4 mass closure, the
 #  Nelder-Mead noise floor of its stage flash; the flash now finishes on a
 #  Newton and the cascade closes to 1e-8.
-
-#  The one entry that is NOT a leak, with the reason, so a reader of the
-#  ledger is not misled into counting it as one.
-NOT_A_LEAK = {
-    "tutorials/steady/membranes/membrane08_softened_scaling":
-        "a SOFTENER: ion exchange moves calcium onto a resin, and a resin is "
-        "not a stream.  The atoms are conserved; the boundary is not the "
-        "right control volume for them.",
-}
 
 
 def worst(path):
@@ -218,7 +210,6 @@ def main(argv):
             print("  " + f)
         return 1
 
-    leaks = len(pinned) - len(NOT_A_LEAK)
     print(
         f"check_element_closure: OK -- the engine's own elementBalance report, "
         f"read and never recomputed here: {len(inband)} case(s) close EVERY "
@@ -226,11 +217,7 @@ def main(argv):
         f"are PINNED with the worst deviation they are known to carry, none of "
         f"which has grown past its ratchet ({RATCHET} pp) or quietly started "
         f"closing.  The pin list is a ledger of plants that do NOT conserve "
-        f"atoms, not exemptions: {leaks} of the {len(pinned)} are real, "
-        f"undiagnosed leaks and 14 of those are membrane cases, so the leak is "
-        f"a FAMILY and not a scatter; the remaining {len(NOT_A_LEAK)} is named "
-        f"in NOT_A_LEAK with its reason (a softener moves calcium onto a resin, "
-        f"and a resin is not a stream).  The band is per ELEMENT and the pin is "
+        f"atoms, not exemptions.  The band is per ELEMENT and the pin is "
         f"per CASE's worst element, so closing one element while opening "
         f"another cannot read as an improvement.  NOT CHECKED: whether a pinned "
         f"deviation is acceptable (it is not); whether the element inventory is "

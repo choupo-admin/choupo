@@ -93,6 +93,33 @@ int IonExchanger::solve(const DictPtr& dict,
                         acceptance()), thermo, locus);
     }
 
+    // ---- THE RESIN IS TWO NAMED STREAMS (DEV.md 4c C500) --------------------
+    //  The cations the water gives up (Ca, Mg, K) and the sodium the resin
+    //  gives back are matter that crosses the plant boundary.  A softener
+    //  with one outlet shows them as matter lost and created, so the case
+    //  must name three streams and declare which one enters the plant:
+    //      outputs ( softened resinTaken resinReleased );
+    //      supplies ( resinReleased );
+    {
+        std::vector<std::string> outs, sup;
+        if (dict->found("outputs"))  outs = dict->lookupWordList("outputs");
+        if (dict->found("supplies")) sup  = dict->lookupWordList("supplies");
+        if (outs.size() != 3 || sup.size() != 1 || sup[0] != outs[2])
+            throw std::runtime_error("ionExchanger '"
+                + (dict->name().empty() ? type() : dict->name()) + "': the resin"
+                " must be named.  Ion exchange moves matter between the water"
+                " and the resin -- Ca, Mg, K onto it, Na off it -- and one"
+                " outlet leaves that matter unaccounted (the plant's element"
+                " ledger shows it created and lost).  REMEDY: declare\n"
+                "        outputs  ( softened  resinTaken  resinReleased );\n"
+                "        supplies ( resinReleased );\n"
+                "    outputs[0] is the effluent, outputs[1] the cations the resin"
+                " TAKES UP, outputs[2] the sodium it RELEASES (an inlet of the"
+                " plant, computed here, hence `supplies`).  Found "
+                + std::to_string(outs.size()) + " output(s) and "
+                + std::to_string(sup.size()) + " supplied stream(s).");
+    }
+
     //  The aqueous carrier from its ONE home (the contract made sure it is fed).
     const std::size_t iWater = thermo.aqueousSolventIndex();
     const scalar z_water = z_in[iWater];
@@ -281,8 +308,62 @@ int IonExchanger::solve(const DictPtr& dict,
         out_.push_back(std::move(sft));
     }
 
+    // ---- The resin streams: exactly the matter the water exchanged ----------
+    //  Per component the water side changed by (before - after) mol/kg water:
+    //  positive = taken up by the resin (resinTaken), negative = released by
+    //  it (resinReleased).  Both flows are non-negative by construction.
+    //  Equivalent for equivalent: sum z_i n_i is held equal on the two
+    //  streams (the charge balance of the exchange), refused above 1e-6.
+    {
+        const scalar kgWater_s = F_in * z_water * (MW_WATER_KG * 1.0e3);   // kg/s
+        sVector nTaken(Ncomp, 0.0), nReleased(Ncomp, 0.0);
+        scalar eqTaken = 0.0, eqReleased = 0.0;
+        for (std::size_t i = 0; i < Ncomp; ++i)
+        {
+            if (i == iWater) continue;
+            const std::string nm = thermo.comp(i).name();
+            if (!res.aqAfter.count(nm)) continue;
+            const scalar d  = aqIn(nm) - aqOut(nm);            // mol/kg water
+            const scalar n  = std::abs(d) * kgWater_s * 1.0e-3; // kmol/s
+            const scalar zc = std::abs(electrolyte::ionCharge(
+                thermo.aqueousChemistry().singleMaster(ComponentId(nm))));
+            if (d > 0.0) { nTaken[i] = n;    eqTaken    += zc * n; }
+            else         { nReleased[i] = n; eqReleased += zc * n; }
+        }
+        const scalar eqScale = std::max(eqTaken, eqReleased);
+        if (eqScale > 0.0 && std::abs(eqTaken - eqReleased) > 1.0e-6 * eqScale)
+            throw std::runtime_error("ionExchanger: the exchange is not "
+                "equivalent for equivalent -- the resin takes "
+                + std::to_string(eqTaken * 3.6e6) + " eq/h and releases "
+                + std::to_string(eqReleased * 3.6e6) + " eq/h (gap above 1e-6 "
+                "relative).  The speciation moved a charge the resin did not "
+                "carry (a proton, a hydroxide?); the two resin streams cannot "
+                "be written as the exchange of cations alone.");
+        auto makeResin = [&](const char* nm, const sVector& n) {
+            ProcessStream r;
+            r.name = nm;  r.T = T_in;  r.P = P_in;  r.vf = 0.0;
+            scalar F = 0.0;
+            for (scalar v : n) F += v;
+            r.F = F;
+            r.z.assign(Ncomp, 0.0);
+            if (F > 0.0) for (std::size_t i = 0; i < Ncomp; ++i) r.z[i] = n[i] / F;
+            return r;
+        };
+        out_.push_back(makeResin("resinTaken", nTaken));
+        out_.push_back(makeResin("resinReleased", nReleased));
+        kpis_.clear();
+        kpis_["resin_taken_eq_h"]    = eqTaken * 3.6e6;     // eq/h
+        kpis_["resin_released_eq_h"] = eqReleased * 3.6e6;
+        if (verbosity >= 2)
+            std::cout << "  [resin] taken up " << std::setprecision(4)
+                      << eqTaken * 3.6e6 << " eq/h (Ca, Mg, K ...), released "
+                      << eqReleased * 3.6e6 << " eq/h (Na): equivalent for "
+                         "equivalent, both are named streams so the plant's "
+                         "mass, element and charge ledgers close\n";
+    }
+
     // ---- KPIs ----------------------------------------------------------
-    kpis_.clear();
+    //  (kpis_ already holds the resin equivalents written above)
     const scalar hIn  = hardnessAsCaCO3(aqIn("Ca"),  aqIn("Mg"));
     const scalar hOut = hardnessAsCaCO3(aqOut("Ca"), aqOut("Mg"));
     kpis_["hardness_in_mgL_CaCO3"]  = hIn;
