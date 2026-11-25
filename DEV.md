@@ -5673,6 +5673,18 @@ accepts today, and that is a policy call.
 
 > **C506. A COMPRESSIBLE GAS LINE (from C505; C35 item 8).**  Isothermal, mean density, derived and compared with
 > the exact isothermal solution; the band where constant density misleads; then its tool.  After 2 December.
+> **C506 ENGINE HALF BUILT 2026-11-25 (branch c506-gas-line; the tool NOT built).**  `Pipe` takes an all-vapour
+> inlet as the steady isothermal compressible line (`Pipe.cpp` `solveGasLine`, Theory Guide `sec:pipe-gasline`):
+> `P1^2 - P2^2 = c G^2 [f L/D + sum K + 2 ln(P1/P2)]`, `c = P1/rho1`, one friction factor (Re = G D / mu is the same
+> at every section), the mean-density shortcut printed beside it.  Window, all refused by name: inlet at or past the
+> isothermal sonic limit `P1 <= G sqrt(c)`, a line past `L_max`, `dz != 0`, no gas viscosity; a 40 % drop is a flagged
+> advisory (a stated level, not derived).  Adiabatic and Joule-Thomson effects are NOT modelled.  Witness
+> `pipe09_isothermal_gas_line` (P2 5.4601 bar exact, 5.4799 mean-density, L_max 549.1 m); an independent script
+> (`bin/curate/gasline_reference.py`) and an RK4 integration agree to 1e-11 or better.  NOT DONE: no published worked
+> example reproduced (no primary page of Coulson & Richardson Vol. 1 in hand: queue the reading and add it as a
+> second witness); the EduTool; Z held at its inlet value.  The gate arm (g) of `check_friction_correlations`, which
+> pinned the old refusal, is rewritten around the defect that remains (a gas priced with a liquid density).
+> Record: docs/audits/2026-11-25-c506-step0.md.
 
 > **C507. THE EXCHANGER'S SERVICE CLEARANCE IN THE LAYOUT CHECKER (from C505).**  Tube length plus a declared
 > clearance at the channel end, a finding with a name; the PEQ would raise it.  After 2 December: it moves the
