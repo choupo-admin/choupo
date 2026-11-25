@@ -126,6 +126,8 @@ import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
 import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
+import { WHY_QUIZ, WHY_STEPS } from "../src/ui/methods/whyDidItNotDryLesson.js";
+import { WhyDidItNotDryTool } from "../src/ui/methods/WhyDidItNotDryTool.js";
 import { OPT_QUIZ, OPT_STEPS } from "../src/ui/methods/optimizersLesson.js";
 import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
 import { OptimizersTool } from "../src/ui/methods/OptimizersTool.js";
@@ -304,6 +306,11 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  "why-did-it-not-dry": {
+    quiz: WHY_QUIZ, quizName: "WHY_QUIZ",
+    lesson: WHY_STEPS, lessonName: "WHY_STEPS",
+    file: "src/ui/methods/WhyDidItNotDryTool.tsx", tool: WhyDidItNotDryTool,
+  },
   optimizers: {
     quiz: OPT_QUIZ, quizName: "OPT_QUIZ",
     lesson: OPT_STEPS, lessonName: "OPT_STEPS",
