@@ -155,6 +155,7 @@ PRE  | PAR    | bin/curate/check_forward_order.py                  | on gatekit 
 PRE  | ISO*2  | bin/curate/check_pellet_announcement.py            | ISO (private slot tree; measured: writes tutorials/batch/reactor/batch07_lhhw_methylAcetate/.tmp_1020 (+411 more))
 PRE  | PAR    | bin/curate/check_reaction_subset_approach.py       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_adiabatic_approach_direction.py   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_adiabatic_restart.py              | runs two copies of batch02 in a private tempfile.mkdtemp under /tmp; writes nothing in the tree; no make, no node, no nested walk
 PRE  | ISO    | bin/curate/check_feed_thermal_state.py             | ISO (private slot tree; measured: writes tutorials/steady/distillation/column01_benzene_toluene/converged (+14 more))
 PRE  | ISO    | bin/curate/check_overspecified_stream.py           | ISO (private slot tree; measured: writes balanceTrajectory.csv (+32 more))
 PRE  | ISO    | bin/curate/check_evaporator_chest_phase.py         | ISO (private slot tree; measured: writes tutorials/steady/evaporation/evaporator02_triple_effect_sugar/converged (+49 more))
