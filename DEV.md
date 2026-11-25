@@ -5724,6 +5724,12 @@ accepts today, and that is a policy call.
 > t = 300 of 600 resolves it again at that instant's T (-2.416 against -2.428 kJ/mol), so the remaining rise is
 > 0.53 % smaller: batch02, batch04, batch06 end 6 mK apart.  Either the datum temperature enters the state, or
 > the vessel integrates on the canonical H surface (the code's own open item).
+> THE BACKLOG GROWS BY FINDINGS (Vitor, 2026-11-25: "Como já fizeste tantas tasks e o número por fazer está a
+> aumentar?").  MEASURED: 61 open on 23 November, 70 today; 56 of the 70 are older than C490 and 39 of them
+> PARTIAL; of 24 items opened since the evening of the 24th, 10 are closed.  RULED: a small defect found is a line
+> of the item it belongs to, or is fixed where it was found; one old item closed per new one; half the generals
+> on PARTIAL items at 70 % or more; the open count may not rise between two daily reports without the reason
+> in the report's first line.  C518 folded into C513; C517 closed (its 1e-5 rung is held by the gate's ratchet).
 
 > **C514, C516, C517. WHAT THE PROOFS FOUND ON THE WHOLE STEADY CORPUS (C492, 376 cases, 2026-11-25).**  No mass
 > lost, no impossible stream.  C514: published numbers that follow the list's order in membranes (c_ret_elem),
