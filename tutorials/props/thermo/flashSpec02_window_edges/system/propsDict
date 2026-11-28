@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flashSpec02_window_edges -- the three edges of a (P,H)/(P,S) search.
+  Each target is the state (T, 1 bar) of liquid or vapour water, so the
+  answer is known: the T it came from.
+    edgeRoot   T = 300 K, seed 320 K, window [300, 600] K: the root IS the
+               window edge; a bracket that tests only a sign change misses it.
+    topOfIF97  T = 1073.15 K and 1073.14995 K: the derivative must not step
+               above IF97's ceiling (region 5 is not implemented).
+    belowIF97  T = 274 K, seed 280 K, default window [50, 1500] K: the window
+               is cut to IF97's 273.15 K floor, so no trial state is priced
+               below it.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name edgeRootPH; type flashSpec; composition { water 1; }
+        spec { pair PH; P 1 bar; targetFrom { T 300 K; P 1 bar; } seed 320 K; window { Tmin 300 K; Tmax 600 K; } }
+    }
+    {
+        name topPH; type flashSpec; composition { water 1; }
+        spec { pair PH; P 1 bar; targetFrom { T 1073.15 K; P 1 bar; }  }
+    }
+    {
+        name topNearPH; type flashSpec; composition { water 1; }
+        spec { pair PH; P 1 bar; targetFrom { T 1073.14995 K; P 1 bar; }  }
+    }
+    {
+        name belowPH; type flashSpec; composition { water 1; }
+        spec { pair PH; P 1 bar; targetFrom { T 274 K; P 1 bar; } seed 280 K; }
+    }
+    {
+        name edgeRootPS; type flashSpec; composition { water 1; }
+        spec { pair PS; P 1 bar; targetFrom { T 300 K; P 1 bar; } seed 320 K; window { Tmin 300 K; Tmax 600 K; } }
+    }
+    {
+        name topPS; type flashSpec; composition { water 1; }
+        spec { pair PS; P 1 bar; targetFrom { T 1073.15 K; P 1 bar; }  }
+    }
+    {
+        name topNearPS; type flashSpec; composition { water 1; }
+        spec { pair PS; P 1 bar; targetFrom { T 1073.14995 K; P 1 bar; }  }
+    }
+    {
+        name belowPS; type flashSpec; composition { water 1; }
+        spec { pair PS; P 1 bar; targetFrom { T 274 K; P 1 bar; } seed 280 K; }
+    }
+);

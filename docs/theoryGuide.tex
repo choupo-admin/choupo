@@ -19970,6 +19970,14 @@ activity pairs are calorimetrically fitted).  The units \code{adiabaticFlash},
 searches; the turbine's is over a single-phase vapour and cannot land inside
 the dome.
 
+\emph{Edges of the search.}  The search window is first cut to the
+temperature domain of the package (IAPWS-IF97 water: $273.15$--$1073.15$\,K),
+so no trial state is priced where the package refuses; a root that falls
+exactly on a window edge (or on a step of the bracketing walk) is accepted as
+a zero-width bracket; and near a bound the Newton derivative is a one-sided
+difference inside the window (case
+\code{tutorials/props/thermo/flashSpec02\_window\_edges}).
+
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}[
