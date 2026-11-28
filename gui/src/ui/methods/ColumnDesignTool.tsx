@@ -397,7 +397,7 @@ export function ColumnDesignTool(): JSX.Element {
         </Panel>
 
         {/* ---------------- card 3 ---------------- */}
-        <Panel n={3} title="The cost optimum: stages cost capital, reflux costs energy"
+        <Panel n={3} title="The cost optimum on the design curve"
           origin={["engine", "page", "assumption"]}
           originNote="capital, duties and utility prices are the engine's (recorded); the sum, the capital charge, the heat price and the hours are this page's">
           {lessonStep(3)}

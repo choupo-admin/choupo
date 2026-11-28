@@ -207,7 +207,7 @@ export function TransferUnitTool(): JSX.Element {
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 1040, margin: "0 auto" }}>
         <Box>
-          <Title order={4}>Why the transfer unit was invented</Title>
+          <Title order={4}>The transfer unit, in short</Title>
           <Text size="sm" c="dimmed" mt={4}>
             A packed tower's height is a product of two numbers that answer two different
             questions: how hard the separation is, and how good the packing is. Move the
