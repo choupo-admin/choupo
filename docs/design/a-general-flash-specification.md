@@ -123,8 +123,8 @@ P is increasing in T (Cp > 0; dS/dT = Cp/T).
 3. A target the window [Tmin, Tmax] cannot reach REFUSES naming both ends
    and their values.  A trial the package cannot answer REFUSES naming the
    trial T and the package's sentence — no high-side rule is assumed here
-   (`adiabaticFlash` assumes one for the reactive path and says so; a
-   general specification has no grounds to).
+   (`adiabaticFlash` assumed one for the reactive path until 2026-11-28 and
+   no longer does).
 
 **(P, V/F) and (T, V/F).**  The unknown is T (or ln P).
 1. A pure stream: the state is ON its curve with the vapour fraction the
@@ -178,16 +178,11 @@ that does not satisfy its specification is never returned.
   printed.  IF97 water 450 K, 20 -> 1 bar: 372.756 K, V/F 0.147246, residual 0
   (before: "Outer T search converged: NO", V/F 1, 3.5e4 J/mol open).  Witnesses
   `adiabaticFlash02_wet_water_letdown`, `adiabaticFlash03_near_pure_letdown`.
-  The declared HIGH-SIDE rule for an unanswerable reactive trial is KEPT as
-  a documented exception: `column13_sour_water_stage_identity` reaches it
-  (its re-flash arm hands the unit a fictitious 483 K readout the reactive
-  package cannot answer).  When the home refuses on an unanswerable package
-  trial (`FlashSpecification::lastUnanswerableT` says which), the unit falls
-  back, announced, to its own search with the rule.  Narrowing the window
-  cannot emulate it (the home evaluates the window's edges).  So
-  the gate's census no longer counts the file (it asks the home first), but the
-  fallback is a private T-from-H search for that one rule: the home should carry
-  it (a per-trial "unanswerable is above" option).  Next slice.
+  The unit's former private search (its declared HIGH-SIDE rule for an
+  unanswerable reactive trial) was REMOVED 2026-11-28: no shipped case reached
+  it once the mixer priced its real two-phase state (column13 included; 7
+  cases run, 0 announcements); a refusal of the home is `Converged: NO` with the
+  reason.  The unit has no private T-from-H search left.
   KNOWN, registered not fixed: water on the `pureFluids` IF97 override WITH a
   trace of methanol in a gamma-phi mixture is refused (root not found) (the H step is not
   resolved); the same feed on the catalogue water converges.
@@ -201,8 +196,8 @@ that does not satisfy its specification is never returned.
   home prices no solids at T_out; Mixer.cpp stays in the door ratchet for it.
   Moved golden (a CORRECTION): `column13_sour_water_stage_identity`'s `recombine`
   was the reactive package's fictitious 483 K readout, now the real two-phase
-  state 366.8775 K, vf 0.25; adiabaticFlash's high-side fallback is no longer
-  reached by any shipped case.  `compressor`, `turbine`: NOT migrated — §6.
+  state 366.8775 K, vf 0.25; adiabaticFlash's high-side fallback was not
+  reached by any shipped case and is now removed.  `compressor`, `turbine`: NOT migrated — §6.
 
 * **`reactorOutlet::temperatureOfEnthalpy`: MIGRATED (2026-11-28, C532 c)** for
   fluid streams (the PFR's march is its caller).  **The PFR, MIGRATED (2026-11-28, C532 c):**
@@ -237,8 +232,8 @@ lost — the first build did exactly that and its own verdict refused it
   slice (CLAUDE.md §10, a golden re-record is a claim): `adiabaticFlash` and
   `valve` converge to 0.01 J/mol from a different bracket (200–700 K) and
   step limit, so a tighter, differently seeded search lands on a T that
-  differs in the last printed digits, and `adiabaticFlash` carries a
-  declared high-side rule for an unanswerable reactive trial this home
+  differs in the last printed digits, and `adiabaticFlash` carried a
+  declared high-side rule (since removed) for an unanswerable reactive trial this home
   refuses; the compressor and turbine solve P_out for a given shaft work
   (their unknown is the pressure, not the state at a pressure), price on
   `H_real`/`S_real` at the overall composition, and an equilibrium outlet

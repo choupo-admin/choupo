@@ -3,10 +3,7 @@
 # Census CORRECTED 2026-11-28 (per-function match, wider target names, .H scanned):
 # +ReactorOutlet.cpp (temperatureOfEnthalpy(scalar h...)), -IsothermalFlash.cpp and -CSTR.cpp
 # (their search and their enthalpy target are in different functions).
-# adiabaticFlash migrated 2026-11-28, with ONE documented exception the census cannot see: when the home
-# refuses an unanswerable reactive trial, the unit falls back, announced, to its own search with the declared
-# high-side rule (column13_sour_water_stage_identity needs it).  Removing it needs a per-trial
-# "unanswerable is above" option in specifiedFlash (registered debt, C532 c).
+# adiabaticFlash migrated 2026-11-28 (row removed); its private high-side search is gone too (no shipped case reached it).
 # mixer migrated 2026-11-28 (row removed: the census asks the home first); ONE documented exception the census cannot see: a merge carrying crystals
 # keeps reactorOutlet::temperatureOfEnthalpy (specifiedFlash prices no solids at T_out).  Registered debt (C532 c).
 # reactorOutlet::temperatureOfEnthalpy migrated 2026-11-28 (row removed): the fluid case is flashState::specifiedFlash (PH),
