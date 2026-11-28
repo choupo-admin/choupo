@@ -47,7 +47,7 @@ import { TOOL_HEADINGS, TOOL_LESSONS } from "virtual:edutool-lessons";
 
 import { excerptAround, fold, parseQuery, termMatches, type Term } from "../../search/textSearch.js";
 import { chapterSlug, isSourcesHeading } from "./chapters.js";
-import { METHOD_TOOLS, type MethodToolId } from "./registry.js";
+import { METHOD_TOOLS, familyOf, type MethodToolId } from "./registry.js";
 
 export type EduDocKind = "tool" | "step" | "limit" | "source" | "heading";
 
@@ -126,12 +126,20 @@ function docsOfExport(value: unknown): { kind: EduDocKind; title: string; key: s
   return [];
 }
 
+/** A family member's hit reads "Drying > Diagnose" (family title > chapter label). */
+function familyHitLabel(tool: (typeof METHOD_TOOLS)[number]): string {
+  const f = familyOf(tool.id);
+  if (!f) return tool.label;
+  const st = f.steps.find((x) => x.tool === tool.id);
+  return `${f.title} > ${st?.label ?? tool.label}`;
+}
+
 function makeDoc(
   tool: (typeof METHOD_TOOLS)[number], kind: EduDocKind, chapter: string | null,
   chapterKey: string | null, text: string, glossary: string,
 ): EduDoc {
   return {
-    tool: tool.id, toolLabel: tool.label, discipline: tool.discipline, kind,
+    tool: tool.id, toolLabel: familyHitLabel(tool), discipline: tool.discipline, kind,
     chapter, chapterKey, text,
     f: {
       title: fold(chapter ?? ""),

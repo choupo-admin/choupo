@@ -131,7 +131,7 @@ import { OriginLegend, OriginMark } from "./methods/origin.js";
 import { EngineCaveats } from "./methods/EngineCaveats.js";
 import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 import { PathBar } from "./methods/PathBar.js";
-import { EduToolsHome } from "./methods/EduToolsHome.js";
+import { EduToolsHome, collapseFamilies } from "./methods/EduToolsHome.js";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -154,7 +154,7 @@ import { MCCABE_LIMITS, MCCABE_QUIZ, MCCABE_STEPS } from "./methods/mccabeLesson
 import { LessonQuiz } from "./methods/lessonQuiz.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
-  METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, theoryUrl,
+  METHOD_DISCIPLINES, METHOD_TOOLS, familyOf, setActiveMethodTool, theoryUrl,
   useActiveMethodTool,
   type MethodTool, type MethodToolId,
 } from "./methods/registry.js";
@@ -853,9 +853,10 @@ function ToolChooser({ tool }: { tool: MethodToolId | null }) {
   const data = useMemo(
     () => METHOD_DISCIPLINES.map((d) => ({
       group: d,
-      items: METHOD_TOOLS.filter((m) => m.discipline === d).map((m) => ({
+      items: collapseFamilies(METHOD_TOOLS.filter((m) => m.discipline === d)).map((m) => ({
         value: m.id,
-        label: m.status === "live" ? m.label : `${m.label} (planned)`,
+        label: familyOf(m.id)?.title
+          ?? (m.status === "live" ? m.label : `${m.label} (planned)`),
         disabled: m.status !== "live",
       })),
     })).filter((g) => g.items.length > 0),
@@ -874,7 +875,7 @@ function ToolChooser({ tool }: { tool: MethodToolId | null }) {
         aria-label="choose an EduTools construction"
         data={data}
         placeholder="Pick a tool, or start from the home"
-        value={tool}
+        value={tool ? (familyOf(tool)?.steps[0]!.tool ?? tool) : tool}
         onChange={(v) => { if (v) setActiveMethodTool(v as MethodToolId); }}
         allowDeselect={false}
         searchable
