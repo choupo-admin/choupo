@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1948,
+  "cases": 1949,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -30422,6 +30422,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/rotating/turbine02_n2_isentropic_state": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/separation/psa01_h2_psa": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33169,6 +33183,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
@@ -34054,6 +34069,7 @@
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl"
    ],
    "valve": [
@@ -36729,6 +36745,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",

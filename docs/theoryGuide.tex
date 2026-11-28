@@ -29340,6 +29340,15 @@ gas the two levels decouple and it converges in one outer step; for a
 real gas they couple (4--10 steps).  The expansion branch simply
 searches $P_{\text{out}}<P_{\text{in}}$.
 
+After the outer Newton converges, $T_{\text{isen}}$ is solved once more at the
+converged $P_{\text{out}}$ (tolerance $10^{-9}$), because the last inner
+solve was made at a finite-difference neighbour pressure; the published
+$T_{\text{isen}}$ therefore satisfies $S(T_{\text{isen}},P_{\text{out}})=S_{\text{in}}$
+(witness \code{turbine02\_n2\_isentropic\_state}).  The cheap dry-discharge
+screen (Raoult dew sum below $0.5$) is not applied under $\gamma$--$\phi$
+with a non-ideal activity model, where $\gamma\ll1$ can make a liquid exist
+although the Raoult sum says the outlet is dry.
+
 \paragraph{The outlet is an equilibrium state (C493).}
 The discharge is priced at $(T,P,\mathbf{y})$ on the \emph{equilibrium}
 state of that point, the surface the energy report uses.  If the gas
