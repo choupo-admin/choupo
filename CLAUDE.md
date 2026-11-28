@@ -75,6 +75,13 @@ when it and this file disagree, the philosophy wins.
    to files; read the summary.  Every Agent call names its `model`: Sonnet
    for building and mechanical work, Fable for design.  The main session
    restarts from a resume note rather than growing.
+   **Quality before context** (Vítor, 2026-11-28): context is cut only where
+   quality does not fall.  ARCHITECTURE items (a change with strong future
+   reach on scalability and maintenance: one home for a law, a family,
+   a door) get LONG context on purpose: parallel readers report facts with
+   file:line, one Fable designer reads across the code and writes the
+   design, an independent reviewer (not shown the design's conclusion)
+   challenges it, and only then short Sonnet slices build it.
 5. Do not change a permanent rule as a reflex to criticism.
 6. Before calling a task done, verify it; say what was validated and what
    is pending.
