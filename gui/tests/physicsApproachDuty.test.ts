@@ -40,11 +40,12 @@ License
   back from the cited source lines.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
 import { APPROACH_LIMITS } from "../src/ui/methods/approachToEquilibriumLesson.js";
+import { resolveCite } from "./support/engineCite.js";
 
 const prose = (s: string): string => s.replace(/\s+/g, " ").trim();
 const R = 8.314;
@@ -78,22 +79,21 @@ describe("the page names what is carried and what is recomputed", () => {
     expect(body).toContain("Q = H_out(T, shifted composition) − H_in");
     expect(body).toContain("recompute the enthalpy and the duty");
   });
-  it("cites the lines where the engine prices the outlet at T with the shifted composition", () => {
-    const eq = readFileSync(new URL(
-      "../../src/unitOperations/reactor/EquilibriumReactor.cpp", import.meta.url),
-      "utf-8").split("\n");
-    expect(eq[914 - 1]).toContain("outletState(");
-    expect(eq[915 - 1]).toContain("T, P, zout");
-    expect(eq[977 - 1]).toContain("priceState(T, P, zout");
-    expect(eq[981 - 1]).toContain("Q_W = (H_out - H_in)");
-    expect(eq[988 - 1]).toContain("out.T = T");
-    expect(eq[988 - 1]).toContain("out.z = zout");
-    const gb = readFileSync(new URL(
-      "../../src/unitOperations/reactor/GibbsReactor.cpp", import.meta.url),
-      "utf-8").split("\n");
-    expect(gb.slice(800 - 1, 806).join(" ")).toContain("s.T, s.P, s.z");
-    expect(gb[806 - 1]).toContain("kpis_[\"Q_kW\"] = H_out_kW - H_in_kW");
-    expect(body).toContain("EquilibriumReactor.cpp:914, 977–981, 988");
-    expect(body).toContain("GibbsReactor.cpp:800–806");
+  it("cites, by symbol, where the engine prices the outlet at T with the shifted composition", () => {
+    // Held by symbol (C415), never by line number: the line-indexed form
+    // (an array indexed by line) broke three times on 2026-11-28 (+17, +14/+37, +20).
+    const root = fileURLToPath(new URL("../..", import.meta.url));
+    const holds = (file: string, contains: string) =>
+      resolveCite(root, { file, symbol: file.includes("Gibbs") ? "GibbsReactor::solve" : "EquilibriumReactor::solve", contains });
+    const EQ = "src/unitOperations/reactor/EquilibriumReactor.cpp";
+    const GB = "src/unitOperations/reactor/GibbsReactor.cpp";
+    for (const frag of ["outletState(", "T, P, zout", "priceState(T, P, zout",
+                        "Q_W = (H_out - H_in)", "out.T = T", "out.z = zout"]) {
+      expect(() => holds(EQ, frag), frag).not.toThrow();
+    }
+    expect(() => holds(GB, "s.T, s.P, s.z")).not.toThrow();
+    expect(() => holds(GB, "kpis_[\"Q_kW\"] = H_out_kW - H_in_kW")).not.toThrow();
+    expect(body).toContain("`EquilibriumReactor::solve`");
+    expect(body).toContain("`GibbsReactor::solve`");
   });
 });
