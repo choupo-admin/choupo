@@ -148,7 +148,7 @@ describe("(a) every claim carries a source with a page", () => {
 describe("(b) the tree is total and consistent with the feed-form tables", () => {
   const all = everyInput();
   it("every combination of answers fires a rule", () => {
-    expect(all.length).toBe(4 * 3 * 3 * 2 * 3 * 2 * 8);
+    expect(all.length).toBe(5 * 3 * 3 * 2 * 3 * 2 * 8);
     for (const i of all) expect(() => recommend(i)).not.toThrow();
   });
   it("every rule fires for at least one combination (no dead rule)", () => {
@@ -787,7 +787,9 @@ describe("(i) the flash dryer: where the books make it a pick, and where they do
       if (!r.picks.includes("flash")) continue;
       const quickRule = i.feed === "granular" && i.mode === "continuous" && i.quick && r.rule.id === "gran-cont-quick";
       const pasteRule = i.feed === "paste" && i.mode === "continuous" && i.heat !== "low" && r.rule.id === "paste-cont";
-      expect(quickRule || pasteRule, JSON.stringify(i)).toBe(true);
+      // a cake: Table 1.1 ticks the flash dryer for centrifuge and filter cakes (rule "cake-cont")
+      const cakeRule = i.feed === "cake" && i.mode === "continuous" && i.heat !== "low" && r.rule.id === "cake-cont";
+      expect(quickRule || pasteRule || cakeRule, JSON.stringify(i)).toBe(true);
     }
   });
   it("the quick answer is the flash dryer for fine and medium particles, and not for coarse, fragile or 30 degC ones", () => {
@@ -959,5 +961,20 @@ describe("(l) the design guide's dryer table is read from the page (one home)", 
       const e = DRYERS[id].energy;
       if (e) expect(tb, id).toContain(`${grouped(e.value[0])}--${grouped(e.value[1])}`);
     }
+  });
+});
+
+describe("(j) a paste and a filter cake are two feed forms (Mujumdar Table 1.1)", () => {
+  it("spray and drum are for pastes and not cakes; rotary, fluid bed, flash and tray are for cakes", () => {
+    expect(DRYERS.spray.feed.cake.fit).toBe("no");
+    expect(DRYERS.drum.feed.cake.fit).toBe("no");
+    expect(DRYERS.belt.feed.cake.fit).toBe("no");
+    for (const id of ["rotary", "fluidBed", "tray"] as DryerId[]) expect(DRYERS[id].feed.cake.fit, id).toBe("yes");
+    expect(DRYERS.flash.feed.cake.fit).toBe("conditional");
+    expect(recommend({ ...DEFAULT_INPUTS, feed: "cake", mode: "continuous" }).picks).toEqual(["rotary", "fluidBed", "flash"]);
+    expect(recommend({ ...DEFAULT_INPUTS, feed: "cake", mode: "batch" }).picks).toEqual(["tray"]);
+    expect(recommend({ ...DEFAULT_INPUTS, feed: "paste", mode: "continuous" }).picks).not.toContain("rotary");
+    expect(FEED_LABEL.cake).toMatch(/cake/);
+    expect(FEED_LABEL.paste).not.toMatch(/cake/);
   });
 });
