@@ -251,8 +251,14 @@ def main():
                 f"{REACTIVE[0]}: its published speciation blocks sit beyond "
                 "Davies' trust range and the caveat block no longer says so "
                 "ABOVE the path section -- the true caveat was demoted")
+        #  The adiabaticFlash frame is held by the SOURCE arm only since the unit
+        #  takes its outlet from flashState::specifiedFlash (C532 c, 2026-11-28):
+        #  on column13 the home's trials raise no advisory any more (the 96 of
+        #  103 this frame was built against were its old private search), so a
+        #  run-time attribution has no subject there; the frame stays opened and
+        #  closed around the search for any feed whose trials do speak.
         for frame in ("reactive equilibrium: outer Newton search",
-                      "MESH search", "adiabaticFlash outlet-T search"):
+                      "MESH search"):
             if frame not in block:
                 failures.append(
                     f"{REACTIVE[0]}: no advisory attributed to `{frame}` -- "
