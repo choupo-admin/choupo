@@ -6,3 +6,5 @@ transfer-unit	R2	the part heading and step 3 are both "Why the transfer unit was
 column-design	R2	each of the four parts repeats its step's title
 adsorbent-selection	R2	the part heading and step 4 are both "Which adsorbent for which separation"
 relaxation	R3	steps "n · title" and figure cards "k. title" are two numberings interleaved
+how-many-phases	R2	two chapters share a title (C528, from the cloud; fixed with the EduTools consolidation, C535)
+how-many-phases	R3	its step numbers do not ascend in menu order (C528; C535)
