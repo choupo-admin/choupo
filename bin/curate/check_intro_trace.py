@@ -54,6 +54,11 @@ SOLVER = ROOT / "choupoSolve"
 ROW = re.compile(r"^\s*(\d+)\s+([0-9.]+)\s+(-?[0-9.]+e[+-]\d+)")
 
 
+#  The shared (P,H) flash's own line (adiabaticFlash, valve, mixer since
+#  flashState::specifiedFlash): "[specifiedFlash PH] it 0    T = 3.58e+02 K   residual -3.2e+03".
+SPEC_ROW = re.compile(r"\[specifiedFlash PH\]\s+it\s+(\d+)\s+T\s*=\s*([0-9.]+(?:e[+-]?\d+)?)\s*K\s+residual\s+(-?[0-9.]+e[+-]\d+)")
+
+
 def screen_traces(src: str):
     """{case id: [(it, T, residual), ...]} from the GUIDE table's `trace`."""
     out = {}
@@ -125,6 +130,9 @@ def engine_rows(case_id: str):
         r = ROW.match(line)
         if r:
             rows.add((r.group(1), r.group(2), r.group(3)))
+        q = SPEC_ROW.search(line)
+        if q:
+            rows.add((q.group(1), q.group(2), q.group(3)))
     return rows, None
 
 

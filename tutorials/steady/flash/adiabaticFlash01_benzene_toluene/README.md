@@ -12,12 +12,11 @@ case's own golden (`expected`), which `bin/runTests` re-checks.
 1. **Q = 0 is a definition, not a setting.**  The dict declares only the
    outlet pressure (`system/flowsheetDict`, `operation { P 1.01325 bar; }`).
    There is no `T` to give; an adiabatic drum has none to receive.
-2. **Two Newtons, one inside the other.**  The outer one walks T until the
-   outlet enthalpy equals the inlet's; at every trial T the inner one solves
-   the Rachford-Rice flash.  Watch it in the **Log** tab — each outer step
+2. **A Newton in T over a flash.**  The unit asks the shared (P,H) flash,
+   which walks T until the outlet enthalpy equals the inlet's; at every trial
+   T an isothermal flash is solved.  Watch it in the **Log** tab — each step
    prints its H-residual, and the last one prints `H_residual` at the
-   round-off floor (−2.2e-3 J/mol; over the whole 100 kmol/h stream that is
-   6.2e-5 kW against a 1091 kW throughput).
+   round-off floor (−2.8e-7 J/mol).
 3. **Where the 11 K went.**  Vaporising 5 % of the feed costs latent heat,
    and the only place it can come from is the sensible heat of the liquid.
    Open **Streams**: the vapour is benzene-rich, the liquid barely moved in
