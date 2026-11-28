@@ -140,10 +140,9 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  converged: NO", V/F 1.000, 3.5e4 J/mol unclosed); the home answers it
     //  in closed form and every other state by its bracketed search.  What the
     //  old search carried and the home does not: the declared HIGH-SIDE rule
-    //  (an unanswerable trial counted as above the answer).  The shipped
-    //  cases that could reach it (column13's re-flash arm) are in the scope
-    //  of the commit that migrated this unit; the home refuses by name a
-    //  trial it cannot answer instead of re-bracketing it.
+    //  (an unanswerable trial counted as above the answer), removed
+    //  2026-11-28: no shipped case reached it once the mixer priced its real
+    //  two-phase state; the home refuses by name a trial it cannot answer.
     FlashOptions iopts;
     iopts.tolerance  = 1.0e-9;          // inner flash: H error ~1e-5 J/mol
     iopts.maxIter    = 60;
@@ -168,251 +167,16 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  still publishes (the feed's own T at P_out), as the old search did:
     //  inside a recycle one bad tear iterate must not kill the run.  A hard
     //  refusal (C398 TG-01) is never turned into a number.
-    //  DOCUMENTED EXCEPTION -- THE HIGH-SIDE RULE, KEPT AS THE UNIT'S OWN
-    //  SEARCH (2026-11-28).  column13_sour_water_stage_identity reaches it: a
-    //  REACTIVE package refuses trial states far above its two-phase band and
-    //  its re-flash arm hands this unit a mixer enthalpy under a FICTITIOUS
-    //  483 K readout.  `specifiedFlash` refuses such a trial (and evaluates
-    //  the window's edges, so tightening the window cannot emulate the rule);
-    //  this fallback runs ONLY after the home has refused on an unanswerable
-    //  package trial, and is announced.  It is why AdiabaticFlash.cpp stays in
-    //  bin/curate/state_inversion_door.tsv; the row leaves when the home
-    //  carries the rule.
-    auto highSideSearch = [&]() -> std::pair<scalar, bool>
-    {
-        auto splitH = [&](scalar T, scalar P, const FlashSolution& sol) -> scalar
-        {
-            auto H = [&](scalar phase, const sVector& w)
-            { return useFormation ? thermo.H_stream_formation(T, P, phase, w)
-                                  : (phase < 0.5 ? thermo.Hliquid(T, w, Tref)
-                                                 : thermo.Hvapour(T, w, Tref)); };
-            return (1.0 - sol.V_over_F) * H(0.0, sol.x) + sol.V_over_F * H(1.0, sol.y);
-        };
-    FlashSolution lastSolOld;
-    //  C245 3g: the inner flash's own `converged` is READ.  Every trial whose
-    //  inner flash stopped unconverged is counted and treated as unanswerable
-    //  (it is not a point of the surface H_out(T); differencing it would put
-    //  an arbitrary number into the Newton slope).
-    int innerFailedTrials = 0;
-
-    //  A two-phase root above every present component's Tc is not a split:
-    //  the outlet is the single fluid phase, and the discard is said once,
-    //  at the answer (the one home, StreamEquilibrium.H -- C34).
-    std::string scDiscarded;
-    auto flashAt = [&](scalar T) -> FlashSolution
-    {
-        FlashInput in;
-        in.F = F; in.T = T; in.P = Pout; in.z = z;
-        return flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts,
-                                                             scDiscarded);
-    };
-
-    //  A TRIAL TEMPERATURE THE PACKAGE CANNOT ANSWER MUST NOT KILL THE
-    //  SEARCH.  The molecular isothermal flash answers anywhere in the
-    //  bracket, so the outer Newton never noticed it had no strategy for an
-    //  inner failure -- until a REACTIVE package met a trial far above its
-    //  two-phase band (the ReactiveVLE has no liquid to speciate there and
-    //  refuses, correctly).  The named case: column13's re-flash arm, whose
-    //  mixer inlet carries a two-phase enthalpy under a FICTITIOUS
-    //  dominant-phase temperature (483 K on a 367 K stage -- the enthalpy is
-    //  exact, the readout is not, and the case header says so), so the very
-    //  first evaluation sat 110 K above the dew point.
-    //
-    //  The rule, stated because it is a modelling claim and not a
-    //  convenience: H_out(T) rises with T, and the reactive path fails on
-    //  the HIGH side (superheated: the liquid it must speciate is gone), so
-    //  an unanswerable trial is treated as ABOVE the answer -- it tightens
-    //  the upper bracket exactly as f > 0 would.  Every such trial is
-    //  ANNOUNCED.  A failure that is NOT of that kind (an unanswerable
-    //  trial at the bottom of the bracket) walks the search to the lower
-    //  bound and fails THERE, loudly -- misclassification degrades to a
-    //  visible non-convergence, never to a wrong answer.
-    bool trialUnanswerable = false;             // set by f, read by df
-    auto f = [&](scalar T)
-    {
-        try
-        {
-            lastSolOld = flashAt(T);
-        }
-        catch (const std::exception& e)
-        {
-            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
-            trialUnanswerable = true;
-            if (verbosity >= 1)
-                std::cout << "  [adiabaticFlash] trial T = " << std::fixed
-                          << std::setprecision(2) << T << " K: the package"
-                          << " could not answer (" << e.what() << ")\n"
-                          << "  [adiabaticFlash] treated as ABOVE the answer"
-                             " (H rises with T; the reactive path loses its"
-                             " liquid on the high side) -- upper bracket"
-                             " tightened\n";
-            return 1.0e12;                      // f > 0: tightens the upper edge
-        }
-        if (!lastSolOld.converged)
-        {
-            trialUnanswerable = true;
-            ++innerFailedTrials;
-            if (verbosity >= 1)
-                std::cout << "  [adiabaticFlash] trial T = " << std::fixed
-                          << std::setprecision(2) << T << " K: the inner"
-                          << " isothermal flash did NOT converge (residual "
-                          << std::scientific << std::setprecision(2)
-                          << lastSolOld.residual << ") -- trial refused,"
-                             " treated as ABOVE the answer\n";
-            return 1.0e12;
-        }
-        trialUnanswerable = false;
-        scalar Hout = splitH(T, Pout, lastSolOld);
-        return Hout - Hreq;
-    };
-    auto df = [&](scalar T)
-    {
-        //  Central difference; one-sided when a probe is unanswerable, and a
-        //  positive unit slope when both are -- the monotone bracket logic
-        //  then advances by bisection alone, which is the honest thing left.
-        const scalar dT = 0.5;
-        scalar fph = f(T + dT);
-        const bool phBad = trialUnanswerable;
-        scalar fmh = f(T - dT);
-        const bool mhBad = trialUnanswerable;
-        if (phBad && mhBad) return 1.0;
-        if (phBad || mhBad)
-        {
-            scalar fT = f(T);
-            if (trialUnanswerable) return 1.0;
-            return phBad ? (fT - fmh) / dT : (fph - fT) / dT;
-        }
-        return (fph - fmh) / (2.0 * dT);
-    };
-
-    solver::NROptions nro;
-    nro.tolerance          = 0.01;         // J/mol; keeps published H-flow closure negligible
-    nro.maxIter            = solver::requireIterationBudget(
-        operDict->lookupScalarOrDefault("maxOuterIter", 30.0),
-        "adiabaticFlash maxOuterIter");
-    nro.lower              = 200.0;
-    nro.upper              = 700.0;
-    nro.bracket            = true;
-    nro.monotoneIncreasing = true;         // d(H_out)/dT > 0 generally
-    nro.maxStep            = 15.0;
-
-    if (verbosity >= 3)
-    {
-        std::cout << "Outer Newton in T (energy balance):\n"
-                  << "   it       T [K]       H_out-Hreq    dH/dT          ΔT\n"
-                  << "  ----  -----------  -------------  -------------  -------------\n";
-    }
-    nro.onIter = [this, verbosity](const solver::NRTrace& tr)
-    {
-        recordResidual(std::abs(tr.f));
-        if (verbosity >= 3)
-        {
-            std::cout << "  " << std::setw(4) << tr.iteration
-                      << "  " << std::fixed << std::setprecision(4)
-                      << std::setw(11) << tr.x
-                      << "  " << std::scientific << std::setprecision(5)
-                      << std::setw(13) << tr.f
-                      << "  " << std::setw(13) << tr.dfdx
-                      << "  " << std::setw(13) << tr.dx << "\n";
-        }
-    };
-
-    //  SEED FROM THE FEED, THEN PROVE THE SEED ANSWERS.  The inlet T is the
-    //  natural start -- except when it is a mixer's fictitious dominant-phase
-    //  readout, in which case the first trial may sit above everything the
-    //  package can answer.  Bisect toward the lower bound until a trial
-    //  answers (each unanswerable trial tightens the upper bracket under the
-    //  high-side rule above); a bracket with no answerable point anywhere
-    //  refuses naming both ends, because there is nothing honest to return.
-    //  THE T SEARCH WALKS, AND SAYS SO.
-    //
-    //  Every trial temperature below is a full flash at a state this unit
-    //  invented, and all but the last are discarded -- the bisection probes,
-    //  the bracketing, and the two extra flashes the central-difference dH/dT
-    //  costs per iteration.  On an electrolyte feed each of those raises its
-    //  own out-of-band advisory, so an unframed search buries the handful
-    //  that describe the CONVERGED outlet.  (Measured on column13: 96 of the
-    //  run's 103 advisories were raised here, and none of them is about the
-    //  answer.)  The frame closes below, before the final flash at the
-    //  converged T -- that one IS the answer and speaks in full.
-    AdvisoryFrame walk("adiabaticFlash outlet-T search");
-
-    scalar Tstart = std::clamp(Tfeed, nro.lower, nro.upper);
-    {
-        int probe = 0;
-        for (; probe < 24; ++probe)
-        {
-            f(Tstart);
-            if (!trialUnanswerable) break;
-            nro.upper = Tstart;
-            Tstart    = 0.5 * (nro.lower + Tstart);
-        }
-        if (trialUnanswerable)
-            throw std::runtime_error("adiabaticFlash: no trial temperature in ["
-                + std::to_string(nro.lower) + ", "
-                + std::to_string(std::clamp(Tfeed, nro.lower, nro.upper))
-                + "] K was answerable by the package -- the energy balance"
-                  " has nothing to search on.  Check the feed state and the"
-                  " package's validity range.");
-        if (probe > 0 && verbosity >= 1)
-            std::cout << "  [adiabaticFlash] the inlet's stated T ("
-                      << std::fixed << std::setprecision(2) << Tfeed
-                      << " K) was not answerable by the package (a mixer"
-                         " carrying a two-phase enthalpy reports a fictitious"
-                         " dominant-phase T); search re-seeded at "
-                      << Tstart << " K after " << probe
-                      << " bisection probe(s)\n";
-    }
-
-    
-
-        auto r = solver::newton1D(f, df, Tstart, nro);
-        return { r.x, r.converged };
-    };
 
     flashState::SpecifiedState st;
     bool searchOk = true;
     std::string searchWhy;
-    //  DOCUMENTED EXCEPTION -- THE HIGH-SIDE RULE (kept from the unit's own
-    //  search; column13_sour_water_stage_identity reaches it).  A REACTIVE
-    //  package refuses a trial far above its two-phase band (the liquid it
-    //  must speciate is gone), and column13's re-flash arm hands this unit a
-    //  mixer enthalpy under a FICTITIOUS 483 K readout.  When the home's
-    //  first attempt fails, the window's upper edge is moved to the lowest
-    //  temperature the package cannot answer (H rises with T, so an
-    //  unanswerable trial lies ABOVE the answer), the seed to an answerable
-    //  one, and the home is asked once more.  Announced; a second failure is
-    //  reported not converged below.
+    //  No private search remains: a refusal of the home (an unanswerable
+    //  package trial included) is reported NOT converged with its reason,
+    //  as the valve does.
     try
     {
-        spec.lastUnanswerableT = std::numeric_limits<scalar>::quiet_NaN();
-        try
-        {
-            st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
-        }
-        catch (const std::exception& refused)
-        {
-            rethrowHardRefusal();
-            if (!std::isfinite(spec.lastUnanswerableT)) throw;
-            std::cout << "  [adiabaticFlash] the (P, H) flash was refused on an"
-                         " unanswerable package trial (" << spec.lastUnanswerableT
-                      << " K): " << refused.what() << "\n"
-                      << "  [adiabaticFlash] falling back to the unit's own HIGH-SIDE"
-                         " search (an unanswerable trial is treated as ABOVE the answer)\n";
-            const auto hs = highSideSearch();
-            if (!hs.second)
-                throw std::runtime_error("adiabaticFlash: the high-side search did not converge");
-            std::string sc;
-            FlashInput in; in.F = F; in.T = hs.first; in.P = Pout; in.z = z;
-            st.phases = flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts, sc);
-            flashState::reportSupercriticalDiscard(sc, "adiabaticFlash",
-                                                   "adiabaticFlash outlet", verbosity);
-            st.T = hs.first;
-            st.H = flashState::priceState(hs.first, Pout, z, 1.0, false,
-                                          st.phases.V_over_F, thermo,
-                                          "adiabaticFlash outlet", nullptr);
-            st.route = "the unit's own high-side search (documented exception)";
-        }
+        st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
     }
     catch (const std::exception& e)
     {
