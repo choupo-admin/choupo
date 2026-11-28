@@ -72,7 +72,6 @@ const WORKSPACE = read("../src/ui/MethodsWorkspace.tsx");
  *  holds both, and the legend's own code). */
 const IN_FILE: Readonly<Record<string, string>> = {
   mccabe: "McCabeTool",
-  psychro: "PsychroTool",
 };
 
 function functionBody(src: string, name: string): string {

@@ -95,6 +95,16 @@ function chaptersWith(steps: readonly { title: string; body: string }[], word: s
 }
 
 describe("searching", () => {
+  it("a family member's hit is labelled 'Drying > <chapter>' (C535 S6)", () => {
+    for (const q of ["wet bulb", "dry basis"]) {
+      const hits = searchEduTools(eduToolsIndex(), q)
+        .filter((h) => ["dryer-selection", "drying", "why-did-it-not-dry", "psychro"].includes(h.doc.tool));
+      expect(hits.length, q).toBeGreaterThan(0);
+      for (const h of hits) expect(h.doc.toolLabel.startsWith("Drying > "), h.doc.toolLabel).toBe(true);
+    }
+    const diag = eduToolsIndex().find((d) => d.tool === "why-did-it-not-dry" && d.kind === "tool")!;
+    expect(diag.toolLabel).toBe("Drying > Diagnose");
+  });
   it("'cavitation' finds the letdown and the pump pages at the right chapters", () => {
     const hits = searchEduTools(eduToolsIndex(), "cavitation");
     const at = (tool: string) => hits.filter((h) => h.doc.tool === tool && h.doc.chapterKey)

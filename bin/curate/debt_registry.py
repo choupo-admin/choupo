@@ -1187,6 +1187,7 @@ LESSON_PROSE_CITATIONS_DEBT = {
 #  count may only fall (a new one needs a claim and a probe), measured at the
 #  commit that introduced the gate.
 LESSON_ABSENCE_UNCLASSIFIED = {
+    "gui/src/ui/methods/engineBench.tsx": 1,  # moved from MethodsWorkspace.tsx (C535 batch); a regex for the error line, not an absence claim
     "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/DryerSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/LinearAlgebraFigures.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
@@ -1211,7 +1212,7 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/CosmoSacTheoryTool.tsx": 3,
     "gui/src/ui/methods/DatabaseToParametersTool.tsx": 5,
     "gui/src/ui/methods/DemandForecastTool.tsx": 1,
-    "gui/src/ui/methods/DryingCurveTool.tsx": 4,
+    "gui/src/ui/methods/DryingCurveTool.tsx": 3,
     "gui/src/ui/methods/EconomicsErrorsTool.tsx": 5,
     "gui/src/ui/methods/ElectrolyteModelsTool.tsx": 2,
     "gui/src/ui/methods/ElementPotentialTool.tsx": 5,
@@ -1403,6 +1404,7 @@ LESSON_TYPED_CANDIDATES_DEBT = {
 #  Pitzer validity, overpressure P2 above the relieving pressure).  Per file;
 #  may only fall.
 LESSON_KNOBS_UNDECLARED = {
+    "gui/src/ui/methods/PsychroTool.tsx": 4,  # moved from MethodsWorkspace.tsx (C535 S4); the four setup knobs, undeclared
     "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/FaultDiagnosisTool.tsx": 1,  # arrived from main 2026-11-21, undeclared at seeding
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 4,

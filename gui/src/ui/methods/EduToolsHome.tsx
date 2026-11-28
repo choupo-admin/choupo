@@ -48,8 +48,19 @@ import { useCoarsePointer } from "./methodsChrome.js";
 import { accentCss } from "./sectionAccents.js";
 import { groupHits, type HomeMatch } from "./homeFilter.js";
 import {
-  METHOD_DISCIPLINES, METHOD_TOOLS, type MethodDiscipline, openMethodToolAt, openToolFromHome,
+  METHOD_DISCIPLINES, METHOD_TOOLS, type MethodDiscipline, type MethodToolId,
+  familyOf, openMethodToolAt, openToolFromHome,
 } from "./registry.js";
+
+/** A family's members appear ONCE in every list a student browses (C535 S6):
+ *  the member that opens the family (its first step) stands for it, the others
+ *  drop.  The family is read from the registry, never typed here. */
+export function collapseFamilies<T extends { id: string }>(tools: readonly T[]): T[] {
+  return tools.filter((m) => {
+    const f = familyOf(m.id as MethodToolId);
+    return !f || f.steps[0]!.tool === m.id;
+  });
+}
 
 type IndexModule = typeof import("./eduToolsIndex.js");
 
@@ -91,15 +102,21 @@ export function EduToolsHome(): JSX.Element {
   const searching = query.trim() !== "";
   // Until the index has loaded, a typed query cannot filter: show everything.
   const filtering = searching && mod !== null;
-  const kept = (id: string) =>
+  const keptTool = (id: string) =>
     !filtering || (match.tools !== null && match.tools.has(id as never));
-  const nKept = live.filter((m) => kept(m.id)).length;
+  // A family is kept when any of its chapters is.
+  const kept = (id: string) => {
+    const f = familyOf(id as MethodToolId);
+    return f ? f.steps.some((st) => keptTool(st.tool)) : keptTool(id);
+  };
+  const nKept = live.filter((m) => keptTool(m.id)).length;
+  const shelf = collapseFamilies(live);
   const sections = METHOD_DISCIPLINES.map((d) => ({
-    d, tools: live.filter((m) => m.discipline === d && kept(m.id)),
+    d, tools: shelf.filter((m) => m.discipline === d && kept(m.id)),
   })).filter((s) => s.tools.length > 0);
   // One tile per section that has live tools; under a query its count is the
   // number of MATCHES and a section with none is dimmed (its shelf is hidden).
-  const tiles = homeTiles(live, kept);
+  const tiles = homeTiles(shelf, kept);
 
   return (
     <Box data-method-home="" style={{ flex: 1, minHeight: 0, minWidth: 0,
@@ -162,6 +179,29 @@ export function EduToolsHome(): JSX.Element {
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs">
                 {s.tools.map((m) => {
                   const ch = match.chapter.get(m.id);
+                  const fam = familyOf(m.id as MethodToolId);
+                  if (fam) {
+                    return (
+                      <Box key={fam.id} data-method-home-family={fam.id} className="choupo-edu-card"
+                        style={{ borderRadius: 4, minWidth: 0 }}>
+                        <UnstyledButton onClick={() => openToolFromHome(fam.steps[0]!.tool)}
+                          style={{ display: "block", width: "100%", textAlign: "left",
+                            padding: coarse ? "10px 12px" : "6px 10px" }}>
+                          <Text size="sm" fw={600}>{fam.title}</Text>
+                          <Text size="xs" c="dimmed">{fam.intro}</Text>
+                        </UnstyledButton>
+                        <Box style={{ display: "flex", flexWrap: "wrap", gap: 10,
+                          padding: coarse ? "4px 12px 10px" : "0 10px 6px" }}>
+                          {fam.steps.map((st) => (
+                            <UnstyledButton key={st.tool} data-method-home-family-chapter={st.tool}
+                              onClick={() => openToolFromHome(st.tool)}>
+                              <Text size="xs" c="dimmed" td="underline">{st.label ?? st.tool}</Text>
+                            </UnstyledButton>
+                          ))}
+                        </Box>
+                      </Box>
+                    );
+                  }
                   return (
                     <Box key={m.id} data-method-home-tool={m.id} className="choupo-edu-card"
                       style={{ borderRadius: 4, minWidth: 0 }}>

@@ -91,6 +91,191 @@ THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
 
+LOGS = Path.home() / ".claude" / "projects" / "-home-vitor-Choupo"
+LAST_WEEK_M = 4980   # re-read tokens (millions) of the week before Vitor's request, measured 2026-11-27
+
+
+def _scan(hours):
+    """Per-message context (cache read + creation + input) from the local Claude Code logs,
+    as ~/.cache/choupo/meter.py reads them: main session and subagents apart."""
+    from datetime import timedelta
+    t0 = datetime.now(timezone.utc) - timedelta(hours=hours)
+    main, gens, tot = [], {}, 0
+    for f in LOGS.glob("**/*.jsonl"):
+        if f.stat().st_mtime < t0.timestamp():
+            continue
+        sub = "/subagents/" in str(f)
+        seen = set()
+        for line in f.open(errors="ignore"):
+            if '"usage"' not in line:
+                continue
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            m = r.get("message") or {}
+            ts = r.get("timestamp")
+            if r.get("type") != "assistant" or not ts or m.get("id") in seen:
+                continue
+            if datetime.fromisoformat(ts.replace("Z", "+00:00")) < t0:
+                continue
+            seen.add(m.get("id"))
+            u = m["usage"]
+            c = u.get("cache_read_input_tokens", 0) + u.get("cache_creation_input_tokens", 0) + u.get("input_tokens", 0)
+            tot += c
+            (gens.setdefault(f, []) if sub else main).append(c)
+    return main, gens, tot
+
+
+def _light(v, g, y):
+    return "🟢" if v <= g else ("🟡" if v <= y else "🔴")
+
+
+def efficiency_section():
+    """Context efficiency of the agents, computed from the logs (Vitor, 2026-11-28)."""
+    import statistics as st
+    try:
+        m, g, t = _scan(24)
+        _, _, t7 = _scan(168)
+    except OSError:
+        return "### Eficiência de contexto\n\nsem dado (registos locais ilegíveis)"
+    k = lambda x: f"{x / 1000:.0f} mil"
+    L = ["### Eficiência de contexto (últimas 24 h, calculado dos registos)", ""]
+    if m:
+        med = st.median(m)
+        L.append(f"- {_light(med/1000,150,300)} sessão principal: mediana **{k(med)}** relidos por mensagem, última **{k(m[-1])}** (alvo < 150 mil)")
+    else:
+        L.append("- sessão principal: sem dado")
+    gl = [v for v in g.values() if v]
+    if gl:
+        n = [len(v) for v in gl]
+        L.append(f"- {_light(max(n),60,90)} generais hoje: **{len(gl)}**; chamadas por general: mediana {st.median(n):.0f}, máximo {max(n)} (alvo <= 60)")
+        L.append(f"- contexto por general: na 1.ª chamada mediana {k(st.median(v[0] for v in gl))}, no fim mediana {k(st.median(v[-1] for v in gl))}; "
+                 f"tokens por general: mediana {st.median(sum(v) for v in gl)/1e6:.1f} M, máximo {max(sum(v) for v in gl)/1e6:.1f} M")
+    else:
+        L.append("- generais hoje: sem dado")
+    L.append(f"- {_light(t/1e6,300,800)} relido hoje: **{t/1e6:.0f} M** · {_light(t7/1e6,2100,4980)} 7 dias: **{t7/1e6:.0f} M** (a semana passada: {LAST_WEEK_M} M)")
+    L.append("")
+    for f, v in sorted(g.items(), key=lambda kv: -sum(kv[1]))[:12]:
+        desc, model = "sem descrição", "?"
+        try:
+            meta = json.loads(f.with_suffix(".meta.json").read_text())
+            desc, model = meta.get("description", desc), meta.get("model", "?")
+        except (OSError, ValueError):
+            pass
+        L.append(f"  - {desc[:48]} · {model} · {len(v)} chamadas · pico {k(max(v))} · {sum(v)/1e6:.1f} M")
+    return "\n".join(L)
+
+FIXRE = r"fix|repair|red\b|reds\b|correct|restore"
+LANDRE = r"^(Merge(?! branch 'main')|Landing|Batch|integrate)"
+HUBS = ("BACKLOG.tsv", "DEV.md", "PLAN.md", "BRAIN.md", "SESSIONS.md", "CHANGELOG.md", "bin/curate/backlog_themes.tsv")  # registers: the backlog view's own theme map changes with every backlog edit
+
+
+def _hub(f):
+    """Files every landing touches (registers, generated files, PDFs): not evidence of a patch."""
+    return f in HUBS or f.startswith("generated/") or f.endswith(".pdf") or f.startswith("docs/audits/")
+
+
+
+def _git(*a):
+    return subprocess.run(["git", "-C", str(ROOT), *a], capture_output=True, text=True).stdout
+
+
+_FIXCACHE = []
+DYNHUBS = set()   # files touched by more than 30 % of the 7-day landings, set by quality_section
+
+
+def _fixes(after_ts, hours, files, ref="main"):
+    """Fix-looking commits on ref in (after_ts, after_ts+hours] touching one of files (one git call, cached)."""
+    import re
+    if not _FIXCACHE:
+        cur = None
+        for ln in _git("log", ref, "--no-merges", "--since=15 days ago", "--name-only", "--format=@@%H\t%ct\t%s").splitlines():
+            if ln.startswith("@@"):
+                h, ct, subj = ln[2:].split("\t", 2)
+                cur = (h, int(ct), set()) if re.search(FIXRE, subj, re.I) and not re.search(LANDRE, subj) else None
+                if cur:
+                    _FIXCACHE.append(cur)
+            elif ln and cur:
+                if not _hub(ln):
+                    cur[2].add(ln)
+        _FIXCACHE.append(("", 0, set()))
+    files = files - DYNHUBS
+    return [(h, files & fs) for h, ct, fs in _FIXCACHE if after_ts < ct <= after_ts + hours * 3600 and files & fs - DYNHUBS]
+
+
+def quality_section():
+    """Quality indicators, computed from git on main and the local logs (Vitor, 2026-11-28).
+    Returns (markdown, [[light, text], ...]).  Each has a blind spot, stated here:
+    1. landings needing a correction: landings (first-parent commits on main in 7 days, subject
+       Merge/Landing/Batch/integrate) followed within 24 h by a fix commit (subject has
+       fix/repair/red/correct/restore) touching a file the landing touched.  Blind: a fix whose
+       subject lacks the words; a landing's files are its diff against first parent, so a
+       merge of a build branch into main counts once per hop.  Register files (BACKLOG, DEV, PLAN,
+       BRAIN, generated/, PDFs) are ignored as touched files.
+    2. patches after landing: such fix commits in the 7 days after each landing, per file.
+       Blind: same word list; one fix touching many files counts once per landing.
+    3. generals accepted first time: each agent-<id> log of the last 24 h tied to branch
+       worktree-agent-<id>; accepted if merged into main with no fix commit within 24 h
+       touching the files of its branch.  Blind: unmerged or deleted branches are not counted;
+       the 24 h window starts at the merge that first brought the tip into main.
+    """
+    import re, time
+    from collections import Counter
+    now = int(time.time())
+    Q = []
+    land = []
+    for ln in _git("log", "main", "--first-parent", "--since=7 days ago", "--format=%H\t%ct\t%s").splitlines():
+        h, ct, subj = ln.split("\t", 2)
+        if re.search(LANDRE, subj):
+            merge = len(_git("rev-list", "--parents", "-1", h).split()) > 2
+            f = set(_git("diff", "--name-only", h + "^1", h).split()) if merge else \
+                set(_git("diff-tree", "--no-commit-id", "--name-only", "-r", h).split())
+            land.append((h, int(ct), {x for x in f if not _hub(x)}))
+    hubs = []
+    if land:
+        c = Counter(x for _, _, f in land for x in f)
+        DYNHUBS.update(k for k, v in c.items() if v > 0.3 * len(land))
+        hubs = sorted(DYNHUBS)
+    if not land:
+        Q += [["none", "aterragens que precisaram de correção: sem dado"], ["none", "remendos depois de aterrar: sem dado"]]
+    else:
+        need = sum(1 for h, ct, f in land if _fixes(ct, 24, f))
+        r = need / len(land)
+        Q.append(["g" if need == 0 else ("y" if r <= .2 else "r"),
+                  f"aterragens que precisaram de correção (24 h): **{need} de {len(land)}** (7 dias)"])
+        cnt, fl = set(), Counter()
+        for h, ct, f in land:
+            for fh, hit in _fixes(ct, 168, f):
+                cnt.add(fh); fl.update(hit)
+        n = len(cnt)
+        top = ", ".join(f"{k} ({v})" for k, v in fl.most_common(3)) or "-"
+        Q.append(["g" if n <= 2 else ("y" if n <= 6 else "r"), f"remendos depois de aterrar: **{n}** commits; mais tocados: {top}"])
+    ids = sorted({re.search(r"agent-(\w+)\.jsonl", str(f)).group(1) for f in LOGS.glob("**/subagents/agent-*.jsonl")
+                  if now - f.stat().st_mtime < 86400})
+    ok = tot = 0
+    for i in ids:
+        tip = _git("rev-parse", "--verify", "-q", "worktree-agent-" + i).strip()
+        if not tip or subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", tip, "main"]).returncode:
+            continue
+        m = _git("log", "main", "--first-parent", "--ancestry-path", f"{tip}..main", "--format=%H\t%ct").splitlines()
+        if not m:
+            continue
+        mh, mct = m[-1].split("\t")
+        files = {x for x in _git("diff", "--name-only", _git("merge-base", tip, mh + "^1").strip(), tip).split() if not _hub(x)}
+        tot += 1
+        ok += 0 if _fixes(int(mct), 24, files) else 1
+    if tot:
+        Q.append(["g" if ok / tot >= .9 else ("y" if ok / tot >= .7 else "r"),
+                  f"generais aceites à primeira (ramo worktree-agent-<id> do registo; já no main, sem correção em 24 h): **{ok} de {tot}**"])
+    else:
+        Q.append(["none", "generais aceites à primeira: sem dado (nenhum ramo de general das últimas 24 h já está no main)"])
+    ico = {"g": "🟢", "y": "🟡", "r": "🔴", "none": "⚪"}
+    md = "### Qualidade (7 dias, calculado do git)\n\n" + "\n".join(f"- {ico[l]} {t}" for l, t in Q)
+    md += "\n- ficheiros-eixo excluídos (em mais de 30 % das aterragens): " + (", ".join(hubs) or "nenhum")
+    return md, Q
+
+
 def main():
     if len(sys.argv) != 2:
         print(__doc__); return 2
@@ -110,7 +295,7 @@ def main():
                "themes": {r["item"]: th.get(r["item"], "Outros") for r in open_},
                "themeOrder": THEME_ORDER, "progress": {r["item"]: pg[r["item"]] for r in open_ if r["item"] in pg},
                "week": week, "roadmap": count["ROADMAP"],
-               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day}
+               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day, "quality": quality_section()[1]}
         Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
         print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
         return 0
@@ -139,17 +324,17 @@ def main():
             return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} | " \
                    + (f"{pg[r['item']][0]} %" if r["item"] in pg else "") + " |"
         nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
-        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n{efficiency_section()}\n\n{quality_section()[0]}\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
               f"\n### ▶ A andar agora ({len(now)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in now) + "\n"
               f"\n### A seguir, por prioridade ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
-              f"\n### O resto, por tema\n")
+              f"\n### O resto, por tema\n\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
         for t in THEME_ORDER + ([] if "Outros" in THEME_ORDER else ["Outros"]):
             lst = [r for r in rest if (th.get(r["item"], "Outros") if th.get(r["item"]) in THEME_ORDER else "Outros") == t]
             if lst:
-                md += f"\n**{t}** ({len(lst)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in lst) + "\n"
+                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] + (f" ({pg[r['item']][0]} %)" if r["item"] in pg else "") for r in lst) + "\n"
         md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Feito: estimativa, partes no main.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
         Path(sys.argv[1]).write_text(md)
         print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")

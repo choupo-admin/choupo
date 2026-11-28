@@ -116,7 +116,7 @@ import {
   selectedUnitIn, selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
 import {
-  METHOD_DISCIPLINES, METHOD_TOOLS, goToEduToolsHome, setActiveMethodTool, useActiveMethodTool,
+  METHOD_DISCIPLINES, METHOD_TOOLS, familyOf, goToEduToolsHome, setActiveMethodTool, useActiveMethodTool,
   type MethodToolId,
 } from "./methods/registry.js";
 import { openEduToolsFind } from "./methods/EduToolsFind.js";
@@ -1154,13 +1154,14 @@ function ToolMenu({ tool, px }: { tool: MethodToolId | null; px: number }) {
           METHOD_DISCIPLINES in the registry; an empty shelf does not
           render. */}
       {METHOD_DISCIPLINES.map((d) => {
-        const shelf = METHOD_TOOLS.filter((m) => m.discipline === d);
+        const shelf = METHOD_TOOLS.filter((m) => m.discipline === d && (!familyOf(m.id) || familyOf(m.id)!.steps[0]!.tool === m.id));
         if (shelf.length === 0) return null;
         return (
           <Box key={d}>
             <Menu.Label>{d}</Menu.Label>
             {shelf.map((m) => {
-              const active = m.id === tool;
+              const fam = familyOf(m.id);
+              const active = fam ? !!tool && familyOf(tool)?.id === fam.id : m.id === tool;
               const planned = m.status !== "live";
               return (
                 <Menu.Item
@@ -1182,7 +1183,7 @@ function ToolMenu({ tool, px }: { tool: MethodToolId | null; px: number }) {
                   onClick={() => { if (!planned) setActiveMethodTool(m.id); }}
                   styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
                 >
-                  {planned ? `${m.label} (planned)` : m.label}
+                  {fam ? fam.title : planned ? `${m.label} (planned)` : m.label}
                 </Menu.Item>
               );
             })}

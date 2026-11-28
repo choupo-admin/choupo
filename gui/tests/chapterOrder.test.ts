@@ -32,7 +32,7 @@
   A page that fails today is pinned BY NAME in chapterOrderDebt.tsv with the
   rule it breaks.  The ratchet is exact: a page that fails and is not pinned
   fails, and a pinned page that no longer fails fails too, so the file can only
-  shrink.  The two tools the workspace mounts with props (mccabe, psychro) and
+  shrink.  The tools the workspace mounts with props (mccabe, psychro) and
   any tool whose static render throws are listed in UNRENDERED, and that list
   is pinned the same way.
 \*---------------------------------------------------------------------------*/
