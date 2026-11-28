@@ -6282,6 +6282,43 @@ NOT MODELLED, said plainly: any non-equilibrium (a real turbine's supersaturated
 \end{tutgolden}
 
 \clearpage
+\tutentry{flashSpec02\_window\_edges}{tutorials/props/thermo/flashSpec02\_window\_edges}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{edgeRootPH}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{topPH}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{topNearPH}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{belowPH}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{edgeRootPS}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{topPS}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{topNearPS}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{belowPS}\\[-1pt]{\tiny flashSpec}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The edges of the flash specification's search (DEV.md 4c C214 follow-up): a root exactly on the window edge, a target at the top of the package's temperature domain (IF97, 1073.15 K), and a default window wider than the package domain (IF97, 273.15 K) -- each in (P,H) and (P,S) on IAPWS-IF97}
+\begin{tutnarrative}
+the three edges of a (P,H)/(P,S) search. Each target is the state (T, 1 bar) of liquid or vapour water, so the answer is known: the T it came from. edgeRoot T = 300 K, seed 320 K, window [300, 600] K: the root IS the window edge; a bracket that tests only a sign change misses it. topOfIF97 T = 1073.15 K and 1073.14995 K: the derivative must not step above IF97's ceiling (region 5 is not implemented). belowIF97 T = 274 K, seed 280 K, default window [50, 1500] K: the window is cut to IF97's 273.15 K floor, so no trial state is priced below it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{edgeRootPH}{H}{2029.63877635}
+\goldrow{diag}{edgeRootPH}{H\_per\_mass}{112.663823278}
+\goldrow{diag}{edgeRootPH}{P}{100000}
+\goldrow{diag}{edgeRootPH}{S}{7.08164330613}
+\goldrow{diag}{edgeRootPH}{S\_per\_mass}{0.393097047246}
+\goldrow{diag}{edgeRootPH}{T}{299.999999999}
+\goldrow{diag}{edgeRootPH}{dH\_fromReference}{-8.73910721566e-08}
+\goldrow{diag}{edgeRootPH}{flashes}{11}
+\goldrow{diag}{edgeRootPH}{iterations}{2}
+\goldrow{diag}{edgeRootPH}{onSaturationPlateau}{0}
+\goldrow{diag}{edgeRootPH}{ref\_H}{2029.63877643}
+\goldrow{diag}{edgeRootPH}{ref\_P}{100000}
+\goldrow{diag}{edgeRootPH}{ref\_T}{300}
+\goldrow{diag}{edgeRootPH}{ref\_vaporFraction}{0}
+\goldmore{142}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heavyWater01\_isotope\_effect}{tutorials/props/thermo/heavyWater01\_isotope\_effect}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
