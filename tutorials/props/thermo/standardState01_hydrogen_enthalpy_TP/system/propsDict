@@ -3,7 +3,7 @@
 |        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
 \*-----------------------------------------------------------------------------*/
 /*  One propertyPoint per node of the page's grid.  Names are the keys the
-    GUI reads: h_T<K>_P<bar>; h_converter is the green-ammonia converter's
+    GUI reads: h_T<K>_P<bar>; h_converter is the ammonia converter's
     (T, P), h_converter_1bar its standard-pressure twin.
 */
 operations

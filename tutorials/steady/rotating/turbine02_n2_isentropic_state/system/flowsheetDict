@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  turbine02_n2_isentropic_state -- witness: the PUBLISHED isentropic discharge
+  temperature satisfies S(T_out_isen, P_out) = S_in.  An external review found
+  T_out_isen taken at a finite-difference neighbour pressure of the outer
+  Newton (313.1225 K against 313.2192 K); the discharge now re-solves at P_out.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        turbine;
+        type        turbine;
+        in          feed;
+        outputs     ( exhaust );
+        operation   { W_shaft -8.0 kW;  eta 1.0; }
+    }
+);

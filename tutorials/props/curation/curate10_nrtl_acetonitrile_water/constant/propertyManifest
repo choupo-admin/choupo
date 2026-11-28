@@ -21,8 +21,8 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/acetonitrile.dat"  "398dc590046321dd24fc101560dfdac682a699a47b127824c614b64fe1413da8";
-        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "components/acetonitrile.dat"  "b1690e4bb7d2623b7dd3e0cd6495f7bb38bf4bfcb90fabc368da4d6b40781084";
+        "components/water.dat"  "fd30a5f6ea814eca35b2371056809686673359b371cb9bc428755012f1d18dea";
         "parameters/Henry/"  "relevant:34c3f7d37f4eba0e73433ee8f06d9433d80c98ecd707aab3c0529848f20c03e1";
         "parameters/Henry/acetonitrile-water.dat"  "a270074b50da8899cadd417065bac24a83aad33f6853fc8eab8d81eb431da359";
         "parameters/NRTL/acetonitrile-water.dat"  "49773e8fa6968181d5092bcb374f3a7af4dbe0211c7209e3f1c5f7e5c7e813f3";

@@ -21,7 +21,7 @@ For every case whose constant/propertyManifest holds `pins`:
   * (C433) a pair's address is never written in a case: no `source "<path>"` in a
     binaryParameters / binaryInteractions entry, no inline pair that is not a value a
     fit varies (bin/curate/pairs_by_name.py --check; the real defect: flash02 retyped
-    the catalogue's five NRTL numbers and greenAmmoniaPEQ named its Henry records by
+    the catalogue's five NRTL numbers and ammoniaPEQ named its Henry records by
     path -- a fact with two homes, one of which no gate compared with the other);
   * a path the case's own run WRITES (`record "constant/<sub>"` in a dict under
     system/) has no catalogue homonym -- otherwise deleting the product would

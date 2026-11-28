@@ -59,9 +59,9 @@ Run: 47.4 s, converged, mass 100 %, 22 advisories.
 
 Screenshots: `03-column14-run.png`, `03-column14-plots.png`, `03-column14-streams.png`.
 
-## Stop 4 -- greenAmmoniaPEQ_baseCase
+## Stop 4 -- ammoniaPEQ_baseCase
 
-Opened `?case=plant/greenAmmoniaPEQ_baseCase`.  Run: 44.8 s (two recycle loops, converged).  Header: MASS 99.9971 %, ENERGY residual 1.761 kW (0.00207 %), **162 advisories**.
+Opened `?case=plant/ammoniaPEQ_baseCase`.  Run: 44.8 s (two recycle loops, converged).  Header: MASS 99.9971 %, ENERGY residual 1.761 kW (0.00207 %), **162 advisories**.
 
 | sub-step | doc says | on screen | match |
 |---|---|---|---|

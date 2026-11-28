@@ -104,8 +104,11 @@ move T or P to enter the band if a real split is what you wanted.
 <!-- END GENERATED unit-acceptance isothermalFlash,flash -->
 
 ### `adiabaticFlash`
-Same as isothermalFlash but the outer Newton finds T such that
-`H_out = H_in`.  Spec the pressure only:
+Same as isothermalFlash but the outlet is the (P, H) flash of the inlet's
+enthalpy (`flashState::specifiedFlash`): T such that `H_out = H_in`, to 0.01 J/mol.  A pure fluid
+flashed into its saturation plateau leaves at Tsat(P) with the lever-rule vapour
+fraction (`adiabaticFlash02_wet_water_letdown`; a near-pure mixture: `adiabaticFlash03_near_pure_letdown`).
+If the (P, H) flash cannot answer, the unit reports `Converged: NO` and still publishes.  Spec the pressure only:
 ```
 operation { P <Pa>; }
 ```
@@ -389,7 +392,7 @@ a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy �
 fixed volume the drop goes as (L/D)² (at a declared diameter, as D⁻⁴ to D⁻⁶); nothing
 is clamped.  Absent both keys the bed is
 the constant-pressure march it always was.  The single-reaction path refuses them.
-Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds at the converter's ONE
+Example: `tutorials/plant/ammoniaPEQ03_basicDesign` (three beds at the converter's ONE
 diameter, solved by its DesignSpec as the smallest at which every bed is within its
 1 bar; C66 had each bed at its own L/D 1.5, and at L/D 6 the loop did not converge).
 **A cooled MULTITUBULAR bed** (multi-reaction path, `thermalMode heatExchange`, C69):
@@ -479,7 +482,7 @@ the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>
 Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
 (1968) ammonia law, written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing` (rung 4
 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
-`greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
+`ammoniaPEQ03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
 The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrhenius` only.
 
@@ -640,6 +643,7 @@ double cannot carry it), `extent_<name>_kmol_h`, `conversion_<name>`,
 `Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)
 and `temperatureApproach_K` (the global magnitude, when declared).
 Examples: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift together);
+`tutorials/steady/reactors/equil05_order_independent_a` / `_b` (the order of the `reactions` list does not change the start or the answer);
 `tutorials/steady/reactors/equil02_methanol_declared_pathways` (one syngas, three
 equilibria: Gibbs over every species makes methane, the declared list without methanation
 makes methanol, the complete list reproduces Gibbs);
@@ -668,6 +672,7 @@ Refused by name: two solids supersaturated at once, a solid in the feed.  The sa
 rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 
 ### `gibbsReactor`
+A feed species with non-zero flow that is missing from `operation.species` is REFUSED by name (it would silently leave the Gibbs inventory).
 Equilibrium by direct Gibbs minimisation with atom-balance
 constraints.  Four selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
@@ -890,6 +895,11 @@ film condensation) or a `boiling{}` + `heatingMedium{}` block (Rohsenow nucleate
 flux, Zuber CHF ceiling — a design above CHF is hard-refused).  Theory:
 [`theoryGuide`](../theoryGuide.tex) → "Phase changer: the dome-crossing
 boiler / condenser".
+`model geometry;` REFUSES BY NAME when the film flux x area exceeds the feed's latent
+(+ sensible-to-saturation) capacity (message gives the largest duty, the area that
+exhausts it, the remedy); it never publishes an outlet beyond the coolant's / heating
+medium's inlet temperature.  KPIs `T_utility_in`, `Q_capacity_kW`.  Theory
+`sec:phasechanger-exhaustion`.
 
 ### `heatExchanger`  (2-stream, ε-NTU rating)
 Two process streams; hardware-only (`area` + `U`).  Outputs the duty Q
@@ -906,6 +916,12 @@ has no enthalpy datum, does the outlet fall back to the ε-NTU temperature —
 announced in the caveat block, with `H_closure_gap_kW` carrying the
 difference.  The DUTY stays the sensible ε-NTU's (no latent term): a side
 that changes phase is announced, and its Q is not a condenser's.
+The published profile is computed SEGMENT BY SEGMENT (20 segments of equal duty,
+each side's state from the enthalpy inversion at H_in -/+ q_k/n; plateaus show as
+T = Tsat with a vapour-fraction column; energy closes per segment, KPI
+`profile_residual`).  KPIs `dT_min_segments` (the minimum approach over the nodes;
+negative = internal temperature cross) and `UA_segments` come from it, not from the
+terminal pair.  Theory `sec:hx-segment-profile`; gate `check_utility_limits`.
 
 ```
 inputs  (hot  cold );
@@ -3082,6 +3098,12 @@ heat), and a heat capacity it must default (a salt with no
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 operation { maxExhaustHumidity 0.95; }   // optional
 ```
+Every solid of the feed counts (mass, moisture ratio, sensible heat), in any
+component order.  A `maxExhaustHumidity` the gas cannot meet even with nothing
+evaporated is REFUSED by name with the feasible range (before, the exhaust left
+above the cap while the run announced the cap).  `convectiveDryer` dries ONE
+solid and refuses a second by name; `coolingTower` prices the whole dry-gas
+mixture (molar mass, humid heat), not its majority component.
 Use `solidDryer` when the moisture is sorbed (an isotherm governs it);
 `evaporativeDryer` when it is free surface water (a crystal loses it by
 plain evaporation).
@@ -3190,7 +3212,11 @@ carries that enthalpy, and the outlet is published with the vapour fraction
 it resolves to — a two-phase merge leaves as ONE combined two-phase stream
 (the mixer does not SEPARATE; put a flash after it to split the phases).  A
 pure fluid inside its saturation jump (steam into condensate) leaves at its
-saturation T with its quality pinned.  Until 2026-10-24 the balance used one
+saturation T with its quality pinned.  Since 2026-11-28 (D9) a fluid-only merge takes
+that state from `flashState::specifiedFlash` (PH at (P_out, SUM H_in), 1e-6 J/mol absolute;
+witness `mixer01_water_steam_plateau`: 36 kmol/h water 300 K + 36 kmol/h steam 450 K, IF97, 1 bar -> 372.756 K, vf 0.46678);
+a failed flash reports `Converged: NO` and publishes the seed T.  A merge carrying crystals keeps
+the older inversion (the home does not price solids).  Until 2026-10-24 the balance used one
 dominant phase and published that label, which the report contradicted: the
 first law of `cavett01` was open by 88 % on its two mixers.  Without
 formation data on every component the sensible dominant-phase balance is
@@ -3268,9 +3294,9 @@ operation { fractions ( 0.6  0.4 ); }
 <!-- END GENERATED unit-acceptance splitter -->
 
 ### `valve`
-Isenthalpic throttle: drops pressure to `P` at constant enthalpy; `T_out`
+Isenthalpic throttle (outlet = the (P, H) flash via `flashState::specifiedFlash`; a pure fluid thrown into its saturation plateau leaves at Tsat(P) with the lever-rule vapour fraction: `valve02_wet_letdown_water`): drops pressure to `P` at constant enthalpy; `T_out`
 and the vapour fraction are RESULTS (a real-gas EoS flashes the let-down).
-Use it upstream of a flash to set the drum pressure.  Warns if `P >= P_in`.
+Use it upstream of a flash to set the drum pressure.  REFUSES by name if `P > P_in` (a raise has w = 0 and delta s < 0; use a `pump` or `compressor`).
 ```
 in  feed;  outputs (throttled );
 operation { P  1.0 bar; }          // the downstream pressure (the only knob)

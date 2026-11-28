@@ -98,6 +98,12 @@ import {
 import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
 import { binaryPxySpec, binaryVleSpec, orderBinaryByVolatility, readPxyCsv, supercriticalNotes } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
+import {
+  ACTIVITY_MODELS, EOS_MODELS, TRANSPORT_MODELS, activityVerdict, chooseActivity, chooseEos, chooseTransport,
+  eosVerdict, refusalAdvice, transportVerdict,
+  type ApplicabilityCtx,
+} from "../case/modelApplicability.js";
+import { EngineRefusal } from "./explore/EngineRefusal.js";
 import { PLOT_KINDS, type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
 import { defaultMapMetric, gibbsMapAtoms, mapMetricCandidates, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
@@ -151,10 +157,13 @@ const TRANSPORT_LABEL: Record<string, string> = {
 // data/local/ and in one case-local witness), so a picker offering it would
 // offer a model that refuses on every record the Explorer can select.  The
 // picker for the gas families is the named absence, not the models.
+//  The liquid families offer what the ENGINE registers and what the records hold
+//  (case/modelApplicability.ts TRANSPORT_MODELS).  Until 2026-11-25 the screen offered
+//  Andrade/Vogel (a form 6 records carry; 396 carry chemsepEq101, which the picker
+//  did not list: 1301 of 1312 catalogue runs refused) and Latini (not registered:
+//  591 of 656 refused).
 function transportModelsFor(property: string): string[] {
-  if (property === "viscosity_liquid") return ["Andrade", "Vogel"];
-  if (property === "thermal_conductivity_liquid") return ["SatoRiedel", "Latini"];
-  return [];
+  return TRANSPORT_MODELS[property]?.models ?? [];
 }
 
 // Scaling (SI vs recovery): the editable water analysis.  Master ions the
@@ -319,13 +328,13 @@ export function ExploreWorkspace() {
   const [nPts, setNPts] = useState(60);
   const [tieStride, setTieStride] = useState(4);  // ternary LLE tie-line density
   const [fixedP, setFixedP] = useState(101325); // Pa (canonical SI; display via the Units menu)
-  const [eos, setEos] = useState("idealGas");
-  const [transportModel, setTransportModel] = useState("Andrade"); // Andrade/Vogel, SatoRiedel/Latini
+  const [eosPick, setEos] = useState("idealGas");
+  const [transportPick, setTransportModel] = useState("chemsepEq101"); // the student's pick; the model that runs is `transportModel`
   // (v) multi-method comparison
   const [compareOn, setCompareOn] = useState(false);
   const [compareModels, setCompareModels] = useState<string[]>([]);
   const [compareInfo, setCompareInfo] = useState<{ models: string[]; spread: { absMax: number; relMaxPct: number }; property: string } | null>(null);
-  const [activity, setActivity] = useState("NRTL"); // for VLE templates
+  const [activityPick, setActivity] = useState("NRTL"); // for VLE templates: the student's pick; `activity` below is what RUNS
   // (Psychrometry state left with the psychro lens for the Methods workspace,
   // 2026-08-15.)
   // Scaling: the water analysis (TOTAL molalities, mol/kg water — canonical;
@@ -489,6 +498,29 @@ export function ExploreWorkspace() {
       (prev === "NRTL" || prev === "Wilson") && !hasPair(prev, a, b) ? "UNIFAC" : prev);
   }, [selected, unifacAble]);
 
+  //  WHAT RUNS (2026-11-25): the student's pick when it can price the set, else
+  //  the nearest model that can -- and the sentence saying so is on screen
+  //  (`activityChoice.note`), the picker shows the model that runs, and a model
+  //  that cannot price the set is listed DISABLED with the reason.  The pick
+  //  itself is kept, so removing the offending component hands the student's
+  //  model back.
+  const applyCtx = useMemo<ApplicabilityCtx>(() => ({
+    metaOf: (c) => metaByName(c, catalogue), hasUnifac: unifacAble, hasPair,
+  }), [catalogue, unifacAble]);
+  const activityChoice = useMemo(() => chooseActivity(activityPick, selected, applyCtx), [activityPick, selected, applyCtx]);
+  const eosChoice = useMemo(() => chooseEos(eosPick, selected, applyCtx), [eosPick, selected, applyCtx]);
+  const activity = activityChoice.model;
+  const eos = eosChoice.model;
+  //  A liquid-transport pick that the chosen records cannot answer moves to the first
+  //  listed model that can -- said on screen, the picker shows the one that runs.
+  const transportChoice = useMemo(() => {
+    const ms = transportModelsFor(property);
+    const pick = ms.includes(transportPick) ? transportPick : (ms[0] ?? "");
+    return ms.length === 0 ? { model: pick, changed: false, note: null as string | null }
+      : chooseTransport(property, pick, selected, applyCtx);
+  }, [property, transportPick, selected, applyCtx]);
+  const transportModel = transportChoice.model;
+
   const addComp = useCallback((n: string) => setSelected((s) => (s.includes(n) ? s : [...s, n])), []);
   const removeComp = useCallback((n: string) => setSelected((s) => s.filter((x) => x !== n)), []);
 
@@ -647,7 +679,17 @@ export function ExploreWorkspace() {
         phaseDiagram: { grid: Math.max(20, Math.round(nPts)), solid: solidPhaseFor(c) },
         componentFiles: {
           ...localComponentFiles,   // case-local components reach the run too
-          [`constant/components/${c}.dat`]: `name ${c};\nvaporPressure { model AmbroseWalton; }\n`,
+          //  A case copy that shadows a catalogue record must say what it is, or the
+          //  engine refuses the whole run by name ("shadows the catalogue record of
+          //  the same name without declaring what it is" -- the pure P-T diagram
+          //  was refused for EVERY catalogue component until 2026-11-25, measured).
+          //  An overlay takes every key it lacks from the catalogue and changes
+          //  the one that is the point of this lens: the vapour-pressure model.
+          //  A case-local record of the same name stays as the case wrote it.
+          ...(`constant/components/${c}.dat` in localComponentFiles ? {} : {
+            [`constant/components/${c}.dat`]:
+              `name ${c};\noverlayOf ${c};\nvariationReason "Explorer P-T diagram: vapour pressure from Ambrose-Walton corresponding states";\nvaporPressure { model AmbroseWalton; }\n`,
+          }),
         },
       };
     }
@@ -1051,11 +1093,16 @@ export function ExploreWorkspace() {
         setSupercritNotes(supercriticalNotes(isVle && plotType !== "gamma", result.advisories));
         out = result.csvFiles?.[EXPLORE_OUTPUT];
         notDone = result.status !== "done";
-        failureDetail = result.log
-          .split("\n")
-          .map((line) => line.trim())
-          .reverse()
-          .find((line) => /(?:error|fatal|refused|failed)/i.test(line));
+        //  The engine's reason, in order of how specific it is: a fatal error, then
+        //  the refusal the scan itself prints ("property X produced NO value ...
+        //  Reason at the first point: ...", which stderr never repeats -- the
+        //  last line of a refused scan is only "Operation returned rc = 1"),
+        //  then any error-looking line.
+        const logLines = result.log.split("\n").map((line) => line.trim()).reverse();
+        failureDetail = logLines.find((line) => /fatal error/i.test(line))
+          ?? logLines.find((line) => /produced NO value|Reason at the first point/.test(line))?.replace(/^-\s*/, "")
+          ?? logLines.find((line) => /(?:error|fatal|refused|failed)/i.test(line) && !/returned rc = \d/.test(line))
+          ?? logLines.find((line) => /(?:error|fatal|refused|failed)/i.test(line));
         // Honesty: lift the op's "[advisory]" lines off the run log (e.g.
         // scalingScan's Davies-beyond-trust-range flag) — the Explorer shows
         // no log tab, and a swallowed advisory is a silent crutch.  The
@@ -1941,23 +1988,38 @@ export function ExploreWorkspace() {
               menu-button showing the committed value, opening its Select. */}
           {showGamma && (
             <ToolMenu label="γ" value={activity}
-              tip="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson auto-resolve curated binary pairs by name, else that pair is ideal; UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) — a component without a group decomposition is treated as ideal">
-              <Select size="xs" label="γ model" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
-                onChange={(v) => setActivity(v ?? "NRTL")} w={150} allowDeselect={false} />
+              tip="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson need a curated binary pair for every pair; UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) and needs a group decomposition for every component.  A model that cannot price the chosen components is listed disabled, with the reason.">
+              <Select size="xs" label="γ model" value={activity}
+                data={ACTIVITY_MODELS.map((m) => {
+                  const v = activityVerdict(m, selected, applyCtx);
+                  return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+                })}
+                onChange={(v) => setActivity(v ?? "NRTL")} w={150} allowDeselect={false}
+                comboboxProps={{ width: 380, position: "bottom-start" }} />
             </ToolMenu>
           )}
           {showEos && (
             <ToolMenu label="EoS" value={eos}
               tip="vapour equation of state: idealGas ⇒ Z = 1; SRK/PR are cubic real-gas models">
-              <Select size="xs" label="EoS" data={["idealGas", "SRK", "PR"]} value={eos}
-                onChange={(v) => setEos(v ?? "idealGas")} w={150} allowDeselect={false} />
+              <Select size="xs" label="EoS" value={eos}
+                data={EOS_MODELS.map((m) => {
+                  const v = eosVerdict(m, selected, applyCtx);
+                  return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+                })}
+                onChange={(v) => setEos(v ?? "idealGas")} w={150} allowDeselect={false}
+                comboboxProps={{ width: 380, position: "bottom-start" }} />
             </ToolMenu>
           )}
           {showTransport && (
             <ToolMenu label="model" value={tModel}
               tip="transport correlation, chosen WITHIN a family (e.g. Andrade vs Vogel) — a sibling of the EOS, never driven by it; both move the curve, so you SEE which you commit to">
-              <Select size="xs" label="model" data={tModels} value={tModel}
-                onChange={(v) => setTransportModel(v ?? tModels[0]!)} w={150} allowDeselect={false} />
+              <Select size="xs" label="model" value={tModel}
+                data={tModels.map((m) => {
+                  const v = transportVerdict(property, m, selected, applyCtx);
+                  return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+                })}
+                onChange={(v) => setTransportModel(v ?? tModels[0]!)} w={150} allowDeselect={false}
+                comboboxProps={{ width: 380, position: "bottom-start" }} />
             </ToolMenu>
           )}
           {/* (v) multi-method: overlay several models of the same family and
@@ -2212,7 +2274,19 @@ export function ExploreWorkspace() {
             origin down.  A `⚠ N` pill folds it; a new alert re-expands it. */}
         {(() => {
           const alerts: React.ReactNode[] = [];
-          if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
+          if (showGamma && activityChoice.note) alerts.push(
+            <Alert key="gammaMoved" color="blue" variant="light" title="The γ model was moved for this set"
+              data-testid="model-moved"><Text size="xs">{activityChoice.note}  The picker lists each model with the reason it is off.</Text></Alert>);
+          if (showTransport && transportChoice.note) alerts.push(
+            <Alert key="transportMoved" color="blue" variant="light" title="The correlation was moved for this set"
+              data-testid="model-moved-transport"><Text size="xs">{transportChoice.note}</Text></Alert>);
+          if (showEos && eosChoice.note) alerts.push(
+            <Alert key="eosMoved" color="blue" variant="light" title="The equation of state was moved for this set"
+              data-testid="model-moved-eos"><Text size="xs">{eosChoice.note}</Text></Alert>);
+          if (err && /^choupoProps did not finish/.test(err)) alerts.push(
+            <EngineRefusal key="err" advice={refusalAdvice(err, { activity, eos, comps: selected }, applyCtx)}
+              onTryActivity={(m) => setActivity(m)} onTryEos={(m) => setEos(m)} />);
+          else if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
           if (activeReason) alerts.push(<Alert key="reason" color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>);
           //  Its OWN cell, never folded into "Solver advisory": this one says
           //  the question was altered before any solver ran.

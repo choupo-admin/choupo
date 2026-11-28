@@ -30,12 +30,14 @@ License
 #include "thermo/PropertyDomainError.H"
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "unitOperations/flash/SpecifiedFlash.H"
 #include "solver/NewtonRaphson.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 
 namespace Choupo {
@@ -77,22 +79,6 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     bool useFormation = true;
     for (std::size_t i = 0; i < n; ++i)
         if (!thermo.hasEnthalpyDatum(i)) { useFormation = false; break; }
-
-    auto liquidH = [&](scalar T, scalar P, const sVector& x) -> scalar
-    {
-        return useFormation ? thermo.H_stream_formation(T, P, 0.0, x)
-                            : thermo.Hliquid(T, x, Tref);
-    };
-    auto vapourH = [&](scalar T, scalar P, const sVector& y) -> scalar
-    {
-        return useFormation ? thermo.H_stream_formation(T, P, 1.0, y)
-                            : thermo.Hvapour(T, y, Tref);
-    };
-    auto splitH = [&](scalar T, scalar P, const FlashSolution& sol) -> scalar
-    {
-        return (1.0 - sol.V_over_F) * liquidH(T, P, sol.x)
-             +        sol.V_over_F  * vapourH(T, P, sol.y);
-    };
 
     //  THE INLET'S PHASE STATE IS READ, NOT ASSUMED.  This used to price the
     //  feed as a sub-cooled liquid unconditionally, with the comment "the
@@ -145,18 +131,64 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     std::cout << "Inlet enthalpy H_in = " << std::scientific
               << std::setprecision(5) << Hin << " J/mol of feed\n\n";
 
-    // Outer residual:  f(T) = H_out(T) - Hreq, where H_out comes from a
-    // fully converged isothermal flash at (T, Pout, z).
+    //  THE OUTLET STATE IS `flashState::specifiedFlash`'s (D8, 2026-11-28; the
+    //  migration planned in docs/design/a-general-flash-specification.md
+    //  sections 5-6): the state at (P_out, H_in), by the one (P, H) home.  The
+    //  unit's own nested Newton in T had no root where a PURE fluid is
+    //  flashed into its saturation plateau (H jumps by the latent heat at
+    //  Tsat: IF97 water 450 K, 20 -> 1 bar published "Outer T search
+    //  converged: NO", V/F 1.000, 3.5e4 J/mol unclosed); the home answers it
+    //  in closed form and every other state by its bracketed search.  What the
+    //  old search carried and the home does not: the declared HIGH-SIDE rule
+    //  (an unanswerable trial counted as above the answer).  The shipped
+    //  cases that could reach it (column13's re-flash arm) are in the scope
+    //  of the commit that migrated this unit; the home refuses by name a
+    //  trial it cannot answer instead of re-bracketing it.
     FlashOptions iopts;
-    //  C245 3g: the inner tolerance is on the composition step; H changes by
-    //  ~1e4 J/mol per unit of it, so 1e-9 puts the inner flash's H error at
-    //  ~1e-5 J/mol, 1e3 below the outer 0.01 J/mol.
-    iopts.tolerance  = 1.0e-9;
+    iopts.tolerance  = 1.0e-9;          // inner flash: H error ~1e-5 J/mol
     iopts.maxIter    = 60;
     iopts.verbosity  = (verbosity >= 4) ? 3 : 0;
     iopts.accelerator = OuterAccelerator::Wegstein;
 
-    FlashSolution lastSol;
+    flashState::FlashSpecification spec;
+    spec.pair   = flashState::SpecPair::PH;
+    spec.P      = Pout;
+    spec.target = Hreq;
+    spec.seed   = Tfeed;
+    spec.flash  = iopts;
+    spec.controls = flashState::FlashSpecification::defaultControls(flashState::SpecPair::PH);
+    //  The unit's own absolute tolerance, 0.01 J/mol (as its Newton kept): with
+    //  terms {phi, target} the home's normalisation is degenerate for a
+    //  near-pure feed and the verdict reads the RAW residual, so the number
+    //  declared here is in J/mol, not relative (review of the valve, 11-28).
+    constexpr scalar kTolJmol = 0.01;
+    spec.controls.tolerance = kTolJmol;
+    spec.controlsDeclared = true;
+    //  A state the home cannot answer is reported NOT converged and the unit
+    //  still publishes (the feed's own T at P_out), as the old search did:
+    //  inside a recycle one bad tear iterate must not kill the run.  A hard
+    //  refusal (C398 TG-01) is never turned into a number.
+    //  DOCUMENTED EXCEPTION -- THE HIGH-SIDE RULE, KEPT AS THE UNIT'S OWN
+    //  SEARCH (2026-11-28).  column13_sour_water_stage_identity reaches it: a
+    //  REACTIVE package refuses trial states far above its two-phase band and
+    //  its re-flash arm hands this unit a mixer enthalpy under a FICTITIOUS
+    //  483 K readout.  `specifiedFlash` refuses such a trial (and evaluates
+    //  the window's edges, so tightening the window cannot emulate the rule);
+    //  this fallback runs ONLY after the home has refused on an unanswerable
+    //  package trial, and is announced.  It is why AdiabaticFlash.cpp stays in
+    //  bin/curate/state_inversion_door.tsv; the row leaves when the home
+    //  carries the rule.
+    auto highSideSearch = [&]() -> std::pair<scalar, bool>
+    {
+        auto splitH = [&](scalar T, scalar P, const FlashSolution& sol) -> scalar
+        {
+            auto H = [&](scalar phase, const sVector& w)
+            { return useFormation ? thermo.H_stream_formation(T, P, phase, w)
+                                  : (phase < 0.5 ? thermo.Hliquid(T, w, Tref)
+                                                 : thermo.Hvapour(T, w, Tref)); };
+            return (1.0 - sol.V_over_F) * H(0.0, sol.x) + sol.V_over_F * H(1.0, sol.y);
+        };
+    FlashSolution lastSolOld;
     //  C245 3g: the inner flash's own `converged` is READ.  Every trial whose
     //  inner flash stopped unconverged is counted and treated as unanswerable
     //  (it is not a point of the surface H_out(T); differencing it would put
@@ -200,7 +232,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     {
         try
         {
-            lastSol = flashAt(T);
+            lastSolOld = flashAt(T);
         }
         catch (const std::exception& e)
         {
@@ -216,7 +248,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                              " tightened\n";
             return 1.0e12;                      // f > 0: tightens the upper edge
         }
-        if (!lastSol.converged)
+        if (!lastSolOld.converged)
         {
             trialUnanswerable = true;
             ++innerFailedTrials;
@@ -225,12 +257,12 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                           << std::setprecision(2) << T << " K: the inner"
                           << " isothermal flash did NOT converge (residual "
                           << std::scientific << std::setprecision(2)
-                          << lastSol.residual << ") -- trial refused,"
+                          << lastSolOld.residual << ") -- trial refused,"
                              " treated as ABOVE the answer\n";
             return 1.0e12;
         }
         trialUnanswerable = false;
-        scalar Hout = splitH(T, Pout, lastSol);
+        scalar Hout = splitH(T, Pout, lastSolOld);
         return Hout - Hreq;
     };
     auto df = [&](scalar T)
@@ -332,22 +364,89 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                       << " bisection probe(s)\n";
     }
 
-    auto r = solver::newton1D(f, df, Tstart, nro);
+    
 
-    walk.close();                       // the search is over; what follows is the answer
+        auto r = solver::newton1D(f, df, Tstart, nro);
+        return { r.x, r.converged };
+    };
 
-    // Final flash at converged T
-    scDiscarded.clear();    // say it only if the ANSWER is a discarded root
-    lastSol = flashAt(r.x);
-    flashState::reportSupercriticalDiscard(scDiscarded, "adiabaticFlash",
-                                           "adiabaticFlash outlet", verbosity);
+    flashState::SpecifiedState st;
+    bool searchOk = true;
+    std::string searchWhy;
+    //  DOCUMENTED EXCEPTION -- THE HIGH-SIDE RULE (kept from the unit's own
+    //  search; column13_sour_water_stage_identity reaches it).  A REACTIVE
+    //  package refuses a trial far above its two-phase band (the liquid it
+    //  must speciate is gone), and column13's re-flash arm hands this unit a
+    //  mixer enthalpy under a FICTITIOUS 483 K readout.  When the home's
+    //  first attempt fails, the window's upper edge is moved to the lowest
+    //  temperature the package cannot answer (H rises with T, so an
+    //  unanswerable trial lies ABOVE the answer), the seed to an answerable
+    //  one, and the home is asked once more.  Announced; a second failure is
+    //  reported not converged below.
+    try
+    {
+        spec.lastUnanswerableT = std::numeric_limits<scalar>::quiet_NaN();
+        try
+        {
+            st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
+        }
+        catch (const std::exception& refused)
+        {
+            rethrowHardRefusal();
+            if (!std::isfinite(spec.lastUnanswerableT)) throw;
+            std::cout << "  [adiabaticFlash] the (P, H) flash was refused on an"
+                         " unanswerable package trial (" << spec.lastUnanswerableT
+                      << " K): " << refused.what() << "\n"
+                      << "  [adiabaticFlash] falling back to the unit's own HIGH-SIDE"
+                         " search (an unanswerable trial is treated as ABOVE the answer)\n";
+            const auto hs = highSideSearch();
+            if (!hs.second)
+                throw std::runtime_error("adiabaticFlash: the high-side search did not converge");
+            std::string sc;
+            FlashInput in; in.F = F; in.T = hs.first; in.P = Pout; in.z = z;
+            st.phases = flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts, sc);
+            flashState::reportSupercriticalDiscard(sc, "adiabaticFlash",
+                                                   "adiabaticFlash outlet", verbosity);
+            st.T = hs.first;
+            st.H = flashState::priceState(hs.first, Pout, z, 1.0, false,
+                                          st.phases.V_over_F, thermo,
+                                          "adiabaticFlash outlet", nullptr);
+            st.route = "the unit's own high-side search (documented exception)";
+        }
+    }
+    catch (const std::exception& e)
+    {
+        rethrowHardRefusal();
+        searchOk = false;
+        searchWhy = e.what();
+        std::cout << "  [adiabaticFlash] the (P, H) flash could not answer: "
+                  << searchWhy << "\n";
+        FlashInput in;
+        in.F = F; in.T = Tfeed; in.P = Pout; in.z = z;
+        std::string scDiscarded;
+        st.phases = flashState::flashDiscardingSupercriticalSplit(
+            in, thermo, iopts, scDiscarded);
+        flashState::reportSupercriticalDiscard(scDiscarded, "adiabaticFlash",
+                                               "adiabaticFlash outlet", verbosity);
+        st.T = Tfeed;
+        st.route = "NOT CONVERGED: outlet shown at the feed temperature";
+        st.H = flashState::priceState(Tfeed, Pout, z, 1.0, false,
+                                      st.phases.V_over_F, thermo,
+                                      "adiabaticFlash outlet", nullptr);
+    }
+    FlashSolution lastSol = st.phases;
+    const scalar Tout = st.T;
     const bool innerFinalOk = lastSol.converged;
-    scalar Hout = splitH(r.x, Pout, lastSol);
-    //  The unit is converged only if the ENERGY balance at the published
-    //  outlet closes to the declared tolerance (C467 R-001: a search that
-    //  never ran was published converged with a 917 kW imbalance).
-    const bool energyClosed = std::abs(Hout - Hin) <= nro.tolerance;
-    const bool allOk = r.converged && innerFinalOk && energyClosed;
+    const int  innerFailedTrials = 0;
+    if (verbosity >= 3)
+        std::cout << "Outlet state (P, H) flash: " << st.route << "\n";
+    for (const auto& note : st.notes) std::cout << note << "\n";   // C34, said once
+    const scalar Hout = st.H;
+    recordResidual(std::abs(Hout - Hreq));
+    //  Converged only if the ENERGY balance at the published outlet closes
+    //  (C467 R-001: a search that never ran was published converged).
+    const bool energyClosed = searchOk && std::abs(Hout - Hin) <= kTolJmol;
+    const bool allOk = innerFinalOk && energyClosed;
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.
     // The products ARE the point of a flash -- emit them so the flowsheet
@@ -356,11 +455,11 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     {
         ProcessStream liq;
         liq.name = "liquid"; liq.F = F * (1.0 - lastSol.V_over_F);
-        liq.T = r.x; liq.P = Pout; liq.z = lastSol.x; liq.vf = 0.0;
+        liq.T = Tout; liq.P = Pout; liq.z = lastSol.x; liq.vf = 0.0;
         produced_.push_back(liq);
         ProcessStream vap;
         vap.name = "vapor"; vap.F = F * lastSol.V_over_F;
-        vap.T = r.x; vap.P = Pout; vap.z = lastSol.y; vap.vf = 1.0;
+        vap.T = Tout; vap.P = Pout; vap.z = lastSol.y; vap.vf = 1.0;
         produced_.push_back(vap);
     }
 
@@ -369,9 +468,9 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     // outlet T falls out of the energy balance, so it is the natural thing to
     // watch as the student turns the outlet pressure P.
     kpis_.clear();
-    kpis_["T_out"]     = r.x;                                 // K -- the result
+    kpis_["T_out"]     = Tout;                                 // K -- the result
     kpis_["T_feed"]    = Tfeed;                               // K
-    kpis_["T_drop"]    = Tfeed - r.x;                         // K (flash cooling)
+    kpis_["T_drop"]    = Tfeed - Tout;                         // K (flash cooling)
     kpis_["P"]         = Pout;                                // Pa
     kpis_["F_in"]      = F;
     kpis_["V_over_F"]  = lastSol.V_over_F;
@@ -381,14 +480,13 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     std::cout << "\n========================  Adiabatic Flash Result  ===================\n"
               << "  Converged:     " << (allOk ? "yes" : "NO") << "\n"
-              << "  Outer T search converged:  " << (r.converged ? "yes" : "NO") << "\n"
+              << "  Outlet route:  " << st.route << "\n"
               << "  Inner flash converged:     " << (innerFinalOk ? "yes" : "NO")
               << "  (" << innerFailedTrials << " trial(s) refused)\n"
-              << "  Outer iter.:   " << r.iterations << "\n"
               << "  T_out:         " << std::fixed << std::setprecision(4)
-              << r.x << "  K  ( " << (r.x - 273.15) << " °C )\n"
+              << Tout << "  K  ( " << (Tout - 273.15) << " °C )\n"
               << "  ΔT (drop):     " << std::fixed << std::setprecision(2)
-              << (Tfeed - r.x) << "  K\n"
+              << (Tfeed - Tout) << "  K\n"
               << "  H_in:          " << std::scientific << std::setprecision(5)
               << Hin << "  J/mol\n"
               << "  H_out:         " << Hout << "  J/mol\n"
@@ -396,7 +494,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
               << "  J/mol  "
               << (energyClosed ? "(~0; adiabatic, Q = 0 by definition)"
                                : "(NOT CLOSED: exceeds the tolerance of "
-                                 + std::to_string(nro.tolerance)
+                                 + std::to_string(kTolJmol)
                                  + " J/mol -- the outlet is not an adiabatic"
                                    " state)")
               << "\n"

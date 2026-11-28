@@ -71,7 +71,7 @@ const APP_LABEL: { [k: string]: string } = {
 // noticing.  Three rows of the adiabatic trace drifted -- 3.17088e+04 where
 // the engine prints 3.30212e+04, and 1.83628e+04 where it prints 1.90096e+04
 // (2026-11-18, C390: the whole trace moved again because the liquid enthalpy now carries its
-// pressure term -- the 3 bar feed -- and the engine converges in seven iterations; every row
+// pressure term -- the 3 bar feed -- and the engine converges in seven iterations; (11-28: the unit now asks the shared specifiedFlash (P,H) flash, six iterations, rows re-read from its own run; every row
 // below was re-read from the engine's own run.)
 // -- on THE SCREEN WHOSE WHOLE PURPOSE IS TO PROVE THE BOX IS GLASS.  A
 // transcribed number is a second home for a result, and this one had no
@@ -119,26 +119,25 @@ const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } 
       "Raoult VLE,  γ = ideal,   Q = 0  (adiabatic — by definition, not an input)\n"
       + "Kᵢ = Psatᵢ(T) / P\n"
       + "energy balance:  H_out(T, V/F) = H_in   (the flash cools itself)\n"
-      + "→ outer Newton on T, inner Rachford-Rice flash at each T",
+      + "→ the unit asks the shared (P,H) flash: bracketed Newton on T, an isothermal flash at each T",
     sequence:
       "read the dicts (system/, constant/)\n"
       + "  → check units & components\n"
       + "  → load benzene / toluene data\n"
       + "  → build the property model (Raoult, ideal γ)\n"
       + "  → expand the feed 3 bar → 1 atm with Q = 0\n"
-      + "  → outer Newton on T to close H_out = H_in\n"
-      + "  → inner Rachford-Rice flash at each T\n"
+      + "  → shared (P,H) flash: bracketed Newton on T to close H_out = H_in\n"
+      + "  → isothermal flash at each T\n"
       + "  → write streams, log, report",
     trace:
-      "Outer Newton in T (energy balance):\n"
-      + "   it       T [K]       H_out−Hreq\n"
-      + "  0     380.0000     3.30058e+04\n"
-      + "  1     365.0000    -2.23464e+03\n"
-      + "  2     372.5000     1.89966e+04\n"
-      + "  3     369.0632     1.88849e+03\n"
-      + "  4     368.6639     6.65438e-01\n"
-      + "  5     368.6638    -9.75025e-02\n"
-      + "  7     368.6638    -2.09875e-03   ✓\n"
+      "Bracketed Newton in T on the shared (P,H) flash:\n"
+      + "   it       T [K]       residual\n"
+      + "  0     358.2672    -3.2338e+03\n"
+      + "  1     364.1336    -2.3632e+03\n"
+      + "  2     367.0668    -1.9279e+03\n"
+      + "  3     368.5334    -6.1777e+02\n"
+      + "  4     368.6637    -5.0598e-01\n"
+      + "  5     368.6638    -2.8042e-07   ✓\n"
       + "\n"
       + "T_out = 368.66 K   (ΔT drop 11.34 K — no duty, the vapour pays for itself)\n"
       + "V/F  = 0.0522   (two-phase)",

@@ -326,7 +326,7 @@ against the enclosing level's block — through a sector that declares none,
 the plant's — and the binding is live,
 so a DesignSpec at the plant can manipulate a value written in a unit folder
 (`V_R $V_Bed1;` in the folder, `V_Bed1 8.72 m3;` in the plant's
-`variables {}`; see `tutorials/plant/greenAmmonia03_basicDesign`).  A response
+`variables {}`; see `tutorials/plant/ammoniaPEQ03_basicDesign`).  A response
 of a unit inside a sector is written with its whole name, `CONVERTER.Bed1.T_out`
 (the driver tries each dot against the run's own units and streams).  A member that
 declares its own block keeps it, and a name it shares with an enclosing level
@@ -969,7 +969,7 @@ options
 {
     maxIter  40;
     fdStep   1e-3;                    // relative FD step (default 1e-5)
-    fdMode   central;                 // forward (n+1 sim/iter, default) | central (2n)
+    fdMode   central;                 // forward (n+1 sim/iter, default) | central (2n) | auto (noise-aware step per variable, error bars on the shadow prices; outer-drivers.md)
 }
 ```
 

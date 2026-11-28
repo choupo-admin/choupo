@@ -371,9 +371,9 @@ tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	energy_closure_r
 tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	mass_closure_rel	1.64932562313e-14	1e-4	residual_closure	residual/closure
 tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	mass_residual_kg	-5.86908299738e-12	1e-4	residual_mass_abs	residual/closure
 tutorials/plant/acetonePlant	kpi	C1	x_D_LK	4.94903618327e-10	1e-4	direct	physical
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed1	Q_kW	7.27595761418e-12	1e-4	zero_duty	zero by construction (round-off)
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed2	Q_kW	-2.18278728426e-11	1e-4	zero_duty	zero by construction (round-off)
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed3	Q_kW	1.09139364213e-11	1e-4	zero_duty	zero by construction (round-off)
+tutorials/plant/ammoniaPEQ03_basicDesign	kpi	CONVERTER.Bed1	Q_kW	7.27595761418e-12	1e-4	zero_duty	zero by construction (round-off)
+tutorials/plant/ammoniaPEQ03_basicDesign	kpi	CONVERTER.Bed2	Q_kW	-2.18278728426e-11	1e-4	zero_duty	zero by construction (round-off)
+tutorials/plant/ammoniaPEQ03_basicDesign	kpi	CONVERTER.Bed3	Q_kW	1.09139364213e-11	1e-4	zero_duty	zero by construction (round-off)
 tutorials/plant/swro01_campoDalias	kpi	RO1	mass_closure_rel	2.17326318748e-16	1e-4	residual_closure	residual/closure
 tutorials/plant/swro01_campoDalias	kpi	RO1	solute_closure_rel	5.56753855746e-16	1e-4	residual_closure	residual/closure
 tutorials/plant/swro01_campoDalias	kpi	RO2a	solute_closure_rel	3.06795496168e-16	1e-4	residual_closure	residual/closure

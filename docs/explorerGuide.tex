@@ -175,6 +175,29 @@ homogeneous curve), and a composition at which the engine found no bubble
 pressure is left out and counted, never interpolated.  \textbf{F1} opens the
 Theory Guide's \code{sec:bubble-pressure}.
 
+\subsection{When a model cannot price the chosen components}\label{sec:explorer-model-applicability}
+% Written 2026-11-25 against gui/src/case/modelApplicability.ts and
+% gui/src/ui/explore/EngineRefusal.tsx; the measurement is in
+% docs/audits/2026-11-25-explorer/.
+Picking a compound the \(\gamma\) model cannot price used to end in a red box
+quoting the engine (``UNIFAC: component(s) \dots{} have no group
+decomposition'') and nothing to do next.  The engine was right to refuse; the
+screen now says so \emph{before} the run.  The model pickers --- \(\gamma\)
+(ideal, NRTL, Wilson, UNIFAC), the equation of state, and the liquid
+viscosity and conductivity correlations --- list every model, and a model that
+cannot price the set is shown \emph{disabled with its reason in one line}:
+``UNIFAC --- no UNIFAC groups for X'', ``NRTL --- no curated NRTL pair for
+X--Y'', ``Wilson --- no liquid molar volume (Vliq) for X'', ``PR --- no critical
+constants (Tc, Pc) for X'', ``Andrade --- no andrade coefficients in the record
+of X''.  Each reason reads a fact of the record the engine's own refusal is
+written against; the engine stays the authority.  When the model you had picked
+cannot price a newly chosen set, the model that runs is the nearest that can,
+and a blue note on the lens says which and why --- the choice is never moved
+silently, and removing the offending compound hands your model back.  When the
+engine refuses anyway, the red box leads with what the refusal means, then
+what to do next, then \emph{one} button that runs the nearest model that works;
+the engine's own text stays behind a fold.
+
 \subsection{Mixture phase envelope ($P$--$T$)}\label{sec:explorer-envelope}
 % Written 2026-11-15 against gui/src/case/phaseEnvelopeLens.ts (envelopePlan,
 % envelopeReport, branchEndLabel), gui/src/ui/explore/EnvelopeLens.tsx and

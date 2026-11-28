@@ -236,7 +236,7 @@ the `--fast` rule, where the declared set must reach it).
    regenerated, and `propsGuide.pdf` rebuilt with it;
 2. `generated/codeMap.json` stale (the C119 friction and Reynolds-sweep
    classes) -- regenerated;
-3. `tutorials/plant/greenAmmonia03_basicDesign/README.md`'s generated NPV
+3. `tutorials/plant/ammoniaPEQ03_basicDesign/README.md`'s generated NPV
    decomposition no longer reproduces (model fidelity -39.13 -> -39.30 M EUR,
    the start-up years +10.14 -> +10.13, two separators' C_BM by 0.03 M EUR):
    `gen_ammonia_stage_comparison.py --check`, an arm of `bin/runTests`,

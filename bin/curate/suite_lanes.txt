@@ -291,6 +291,7 @@ PRE  | ISO    | bin/curate/check_fit_verdict_channel.py            | ISO (privat
 PRE  | ISO      | bin/curate/check_origin_census.py                  | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: exit 1 in the traced sweep: its writes are not known in full
 PRE  | PAR    | bin/curate/check_origin_vocabulary.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_standards_write_guard.py          | ISO (private slot tree; measured: writes curation/ethanol.dossier (+12 more))
+PRE  | PAR    | bin/curate/check_state_inversion_door.py           | PAR (reads src/ only)
 PRE  | PAR    | bin/curate/check_no_symlinks.py                    | reads the git index only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_pair_names.py                     | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_henry_records.py                  | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
@@ -332,6 +333,7 @@ PRE  | PAR    | bin/curate/check_kinetics_jacobian.py              | on the kit:
 PRE  | PAR    | bin/curate/check_ldlt_inertia.py                   | on the kit: test/ldlt_inertia.cpp is built in a mkdtemp from sources read-only and run there; no case is run; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_interior_point.py                 | on the kit: test/interior_point_hs.cpp and src/solver/ip/*.cpp are built in a mkdtemp from sources read-only and run there (about 10 s); no case is run; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_gibbs_interior_point.py           | on the kit: every run (ten shipped cases under two methods and two variants, seven refusal probes) is in a private gatekit.probe_copy under /tmp; writes nothing in the tree
+PRE  | PAR    | bin/curate/check_sqp_adaptive.py                   | on the kit: test/sqp_adaptive_check.cpp and test/sqp_default_path.cpp are built in a mkdtemp from sources read-only and run there (about 30 s); no case is run; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_iteration_budgets.py              | on the kit: the probe is built in a mkdtemp from sources read-only; every case run is in a private gatekit.probe_copy under /tmp; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_cracking_yields.py                | on the kit: both runs (the case and its k6 sabotage) are in a private gatekit.probe_copy under /tmp; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_olefin_vle.py                     | on the kit: every run (two props cases, the splitter case, the omega sabotage) is in a private gatekit.probe_copy under /tmp; writes nothing in the tree
@@ -449,7 +451,7 @@ PRE  | SERIAL | bin/curate/check_record_law_values.py                | C470: sta
 POST | SERIAL | bin/curate/check_degenerate_limits.py              | has its own pool of workers: it runs alone, with the machine
 POST | ISO      | bin/curate/check_unread_keys.py                    | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/steady/economics/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+16 more)
 POST | PAR    | bin/curate/check_postdict_audit.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-POST | ISO      | bin/curate/check_cost_provenance.py                | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/plant/greenAmmoniaPEQ_baseCase/converged (+84 more)
+POST | ISO      | bin/curate/check_cost_provenance.py                | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/plant/ammoniaPEQ_baseCase/converged (+84 more)
 POST | PAR    | bin/curate/check_economic_sensitivity.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | PAR    | bin/curate/check_debt_financing.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | PAR*2  | bin/curate/check_plant_books.py                     | C524: six probe copies in gatekit temp dirs, no make, no node, no nested walk; 39 s alone
@@ -488,3 +490,5 @@ POST | SERIAL | bin/curate/check_pressure_exchanger.py               | C470: sta
 POST | SERIAL | bin/curate/check_tablet_machines.py                  | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
 POST | SERIAL | bin/curate/check_swro_plant.py                       | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
 POST | SERIAL | bin/curate/check_boron_split.py                      | C470: stays SERIAL until a sweep compares it -- reads the walk's cache by CHOUPO_SUITE_OUTPUTS
+POST | ISO    | bin/curate/check_utility_limits.py                 | C531: runs 56 shipped cases in copies; reads published results only
+POST | ISO    | bin/curate/check_multicomponent.py                | C529: synthetic two-solid and two-gas cases in its own scratch

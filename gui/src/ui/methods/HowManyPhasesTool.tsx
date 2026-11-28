@@ -83,7 +83,7 @@ function Readout({ label, value, unit, dataKey }: {
   );
 }
 
-/** The lines of the engine's log the page quotes (card 5). */
+/** The lines of the engine's log the page quotes (the flash card). */
 export function quotedLines(log: string | null | undefined): string[] {
   if (!log) return [];
   const keep = /Michelsen TPD stability test|tm_min|\[binaryLLE\]|\[tangentPlane\]/;
@@ -210,7 +210,7 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
 
         {step(1)}
         <Box px="sm" py={8} style={BOX} data-card="gmix">
-          <Title order={5}>1. The Gibbs energy of mixing has two humps</Title>
+          <Title order={5}>The Gibbs energy of mixing has two humps</Title>
           <OriginMark of={["engine"]} note="the gmix table of the engine's propertyScanBinary run" />
           <Box mt={6} data-chart="gmix">
             <DryChart series={gSeries} xLabel="mole fraction of water, x1" yLabel="g_mix / RT"
@@ -228,7 +228,7 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
 
         {step(2)}
         <Box px="sm" py={8} style={BOX} data-card="tangent">
-          <Title order={5}>2. The common tangent: move the feed</Title>
+          <Title order={5}>The common tangent: move the feed</Title>
           <OriginMark of={["engine", "page"]}
             note="the curve and the two liquids are the engine's tables; the lever rule and the line value at the feed are the page's arithmetic" />
           <Group gap="md" mt={6} align="flex-start" wrap="wrap">
@@ -267,7 +267,7 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
 
         {step(3)}
         <Box px="sm" py={8} style={BOX} data-card="isoactivity">
-          <Title order={5}>3. Three solutions of equal activities</Title>
+          <Title order={5}>Three solutions of equal activities</Title>
           <OriginMark of={["engine", "page"]}
             note="a1, a2 and the activities in the two liquids are engine tables; the pairs found on the sampled curves are the page's reading" />
           <Box mt={6} data-chart="activity">
@@ -329,7 +329,7 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
 
         {step(4)}
         <Box px="sm" py={8} style={BOX} data-card="tpd">
-          <Title order={5}>4. Michelsen&apos;s tangent-plane distance</Title>
+          <Title order={5}>The tangent-plane distance, drawn</Title>
           <OriginMark of={["engine", "page"]}
             note="tm(y) is arithmetic on the engine's activity table; for the engine's declared feed it equals the engine's tpd table, and the engine's own Michelsen verdict is quoted beside it" />
           <Group gap="md" mt={6} align="flex-start" wrap="wrap">
@@ -379,7 +379,7 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
 
         {step(5)}
         <Box px="sm" py={8} style={BOX} data-card="engine">
-          <Title order={5}>5. The engine doing it</Title>
+          <Title order={5}>One flash, run by the engine</Title>
           <OriginMark of="engine" note="the log of the engine's run of the case, quoted line by line" />
           {log.length > 0
             ? <Box component="pre" mt={6} p="xs" style={{ ...BOX, overflowX: "auto", fontSize: 12, margin: 0 }}
@@ -388,8 +388,8 @@ export function HowManyPhasesView({ d, log: rawLog, busy, err, ran, initialFeed 
           {d && d.binodal.length === 2 && (
             <Text size="sm" mt={6} data-summary="engine">
               The liquid-liquid flash found the two liquids at x1 = {g4(d.binodal[0]!.x)} and{" "}
-              {g4(d.binodal[1]!.x)}: the same two points the common tangent of card 2 touches, and the
-              pair of card 3.
+              {g4(d.binodal[1]!.x)}: the same two points the common tangent of the common-tangent card touches, and the
+              pair of the equal-activities card.
             </Text>
           )}
         </Box>

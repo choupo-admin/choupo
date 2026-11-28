@@ -246,7 +246,7 @@ function Appraiser(): JSX.Element {
   const fig = useMemo(() => tornadoFigure(a), [a]);
   return (
     <Box data-testid="sines-appraisal">
-      <Title order={5}>A simplified appraisal for teaching</Title>
+      <Title order={5}>The simplified appraisal, in numbers</Title>
       <OriginMark of={["page", "assumption"]} note="this page's calculation on inputs that are assumptions; no engine run (the per-row words below are finer)" />
       <Paper withBorder p="xs" radius="sm" mt={6} data-testid="sines-results"
         style={{ borderLeft: "4px solid var(--mantine-color-orange-6)" }}>

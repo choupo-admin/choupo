@@ -87,7 +87,7 @@ def progress():
     return t
 
 
-THEME_ORDER = ["Para 2 de dezembro", "Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
+THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
 
@@ -138,19 +138,18 @@ def main():
         def mdrow(r):
             return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} | " \
                    + (f"{pg[r['item']][0]} %" if r["item"] in pg else "") + " |"
-        dec = [r for r in open_ if r["rank"] != "0" and th.get(r["item"]) == "Para 2 de dezembro"]
-        nxt10 = dec if dec else [r for r in open_ if r["rank"] != "0"][:10]
+        nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
         md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
               f"\n### ▶ A andar agora ({len(now)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in now) + "\n"
-              f"\n### {'Para 2 de dezembro' if dec else 'A seguir'} ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
-              f"\n### {'Lista de desejos (depois de 2 de dezembro), por tema' if dec else 'O resto, por tema'}\n\n")
+              f"\n### A seguir, por prioridade ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
+              f"\n### O resto, por tema\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
-        for t in [x for x in THEME_ORDER if x != "Para 2 de dezembro"]:
-            lst = [r for r in rest if th.get(r["item"], "Outros") == t]
+        for t in THEME_ORDER + ([] if "Outros" in THEME_ORDER else ["Outros"]):
+            lst = [r for r in rest if (th.get(r["item"], "Outros") if th.get(r["item"]) in THEME_ORDER else "Outros") == t]
             if lst:
-                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] + (f" ({pg[r['item']][0]} %)" if r["item"] in pg else "") for r in lst) + "\n"
+                md += f"\n**{t}** ({len(lst)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in lst) + "\n"
         md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Feito: estimativa, partes no main.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
         Path(sys.argv[1]).write_text(md)
         print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")

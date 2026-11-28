@@ -299,7 +299,7 @@ const ANCHORS: readonly [string, number, string][] = [
   ["GibbsSolidPhase.cpp", 245, "v.lnActivityWithout > pureSolidPhase::kLnActivityAppears"],
   ["GibbsSolidPhase.cpp", 273, "const scalar lim = p.b[k] / p.A[k][c]"],
   ["GibbsSolidPhase.cpp", 324, "if (rn > 0.0) lo = n; else hi = n;"],
-  ["GibbsReactor.cpp", 777, "kpis_[\"lambda_\" + elems[j]]"],
+  ["GibbsReactor.cpp", 814, "kpis_[\"lambda_\" + elems[j]]"],
 ];
 
 describe("every file:line the lesson cites lands on what it claims", () => {

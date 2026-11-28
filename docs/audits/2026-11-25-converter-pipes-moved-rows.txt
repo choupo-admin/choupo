@@ -1,4 +1,4 @@
-# Golden rows moved by the converter-pipes slice, greenAmmoniaPEQ_baseCase ONLY (2026-11-25)
+# Golden rows moved by the converter-pipes slice, ammoniaPEQ_baseCase ONLY (2026-11-25)
 # Rule 2 of the coordinator, the NARROWER rule: a pipeNotRouted finding only for a pipe whose end is a sized-but-unplaced or refused unit.
 # bin/runTests --scope on the 9 layout cases: aceticAcid02_plant, swro01_campoDalias, donepezil01_tablets, donepezil02_two_strengths, apalutamide01_tablets,
 # ammonia02_full_plant, line01_pumped_drum, economics04_building_royalty_breakeven all PASS against their goldens UNCHANGED (byte-identical rows).

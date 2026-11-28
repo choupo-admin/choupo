@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Isenthalpic let-down of hot liquid water (IF97), 20 bar -> 1 bar.  The
+  throttled enthalpy lies inside the saturation plateau of water at 1 bar:
+  no temperature carries it (H jumps by the whole latent heat at Tsat), so
+  the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the
+  lever rule on the saturated legs (0.147), taken from the pure-fluid plateau
+  route of flashState::specifiedFlash.  Held: the valve's own balance
+  H_out = H_in, and the mass balance.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        letdown;
+        type        valve;
+        in          feed;
+        outputs     ( out );
+        operation   { P 1 bar; }
+    }
+);

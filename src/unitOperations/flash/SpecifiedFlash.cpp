@@ -33,6 +33,8 @@ License
 #include "solver/NewtonRaphson.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "thermo/pureFluid/IF97WaterFluid.H"
+#include "thermo/iapws/IF97.H"
 
 #include <algorithm>
 #include <cmath>
@@ -136,6 +138,12 @@ Bracket bracketIncreasing(const std::function<scalar(scalar)>& f,
     {
         const scalar xn = std::clamp(x + dir * step, xmin, xmax);
         const scalar fn = f(xn);
+        if (fn == 0.0)      // a root exactly on the step (or at the window edge)
+        {
+            b.found = true;
+            b.lo = b.hi = xn; b.flo = b.fhi = 0.0;
+            return b;
+        }
         if ((fn >= 0.0) != (fx >= 0.0))
         {
             b.found = true;
@@ -185,6 +193,8 @@ struct Searcher
         catch (const std::exception& e)
         {
             rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
+            spec.lastUnanswerableT = T;
+            if (spec.lastUnanswerableSink) *spec.lastUnanswerableSink = T;
             refuse(spec.pair, "the package could not answer the trial state"
                 " T = " + num(T) + " K, P = " + num(P) + " Pa (" + e.what()
                 + ").  The specification is refused rather than searched"
@@ -366,12 +376,33 @@ SpecifiedState stateAtTP(const ThermoPackage& thermo, const sVector& z,
     return st;
 }
 
+//  The temperature range the package can answer in, for the components the
+//  stream carries: IF97 water is defined on [273.15, 1073.15] K (region 5
+//  is not implemented); every other model is not bounded here.
+static std::pair<scalar, scalar> packageTemperatureDomain(
+    const ThermoPackage& thermo, const sVector& z)
+{
+    scalar lo = 0.0, hi = std::numeric_limits<scalar>::infinity();
+    for (std::size_t i = 0; i < z.size(); ++i)
+    {
+        if (!(z[i] > 0.0) || !thermo.hasPureFluid(i)) continue;
+        if (dynamic_cast<const IF97WaterFluid*>(&thermo.pureFluid(i)))
+        {
+            lo = std::max(lo, IF97::Tmin);
+            hi = std::min(hi, IF97::Tmax12);
+        }
+    }
+    return {lo, hi};
+}
+
 SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
                               const sVector&            z,
-                              const FlashSpecification& spec,
+                              const FlashSpecification& specIn,
                               int                       verbosity,
                               bool                      wantS)
 {
+    FlashSpecification spec = specIn;
+    spec.lastUnanswerableSink = &specIn.lastUnanswerableT;   // the caller's copy, written by Searcher
     const SpecPair pair = spec.pair;
     const solver::ConvergenceControls ctl =
         spec.controlsDeclared ? spec.controls
@@ -392,6 +423,20 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
         refuse(pair, "the search window is empty (Tmin " + num(spec.Tmin)
             + ", Tmax " + num(spec.Tmax) + ", Pmin " + num(spec.Pmin)
             + ", Pmax " + num(spec.Pmax) + ").");
+    //  The window is cut to the package's own temperature domain, so a trial
+    //  state is never priced where the package refuses (a default window of
+    //  [50, 1500] K is wider than IF97's [273.15, 1073.15] K).
+    if (heldP)
+    {
+        const auto dom = packageTemperatureDomain(thermo, z);
+        spec.Tmin = std::max(spec.Tmin, dom.first);
+        spec.Tmax = std::min(spec.Tmax, dom.second);
+        if (!(spec.Tmax >= spec.Tmin))
+            refuse(pair, "the search window [" + num(specIn.Tmin) + ", "
+                + num(specIn.Tmax) + "] K lies outside the package's"
+                " temperature domain [" + num(dom.first) + ", "
+                + num(dom.second) + "] K.");
+    }
     const bool needS = wantS || pair == SpecPair::PS;
 
     Searcher srch{ thermo, z, spec, verbosity };
@@ -503,6 +548,10 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
             auto df = [&](scalar Tq)
             {
                 const scalar h = std::max(1.0e-5, 1.0e-7 * Tq);
+                //  one-sided inside the window near a bound: the package
+                //  refuses beyond its domain
+                if (Tq + h > wHi) return (f(Tq) - f(Tq - h)) / h;
+                if (Tq - h < wLo) return (f(Tq + h) - f(Tq)) / h;
                 return (f(Tq + h) - f(Tq - h)) / (2.0 * h);
             };
             solver::NROptions o;

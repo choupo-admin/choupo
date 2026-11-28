@@ -72,19 +72,34 @@ describe("tutorials/ALIASES -- a renamed case keeps its shared links", () => {
 
   it("a former name opens the renamed case, under its canonical name", () => {
     const t = tutorialByName("plant/greenAmmoniaFeasibility");
-    expect(t?.name).toBe("plant/greenAmmonia02_feasibility150bar");
+    expect(t?.name).toBe("plant/ammoniaPEQ02_feasibility150bar");
     expect(tutorialByName("plant/ammoniaStaged04_kinetic")?.name)
       .toBe("steady/reactors/ammoniaReactor04_kineticSizing");
     // the 50 bar name is not swallowed by the 150 bar prefix
     expect(canonicalCaseName("plant/greenAmmoniaFeasibility50bar"))
-      .toBe("plant/greenAmmonia02_feasibility50bar");
+      .toBe("plant/ammoniaPEQ02_feasibility50bar");
   });
 
   it("a drilled sub-node of an aliased case resolves through its root", () => {
     expect(canonicalCaseName("plant/greenAmmoniaIndustrialN2/FEHE"))
-      .toBe("plant/greenAmmoniaPEQ_baseCase/FEHE");
+      .toBe("plant/ammoniaPEQ_baseCase/FEHE");
     expect(tutorialByName("plant/greenAmmoniaIndustrialN2/FEHE")).toBe(
-      tutorialByName("plant/greenAmmoniaPEQ_baseCase/FEHE"));
+      tutorialByName("plant/ammoniaPEQ_baseCase/FEHE"));
+  });
+
+  it("C526: the 'green' names of the PEQ ammonia plant still open the renamed cases", () => {
+    const pairs: [string, string][] = [
+      ["plant/greenAmmoniaPEQ_baseCase", "plant/ammoniaPEQ_baseCase"],
+      ["plant/greenAmmoniaPEQ_baseCase/FEHE", "plant/ammoniaPEQ_baseCase/FEHE"],
+      ["plant/greenAmmonia02_feasibility150bar", "plant/ammoniaPEQ02_feasibility150bar"],
+      ["plant/greenAmmonia02_feasibility50bar", "plant/ammoniaPEQ02_feasibility50bar"],
+      ["plant/greenAmmonia03_basicDesign", "plant/ammoniaPEQ03_basicDesign"],
+    ];
+    for (const [o, n] of pairs) {
+      expect(canonicalCaseName(o)).toBe(n);
+      expect(tutorialByName(o)).toBe(tutorialByName(n));
+      expect(tutorialByName(n)).toBeTruthy();
+    }
   });
 
   it("a name that is not aliased is left alone", () => {

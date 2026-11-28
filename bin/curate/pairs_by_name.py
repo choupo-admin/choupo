@@ -28,7 +28,7 @@ rule for the shipped corpus.
 
 THE REAL DEFECT THE CHECK WOULD HAVE CAUGHT: flash02_ethanol_water retyped the five
 NRTL numbers of data/standards/parameters/NRTL/ethanol-water.dat inline, and
-greenAmmoniaPEQ_baseCase named three Henry records by their `data/standards/...`
+ammoniaPEQ_baseCase named three Henry records by their `data/standards/...`
 path: a fact with two homes, one of which no gate compared with the other.
 
 AN INLINE PAIR STAYS where a fit varies it: a number under regression has no other

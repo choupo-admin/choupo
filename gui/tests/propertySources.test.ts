@@ -55,7 +55,7 @@ vi.mock("../src/state/store.js", () => ({
 
 const emptyCase: CaseFiles = { thermoPackage: {}, controlDict: {} };
 const PUMP = "tutorials/steady/rotating/pump01_water";
-const PEQ = "tutorials/plant/greenAmmoniaPEQ_baseCase";
+const PEQ = "tutorials/plant/ammoniaPEQ_baseCase";
 
 const html = (el: React.ReactElement): string =>
   renderToStaticMarkup(createElement(MantineProvider, null, el));

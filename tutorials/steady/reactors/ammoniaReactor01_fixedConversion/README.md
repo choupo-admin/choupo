@@ -23,7 +23,7 @@ law of rung 4.
 
 This is a TEACHING SEQUENCE, not a family of plants.  The reference plants of
 the same process live in `tutorials/plant/` (`ammonia02_full_plant`, the
-conventional loop; `greenAmmoniaPEQ_baseCase`, the green-ammonia project).
+conventional loop; `ammoniaPEQ_baseCase`, the ammonia project).
 These cases moved here from `tutorials/plant/` under DEV.md 4c C244 with their
 names, goldens and contents unchanged; the old identifiers resolve through
 `tutorials/ALIASES`.

@@ -22,12 +22,12 @@ makes possible (a table of reader questions and answers).
 *Changed ("Study a process").*  One worked path from a production target to
 a decision, on the green-ammonia sequence of the corpus:
 
-* **Feasibility** (`greenAmmonia02_feasibility150bar`): 1180 t/day NH3,
+* **Feasibility** (`ammoniaPEQ02_feasibility150bar`): 1180 t/day NH3,
   180.8 kg H2/t, 13.7 MW compression (278 kWh/t), 20.2 MW refrigeration,
   30.9 MW of steam raised; FCI 41.4 MEUR; NPV −493 MEUR at 4.5 EUR/kg H2,
   and the case's own sensitivity shows the hydrogen price decides (NPV
   −25 MEUR at 3.6 EUR/kg).
-* **Basic design** (`greenAmmonia03_basicDesign`): three catalyst bed
+* **Basic design** (`ammoniaPEQ03_basicDesign`): three catalyst bed
   volumes (8.95, 18.41, 31.70 m³) and the shell diameter (2.23 m) solved by
   a design specification; heat integration cuts the utility bill from 31.5
   to 6.2 MEUR/year; NPV −341 MEUR.

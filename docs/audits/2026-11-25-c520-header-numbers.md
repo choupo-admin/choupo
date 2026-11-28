@@ -46,7 +46,7 @@ golden does not hold the row.
 | column03_azeotrope_mesh | 354.4248 K, 363 K, 1149.69 kW, 0.894 | 354.4248 = feed T (golden 354.42); the rest are a past defect's numbers and the azeotrope | not a result (history, literature) |
 | column06, column18, column21, column11 | latent heats 30.8 / 33.2 kJ/mol; 354.25 K; azeotrope 0.894; Murphree table | literature and hand values; column11's 0.9179 and 0.9510 equal x_D_LK at E_MV 0.70 and 1 | not re-run for the other E_MV points |
 | column14 tables | feed composition, molar masses, Underwood/Gilliland hand calculation | inputs and hand arithmetic | not a result |
-| greenAmmonia02/03, greenAmmoniaPEQ_baseCase | design temperatures and pressures | 0 suspects: every number is a declared input or matches a row | clean |
+| ammoniaPEQ02/03, ammoniaPEQ_baseCase | design temperatures and pressures | 0 suspects: every number is a declared input or matches a row | clean |
 | flash01 | bubble ~368 K, dew ~374 K | no golden row | not verified |
 | cstr01 / pfr01 / batch01 | hand formulas (X = 1 - exp(-1.10)) | hand arithmetic | not a result |
 

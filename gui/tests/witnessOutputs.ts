@@ -183,17 +183,17 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  two-stream interchanger in four shells, a condensing cooler against
   //  cooling water, and a condensing chiller against a boiling refrigerant.
   {
-    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    caseDir: "tutorials/plant/ammoniaPEQ_baseCase",
     file: "design/FEHE/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
   {
-    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    caseDir: "tutorials/plant/ammoniaPEQ_baseCase",
     file: "design/WaterCooler/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
   {
-    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    caseDir: "tutorials/plant/ammoniaPEQ_baseCase",
     file: "design/Chiller/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
@@ -213,7 +213,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  The overpressure EduTool (C61) reads the same PreheatedFeed files: its
   //  loop witness copies each plant's converter feed, and its test holds the
   //  copy to them.
-  ...["greenAmmonia02_feasibility150bar", "greenAmmonia02_feasibility50bar"].flatMap(
+  ...["ammoniaPEQ02_feasibility150bar", "ammoniaPEQ02_feasibility50bar"].flatMap(
     (c) => ["Recycle", "PreheatedFeed", "HotEffluent"].map((s) => ({
       caseDir: `tutorials/plant/${c}`,
       file: `converged/${s}`,
@@ -228,7 +228,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  DEV.md 4c C69 (its beds are the CONVERTER sector), so its state views
   //  repeat the geography and a plant-level stream lives under MAIN/.
   ...["RawLiquid", "Purge"].map((s) => ({
-    caseDir: "tutorials/plant/greenAmmonia03_basicDesign",
+    caseDir: "tutorials/plant/ammoniaPEQ03_basicDesign",
     file: `converged/MAIN/${s}`,
     readBy: ["letdown.test.ts"],
   })),
@@ -571,7 +571,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     stdout: true,
   },
   {
-    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    caseDir: "tutorials/plant/ammoniaPEQ_baseCase",
     file: "log.choupoSolve",
     readBy: ["propertySources.test.ts"],
     stdout: true,

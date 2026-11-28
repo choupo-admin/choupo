@@ -1,0 +1,30 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.02               1e-4
+stream  feed                   T                450                1e-4
+stream  out                    F                0.02               1e-4
+stream  out                    T                372.755918611      1e-4
+kpi     letdown                F                0.02               1e-4
+kpi     letdown                P_in             2000000            1e-4
+kpi     letdown                P_out            100000             1e-4
+kpi     letdown                Q_in             0.000404355790572  1e-4
+kpi     letdown                Q_out            0.0901931838107    1e-4
+kpi     letdown                T_in             450                1e-4
+kpi     letdown                T_out            372.755918611      1e-4
+kpi     letdown                dP               1900000            1e-4
+kpi     letdown                dT               -77.2440813887     1e-4
+kpi     letdown                massFlow         0.3603             1e-4
+kpi     letdown                rho_L_out        958.636889676      1e-4
+kpi     letdown                rho_V_out        0.590310922945     1e-4
+kpi     letdown                rho_in           891.046965075      1e-4
+kpi     letdown                rho_out          3.99475863671      1e-4
+kpi     letdown                vf               0.147246251547     1e-4
+kpi     letdown                volumeRatio      223.054018054      1e-4
+kpi     letdown                x_mass_out       0.147246251547     1e-4
+boundary global               H_feeds_kW       270.169814907      1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    270.169814907      1e-4
+boundary global               noBoundary       false              exact
+source  letdown                liquidDensity    pureFluid.IF97     exact

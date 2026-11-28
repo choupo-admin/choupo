@@ -116,6 +116,14 @@ struct FlashSpecification
     scalar Tmin = 50.0,   Tmax = 1500.0;       // [K]
     scalar Pmin = 1.0e2,  Pmax = 1.0e8;        // [Pa]
 
+    //  OUTPUT, set when a trial state is refused because the package could
+    //  not answer it (NaN otherwise): the temperature of the LAST such trial.
+    //  A caller that holds a modelling rule about where unanswerable trials
+    //  lie (adiabaticFlash's high-side rule) reads it to move the window; the
+    //  home itself makes no such claim and still refuses.
+    mutable scalar lastUnanswerableT = std::numeric_limits<scalar>::quiet_NaN();
+    mutable scalar* lastUnanswerableSink = nullptr;   // internal: where the search's copy writes back
+
     //  The flash every trial state is solved with.  Tighter than the
     //  isothermal unit's defaults, because a specification asked to 1e-8 in
     //  T must not be bounded by a 1e-6 composition loop.

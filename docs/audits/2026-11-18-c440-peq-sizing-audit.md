@@ -1,6 +1,6 @@
-# C440 audit -- greenAmmoniaPEQ_baseCase, origin/main (3eb8ab8554)
+# C440 audit -- ammoniaPEQ_baseCase, origin/main (3eb8ab8554)
 
-Read: tutorials/plant/greenAmmoniaPEQ_baseCase/{system/flowsheetDict,postDict,layoutDict,expected,<unit>/system/flowsheetDict},
+Read: tutorials/plant/ammoniaPEQ_baseCase/{system/flowsheetDict,postDict,layoutDict,expected,<unit>/system/flowsheetDict},
 src/postProcessing/sizing/*, src/io/DesignSheetWriter.H, gui/src/case/{equipmentListSheet,reportSections}.ts, ~/Choupo-Literature/INDEX.md and the Towler contents list.
 Costs and sizes are the `expected` golden rows (Turton, CEPCI 820, EUR). Book references are to chapter/section TITLES read in the contents list; no number comes from memory.
 

@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoProps;
+tier         witness;
+description  "The edges of the flash specification's search (DEV.md 4c C214 follow-up): a root exactly on the window edge, a target at the top of the package's temperature domain (IF97, 1073.15 K), and a default window wider than the package domain (IF97, 273.15 K) -- each in (P,H) and (P,S) on IAPWS-IF97";
+verbosity    3;

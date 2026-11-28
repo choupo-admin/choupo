@@ -70,7 +70,7 @@ during the solve, and the sizing pass runs after it.  A D chosen in the
 postDict would size a converter whose drops are not the ones in the stream
 table.
 
-## 5. What it measured on greenAmmonia03_basicDesign
+## 5. What it measured on ammoniaPEQ03_basicDesign
 
 D = 2.2283 m, bed 3 binding at its 1 bar allowable (bed 1 at 0.31, bed 2 at
 0.62).  At EQUAL diameter one shell costs MORE than three (16.79 against

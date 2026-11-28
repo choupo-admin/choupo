@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1951,
+  "cases": 1963,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22752,7 +22752,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia02_feasibility150bar": {
+  "tutorials/plant/ammoniaPEQ02_feasibility150bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22760,7 +22760,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia02_feasibility50bar": {
+  "tutorials/plant/ammoniaPEQ02_feasibility50bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22768,7 +22768,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia03_basicDesign": {
+  "tutorials/plant/ammoniaPEQ03_basicDesign": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22776,7 +22776,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaPEQ_baseCase": {
+  "tutorials/plant/ammoniaPEQ_baseCase": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -25143,6 +25143,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/flashSpec02_window_edges": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/heavyWater01_isotope_effect": {
    "application": "choupoProps",
    "ops": [
@@ -27155,6 +27166,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/adiabaticFlash02_wet_water_letdown": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "adiabaticFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/adiabaticFlash03_near_pure_letdown": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "adiabaticFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/analysis01_water_analysis_inlet": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -27693,6 +27732,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/mixer01_water_steam_plateau": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/valve02_wet_letdown_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/vlle01_waterButanol": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28058,6 +28125,20 @@
    "roles": [],
    "hasGolden": false
   },
+  "tutorials/steady/flowsheets/valve_refusal_pressure_raise": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/gas-solid/bagFilter01_dust": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28373,6 +28454,20 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": {
    "application": "choupoSolve",
@@ -28961,6 +29056,20 @@
    ],
    "unitModels": [
     "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pump10_supercritical_outlet": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -29610,6 +29719,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/optimisation/optim09_sqp_fdmode_auto": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/pareto01_purity_energy": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -30164,6 +30289,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/equil05_order_independent_a": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/equil05_order_independent_b": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/ladder01_wgs_three_rungs": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -30453,6 +30606,20 @@
    "hasGolden": true
   },
   "tutorials/steady/rotating/turbine01_air": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/turbine02_n2_isentropic_state": {
    "application": "choupoSolve",
    "unitTypes": [
     "turbine"
@@ -32836,6 +33003,7 @@
     "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
+    "tutorials/props/thermo/flashSpec02_window_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
@@ -32878,10 +33046,10 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
-    "tutorials/plant/greenAmmonia02_feasibility150bar",
-    "tutorials/plant/greenAmmonia02_feasibility50bar",
-    "tutorials/plant/greenAmmonia03_basicDesign",
-    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/plant/ammoniaPEQ02_feasibility150bar",
+    "tutorials/plant/ammoniaPEQ02_feasibility50bar",
+    "tutorials/plant/ammoniaPEQ03_basicDesign",
+    "tutorials/plant/ammoniaPEQ_baseCase",
     "tutorials/plant/hda",
     "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/lithiumBrinePlant",
@@ -32998,6 +33166,8 @@
     "tutorials/steady/evaporation/evaporator10_naoh_triple_effect",
     "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
+    "tutorials/steady/flash/adiabaticFlash02_wet_water_letdown",
+    "tutorials/steady/flash/adiabaticFlash03_near_pure_letdown",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
@@ -33034,6 +33204,8 @@
     "tutorials/steady/flash/leaf01_flash",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
+    "tutorials/steady/flash/valve02_wet_letdown_water",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flash/vlle04_two_liquids_decanter",
@@ -33060,6 +33232,7 @@
     "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -33081,6 +33254,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -33120,6 +33294,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -33157,6 +33332,7 @@
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
     "tutorials/steady/optimisation/optim08_bayesian_membrane",
+    "tutorials/steady/optimisation/optim09_sqp_fdmode_auto",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",
@@ -33195,6 +33371,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -33216,6 +33394,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
@@ -33306,7 +33485,9 @@
    "adiabaticFlash": [
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
-    "tutorials/steady/flash/adiabaticFlash01_benzene_toluene"
+    "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
+    "tutorials/steady/flash/adiabaticFlash02_wet_water_letdown",
+    "tutorials/steady/flash/adiabaticFlash03_near_pure_letdown"
    ],
    "agitatedVessel": [
     "tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt",
@@ -33490,6 +33671,7 @@
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/optimisation/optim09_sqp_fdmode_auto",
     "tutorials/steady/reactors/cstr01_first_order",
     "tutorials/steady/reactors/cstr02_reversible_wgs",
     "tutorials/steady/reactors/cstr03_series_selectivity",
@@ -33642,6 +33824,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/screen01_methanol_routes"
    ],
@@ -33708,6 +33892,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -33757,6 +33942,7 @@
     "tutorials/steady/heat/pinch02_two_pinches_mer",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/optimisation/optim09_sqp_fdmode_auto",
     "tutorials/steady/power/brayton01_gas_turbine",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
@@ -33831,6 +34017,7 @@
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/optimisation/optim09_sqp_fdmode_auto",
     "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
     "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
     "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
@@ -33857,6 +34044,7 @@
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
@@ -33946,6 +34134,7 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/swro01_campoDalias",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
@@ -34105,12 +34294,15 @@
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl"
    ],
    "valve": [
     "tutorials/plant/aceticAcid02_plant",
+    "tutorials/steady/flash/valve02_wet_letdown_water",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing"
    ],
    "williamsOttoPlant": [
@@ -36529,6 +36721,7 @@
     "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
+    "tutorials/props/thermo/flashSpec02_window_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/refEoS01_iapws95_verification",
@@ -36614,6 +36807,8 @@
     "tutorials/steady/evaporation/evaporator04_orange_juice_simple",
     "tutorials/steady/evaporation/evaporator05_counter_current",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
+    "tutorials/steady/flash/adiabaticFlash02_wet_water_letdown",
+    "tutorials/steady/flash/adiabaticFlash03_near_pure_letdown",
     "tutorials/steady/flash/flash01_benzene_toluene",
     "tutorials/steady/flash/flash04_molarFlows_input",
     "tutorials/steady/flash/flash05_ternary_massFlows",
@@ -36624,6 +36819,8 @@
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
+    "tutorials/steady/flash/valve02_wet_letdown_water",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/esterification2sector",
@@ -36638,6 +36835,7 @@
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/flowsheets/table05_sector_table_pins",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -36657,6 +36855,7 @@
     "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
     "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
@@ -36692,6 +36891,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -36729,6 +36929,7 @@
     "tutorials/steady/optimisation/optim06_integer_stages",
     "tutorials/steady/optimisation/optim07_mads_mixed_column",
     "tutorials/steady/optimisation/optim08_bayesian_membrane",
+    "tutorials/steady/optimisation/optim09_sqp_fdmode_auto",
     "tutorials/steady/optimisation/pareto01_purity_energy",
     "tutorials/steady/optimisation/sensitivity01_column_reflux",
     "tutorials/steady/optimisation/sensitivity02_feasibility_map",
@@ -36761,6 +36962,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -36782,6 +36985,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",

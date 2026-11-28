@@ -30,7 +30,7 @@ WHAT THIS CHECKS:
       its named twin in bund.ts (`Twin of bundMath::<name>`) and the reverse.
 
   (b) THE WITNESS'S BUND IS THE PINS.  The `green_*` pins are
-      `greenAmmoniaPEQ_baseCase`'s `tankFarm` bund: their INPUTS are read off
+      `ammoniaPEQ_baseCase`'s `tankFarm` bund: their INPUTS are read off
       the case -- the region's area, the wall height, the tanks' declared
       footprints, the rain depth and the rule's fraction from its layoutDict,
       the largest tank's V_R from its golden -- and their VALUES must equal
@@ -78,7 +78,7 @@ HDR = ROOT / "src" / "postProcessing" / "layout" / "BundArithmetic.H"
 CPP = ROOT / "src" / "postProcessing" / "layout" / "PlantLayout.cpp"
 TS = ROOT / "gui" / "src" / "ui" / "methods" / "bund.ts"
 TS_TEST = ROOT / "gui" / "tests" / "bund.test.ts"
-GREEN = ROOT / "tutorials" / "plant" / "greenAmmoniaPEQ_baseCase"
+GREEN = ROOT / "tutorials" / "plant" / "ammoniaPEQ_baseCase"
 
 fails = []
 
@@ -166,7 +166,7 @@ def arm_b(pins, got):
     lay = re.sub(r"//[^\n]*", "", (GREEN / "system" / "layoutDict").read_text())
     m = re.search(r'name\s+"tankFarm";(.*?)\n    \}\n', lay, re.S)
     if not m:
-        fails.append("(b) greenAmmoniaPEQ_baseCase's layoutDict has no bund `tankFarm`")
+        fails.append("(b) ammoniaPEQ_baseCase's layoutDict has no bund `tankFarm`")
         return
     blk = m.group(1)
     rg = re.search(r"region\s*\{\s*xMin ([-0-9.]+) m; xMax ([-0-9.]+) m; yMin ([-0-9.]+) m;"

@@ -5740,6 +5740,39 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **THE CLOUD'S QUEUE FROM SATURDAY 28 NOVEMBER, RECONCILED (Vitor, 2026-11-25).**  In this order: C184 (3) the
+> thermodynamic homotopy ladder; C522 A3-A5 (heuristics, adaptive barrier, the external bench) and B2, B3, C1-C3 (solids,
+> equations of state, the three-phase flash with the Michelsen test); C523 the optimal temperature profile; C217 the
+> optimal feed profile (needs an adjustable exponential signal); C477 the next family of figures; C522 D later.  The BFGS
+> page ("learning the curvature without computing it") is NOT a new tool while C535 stands: its picture is a chapter of
+> `optimizers`, its algebra a chapter of `linear-algebra-without-pain`.
+
+> **C535. EDUTOOLS BY FAMILY, ONE SKELETON (Vitor, 2026-11-25: "voltes a um ponto em que está simples e funciona ... O
+> EduTool Why did it not dry? é claramente um remendo").**  Weighed: the page's content is sound (four engine runs, a
+> verdict); the patch is its packaging: a new top-level tool for one day's question, the 110th of a flat list.  RULE: a
+> family per operation or concept, one front door, one fixed skeleton (the question, the engine run, what is read, the
+> diagnosis, the choice, the limits); a diagnosis is a chapter of its family, never a new tool.  No big-bang merge: the
+> drying family is the pilot (choose, curve, diagnose, chart), old links alias.  No new EduTool until Vitor has read the
+> skeleton and seen the pilot.
+> FIRST WORK OF SATURDAY 28 NOVEMBER, WITH HIM: the architecture once and for all, and the NAME is open too (Vitor,
+> 2026-11-25: "simples que funciona muito bem e que depois possa escalar sem remendos").
+> DECIDED 2026-11-28 (architect; Vitor: for the student alone, and he does not decide how it is built): the NAME
+> STAYS EduTools (Vitor, the same hour: "Eu gosto de EduTools!"; the architect had proposed Lessons); each page is a DOCUMENT on one fixed skeleton (the question, try it with the engine,
+> what you see, why it goes wrong, check yourself, limits and sources) drawn by one renderer from a small fixed set of
+> interactive pieces; a family per operation with one door.  PILOT: Drying (choose, curve, diagnose, chart).  He judges
+> the pilot on screen as a teacher; only then the other families, one at a time, the old pages working meanwhile.
+
+> **C534. PSYCHROMETRIC CHARTS: ONE HOME, THREE DOORS (Vitor, 2026-11-25, for Saturday 28 November).**  The chart
+> stays in its EduTool; the Explorer gets a card (a gas and a vapour) that opens it with the pair filled; Find answers
+> "humid air", "wet bulb", "dew point"; a link carries gas, vapour and pressure; air + water is the default (N2 + water
+> today); click a point to read every property; A4 print, CSV, save as case.
+
+> **C533 (Vitor, 2026-11-25): which mixture of three solvents dissolves a solid.**  Scatchard-Hildebrand as an activity
+> model (ln gamma_2 = V_2 (delta_2 - delta_bar)^2 phi_1^2 / RT, any number of solvents), with the fusion equation giving the
+> amount; the Hansen triangle for three (today two).  Measured by a scratch run: benzene in three solvents with UNIFAC works
+> (aEq 0.503 at 240 K equals the hand value 0.503); the data that fail: a heat of fusion on the record of water only, 13
+> substances with Hansen numbers.  C226 measured the same day on 947 pairs: 0 new, 547 isothermal only, 292 present.
+
 > **C532. THE LAWS OF EVERY RUN (Vitor, 2026-11-25: "Cada operação, setor e processo global devia gerar isso em cada corrida
 > e lançar alarmes em caso de falha grosseira").**  The laws live in the engine, once per unit kind, never in a folder a
 > case can edit; the CASE holds only its declared specifications; what each run writes into the case is the VERDICT, per

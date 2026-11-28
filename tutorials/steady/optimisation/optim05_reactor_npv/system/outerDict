@@ -15,7 +15,7 @@
   objective:    maximise  economics.NPV   (published by the EconomicsPass; the
                           driver runs the postDict chain so this KPI exists).
   variables:    V_R     (reactor volume,  m^3)
-                T_feed  (feed/reactor T,   K)
+                streams.feed.T  (feed inlet T, K)
   constraints:  reactor.V_R    <=  V_max     (physical size head-room -- BINDS)
                 economics.FCI  <=  FCI_max   (capital budget -- left SLACK)
 
@@ -35,8 +35,9 @@ variables
         max      30.0;
     }
     {
-        path     variables.T_feed;
+        path     streams.feed.T;       // the feed INLET temperature (channel target, as optim04)
         min      348.0 K;
+        initial  350.0 K;
         max      352.5 K;        // kept below the ~353 K cliff where the flash boils the bottoms dry
     }
 );

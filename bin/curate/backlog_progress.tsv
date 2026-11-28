@@ -52,7 +52,6 @@ C482	35	1 das 3 partes
 C485	75	faltam três das máquinas
 C491	40	2 das 5 provas medidas
 C492	40	seis provas em todos os casos estacionários, num ramo
-C496	50	medido; a revisão pediu 11 correções
 C502	0	nada construído
 C507	0	nada construído
 C513	60	uma lei e cinco registos no main
@@ -61,7 +60,7 @@ C309	40	lotes restantes bloqueados por dados
 C454	35	cerca de 6 das 18 famílias
 C525	0	nada construído
 C526	5	cenários corridos
-C529	5	um general em curso
-C530	5	um general em curso
-C531	5	um general em curso
 C532	0	depois da tabela do C531
+C533	0	depois das leis (C532)
+C534	0	sábado
+C535	0	o esqueleto primeiro

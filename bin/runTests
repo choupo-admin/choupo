@@ -59,6 +59,14 @@
 #       lesson (e.g. an explicit RK4 integrator blowing up on stiff chemistry,
 #       ignition01_h2o2_rk4).  Counted as EXPECTED-FAIL.
 #
+#    * `.expect-refusal` -- a case whose engine REFUSES by name (exit non-zero
+#       with a message).  Its first non-comment line is a substring that MUST
+#       appear in the run's output; the case is RUN and is PASS only if the exit
+#       code is non-zero AND the text is present (FAIL: it converged, or the
+#       text is missing).  Defect it catches: under `.expect-nonconvergence` a
+#       refusal deleted from the engine stays green, because that marker skips
+#       the run.
+#
 #    * `.known-broken` -- a case that is genuinely BROKEN (a bug awaiting a
 #       fix: a crash, a stale/failing golden).  The file's first line is a
 #       one-line reason + a pointer to the QA report.  Counted as
@@ -2136,7 +2144,7 @@ auto_generate_raw() {
         # kpis: every numeric key per unit (skip iterations).  A unit of a
         # SECTORED plant is named `SECTOR.unit` (2026-10-12, DEV.md 4c C69):
         # the unit pattern admits the dot, or every KPI of every unit inside a
-        # sector arrives unpinned -- measured on greenAmmonia03_basicDesign the
+        # sector arrives unpinned -- measured on ammoniaPEQ03_basicDesign the
         # day its beds became the CONVERTER sector, 136 rows the recorder no
         # longer wrote.  The reader (get_value) always accepted the dotted name.
         printf '%s\n' "$kpis_sec" | grep -P '"[\w.]+": \{' | while read -r line; do
@@ -2795,7 +2803,7 @@ if [ -n "$RECORD" ]; then
     for case_dir in "${CASES[@]}"; do
         # Never auto-record a golden from a DELIBERATELY-failing or KNOWN-BROKEN
         # run -- that would pin broken physics as the reference.
-        if [ -f "$case_dir/.expect-nonconvergence" ] || [ -f "$case_dir/.known-broken" ]; then
+        if [ -f "$case_dir/.expect-nonconvergence" ] || [ -f "$case_dir/.known-broken" ] || [ -f "$case_dir/.expect-refusal" ]; then
             echo "skip (marked: not recordable): $case_dir"; continue
         fi
         #  ONE CASE, TWO MODES (C152): the default mode records `expected`,
@@ -6646,6 +6654,21 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/gibbsip.$$
+    # noise-aware SQP gate (2026-11-25, C496 review F1-F11).  The adaptive
+    # differences (fdMode auto) certified a non-stationary point on a stale
+    # gradient, took a jump and an oscillation for noise, evaluated outside the
+    # box, printed multiplier bars 7000 times too small, and called feasible QPs
+    # infeasible.  The review's failing inputs, the four invariants, and the
+    # default SQP pinned against its base output.
+    if gate_exec "$ROOT/bin/curate/check_sqp_adaptive.py" > /tmp/sqpad.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sqp-adaptive-gate" "$(head -1 /tmp/sqpad.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_sqp_adaptive.py)\n" "sqp-adaptive-gate"
+        cat /tmp/sqpad.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sqpad.$$
 
     # iteration-budgets gate (2026-11-21, DEV.md 4c C467 R-001/R-002/R-006).  A Newton
     # budget of zero was published as a converged solve (adiabaticFlash with
@@ -8183,6 +8206,19 @@ PYEOF
     fi
     rm -f /tmp/stdwrite.$$
 
+    # state-inversion-door gate (2026-11-28): the units that invert H(T) with
+    # their own search (blind to a pure fluid's saturation plateau: a water
+    # letdown through a valve did not converge) may only shrink in number.
+    if gate_exec "$ROOT/bin/curate/check_state_inversion_door.py" > /tmp/stinv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "state-inversion-door-gate" "$(head -1 /tmp/stinv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_state_inversion_door.py)\n" "state-inversion-door-gate"
+        cat /tmp/stinv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stinv.$$
+
     # no-symlinks gate (2026-11-10, DEV.md 4c C296 slice 1).  No tracked symlink under data/: a record has one home.
     if gate_exec "$ROOT/bin/curate/check_no_symlinks.py" > /tmp/nosymlk.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "no-symlinks-gate" "$(head -1 /tmp/nosymlk.$$)"
@@ -9245,6 +9281,25 @@ for case_dir in "$1"; do
         expected_fail=$((expected_fail+1)); EF_NAMES+=("$name_short"); continue
     fi
 
+    #  `.expect-refusal`: RUN the case; PASS only on a non-zero exit AND the
+    #  marker's substring in the output (a refusal deleted from the engine fails).
+    if [ -f "$case_dir/.expect-refusal" ]; then
+        want=$(grep -vE '^[[:space:]]*#' "$case_dir/.expect-refusal" 2>/dev/null \
+               | grep -m1 -vE '^[[:space:]]*$')
+        rout=$(run_case_raw "$case_dir" "$(binary_for "$case_dir")"); rrc=$?
+        if [ "$rrc" -eq 0 ]; then
+            printf "FAIL  %-40s  (expected a refusal but the run converged, exit 0)\n" "$name_short"
+            fail=$((fail+1))
+        elif [ -z "$want" ] || ! printf '%s' "$rout" | grep -qF -- "$want"; then
+            printf "FAIL  %-40s  (refused with exit %s but the output lacks: %s)\n" "$name_short" "$rrc" "${want:-<empty marker>}"
+            fail=$((fail+1))
+        else
+            printf "PASS  %-40s  (refused by name, exit %s: %s)\n" "$name_short" "$rrc" "$want"
+            pass=$((pass+1))
+        fi
+        continue
+    fi
+
     #  A CASE WHOSE MEASURED SERIES ARE NOT IN THE TREE (C282, 2026-11-10,
     #  Vitor: only the fitted parameters are kept).  It declares them in
     #  constant/archiveDatasets and `bin/choupo-curate fetch` regenerates them
@@ -9770,6 +9825,38 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/plantbooks.$$
+
+    # Utility-limits gate (2026-11-25, DEV.md 4c C531): no heat flows uphill in a
+    # published result.  THE REAL DEFECTS: a condenser left at 284.5 K with its
+    # coolant at 300 K and a reboiler made vapour at 638.8 K with heating at
+    # 393 K, both at exit 0 with the first law closed.  Every shipped
+    # exchanger-like steady case is judged from its published streams and
+    # profiles, and five counterexample arms must each fail.
+    if gate_exec "$ROOT/bin/curate/check_utility_limits.py" > /tmp/utillim.$$ 2>&1 \
+        && gate_exec "$ROOT/bin/curate/check_utility_limits.py" --arms >> /tmp/utillim.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "utility-limits-gate" "$(gate_claim check_utility_limits /tmp/utillim.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_utility_limits.py)\n" "utility-limits-gate"
+        cat /tmp/utillim.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/utillim.$$
+
+    # Multi-component proofs gate (2026-11-25, DEV.md 4c C529): a dryer that
+    # priced only its FIRST solid (the component order moved T_out by 19 K) and
+    # a cooling tower that saw only its majority gas.  Synthetic cases with two
+    # solids or two gases: order swapped, a solid split into two identical
+    # halves, each specification recomputed on the published outlet.
+    if gate_exec "$ROOT/bin/curate/check_multicomponent.py" > /tmp/multic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "multicomponent-proofs-gate" "$(gate_claim check_multicomponent /tmp/multic.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_multicomponent.py)\n" "multicomponent-proofs-gate"
+        cat /tmp/multic.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/multic.$$
 
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal

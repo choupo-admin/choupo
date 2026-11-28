@@ -24,8 +24,8 @@ A. The first ten entries of `tutorials/FASTSET`, in file order, that are under
    `reports/balances/massBalance_byUnit.csv`).  Skipped by that rule:
    `aceticAcid01_gibbsReactor` (1 unit); the walk stopped at the tenth qualifying case.
 B. The two plants under `tutorials/plant/` with the most stream files in `0/`
-   (internalStates excluded): `greenAmmonia03_basicDesign` and
-   `greenAmmoniaPEQ_baseCase`, 28 each, no tie to break.
+   (internalStates excluded): `ammoniaPEQ03_basicDesign` and
+   `ammoniaPEQ_baseCase`, 28 each, no tie to break.
 
 ## The method
 
@@ -67,8 +67,8 @@ record gave DISAGREE (108.59 % against 99.9971 %).  The comparison is not vacuou
 | ammoniaRoutes01_screening | reactors | 6/6/0 | 407703.9298 / 407705.3922 | 100.000359 | 100.0004 | N 100.00000 | O 100.0000 | AGREE |
 | esterification2sector | flowsheets | 1/2/1 | 5306.0500 / 5306.0500 | 100.000000 | 100.0000 | C 100.00000 | O 100.0000 | AGREE |
 | economics01_esterification_dcf | economics | 1/2/2 | 26530.2500 / 26530.2493 | 99.999997 | 100.0000 | C 100.00000 | O 100.0000 | AGREE |
-| greenAmmonia03_basicDesign | plant | 2/4/22 | 50071.4244 / 50069.9601 | 99.997076 | 99.9971 | Ar 99.99851 | Ar 99.9985 | AGREE |
-| greenAmmoniaPEQ_baseCase | plant | 2/4/22 | 50071.4244 / 50069.9601 | 99.997076 | 99.9971 | Ar 99.99851 | Ar 99.9985 | AGREE |
+| ammoniaPEQ03_basicDesign | plant | 2/4/22 | 50071.4244 / 50069.9601 | 99.997076 | 99.9971 | Ar 99.99851 | Ar 99.9985 | AGREE |
+| ammoniaPEQ_baseCase | plant | 2/4/22 | 50071.4244 / 50069.9601 | 99.997076 | 99.9971 | Ar 99.99851 | Ar 99.9985 | AGREE |
 
 "Worst element" is the element farthest from 100 %; where every element prints
 100.0000 the name is a tie and the two columns may name different elements.
@@ -94,7 +94,7 @@ the CSV's own 4-decimal rounding), totals 7e-8 relative (ed01, file digits).
    unresolvable or ambiguous state file, a missing MW or formula) rather than
    guess.  Energy closure is untested by this method.  A plant outlet's file is
    looked for in `MAIN/` and in the `from` sector; none was ambiguous here.
-4. greenAmmonia03 and PEQ print identical closures (99.997076): same plant,
+4. ammoniaPEQ03 and PEQ print identical closures (99.997076): same plant,
    same design point, confirmed independently from each case's own files.
 
 ## Does this become a gate?

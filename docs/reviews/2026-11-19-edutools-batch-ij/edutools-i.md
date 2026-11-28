@@ -35,7 +35,7 @@ The registry ids were the expected ones (`registry.ts:1970`, `:2000ff`, `:2040ff
   - `ThermoPackage.H:376`
   - `PropertyEvaluator.cpp:193`
   - `PropertyPoint.cpp:88-91`
-- The "LetdownHP / StorageFlash governed by their liquid" claim matches the greenAmmonia03 golden (`blocked_LetdownLiquid` 385 mm², `blocked_ProductNH3` 1216 mm²).
+- The "LetdownHP / StorageFlash governed by their liquid" claim matches the ammoniaPEQ03 golden (`blocked_LetdownLiquid` 385 mm², `blocked_ProductNH3` 1216 mm²).
 
 ## 2. Pool fire (`poolFireLesson.ts`, `PoolFireTool.tsx`, `poolFire.ts`)
 

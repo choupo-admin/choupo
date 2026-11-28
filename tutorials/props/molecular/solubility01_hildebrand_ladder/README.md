@@ -52,7 +52,7 @@ The run states this on every call, not only when a pair looks close.  The
 three-parameter Hansen split is what that needs.  The engine reads it from a
 `hansen {}` block and the `hansenMixture` op measures a solvent's or a blend's
 distance from a target with it (`tutorials/props/solvents/`); the catalogue
-itself carries no split, it being a separate dataset.
+carries the split for the solvents Hansen published (69 records), each with its table and row.
 
 ## Not established
 

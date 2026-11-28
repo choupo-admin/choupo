@@ -29,7 +29,7 @@ License
 /*  SECONDARY CONTAINMENT IN THE VIEW (DEV.md 4c C134): bunds and impounding
     areas, as the scene and the tables carry them.  The two records below are
     TRANSCRIBED from the engine's run of `tutorials/plant/
-    greenAmmoniaPEQ_baseCase` (its `layout.bunds`); the view must carry the
+    ammoniaPEQ_baseCase` (its `layout.bunds`); the view must carry the
     engine's numbers unmeasured and work out only what is drawing:
       * the adapter passes the block through and keeps its absence;
       * the wall runs on the engine's outline at the engine's height, the pit

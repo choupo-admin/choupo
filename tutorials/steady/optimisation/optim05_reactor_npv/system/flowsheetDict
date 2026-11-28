@@ -46,7 +46,7 @@
       DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing --
       so an NPV maximum exists.
 
-    * T_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate
+    * T_feed (feed temperature, the channel streams.feed.T) -- higher T raises the Arrhenius rate
       constant k = A.exp(-Ea/RT), so X climbs too.  T_feed is the cheap
       conversion ACCELERATOR; its bounds are kept inside the window where the
       flash splits cleanly (below the temperature that boils the bottoms dry).
@@ -106,7 +106,6 @@
 variables
 {
     V_R        4.0;          // manipulated: reactor volume   [m^3], inside [0.3, 520]
-    T_feed     350.0 K;      // manipulated: feed / reactor temperature  [K]
 }
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

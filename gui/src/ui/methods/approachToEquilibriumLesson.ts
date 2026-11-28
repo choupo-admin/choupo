@@ -247,7 +247,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
         + "(`approachDirection`, GibbsReactor.cpp:70–163).  An isothermal run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
-        + "GibbsReactor.cpp:769)",
+        + "GibbsReactor.cpp:806)",
         unit: "J/mol" },
       { sym: "X_\\mathrm{eq}",
         means: "the equilibrium conversion — or any monotone stand-in for it, "
@@ -472,8 +472,8 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "the engine does with a declared approach is to solve the equilibrium "
       + "on the shifted Kp and then price the outlet at the physical "
       + "temperature with that shifted composition: Q = H_out(T, shifted "
-      + "composition) − H_in (EquilibriumReactor.cpp:877, 940–944, 951; for "
-      + "the isothermal gibbsReactor, GibbsReactor.cpp:763–769).  So carry "
+      + "composition) − H_in (EquilibriumReactor.cpp:894, 957–961, 968; for "
+      + "the isothermal gibbsReactor, GibbsReactor.cpp:800–806).  So carry "
       + "from the shifted run the composition and whatever depends on "
       + "composition alone (conversion, selectivity); carry from the "
       + "unshifted run only the temperature, the pressure and the feed; and "
@@ -519,7 +519,7 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "measurement anywhere in this tool.  The corpus cases that declare "
       + "an approach declare an uncalibrated one: `ammoniaReactor03_equilibriumApproach` "
       + "carries a magnitude chosen for the reactor-model ladder, "
-      + "`greenAmmoniaPEQ_baseCase` takes the patent's 5 K at the outlet of its second and third beds "
+      + "`ammoniaPEQ_baseCase` takes the patent's 5 K at the outlet of its second and third beds "
       + "(step 8), and the five "
       + "`gibbsMap` witnesses of the companion survey page declare the key "
       + "at zero so a slider can move it.",

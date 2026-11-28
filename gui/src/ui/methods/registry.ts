@@ -1410,7 +1410,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  da a reducao de pressao de mais de 10x de uma corrente num processo
   //  quimico? ... pode ser um problema de desgaste e de ruido", then "Faz e
   //  se puder coloca muitas imagens e esquemas!".  A CONSTRUCTION with two
-  //  witnesses run in the browser (letdown01: the green-ammonia separator
+  //  witnesses run in the browser (letdown01: the ammonia separator
   //  liquid and purge through the engine's `valve`; letdown02: the purge's
   //  k and ammonia's vapour pressure) and the valve arithmetic of
   //  letdown.ts on their numbers.
@@ -1434,7 +1434,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     teaches: "What a valve taking a large pressure drop does to the "
       + "stream, and why its severity depends on the fluid's state, its "
       + "vapour pressure, the valve's F_L and x_T, its geometry and the "
-      + "flow: the green-ammonia separator liquid let down 140 -> 20 -> "
+      + "flow: the ammonia separator liquid let down 140 -> 20 -> "
       + "1 bar through the engine's isenthalpic valve -- the dissolved gas "
       + "first, then the ammonia flashing, the temperature falling to the "
       + "two-phase equilibrium state at the outlet pressure and the volume "
@@ -2342,7 +2342,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "necessary, to choose between two options (correlated errors, the "
       + "difference estimated directly, expected cost and risk); and where "
       + "Choupo stands at "
-      + "each stage, from the ammonia ladder to the green-ammonia base case.",
+      + "each stage, from the ammonia ladder to the ammonia base case.",
     //  The Theory Guide's discounted-cash-flow section: the appraisal the
     //  estimate class qualifies, and its own warning that a DCF inherits
     //  every uncertainty upstream of it.

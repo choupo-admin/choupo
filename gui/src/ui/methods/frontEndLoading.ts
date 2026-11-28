@@ -194,8 +194,8 @@ export const FEL_NUMBERINGS: readonly Numbering[] = [
  *
  *  THE C57 CASES ARE LISTED (2026-10-10).  Vitor's green-ammonia project
  *  split by stage (DEV.md 4c C57) put two plant cases in the tree, each a
- *  copy of the base case with one thing changed: greenAmmonia02_feasibility150bar
- *  (and its 50 bar variant) on the feasibility stage, greenAmmonia03_basicDesign
+ *  copy of the base case with one thing changed: ammoniaPEQ02_feasibility150bar
+ *  (and its 50 bar variant) on the feasibility stage, ammoniaPEQ03_basicDesign
  *  on FEED.  The screening stage gained its ammonia case on 2026-10-12
  *  (ammoniaRoutes01_screening, DEV.md 4c C68: green, grey and blue routes on
  *  paper); the route-screening EduTool screens methanol.  None of them is
@@ -281,9 +281,9 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "author declares Class 4 too.",
     choupoCases: [
       "steady/reactors/ammoniaReactor03_equilibriumApproach",
-      "plant/greenAmmonia02_feasibility150bar",
-      "plant/greenAmmonia02_feasibility50bar",
-      "plant/greenAmmoniaPEQ_baseCase",
+      "plant/ammoniaPEQ02_feasibility150bar",
+      "plant/ammoniaPEQ02_feasibility50bar",
+      "plant/ammoniaPEQ_baseCase",
     ],
     choupoTools: ["approach-to-equilibrium", "pinch-composite"],
     notChoupo: "Plot plans, the electrical one-line drawings, and the "
@@ -315,8 +315,8 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "its capital estimate remains a study / Class-4-type estimate.",
     choupoCases: [
       "steady/reactors/ammoniaReactor04_kineticSizing",
-      "plant/greenAmmonia03_basicDesign",
-      "plant/greenAmmoniaPEQ_baseCase",
+      "plant/ammoniaPEQ03_basicDesign",
+      "plant/ammoniaPEQ_baseCase",
     ],
     choupoTools: ["reactor-ladder", "entu"],
     notChoupo: "P&IDs, mechanical datasheets, relief studies, line sizing "

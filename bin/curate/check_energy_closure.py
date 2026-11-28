@@ -232,7 +232,7 @@ restore:
             this arm does.
         S3  price the isothermal feed at the REACTOR's pressure instead of
             its own -> "unit 'Converter' (gibbsReactor) leaves -7.2393 kW"
-            on greenAmmoniaPEQ_baseCase (SRK, feed 150.93 bar, reactor 150
+            on ammoniaPEQ_baseCase (SRK, feed 150.93 bar, reactor 150
             bar).  The plant arm does not see it (0.011 %).  gibbs07 is
             untouched by S3 (its feed and reactor share 1 bar) -- a
             sabotage that changes no number there proves nothing there.

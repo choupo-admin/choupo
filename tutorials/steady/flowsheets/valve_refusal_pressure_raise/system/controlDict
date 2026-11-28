@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  controlDict  --  credo01_valve_heater_drum
+
+  Illustrates "information follows the streams": every change of state is a
+  VISIBLE box on the stream (a heater sets the duty, a valve sets the
+  pressure), and the separator (flash drum) has NO operating knobs --- it
+  separates the stream exactly as it arrives.
+
+    feed -> [H1 heater: Q] -> [V1 valve: P] -> [D1 flash: {}] -> liquid + vapour
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "REFUSAL WITNESS: valve asked to raise pressure";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

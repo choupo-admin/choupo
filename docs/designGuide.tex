@@ -1972,7 +1972,7 @@ sized so flare-tip exit velocity stays below
 relief}: the sizing pass's \texttt{reliefValve} item sizes one valve per
 protected item on its declared blocked-outlet and fire scenarios, by the
 same equations as the EduTool \emph{Designing for overpressure} (worked
-case: \texttt{greenAmmonia03\_basicDesign}), but no unit relieves a stream, and
+case: \texttt{ammoniaPEQ03\_basicDesign}), but no unit relieves a stream, and
 no PSV-vent enthalpy or flare duty appears in any ledger.
 
 \textbf{Spacing/segregation (Pareto).} Fired heaters and flares are
@@ -2447,7 +2447,7 @@ the lines in a table under the pipe register.
 cost (the process pipes have them, in the line list that follows), the steam and
 the nitrogen headers, the cooling-water make-up and blowdown, and the
 line's own supports. The reference plant
-(\texttt{greenAmmoniaPEQ\_baseCase}) declares thirteen lines: eight of
+(\texttt{ammoniaPEQ\_baseCase}) declares thirteen lines: eight of
 cooling water between the tower and the four coolers, two of refrigerant
 between the package and the chiller, and three of flare header from the
 separator and the two let-down drums; its header says what it does not
@@ -2556,7 +2556,7 @@ Guide gives the rules and the pages (section ``The nozzle schedule'').
 
 \textbf{Witnesses.} \texttt{line01\_pumped\_drum} is the smallest plant
 with a line list, with one line worked by hand in its README;
-\texttt{greenAmmoniaPEQ\_baseCase} lists its 24 process pipes (22 sized,
+\texttt{ammoniaPEQ\_baseCase} lists its 24 process pipes (22 sized,
 the two two-phase ones listed not sized).
 
 \textbf{The register beside the 3D view.} In the full-window tab
@@ -2612,7 +2612,7 @@ inventories are stored \textbf{refrigerated at about \textminus33
 with a refrigeration unit for the boil-off. The crossover is economic,
 not physical, and is usually placed in the low thousands of tonnes, where
 either answer can be argued. Choupo carries both:
-\texttt{greenAmmoniaPEQ\_baseCase} stores its product refrigerated at
+\texttt{ammoniaPEQ\_baseCase} stores its product refrigerated at
 atmospheric pressure, and \texttt{ammonia02\_full\_plant} keeps two days
 of product as a pressurised liquid in bullets.
 
@@ -2622,7 +2622,7 @@ about 600--680 kg/m\textsuperscript{3}. And a gas store gives back only
 the gas between its full and its emptied pressure, so a gas is
 \emph{buffered} for hours, not stored for weeks --- which is why plants
 move gases by pipeline and store liquids. The hydrogen buffer of
-\texttt{greenAmmoniaPEQ\_baseCase}, between an intermittent electrolyser
+\texttt{ammoniaPEQ\_baseCase}, between an intermittent electrolyser
 and a steady synthesis loop, is the exception that shows the rule.
 
 \textbf{Containment.} Atmospheric tanks of flammable or toxic liquid
@@ -2716,7 +2716,7 @@ containment short of its rule, a drain open to the sewer, an impounding
 pit inside its own catch area, a road through a wall, a pipe through
 one below its top --- and, on every layout, an item in the open that
 holds liquid by the run's own inventory and that no containment
-encloses. The witnesses: \texttt{greenAmmoniaPEQ\_baseCase} (a 4~m
+encloses. The witnesses: \texttt{ammoniaPEQ\_baseCase} (a 4~m
 bund round the two refrigerated tanks, and a kerbed slab under the
 loop's three liquid vessels draining to a remote pit; lower the bund's
 wall to 2~m and read the shortfall) and \texttt{ammonia02\_full\_plant}
@@ -3903,7 +3903,7 @@ rest (\texttt{relative} ends are fractions of the base value,
 \emph{sensitivity}, not an uncertainty analysis: no probability is
 attached to either end, and inputs that move together in the market (the
 hydrogen and the electricity price) are moved one at a time. See
-\texttt{greenAmmonia02\_feasibility150bar}, where a \(\pm\)20\% move of
+\texttt{ammoniaPEQ02\_feasibility150bar}, where a \(\pm\)20\% move of
 the hydrogen or the ammonia price swings the NPV some fourteen times as
 far as the whole \(-30/+50\)\% capital band.
 

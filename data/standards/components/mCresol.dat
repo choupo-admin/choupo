@@ -92,8 +92,54 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 ACCH3 + 4 ACH + 1 ACOH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.2867;
+    q   3.2480;
+}
+
+groups
+{
+    unifac ( { group ACCH3; count 1; } { group ACH; count 4; } { group ACOH; count 1; } );   // derived from structure c1(O)cc(C)ccc1 by bin/curate/unifac_groups.py
+}
+
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row A16 "m-Cresol":
+//  delta_d = 8.82, delta_p = 2.5, delta_h = 6.3 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    18041.2;        // Pa^0.5   = 8.82 (cal/cm3)^0.5, Table I row A16
+    dP    5113.7;        // Pa^0.5   = 2.5
+    dH    12886.5;        // Pa^0.5   = 6.3
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.2867, q = sum nu_k Q_k = 3.2480 over the record's unifac groups (1 ACCH3 + 4 ACH + 1 ACOH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    unifacGroups
+    {
+        origin        definition;
+        method        "cut from the molecular structure c1(O)cc(C)ccc1 (atom count reproduces the record's formula) into 1 ACCH3 + 4 ACH + 1 ACOH by the rules of bin/curate/unifac_groups.py; no table of decompositions was consulted";
+        citation      "Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 (the subgroup definitions, data/standards/parameters/UNIFAC/groups.dat)";
+        reviewStatus  interim;
+    }
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row A16 (m-Cresol); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row A16; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     MW
     {
         origin        literature;

@@ -362,9 +362,9 @@ export const LA_STEPS: readonly LessonStep[] = [
       + "trusted if its table is a bowl. Choupo's QP solver states that "
       + "requirement (src/solver/ActiveSetQP.H:39) and its SQP driver "
       + "guarantees it by construction instead of testing it: it starts "
-      + "from the identity (src/solver/SQP.cpp:257) and updates with a "
+      + "from the identity (src/solver/SQP.cpp:797) and updates with a "
       + "damped BFGS rule that cannot lose the property, skipping the "
-      + "update rather than break it (src/solver/SQP.cpp:627). Where that "
+      + "update rather than break it (src/solver/SQP.cpp:1594). Where that "
       + "inner problem is solved is the active-set page.",
     derivation: [
       { step: "A quadratic landscape of one table and one linear term.",

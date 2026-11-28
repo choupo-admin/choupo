@@ -11,8 +11,8 @@
 
   This is column12 (`column12_stage_is_a_flash`) with one thing changed:
   the thermodynamic package resolves an aqueous EQUILIBRIUM.  Read that
-  case first -- the construction, the mixer's fictitious temperature and
-  the tolerance are all explained there and not repeated here.
+  case first -- the construction, the construction and the tolerance are
+  explained there (its mixer's former fictitious temperature is history here: see `restage`) and not repeated here.
 
       feed --> [tower] --> distillate, bottoms
                        --> stageLiquid, stageVapour     (stage 2)
@@ -101,17 +101,10 @@ units
             //  in the rectifying section, where the liquid is thin and the
             //  chemistry is at its most sensitive -- the pH there is set by
             //  what little CO2 has not yet left.
-            //  THE DRAWS ARE UNEQUAL, and the reason is the mixer, not the
-            //  physics.  A Choupo mixer reports its outlet as the DOMINANT
-            //  phase (flow-weighted vf >= 0.5 => vapour), and here the two
-            //  surfaces are far apart: water's latent heat is large enough
-            //  that the fictitious all-vapour temperature carrying this
-            //  pair's enthalpy falls below the model's floor, and the mixer
-            //  refuses rather than extrapolate (measured: it clamped at
-            //  150 K and reported non-convergence -- an honest refusal, not
-            //  a wrong number).  With more liquid than vapour the carrier
-            //  rides the LIQUID surface, which is the one the adiabatic
-            //  flash reads back, and the pair's enthalpy is carried exactly.
+            //  THE DRAWS ARE UNEQUAL by choice: 1.5 liquid, 0.5 vapour (V/F 0.25).
+            //  (Until 2026-11-28 the mixer reported the DOMINANT phase and the
+            //  ratio mattered to it; it no longer does, the mixer resolves
+            //  the two-phase state itself.)
             //  The identity itself does not care about the ratio -- the
             //  gate checks the re-flashed V/F against the actual draws, not
             //  against 0.5.
@@ -125,8 +118,8 @@ units
 
     {
         //  The enthalpy carrier.  A mixer mixes; it does not split.  See
-        //  column12's header for why its outlet temperature is fictitious
-        //  and why that is exactly what this construction needs.
+        //  column12's header for the construction.  Its outlet is the real
+        //  two-phase state at SUM H(inlets).
         name        recombine;
         type        mixer;
         inputs      ( stageLiquid  stageVapour );
@@ -134,23 +127,20 @@ units
     }
 
     {
-        //  The independent path.  ADIABATIC, like column12's -- since 2026-08-23 this case claims
-        //  BOTH halves of the identity.  It could not until then: the
-        //  adiabatic flash's outer Newton had no strategy for a trial
-        //  temperature the reactive package cannot answer, and its first
-        //  trial is the mixer's fictitious 483 K readout (the enthalpy is
-        //  exact, the temperature is not -- see column12's header), 110 K
-        //  above anything the ReactiveVLE can speciate.  The flash now
-        //  treats an unanswerable trial as ABOVE the answer (H rises with
-        //  T; the reactive path loses its liquid on the high side),
-        //  announces each such trial, and re-seeds by bisection -- watch
-        //  the log: 483.33 K refused, re-seeded at 341.66 K, one more
-        //  refusal at the dew-point edge (372.16 K), then a clean Newton
-        //  to 367.3398 K.  That number is SOLVED from the energy balance
-        //  and must equal the column's own converged stage-2 temperature
-        //  -- the energy half of the identity, on a flash whose K-values
-        //  come out of a chemistry.  The gate reads both from the run and
-        //  refuses a mismatch; no temperature is typed in here any more.
+        //  The independent path.  ADIABATIC, like column12's -- this case claims
+        //  BOTH halves of the identity.  Since 2026-11-28 the mixer before it
+        //  takes its outlet from the one (P, H) flash (flashState::
+        //  specifiedFlash) and so hands over the reactive package's REAL
+        //  two-phase state (366.88 K, V/F 0.25 = the stage's own vapour
+        //  draw), not the all-vapour "483 K" readout it used to publish
+        //  (that number carried the right enthalpy and a wrong temperature,
+        //  110 K above anything the ReactiveVLE can speciate).  The flash
+        //  therefore starts at the answer, and the energy half of the
+        //  identity is exact: T_drop = 0, H residual 0.  The unit's
+        //  high-side search for an unanswerable trial (the 483.33 K
+        //  refusals this comment used to narrate) is no longer reached
+        //  here.  The gate reads both temperatures from the run and refuses a
+        //  mismatch; no temperature is typed in here.
         name        restage;
         type        adiabaticFlash;
         in          stageMix;

@@ -194,7 +194,7 @@ ENTRIES = [
        conflict="human", scope="region",
        note="only the thebibliography environment is generated"),
     _e("ammoniaStageComparison",
-       ["tutorials/plant/greenAmmonia03_basicDesign/README.md"],
+       ["tutorials/plant/ammoniaPEQ03_basicDesign/README.md"],
        [PY, "bin/curate/gen_ammonia_stage_comparison.py"],
        [PY, "bin/curate/gen_ammonia_stage_comparison.py", "--check"],
        "engine", conflict="human", scope="region",

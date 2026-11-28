@@ -151,8 +151,27 @@ surfaceTension
     Tmax  343.15;
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row B01 "Acetic acid":
+//  delta_d = 7.1, delta_p = 3.9, delta_h = 6.6 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    14522.9;        // Pa^0.5   = 7.1 (cal/cm3)^0.5, Table I row B01
+    dP    7977.4;        // Pa^0.5   = 3.9
+    dH    13500.2;        // Pa^0.5   = 6.6
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row B01 (Acetic acid); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row B01; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "table I marks this row as 'values uncertain'; transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     liquidViscosity
     {
         origin        fitted;

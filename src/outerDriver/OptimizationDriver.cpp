@@ -303,10 +303,11 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
         if (op->found("fdMode"))
         {
             const std::string m = op->lookupWord("fdMode");
-            if      (m == "forward") fdCentral_ = false;
-            else if (m == "central") fdCentral_ = true;
+            if      (m == "forward") { fdCentral_ = false; fdAuto_ = false; }
+            else if (m == "central") { fdCentral_ = true;  fdAuto_ = false; }
+            else if (m == "auto")    { fdCentral_ = false; fdAuto_ = true;  }
             else throw std::runtime_error("OptimizationDriver: options.fdMode"
-                " must be 'forward' or 'central' (got '" + m + "')");
+                " must be 'forward', 'central' or 'auto' (got '" + m + "')");
         }
     }
 
@@ -987,6 +988,10 @@ int OptimizationDriver::runSqp()
                   << std::scientific << std::setprecision(2) << qpErr
                   << "   HS35/HS21/HS71 worst |df| = " << nlpErr
                   << "   (gates passed)\n";
+        if (fdAuto_)
+            std::cout << "  [self-check]  fdMode auto: HS35/HS21/HS71 clean and with 1e-7"
+                         " noise, worst |df| = " << solver::verifySQPAdaptive(0)
+                      << "   (gates passed)\n";
     }
 
     // A cost-kind objective REQUIRES the post chain; any case that SHIPS a
@@ -1047,10 +1052,21 @@ int OptimizationDriver::runSqp()
         std::cout << "    " << c.path << "  " << op << "  "
                   << std::scientific << std::setprecision(6) << c.rhs << "\n";
     }
-    std::cout << "  fd gradients:  " << (fdCentral_ ? "central (2n/iter)"
-                                                    : "forward (n+1/iter)")
-              << "   step " << fdStep_ << "\n"
-              << "  maxIter:       " << maxIter_ << "\n"
+    if (fdAuto_)
+        std::cout << "  fd gradients:  AUTO -- the step of each variable from the response's"
+                     " own noise and curvature (noise: ECnoise, More & Wild 2011 as used by"
+                     " Shi et al. 2021, with a second stencil of our own; steps: Shi et al."
+                     " eq. 2.13/2.14), forward or central per variable, fitted to the box"
+                     " at every evaluation (no evaluation leaves it); each step is printed"
+                     " with its reason; a verdict of CONVERGED needs the gradient"
+                     " re-estimated at the point with its error bar below the tolerance"
+                     " (the tolerance is scaled by the size of the gradient terms);"
+                     " multipliers carry error bars (2 sd, first order)\n";
+    else
+        std::cout << "  fd gradients:  " << (fdCentral_ ? "central (2n/iter)"
+                                                        : "forward (n+1/iter)")
+                  << "   step " << fdStep_ << "\n";
+    std::cout << "  maxIter:       " << maxIter_ << "\n"
               << "  history file:  " << reportFile_ << "\n"
               << "====================================================================\n";
 
@@ -1246,8 +1262,31 @@ int OptimizationDriver::runSqp()
     o.maxIter = maxIter_;
     o.fdStep  = fdStep_;
     o.central = fdCentral_;
+    o.adaptiveFd = fdAuto_;
     o.typX    = typX;
     o.tolFeasEq = 1.0e-6;     // equality residual is tol-scaled in the evaluator
+
+    //  C496: a multiplier with the error bar the gradient noise gives it
+    //  (fdMode auto only); "not resolved" when the bar exceeds the value.
+    auto lambdaBar = [](scalar lam, const sVector& sig, std::size_t i,
+                        bool active = true, bool certified = true) -> std::string
+    {
+        if (i >= sig.size()) return "";
+        std::ostringstream os;
+        if (!active)
+            return " (inactive: exactly 0, no error bar)";
+        //  C496 review 2, M3: a bar on a run that is not certified is not printed -- it
+        //  omits the displacement of x*, which is the dominant error of an iterate that
+        //  stopped before it reached the (noisy) optimum.
+        if (!certified)
+            return " (bar unavailable: run not certified)";
+        if (!std::isfinite(sig[i]))
+            return " (error bar unavailable)";
+        os << std::scientific << std::setprecision(1);
+        if (sig[i] > std::abs(lam)) os << " (+-" << sig[i] << ": NOT RESOLVED)";
+        else                        os << " (+-" << sig[i] << ")";
+        return os.str();
+    };
 
     o.onIter = [&](const solver::SQPTrace& t)
     {
@@ -1264,13 +1303,16 @@ int OptimizationDriver::runSqp()
         // active set + shadow prices
         for (std::size_t e = 0; e < nEq; ++e)
             std::cout << "[" << constraints_[eqIdx[e]].path << " eq lam="
-                      << std::setprecision(3) << t.lambdaEq[e] << "] ";
+                      << std::setprecision(3) << t.lambdaEq[e]
+                      << lambdaBar(t.lambdaEq[e], t.sigmaLamEq, e) << "] ";
         for (std::size_t q = 0; q < nIneq; ++q)
             if (q < t.gActive.size() && t.gActive[q])
                 std::cout << "[" << constraints_[ineqIdx[q]].path << " ACTIVE lam="
-                          << std::setprecision(3) << t.lambdaIneq[q] << "] ";
+                          << std::setprecision(3) << t.lambdaIneq[q]
+                          << lambdaBar(t.lambdaIneq[q], t.sigmaLamIneq, q) << "] ";
         if (!t.note.empty()) std::cout << " <- " << t.note;
         std::cout << "\n";
+        if (!t.fdReport.empty()) std::cout << "        fd: " << t.fdReport << "\n";
 
         csv << t.iteration << "," << sensed(t.f);
         for (std::size_t i = 0; i < t.x.size(); ++i) csv << "," << t.x[i] * s[i];
@@ -1289,7 +1331,9 @@ int OptimizationDriver::runSqp()
     //  Final report + the 5-line KKT certificate.
     // ----------------------------------------------------------------------
     std::cout << "\n=========================  Optimum (SQP)  ==========================\n"
-              << "  status:        " << (R.converged ? "CONVERGED" : "stopped")
+              << "  status:        "
+              << (R.converged ? "CONVERGED"
+                  : R.stationaryUncertified ? "STATIONARY, NOT CERTIFIED" : "stopped")
               << "  (" << R.reason << ")\n"
               << "  iterations:    " << R.iterations
               << "   simulator runs: " << ledger_.total << "\n";
@@ -1324,12 +1368,21 @@ int OptimizationDriver::runSqp()
     for (std::size_t e = 0; e < nEq; ++e)
         std::cout << "    " << constraints_[eqIdx[e]].path
                   << "  (equality)    lambda = "
-                  << std::scientific << std::setprecision(4) << R.lambdaEq[e] << "\n";
+                  << std::scientific << std::setprecision(4) << R.lambdaEq[e]
+                  << lambdaBar(R.lambdaEq[e], R.sigmaLamEq, e, true, R.converged) << "\n";
     for (std::size_t q = 0; q < nIneq; ++q)
         std::cout << "    " << constraints_[ineqIdx[q]].path
                   << "  (inequality)  lambda = "
                   << std::scientific << std::setprecision(4) << R.lambdaIneq[q]
+                  << lambdaBar(R.lambdaIneq[q], R.sigmaLamIneq, q,
+                               q >= R.ineqActive.size() || R.ineqActive[q], R.converged)
                   << (R.lambdaIneq[q] > 1.0e-8 ? "   <- ACTIVE" : "") << "\n";
+    if (fdAuto_)
+        std::cout << "  (error bars, printed on a certified run only: 2 sd of the gradient noise, first order, mapped through"
+                     " the QP's own B-weighted multiplier map; they OMIT the DISPLACEMENT OF x*"
+                     " (the optimum itself moves with the noise), correlations between responses, the bias of truncation"
+                     " (added as if random) and the uncertainty of the active set; a rule of"
+                     " our own, not a published one)\n";
 
     // ----------------------------------------------------------------------
     //  A KKT *certificate* is only valid when the SQP actually converged.
@@ -1343,14 +1396,20 @@ int OptimizationDriver::runSqp()
     {
         std::cout << "  --- KKT certificate (N&W 18.1) ---\n"
                   << "    stationarity   ||grad L||inf = "
-                  << std::scientific << std::setprecision(3) << R.kktStat
-                  << "   (tol " << o.tolStat << ")\n"
-                  << "    primal feas eq   max|h|       = " << R.kktFeasEq
+                  << std::scientific << std::setprecision(3) << R.kktStat;
+        //  C496 review 2, M1: under fdMode auto the tolerance printed is the one USED
+        if (fdAuto_)
+            std::cout << "   (per-component tolerance tolStat*S_j; the binding component: residual "
+                      << R.statRes << " against its tolerance " << R.statResTol << ")\n";
+        else
+            std::cout << "   (tol " << o.tolStat << ")\n";
+        std::cout << "    primal feas eq   max|h|       = " << R.kktFeasEq
                   << "   (tol " << o.tolFeasEq << ")\n"
                   << "    primal feas ineq max g+       = " << R.kktFeasIneq
                   << "   (tol " << o.tolFeasIneq << ")\n"
                   << "    complementarity  max|lam g|   = " << R.kktCompl
-                  << "   (tol " << o.tolCompl << ")\n"
+                  << "   (tol " << (fdAuto_ ? R.complTolUsed : o.tolCompl)
+                  << (fdAuto_ ? ", scaled by the largest resolved multiplier" : "") << ")\n"
                   << "    dual feas        max(0,-lam)  = " << R.kktDualFeas
                   << "   (>= 0 required)\n";
     }
@@ -1369,6 +1428,16 @@ int OptimizationDriver::runSqp()
                   << "   (tol " << o.tolFeasEq << ")\n"
                   << "    primal feas ineq max g+       = " << R.kktFeasIneq
                   << "   (tol " << o.tolFeasIneq << ")\n";
+    }
+    if (fdAuto_)
+    {
+        std::cout << "    gradient error bar (3 sd), the component of grad L where it binds = ";
+        if (std::isfinite(R.statBar))
+            std::cout << std::scientific << std::setprecision(3) << R.statBar
+                      << "   against that component's tolerance " << R.statTolUsed;
+        else
+            std::cout << "UNAVAILABLE (a verdict of CONVERGED is never given without it)";
+        std::cout << "\n";
     }
     std::cout << "  history:       " << reportFile_
               << "\n====================================================================\n";

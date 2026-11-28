@@ -66,8 +66,8 @@ License
   Usage (from the repository root):
       node paper/whitepaper/figures/capture_gui.mjs
       node paper/whitepaper/figures/capture_gui.mjs \
-           --flow-case plant/greenAmmonia03_basicDesign \
-           --layout-case plant/greenAmmoniaPEQ_baseCase --dpr 2 --out paper/whitepaper/figures
+           --flow-case plant/ammoniaPEQ03_basicDesign \
+           --layout-case plant/ammoniaPEQ_baseCase --dpr 2 --out paper/whitepaper/figures
       node paper/whitepaper/figures/capture_gui.mjs --only B \
            --layout-orbit DX,DY --layout-pan DX,DY --layout-zoom N   # the 3D camera
       node paper/whitepaper/figures/capture_gui.mjs --only A        # or --only B
@@ -88,8 +88,8 @@ const HOST = "choupo.test";
 
 // ---- CLI -------------------------------------------------------------------
 const opt = {
-  flowCase: "plant/greenAmmonia03_basicDesign",
-  layoutCase: "plant/greenAmmoniaPEQ_baseCase",
+  flowCase: "plant/ammoniaPEQ03_basicDesign",
+  layoutCase: "plant/ammoniaPEQ_baseCase",
   zoomUnits: ["LoopMix", "RecycleComp", "FEHE", "CONVERTER", "WaterCooler", "Chiller",
               "Separator", "PurgeSplit", "LetdownHP"],
   //  The 3D camera (C134): the bunds round the ammonia tanks are what the

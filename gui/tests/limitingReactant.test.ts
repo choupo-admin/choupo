@@ -111,7 +111,7 @@ describe("the purge-loop arithmetic", () => {
   });
 
   it("the typed ammonia numbers are the committed golden's (inlet ratio and conversion)", () => {
-    const g = readFileSync(new URL("../../tutorials/plant/greenAmmoniaPEQ_baseCase/expected", import.meta.url), "utf-8");
+    const g = readFileSync(new URL("../../tutorials/plant/ammoniaPEQ_baseCase/expected", import.meta.url), "utf-8");
     //  Since C440 the converter is three kinetic beds; each bed publishes the
     //  conversion of its OWN inlet N2 and H2, so the loop's inlet ratio is the
     //  first bed's 3 X_N2 / X_H2 (the reaction consumes them 1 : 3) and the

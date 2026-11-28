@@ -51,9 +51,9 @@ export function familyForProperty(property: string): FamilyDef | null {
   if (["Z", "v_molar", "H_real", "S_real"].includes(property))
     return { family: "equationOfState", models: ["idealGas", "SRK", "PR"] };
   if (property === "viscosity_liquid")
-    return { family: "transportLiquidVisc", models: ["Andrade", "Vogel"] };
+    return { family: "transportLiquidVisc", models: ["chemsepEq101", "Andrade", "Vogel"] };
   if (property === "thermal_conductivity_liquid")
-    return { family: "transportLiquidCond", models: ["SatoRiedel", "Latini"] };
+    return { family: "transportLiquidCond", models: ["SatoRiedel", "chemsepEq16"] };
   return null;
 }
 

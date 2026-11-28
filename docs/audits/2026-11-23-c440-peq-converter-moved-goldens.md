@@ -1,7 +1,7 @@
 # C440 / C302 -- the reference plant's converter: moved and added golden rows (2026-11-23)
 
 Branch build/c440-c302-reference-plant, cut from origin/main 645c6cbea0.
-Case: `tutorials/plant/greenAmmoniaPEQ_baseCase`. The `expected` file was deleted and re-recorded
+Case: `tutorials/plant/ammoniaPEQ_baseCase`. The `expected` file was deleted and re-recorded
 whole (it carries no anchor row), because `--record` keeps rows whose keys the run no longer
 prints: 2923 rows before, 3126 after; 143 removed, 346 added, 505 moved beyond their 1e-4
 tolerance.
@@ -10,7 +10,7 @@ tolerance.
 
 The plant's converter was ONE Gibbs reactor (733.15 K, 5 K short of equilibrium) sized as a
 vessel on an ASSUMED space velocity of 20000 1/h. It is now the converter of
-`greenAmmonia03_basicDesign`: a sector `CONVERTER` of three adiabatic `pfr` beds on the Dyson &
+`ammoniaPEQ03_basicDesign`: a sector `CONVERTER` of three adiabatic `pfr` beds on the Dyson &
 Simon rate times the effectiveness factor (`constant/reactions`), two interbed steam boilers
 (420 and 410 C), one pressure shell (`converterShell`, SS316, 166 bar g). The bed volumes and the
 shared diameter are `variables` (`V_Bed1..3`, `D_converter`): the design point of 03's 3 x 3
@@ -75,7 +75,7 @@ reactor, and the entry is removed from the gate), plant-boundary first law.
 
 ## Gates edited because they named the retired unit
 
-* `bin/curate/check_energy_closure.py`: the witness `(greenAmmoniaPEQ_baseCase, Converter)` removed.
+* `bin/curate/check_energy_closure.py`: the witness `(ammoniaPEQ_baseCase, Converter)` removed.
 * `bin/curate/check_unit_duty_allocation.py`: arm (c) and (d) read the two interbed coolers (the
   declared steam credit, now on the two units that raise it).
 * `gui/tests/bund.test.ts`: the green witness pins follow the tank's new volume (20196.5623 m3).

@@ -4,6 +4,8 @@
 # re-pin with check_header_numbers.py --write.  DEV.md 4c C520.
 # 2026-11-25: six cases of a batch built before this ratchet existed are pinned
 # at their first count (hand numbers of the header: C512, C521, C527).
+# 2026-11-25 (batch 1125f): batch02, batch04, batch06 and ed03 gained one each though no header moved: the tool reads the
+# digits of propertyManifest hashes as inputs, and a re-pin changed them (C520).  optim09 is a new case.
 tutorials/batch/adsorber/batch09_adsorber_co2	4
 tutorials/batch/adsorber/batch10_adsorber_co2_n2	6
 tutorials/batch/adsorber/batch11_adsorber_henry	7
@@ -40,11 +42,11 @@ tutorials/batch/membrane/diafilter01_nf_desalting	4
 tutorials/batch/membrane/diafilter02_fouling_decline	4
 tutorials/batch/reactor/batch01_first_order	5
 tutorials/batch/reactor/batch01b_first_order_eulersi	1
-tutorials/batch/reactor/batch02_adiabatic	6
+tutorials/batch/reactor/batch02_adiabatic	7
 tutorials/batch/reactor/batch03_consecutive	2
-tutorials/batch/reactor/batch04_transient_dirs	7
+tutorials/batch/reactor/batch04_transient_dirs	8
 tutorials/batch/reactor/batch05_crystalliser	5
-tutorials/batch/reactor/batch06_adaptive_runaway	8
+tutorials/batch/reactor/batch06_adaptive_runaway	9
 tutorials/batch/reactor/batch07_lhhw_methylAcetate	4
 tutorials/batch/reactor/batch08_isothermal_duty	1
 tutorials/batch/reactor/batch26_cooling_failure	3
@@ -148,7 +150,7 @@ tutorials/steady/drying/sprayDryer07_design	7
 tutorials/steady/drying/sprayDryer08_fines	7
 tutorials/steady/economics/economics03_startup_years	6
 tutorials/steady/economics/economics04_building_royalty_breakeven	4
-tutorials/steady/electrodialysis/ed03_stack_record	8
+tutorials/steady/electrodialysis/ed03_stack_record	9
 tutorials/steady/electrodialysis/ed04_limiting_current_multiionic	2
 tutorials/steady/electrodialysis/ed05_industrial_stack	7
 tutorials/steady/electrodialysis/ed06_stages_in_series	10
@@ -253,6 +255,7 @@ tutorials/steady/optimisation/designSpec01_triple_equal_areas	1
 tutorials/steady/optimisation/optim04_membrane_recovery_scaling	1
 tutorials/steady/optimisation/optim05_reactor_npv	5
 tutorials/steady/optimisation/optim08_bayesian_membrane	1
+tutorials/steady/optimisation/optim09_sqp_fdmode_auto	5
 tutorials/steady/reactors/acetone02_luyben_reactor	5
 tutorials/steady/reactors/ammonia03_quench_converter	30
 tutorials/steady/reactors/ammoniaReactor04_kineticSizing	2

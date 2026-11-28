@@ -79,8 +79,27 @@ groups
     joback ( { group rCH2; count 4; } { group rNH; count 1; } { group etherRing; count 1; } );
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row N15 "Morpholine":
+//  delta_d = 9.20, delta_p = 2.4, delta_h = 4.5 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    18818.4;        // Pa^0.5   = 9.20 (cal/cm3)^0.5, Table I row N15
+    dP    4909.2;        // Pa^0.5   = 2.4
+    dH    9204.7;        // Pa^0.5   = 4.5
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row N15 (Morpholine); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row N15; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     uniquac
     {
         origin        definition;

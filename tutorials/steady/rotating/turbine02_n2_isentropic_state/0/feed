@@ -1,0 +1,7 @@
+componentMolarFlows
+{
+    N2    1.0 mol/s;
+}
+
+T   600 K;
+P   10 bar;

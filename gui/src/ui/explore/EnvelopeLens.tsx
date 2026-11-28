@@ -61,6 +61,10 @@ import {
   readProbeCsv, splitPressures, type EnvelopeReport,
 } from "../../case/phaseEnvelopeLens.js";
 import { hasUnifacGroups, type UnifacGroup } from "../../case/unifacGroups.js";
+import {
+  activityVerdict, eosVerdict, refusalAdvice, type ApplicabilityCtx,
+} from "../../case/modelApplicability.js";
+import { EngineRefusal } from "./EngineRefusal.js";
 import { defaultActivity } from "./PhaseSplitLens.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import {
@@ -91,6 +95,12 @@ export function EnvelopeLens({ components, catalogue, localUnifac, componentFile
   const [activity, setActivity] = useState(() => defaultActivity(components, catalogue, localUnifac));
   const [pFrom, setPFrom] = useState(1.0e5);      // Pa
   const [pTo, setPTo] = useState(80.0e5);         // Pa
+  //  What each model can price, said BEFORE the run (case/modelApplicability.ts).
+  const applyCtx = useMemo<ApplicabilityCtx>(() => ({
+    metaOf: (c) => metaByName(c, catalogue),
+    hasUnifac: (c) => (metaByName(c, catalogue)?.hasUnifac ?? false) || hasUnifacGroups(c, localUnifac),
+    hasPair,
+  }), [catalogue, localUnifac]);
   const [n, setN] = useState(80);
   const [listsOpen, setListsOpen] = useState(false);
   const amountOf = (c: string) => amounts[c] ?? 1;
@@ -203,9 +213,17 @@ export function EnvelopeLens({ components, catalogue, localUnifac, componentFile
       <Box>
         <Text size="xs" fw={600} c="dimmed" tt="uppercase">Thermophysical system</Text>
         <Stack gap={4} mt={4}>
-          <Select size="xs" label="vapour equation of state" data={[...ENVELOPE_EOS]} value={eos}
+          <Select size="xs" label="vapour equation of state" value={eos}
+            data={ENVELOPE_EOS.map((m) => {
+              const v = eosVerdict(m, components, applyCtx);
+              return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+            })} comboboxProps={{ width: 380, position: "bottom-start" }}
             onChange={(v) => setEos(v ?? "PR")} allowDeselect={false} />
-          <Select size="xs" label="γ model (liquid)" data={[...ENVELOPE_ACTIVITY]} value={activity}
+          <Select size="xs" label="γ model (liquid)" value={activity}
+            data={ENVELOPE_ACTIVITY.map((m) => {
+              const v = activityVerdict(m, components, applyCtx);
+              return { value: m, label: v.ok ? m : `${m} — ${v.reason}`, disabled: !v.ok };
+            })} comboboxProps={{ width: 380, position: "bottom-start" }}
             onChange={(v) => setActivity(v ?? "ideal")} allowDeselect={false} />
           {modelWarning && <Text size="xs" c="orange">{modelWarning}</Text>}
           <Text size="xs" c="dimmed">
@@ -242,9 +260,8 @@ export function EnvelopeLens({ components, catalogue, localUnifac, componentFile
         </Alert>)}
       {plan.nothingToAsk && <Text size="sm" c="dimmed">{plan.nothingToAsk}</Text>}
       {error && (
-        <Alert color="red" variant="light" p="xs" title="The engine refused or did not finish">
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>{error}</Text>
-        </Alert>)}
+        <EngineRefusal advice={refusalAdvice(error, { activity, eos, comps: components }, applyCtx)}
+          onTryActivity={(m) => setActivity(m)} onTryEos={(m) => setEos(m)} />)}
       {figure && report ? (
         <>
           <Box style={{ flexShrink: 0, height: narrow ? 380 : 420, position: "relative" }}>

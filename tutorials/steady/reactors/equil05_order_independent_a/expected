@@ -1,0 +1,27 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.00166666666667   1e-4
+stream  feed                   T                1100               1e-4
+stream  syngas                 F                0.00166593958576   1e-4
+stream  syngas                 T                1100               1e-4
+kpi     reformer               F_in_kmol_h      6                  1e-4
+kpi     reformer               F_out_kmol_h     5.99738250873      1e-4
+kpi     reformer               Kp_smr           312.740523794      1e-4
+kpi     reformer               Kp_wgs           0.978425617548     1e-4
+kpi     reformer               Q_kW             6.20687718107      1e-4
+kpi     reformer               T                1100               1e-4
+kpi     reformer               conversion_smr   -0.00130874563718  1e-4
+kpi     reformer               conversion_wgs   -0.670693979077    1e-4
+kpi     reformer               extent_smr_kmol_h -0.00130874563718  1e-4
+kpi     reformer               extent_wgs_kmol_h -0.670693979077    1e-4
+kpi     reformer               nReactions       2                  1e-4
+kpi     reformer               newtonIterations 11                 1e-4
+kpi     reformer               newtonResidual   1.7763568394e-15   abs:1e-08
+boundary global               H_feeds_kW       -130.902631187     1e-4
+boundary global               Q_boundary_kW    6.20687718107      1e-4
+boundary global               H_products_kW    -124.695754006     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 6.20687718107      1e-4
+utility reformer               heating.-.unserved 1                  1e-4

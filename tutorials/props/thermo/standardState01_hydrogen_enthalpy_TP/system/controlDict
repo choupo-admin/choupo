@@ -7,7 +7,7 @@
     propertyScan2D writes a CSV the browser cannot read).  Witness of the
     `standard-state` EduTool (DEV.md 4c, C32): how much h moves with T
     against P, the ideal-gas part against the SRK residual, and the
-    green-ammonia converter's point (733.15 K, 150 bar) for "the process is
+    ammonia converter's point (733.15 K, 150 bar) for "the process is
     at 150 bar".  The datum is the engine's elements datum (H2 is an element:
     h_ig(298.15 K) = 0); the page shifts every curve to h(300 K, 1 bar) = 0,
     which is the zero-of-enthalpy lesson itself.

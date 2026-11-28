@@ -138,7 +138,7 @@ export const MATERIALS_SOURCES: readonly MaterialsSource[] = [
     used: "read: the numbers each record declares and what its own header "
       + "says about where they came from (step 22 and the bench)." },
   { id: "peq-postdict",
-    cite: "tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict",
+    cite: "tutorials/plant/ammoniaPEQ_baseCase/system/postDict",
     used: "read: the case's own material rule and what it does not check "
       + "(steps 10, 16 and 22)." },
 ];
@@ -382,7 +382,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "testing below it; impact-tested carbon steels serve well below 0 "
       + "degrees C.  The green-ammonia base case shows the consequence of "
       + "a record that carries no such field: its postDict "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:192-196) "
+      + "(tutorials/plant/ammoniaPEQ_baseCase/system/postDict:192-196) "
       + "puts SS304 on every item that goes below 0 degrees C, because "
       + "austenitic stainless keeps its toughness there and the generic "
       + "carbon-steel record states no minimum design temperature -- a "
@@ -590,7 +590,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "The green-ammonia base case says plainly that its records carry no "
       + "hydrogen-service limit and that whether carbon steel resists "
       + "hydrogen at its partial pressures and temperatures is not checked "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:196-200).",
+      + "(tutorials/plant/ammoniaPEQ_baseCase/system/postDict:196-200).",
     formula: String.raw`\ce{Fe3C + 2H2 -> 3Fe + CH4}`,
   },
   {
@@ -774,7 +774,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "A careful case applies the temperature rule itself: the "
       + "green-ammonia base case puts SS316 wherever the process side "
       + "exceeds the carbon-steel record's maxT "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:192-193) "
+      + "(tutorials/plant/ammoniaPEQ_baseCase/system/postDict:192-193) "
       + "-- the author's rule, which the engine now checks and announces "
       + "when broken, and does not choose for anyone.  "
       + "And no record carries "

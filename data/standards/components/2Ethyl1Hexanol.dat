@@ -79,8 +79,27 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } );
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; read by `hansenMixture`
+//  and the Explorer's solvent lens).  Hansen 1969, Table I row A09 "2-Ethylhexanol":
+//  delta_d = 7.78, delta_p = 1.6, delta_h = 5.8 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    15913.9;        // Pa^0.5   = 7.78 (cal/cm3)^0.5, Table I row A09
+    dP    3272.8;        // Pa^0.5   = 1.6
+    dH    11863.8;        // Pa^0.5   = 5.8
+    Tref  298.15 K;       // adopted: the paper prints no temperature beside Table I
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1969, Table I row A09 (2-Ethylhexanol); (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The universality of the solubility parameter, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2-11, Table I (p. 4), row A09; doi 10.1021/i360029a002";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-11-25 (one reading of the image, diffed against two OCR layers); Tref 298.15 K adopted, the paper states no temperature beside Table I";
+    }
     uniquac
     {
         origin        definition;

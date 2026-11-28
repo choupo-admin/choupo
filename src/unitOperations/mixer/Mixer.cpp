@@ -30,6 +30,7 @@ License
 #include "thermo/PropertyDomainError.H"
 #include "streams/PsdOnGrid.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "unitOperations/flash/SpecifiedFlash.H"
 #include "unitOperations/reactor/ReactorOutlet.H"
 #include "solver/NewtonRaphson.H"
 
@@ -504,56 +505,131 @@ int Mixer::solve(const DictPtr& dict,
             for (auto v : s_out) s_sum += v;
             const scalar h_target = H_in / F_out;   // kW / (kmol/s) = J/mol
             const scalar T_seed   = FT / F_out;
-            const auto inv = reactorOutlet::temperatureOfEnthalpy(
-                h_target, P_out, z_out, T_seed, vfFix, vfFix, thermo,
-                s_sum > 0.0 ? &s_out : nullptr, F_out);
-            T_out  = inv.T;
-            vf_out = inv.vf;
-            resolvedOutlet = true;
-
-            std::size_t nPresent = 0;
-            for (auto v : z_out) if (v > 1.0e-12) ++nPresent;
-            if (inv.unmatched_J_per_mol != 0.0 && nPresent == 1)
+            if (s_sum <= 0.0)
             {
-                //  A pure fluid on its saturation curve: (T, P) do not fix the
-                //  quality, so the enthalpy fixes it and the stream DECLARES
-                //  it (pinned), exactly as a pure two-phase inlet does.
-                const scalar hS = s_sum > 0.0
-                    ? flashState::priceSolids(s_out, T_out, thermo) / F_out : 0.0;
-                const scalar hL = thermo.H_stream_formation(T_out, P_out, 0.0, z_out);
-                const scalar hV = thermo.H_stream_formation(T_out, P_out, 1.0, z_out);
-                const scalar q  = (hV != hL) ? (h_target - hS - hL) / (hV - hL) : -1.0;
-                if (q > 0.0 && q < 1.0)
+                //  THE OUTLET STATE IS `flashState::specifiedFlash`'s (D9,
+                //  2026-11-28; docs/design/a-general-flash-specification.md
+                //  sections 5-6): the state at (P_out, SUM H(inlets)) by the one
+                //  (P, H) home.  The unit's inversion in T had no root where a
+                //  PURE fluid is mixed into its saturation plateau (36 kmol/h
+                //  water 300 K + 36 kmol/h steam 450 K, IF97, 1 bar: it asked
+                //  IF97 for 175 K and failed); the home answers it in closed
+                //  form (T = Tsat, quality by the lever rule) and every other
+                //  state by its bracketed search.
+                FlashOptions iopts;
+                iopts.tolerance   = 1.0e-9;
+                iopts.maxIter     = 60;
+                iopts.verbosity   = (verbosity >= 4) ? 3 : 0;
+                iopts.accelerator = OuterAccelerator::Wegstein;
+                flashState::FlashSpecification spec;
+                spec.pair   = flashState::SpecPair::PH;
+                spec.P      = P_out;
+                spec.target = h_target;
+                spec.seed   = T_seed;
+                spec.flash  = iopts;
+                spec.controls = flashState::FlashSpecification::defaultControls(
+                                    flashState::SpecPair::PH);
+                //  ABSOLUTE, in J/mol (the verdict reads the raw residual where
+                //  the normaliser is degenerate): the balance is closed to
+                //  1e-6 J/mol, as the report's remainder is zero by construction.
+                spec.controls.tolerance = 1.0e-6;
+                spec.controlsDeclared   = true;
+                try
                 {
-                    vf_out       = q;
-                    outletPinned = true;
+                    const flashState::SpecifiedState st =
+                        flashState::specifiedFlash(thermo, z_out, spec, verbosity, false);
+                    T_out  = st.T;
+                    vf_out = st.phases.V_over_F;
+                    if (st.onSaturationPlateau)
+                    {
+                        //  A pure fluid on its saturation curve: (T, P) do not
+                        //  fix the quality, so the enthalpy does and the stream
+                        //  DECLARES it (pinned), as a pure two-phase inlet does.
+                        vf_out       = st.vaporFraction;
+                        outletPinned = true;
+                    }
+                    resolvedOutlet = true;
+                    for (const auto& note : st.notes)
+                        notes.push_back(note);
                 }
-                else
-                    reactorOutlet::announceUnmatchedEnthalpy("mixer", unitName,
-                        "adiabatic", T_out, inv.unmatched_J_per_mol * F_out);
+                catch (const std::exception& e)
+                {
+                    rethrowHardRefusal();
+                    //  One bad iterate (a recycle's tear) must not end the run:
+                    //  say it with the remedy, publish the seed state and
+                    //  report NOT converged.
+                    converged = false;
+                    std::cout << "Mixer '" << unitName << "': the ADIABATIC energy"
+                                 " balance found no outlet state.\n"
+                                 "  The material mix is EXACT and is not in"
+                                 " question -- only the temperature is.\n  "
+                              << e.what() << "\n"
+                                 "  A RECYCLE seed far from its answer is the usual"
+                                 " cause: give the tear a better seed in 0/, or tear a"
+                                 " different stream.  If a downstream unit fixes the"
+                                 " temperature anyway, declare the mixer ISOTHERMAL --"
+                                 " `operation { T <K>; }`.\n";
+                    T_out  = T_seed;
+                    vf_out = vfFix;
+                }
             }
-            else if (inv.unmatched_J_per_mol != 0.0)
+            else
             {
-                //  No temperature in [10, 6000] K carries the enthalpy: the
-                //  mixer has no outlet.  The same diagnosis the old balance
-                //  gave, on the surface it now uses.
-                std::ostringstream m;
-                m << "Mixer '" << unitName << "': the ADIABATIC energy balance"
-                     " found no outlet temperature.\n"
-                     "  The material mix is EXACT and is not in question -- only"
-                     " the temperature is.\n"
-                     "  The outlet, resolved at its own equilibrium and priced as"
-                     " the energy report prices it, cannot carry the inlets'"
-                     " enthalpy anywhere in [10, 6000] K (closest T = "
-                  << T_out << " K, short by " << inv.unmatched_J_per_mol
-                  << " J/mol).\n"
-                     "  A RECYCLE seed far from its answer is the usual cause:"
-                     " give the tear a better seed in 0/, or tear a different"
-                     " stream.  If a downstream unit fixes the temperature"
-                     " anyway, declare the mixer ISOTHERMAL -- `operation { T"
-                     " <K>; }` -- and it publishes the duty that implies.";
-                throw std::runtime_error(m.str());
+                //  DOCUMENTED EXCEPTION: crystals riding the stream are priced
+                //  beside the fluid at T_out, which the (P, H) home does not
+                //  carry; this inversion stays for them (registered debt).
+                const auto inv = reactorOutlet::temperatureOfEnthalpy(
+                    h_target, P_out, z_out, T_seed, vfFix, vfFix, thermo,
+                    s_sum > 0.0 ? &s_out : nullptr, F_out);
+                T_out  = inv.T;
+                vf_out = inv.vf;
+                resolvedOutlet = true;
+
+                std::size_t nPresent = 0;
+                for (auto v : z_out) if (v > 1.0e-12) ++nPresent;
+                if (inv.unmatched_J_per_mol != 0.0 && nPresent == 1)
+                {
+                    //  A pure fluid on its saturation curve: (T, P) do not fix the
+                    //  quality, so the enthalpy fixes it and the stream DECLARES
+                    //  it (pinned), exactly as a pure two-phase inlet does.
+                    const scalar hS = s_sum > 0.0
+                        ? flashState::priceSolids(s_out, T_out, thermo) / F_out : 0.0;
+                    const scalar hL = thermo.H_stream_formation(T_out, P_out, 0.0, z_out);
+                    const scalar hV = thermo.H_stream_formation(T_out, P_out, 1.0, z_out);
+                    const scalar q  = (hV != hL) ? (h_target - hS - hL) / (hV - hL) : -1.0;
+                    if (q > 0.0 && q < 1.0)
+                    {
+                        vf_out       = q;
+                        outletPinned = true;
+                    }
+                    else
+                        reactorOutlet::announceUnmatchedEnthalpy("mixer", unitName,
+                            "adiabatic", T_out, inv.unmatched_J_per_mol * F_out);
+                }
+                else if (inv.unmatched_J_per_mol != 0.0)
+                {
+                    //  No temperature in [10, 6000] K carries the enthalpy: the
+                    //  mixer has no outlet.  The same diagnosis the old balance
+                    //  gave, on the surface it now uses.
+                    std::ostringstream m;
+                    m << "Mixer '" << unitName << "': the ADIABATIC energy balance"
+                         " found no outlet temperature.\n"
+                         "  The material mix is EXACT and is not in question -- only"
+                         " the temperature is.\n"
+                         "  The outlet, resolved at its own equilibrium and priced as"
+                         " the energy report prices it, cannot carry the inlets'"
+                         " enthalpy anywhere in [10, 6000] K (closest T = "
+                      << T_out << " K, short by " << inv.unmatched_J_per_mol
+                      << " J/mol).\n"
+                         "  A RECYCLE seed far from its answer is the usual cause:"
+                         " give the tear a better seed in 0/, or tear a different"
+                         " stream.  If a downstream unit fixes the temperature"
+                         " anyway, declare the mixer ISOTHERMAL -- `operation { T"
+                         " <K>; }` -- and it publishes the duty that implies.";
+                    throw std::runtime_error(m.str());
+                }
             }
+
             regime = outletPinned
                 ? "two-phase (a pure fluid on its saturation curve: its quality is pinned)"
                 : (vf_out <= 1.0e-9       ? "liquid (resolved at its own equilibrium)"
@@ -763,6 +839,7 @@ int Mixer::solve(const DictPtr& dict,
     {
         std::cout << "\n=========================  Mixer Result  =========================\n"
                   << "  Inlets:        " << inputs.size() << "\n"
+                  << (converged ? "" : "  Converged:     NO (no outlet state; T_out is the seed)\n")
                   << "  Total F_out:   " << std::fixed << std::setprecision(4)
                   << (F_out * 3600.0) << "  kmol/h\n"
                   << "  P_out:         " << std::fixed << std::setprecision(3)

@@ -1584,7 +1584,7 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \begin{tutnarrative}
 THE STAGE IDENTITY, UNDER CHEMISTRY.
 
-This is column12 (`column12\_stage\_is\_a\_flash`) with one thing changed: the thermodynamic package resolves an aqueous EQUILIBRIUM. Read that case first -- the construction, the mixer's fictitious temperature and the tolerance are all explained there and not repeated here.
+This is column12 (`column12\_stage\_is\_a\_flash`) with one thing changed: the thermodynamic package resolves an aqueous EQUILIBRIUM. Read that case first -- the construction, the construction and the tolerance are explained there (its mixer's former fictitious temperature is history here: see `restage`) and not repeated here.
 
 feed -$\to$ [tower] -$\to$ distillate, bottoms -$\to$ stageLiquid, stageVapour (stage 2) stageLiquid + stageVapour -$\to$ [recombine] -$\to$ stageMix stageMix -$\to$ [restage] -$\to$ checkLiquid, checkVapour
 
@@ -1615,8 +1615,8 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \tutreadme{The ion inventories agreeing is the claim that a comparison of apparent compositions alone would miss: an effective K could reproduce the apparent split while resting on a different chemistry underneath.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0259166666667}
-\goldrow{stream}{checkLiquid}{F}{0.000416666648318}
-\goldrow{stream}{checkVapour}{F}{0.000138888907237}
+\goldrow{stream}{checkLiquid}{F}{0.000416666666672}
+\goldrow{stream}{checkVapour}{F}{0.000138888888883}
 \goldrow{stream}{distillate}{F}{0.000833333333333}
 \goldrow{stream}{feed}{F}{0.0273055555556}
 \goldrow{stream}{stageLiquid}{F}{0.000416666666667}
@@ -1624,9 +1624,9 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \goldrow{stream}{stageVapour}{F}{0.000138888888889}
 \goldrow{kpi}{recombine}{F\_out}{0.000555555555556}
 \goldrow{kpi}{recombine}{P\_out}{101325}
-\goldrow{kpi}{recombine}{T\_out}{482.89249658}
+\goldrow{kpi}{recombine}{T\_out}{366.877511915}
 \goldrow{kpi}{recombine}{n\_in}{2}
-\goldrow{kpi}{recombine}{vf}{0}
+\goldrow{kpi}{recombine}{vf}{0.24999999999}
 \goldrow{kpi}{restage}{F\_in}{0.000555555555556}
 \goldmore{47}
 \end{tutgolden}
@@ -3847,21 +3847,21 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{chilledEffluent}{F}{10.534092622}
-\goldrow{stream}{chilledEffluent}{T}{312.680836627}
+\goldrow{stream}{chilledEffluent}{F}{10.5340929293}
+\goldrow{stream}{chilledEffluent}{T}{312.680836875}
 \goldrow{stream}{compMakeup}{F}{2.22222222222}
-\goldrow{stream}{compMakeup}{T}{656.394257943}
-\goldrow{stream}{compRecycle}{F}{9.27949174913}
-\goldrow{stream}{compRecycle}{T}{263.73601403}
-\goldrow{stream}{cooledEffluent}{F}{10.534092622}
-\goldrow{stream}{cooledEffluent}{T}{482.133200784}
+\goldrow{stream}{compMakeup}{T}{656.394258382}
+\goldrow{stream}{compRecycle}{F}{9.27949202849}
+\goldrow{stream}{compRecycle}{T}{263.736029627}
+\goldrow{stream}{cooledEffluent}{F}{10.5340929293}
+\goldrow{stream}{cooledEffluent}{T}{482.13321183}
 \goldrow{stream}{cw}{F}{138.888888889}
 \goldrow{stream}{cw}{T}{298.15}
 \goldrow{stream}{cwOut}{F}{138.888888889}
-\goldrow{stream}{cwOut}{T}{303.625058007}
-\goldrow{stream}{hotEffluent}{F}{10.5340926318}
-\goldrow{stream}{hotEffluent}{T}{824.89340201}
-\goldmore{311}
+\goldrow{stream}{cwOut}{T}{303.625058492}
+\goldrow{stream}{hotEffluent}{F}{10.5340929393}
+\goldrow{stream}{hotEffluent}{T}{824.893402181}
+\goldmore{371}
 \end{tutgolden}
 
 \clearpage
@@ -5049,20 +5049,86 @@ The outlet pressure is a plain editable value -- tweak it in the GUI's Propertie
 \tutreadme{Click the drum and edit P in the Properties box on the right --- the Case tab is a read-only view of the files, so nothing is typed there. Set 0.5 bar and run again: a deeper let-down flashes more, and the drum ends colder. The edit is transient --- it never touches the file, the node shows it in amber until you reset it, and Reset puts the declared value back.}
 \tutreadme{Now try the other direction, because it teaches more than it looks. Raise P to 1.5 bar and nothing happens: V/F goes to 0 and the temperature does not drop at all. That is not a broken run --- this feed's bubble pressure at 380 K is 1.4088 bar, so 1.5 bar leaves it 0.09 bar subcooled and there is nothing to flash. The engine says so in as many words (Regime: subcooled liquid). The wall is much closer above than below. Then look at the stream table printed $\ast$before$\ast$ the solve --- it shows the 0/ seed values, which look like an answer and are not one; the converged table further down is the answer.}
 \begin{tutgolden}
-\goldrow{kpi}{flashAdiab}{T\_out}{368.663785648}
-\goldrow{kpi}{flashAdiab}{V\_over\_F}{0.052161162592}
+\goldrow{kpi}{flashAdiab}{T\_out}{368.663786091}
+\goldrow{kpi}{flashAdiab}{V\_over\_F}{0.0521612252195}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{liquid}{F}{0.0263288565947}
-\goldrow{stream}{vapor}{F}{0.00144892118311}
+\goldrow{stream}{liquid}{F}{0.026328854855}
+\goldrow{stream}{vapor}{F}{0.00144892292276}
 \goldrow{stream}{feed}{T}{380}
-\goldrow{stream}{liquid}{T}{368.663785648}
-\goldrow{stream}{vapor}{T}{368.663785648}
+\goldrow{stream}{liquid}{T}{368.663786091}
+\goldrow{stream}{vapor}{T}{368.663786091}
 \goldrow{kpi}{flashAdiab}{F\_in}{0.0277777777778}
-\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0263288565947}
-\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00144892118311}
-\goldrow{kpi}{flashAdiab}{H\_residual}{-0.0020987453172}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.026328854855}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00144892292276}
+\goldrow{kpi}{flashAdiab}{H\_residual}{-2.80422682408e-07}
 \goldrow{kpi}{flashAdiab}{P}{101325}
-\goldrow{kpi}{flashAdiab}{T\_drop}{11.3362143518}
+\goldrow{kpi}{flashAdiab}{T\_drop}{11.3362139086}
+\goldmore{5}
+\end{tutgolden}
+
+\clearpage
+\tutentry{adiabaticFlash02\_wet\_water\_letdown}{tutorials/steady/flash/adiabaticFlash02\_wet\_water\_letdown}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flashAdiab) at (0.0,-0.0) {\textbf{flashAdiab}\\[-1pt]{\tiny adiabaticFlash}};
+  \draw[->] ($(flashAdiab.west)+(-1.05,0.00)$) -- ($(flashAdiab.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flashAdiab.east)+(0,-0.17)$) -- ($(flashAdiab.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flashAdiab.east)+(0,0.17)$) -- ($(flashAdiab.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic flash, IF97 water 450 K 20 bar $\to$ 1 bar: the outlet lies inside the saturation plateau}
+\begin{tutnarrative}
+Adiabatic flash of hot liquid water (IF97), 20 bar $\to$ 1 bar. The flashed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the unit's own balance H\_out = H\_in, and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.02}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{liquid}{F}{0.0170550749691}
+\goldrow{stream}{liquid}{T}{372.755918611}
+\goldrow{stream}{vapor}{F}{0.00294492503094}
+\goldrow{stream}{vapor}{T}{372.755918611}
+\goldrow{kpi}{flashAdiab}{F\_in}{0.02}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0170550749691}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00294492503094}
+\goldrow{kpi}{flashAdiab}{H\_residual}{0}
+\goldrow{kpi}{flashAdiab}{P}{100000}
+\goldrow{kpi}{flashAdiab}{T\_drop}{77.2440813887}
+\goldrow{kpi}{flashAdiab}{T\_feed}{450}
+\goldrow{kpi}{flashAdiab}{T\_out}{372.755918611}
+\goldmore{5}
+\end{tutgolden}
+
+\clearpage
+\tutentry{adiabaticFlash03\_near\_pure\_letdown}{tutorials/steady/flash/adiabaticFlash03\_near\_pure\_letdown}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flashAdiab) at (0.0,-0.0) {\textbf{flashAdiab}\\[-1pt]{\tiny adiabaticFlash}};
+  \draw[->] ($(flashAdiab.west)+(-1.05,0.00)$) -- ($(flashAdiab.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flashAdiab.east)+(0,-0.17)$) -- ($(flashAdiab.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flashAdiab.east)+(0,0.17)$) -- ($(flashAdiab.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic flash, water 450 K 20 bar $\to$ 1 bar: the same letdown with 1e-5 methanol: a near-pure feed}
+\begin{tutnarrative}
+The same letdown as adiabaticFlash02 with 1e-5 mole fraction of methanol: the feed is NEARLY pure, the plateau is a narrow two-phase band, and the (P, H) search must still close its balance to the unit's absolute 0.01 J/mol (a relative tolerance would stall at \textasciitilde{}1e-7 J/mol and refuse). Held: the energy balance H\_out = H\_in and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0200002}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{liquid}{F}{0.0171794711941}
+\goldrow{stream}{liquid}{T}{372.755401731}
+\goldrow{stream}{vapor}{F}{0.00282072880588}
+\goldrow{stream}{vapor}{T}{372.755401731}
+\goldrow{kpi}{flashAdiab}{F\_in}{0.0200002}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0171794711941}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00282072880588}
+\goldrow{kpi}{flashAdiab}{H\_residual}{0.000152203661855}
+\goldrow{kpi}{flashAdiab}{P}{100000}
+\goldrow{kpi}{flashAdiab}{T\_drop}{77.2445982692}
+\goldrow{kpi}{flashAdiab}{T\_feed}{450}
+\goldrow{kpi}{flashAdiab}{T\_out}{372.755401731}
 \goldmore{5}
 \end{tutgolden}
 
@@ -6388,6 +6454,71 @@ This is the state marcilla01 could not reach: there the UNIFAC (VLE) backbone ke
 \end{tutgolden}
 
 \clearpage
+\tutentry{mixer01\_water\_steam\_plateau}{tutorials/steady/flash/mixer01\_water\_steam\_plateau}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mix) at (0.0,-0.0) {\textbf{mix}\\[-1pt]{\tiny mixer}};
+  \draw[->] ($(mix.west)+(-1.05,-0.17)$) -- ($(mix.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {liquid};
+  \draw[->] ($(mix.west)+(-1.05,0.17)$) -- ($(mix.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {steam};
+  \draw[->] ($(mix.east)+(0,0.00)$) -- ($(mix.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic mixer, IF97 water: 300 K liquid + 450 K steam at 1 bar end inside the saturation plateau}
+\begin{tutnarrative}
+Adiabatic mixing of 36 kmol/h liquid water at 300 K with 36 kmol/h steam at 450 K, both at 1 bar (IF97). The summed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.4668), taken from the pure-fluid plateau route of flashState::specifiedFlash. Before (D9, 2026-11-28) the mixer's own inversion in T asked IF97 for 175 K and failed. Held: the energy report's mixer remainder (zero) and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{liquid}{F}{0.01}
+\goldrow{stream}{liquid}{T}{300}
+\goldrow{stream}{out}{F}{0.02}
+\goldrow{stream}{out}{T}{372.755918611}
+\goldrow{stream}{steam}{F}{0.01}
+\goldrow{stream}{steam}{T}{450}
+\goldrow{kpi}{mix}{F\_out}{0.02}
+\goldrow{kpi}{mix}{P\_out}{100000}
+\goldrow{kpi}{mix}{T\_out}{372.755918611}
+\goldrow{kpi}{mix}{n\_in}{2}
+\goldrow{kpi}{mix}{vf}{0.46678299337}
+\goldrow{boundary}{global}{H\_feeds\_kW}{530.075245771}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{530.075245771}
+\goldmore{1}
+\end{tutgolden}
+
+\clearpage
+\tutentry{valve02\_wet\_letdown\_water}{tutorials/steady/flash/valve02\_wet\_letdown\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (0.0,-0.0) {\textbf{letdown}\\[-1pt]{\tiny valve}};
+  \draw[->] ($(letdown.west)+(-1.05,0.00)$) -- ($(letdown.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(letdown.east)+(0,0.00)$) -- ($(letdown.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Valve, IF97 water 450 K 20 bar $\to$ 1 bar: the throttle ends inside the saturation plateau}
+\begin{tutnarrative}
+Isenthalpic let-down of hot liquid water (IF97), 20 bar $\to$ 1 bar. The throttled enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the valve's own balance H\_out = H\_in, and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.02}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{out}{F}{0.02}
+\goldrow{stream}{out}{T}{372.755918611}
+\goldrow{kpi}{letdown}{F}{0.02}
+\goldrow{kpi}{letdown}{P\_in}{2000000}
+\goldrow{kpi}{letdown}{P\_out}{100000}
+\goldrow{kpi}{letdown}{Q\_in}{0.000404355790572}
+\goldrow{kpi}{letdown}{Q\_out}{0.0901931838107}
+\goldrow{kpi}{letdown}{T\_in}{450}
+\goldrow{kpi}{letdown}{T\_out}{372.755918611}
+\goldrow{kpi}{letdown}{dP}{1900000}
+\goldrow{kpi}{letdown}{dT}{-77.2440813887}
+\goldrow{kpi}{letdown}{massFlow}{0.3603}
+\goldmore{12}
+\end{tutgolden}
+
+\clearpage
 \tutentry{vlle01\_waterButanol}{tutorials/steady/flash/vlle01\_waterButanol}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -7403,6 +7534,21 @@ Two-sector demo plant. UMBRELLA holding two sectors that share the plant-level c
 \tutreadme{Zip the folder (the compiled code/.build/ and any logs are NOT needed --- the collaborator rebuilds with buildCode):}
 \tutreadme{- The chemistry is synthetic (a structure demo, not a validated process). - compA/compB/compC happen to share names with the standard VLLE-audit components, so the engine prints a [overlay] notice when this case shadows them --- that is the no-silent-crutch honesty working, not an error. - The custom ops are black-box (algebraic), so they run regardless of the thermo; the 10 pairs are curated data for the props bench / activity-using ops, not evaluated by these two ops.}
 
+\clearpage
+\tutentry{valve\_refusal\_pressure\_raise}{tutorials/steady/flowsheets/valve\_refusal\_pressure\_raise}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (V1) at (0.0,-0.0) {\textbf{V1}\\[-1pt]{\tiny valve}};
+  \draw[->] ($(V1.west)+(-1.05,0.00)$) -- ($(V1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(V1.east)+(0,0.00)$) -- ($(V1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSAL WITNESS: valve asked to raise pressure}
+\begin{tutnarrative}
+REFUSAL WITNESS: a valve asked to RAISE pressure (10 $\to$ 30 bar) must refuse by name (it used to warn and report w = 0, delta s < 0). Use a pump.
+
+\end{tutnarrative}
+
 \subsection{gas-solid}
 \grouptheory{gas-solid}
 \clearpage
@@ -8150,6 +8296,21 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \goldrow{kpi}{wgs}{lambda\_H}{-24724.0041247}
 \goldmore{20}
 \end{tutgolden}
+
+\clearpage
+\tutentry{gibbs09\_refusal\_unlisted\_feed\_species}{tutorials/steady/gibbs/gibbs09\_refusal\_unlisted\_feed\_species}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(wgs.east)+(0,0.00)$) -- ($(wgs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {products};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSAL WITNESS: gibbsReactor feed species missing from operation.species}
+\begin{tutnarrative}
+REFUSAL WITNESS: the feed carries CH4 but operation.species omits it; the unit must refuse by name (it used to drop 0.25 kmol/h silently). Water-gas shift reactor at 800 K, 1 bar. CO + water <$\to$ CO2 + H2 Equimolar feed. The Gibbs-minimisation reactor gives CO conversion \textasciitilde{} 67 \% (CO 0.50 $\to$ 0.164 mole fraction at equilibrium; CO2 = H2 = 0.336), consistent with the independent K(800 K) calculation in Smith, Van Ness, Abbott (Table 13.4).
+
+\end{tutnarrative}
 
 \clearpage
 \tutentry{gibbs09\_wgs\_cooled\_directmin}{tutorials/steady/gibbs/gibbs09\_wgs\_cooled\_directmin}
@@ -9398,13 +9559,13 @@ The agitation01 case with a SHEAR-THICKENING flow curve (a power law with n = 1.
   \draw[->] ($(PurgeValve.east)+(0,0.00)$) -- ($(PurgeValve.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {FuelGas};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Pressure letdown: the green-ammonia separator liquid throttled 140 $\to$ 20 $\to$ 1 bar (flashing), and the loop purge 140 $\to$ 2 bar (choked gas)}
+\tutwhat{Pressure letdown: the ammonia separator liquid throttled 140 $\to$ 20 $\to$ 1 bar (flashing), and the loop purge 140 $\to$ 2 bar (choked gas)}
 \begin{tutnarrative}
 A LARGE PRESSURE LETDOWN, WITH THE ENGINE RUNNING (DEV.md 4c C64, the "Large pressure letdown" EduTool).
 
 THE QUESTION. The liquid ammonia that leaves a synthesis loop's separator at 140 bar has to reach an atmospheric store. That is a pressure ratio of about 140, and it is taken in two throttles, each followed by a drum that lets the released gas go. What does the stream look like on the far side of each valve -- its temperature, how much of it is vapour, and how much SPACE it now occupies? And what does the same throttle do to a gas -- the loop purge -- let down to a fuel header?
 
-WHERE THE STATES COME FROM. RawLiquid (0/RawLiquid) -- the converged separator liquid of tutorials/plant/greenAmmonia03\_basicDesign (converged/RawLiquid), copied to the digit: 140 bar, 253.15 K, 2927 kmol/h of ammonia carrying the H2, N2 and Ar the separator dissolved in it. gui/tests/letdown.test.ts holds the copy to the plant's own file. the two pressures, 20 bar and 1.01325 bar -- the plant's own LetdownHP and StorageFlash drums (greenAmmonia03\_basicDesign/LetdownHP/system/flowsheetDict, .../StorageFlash/system/flowsheetDict). Purge (0/Purge) -- the same plant's converged purge gas (140 bar, 253.15 K, mostly H2 and N2), copied to the digit. 2 bar for the purge's fuel header -- AUTHOR-SET for the lesson. The plant sends its purge to a boundary and models no letdown of it; no real fuel system is described by this number.
+WHERE THE STATES COME FROM. RawLiquid (0/RawLiquid) -- the converged separator liquid of tutorials/plant/ammoniaPEQ03\_basicDesign (converged/RawLiquid), copied to the digit: 140 bar, 253.15 K, 2927 kmol/h of ammonia carrying the H2, N2 and Ar the separator dissolved in it. gui/tests/letdown.test.ts holds the copy to the plant's own file. the two pressures, 20 bar and 1.01325 bar -- the plant's own LetdownHP and StorageFlash drums (ammoniaPEQ03\_basicDesign/LetdownHP/system/flowsheetDict, .../StorageFlash/system/flowsheetDict). Purge (0/Purge) -- the same plant's converged purge gas (140 bar, 253.15 K, mostly H2 and N2), copied to the digit. 2 bar for the purge's fuel header -- AUTHOR-SET for the lesson. The plant sends its purge to a boundary and models no letdown of it; no real fuel system is described by this number.
 
 WHAT IS DIFFERENT FROM THE PLANT, AND WHY. The plant takes each drop as an ISOTHERMAL flash whose temperature it declares (253.15 K at 20 bar, 238.15 K at 1 atm) -- a hidden valve and a hidden heat exchanger in one box (see credo01\_valve\_heater\_drum). Here each drop is a `valve`, an isenthalpic throttle (src/unitOperations/valve/Valve.H): the outlet temperature and vapour fraction are RESULTS, and the drum after it has no knobs at all, inheriting T and P from the valve. The plant's own StorageFlash header names the adiabatic letdown as the real one.
 
@@ -9732,6 +9893,42 @@ feed (N2, 8 bar, 300 K, 45 kmol/h) $\to$ [P1 pipe] D, L, roughness $\to$ P\_out 
 \goldrow{kpi}{P1}{deltaP\_meanDensity}{252012.288555}
 \goldrow{kpi}{P1}{density}{8.984505285}
 \goldmore{15}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pump10\_supercritical\_outlet}{tutorials/steady/hydraulics/pump10\_supercritical\_outlet}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump10) at (0.0,-0.0) {\textbf{pump10}\\[-1pt]{\tiny pump}};
+  \draw[->] ($(pump10.west)+(-1.05,0.00)$) -- ($(pump10.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(pump10.east)+(0,0.00)$) -- ($(pump10.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Water pump to 300 bar, above the critical pressure: single-phase compressed-liquid outlet, no T\_sat asked}
+\begin{tutnarrative}
+What it shows: a pump whose DISCHARGE PRESSURE lies above the fluid's critical pressure. Water on IF97 is pumped from 1 bar, 298.15 K to 300 bar (critical pressure 220.64 bar), eta = 0.65.
+
+Above p\_c there is no saturation line, so the pump does not ask for T\_sat(P\_out) (IF97 region 4 refuses it above 22.064 MPa); the outlet is single-phase compressed liquid and the liquid-branch ceiling check is skipped. Before the fix this case stopped with "IF97 region 4: Tsat(p) called at p = 30 MPa", a refusal of a perfectly good state.
+
+Hand check: w\_real = v dP / eta with v \textasciitilde{} 1.8e-5 m3/mol, dP = 2.99e7 Pa gives \textasciitilde{} 830 J/mol; the part stored as pressure is v(1 - alpha T) dP, the rest heats the liquid by about 4-5 K (T\_out \textasciitilde{} 302.7 K, external review: 302.723 K). The run's energy balance closes: W\_shaft = F (h\_out - h\_in).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.01}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{out}{F}{0.01}
+\goldrow{stream}{out}{T}{302.722638153}
+\goldrow{kpi}{pump10}{F}{0.01}
+\goldrow{kpi}{pump10}{P\_in}{100000}
+\goldrow{kpi}{pump10}{P\_out}{30000000}
+\goldrow{kpi}{pump10}{T\_in}{298.15}
+\goldrow{kpi}{pump10}{T\_out}{302.722638153}
+\goldrow{kpi}{pump10}{W\_hydraulic}{5402.43604137}
+\goldrow{kpi}{pump10}{W\_shaft}{8311.44006364}
+\goldrow{kpi}{pump10}{W\_shaft\_kW}{8.31144006364}
+\goldrow{kpi}{pump10}{dP}{29900000}
+\goldrow{kpi}{pump10}{dT}{4.57263815285}
+\goldmore{14}
 \end{tutgolden}
 
 \clearpage
@@ -11416,7 +11613,7 @@ The heater runs at a FIXED partial duty, so the downstream flash SPLITS the reac
 
 V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
 
-T\_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
+T\_feed (feed temperature, the channel streams.feed.T) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
 
 We deliberately set the size cap TIGHTER than where the NPV-greedy design would otherwise stop, so at the optimum the reactor-size constraint BINDS.
 
@@ -11444,7 +11641,7 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \tutreadme{The heater runs at a fixed partial duty, so the flash $\ast$splits$\ast$ the reactor effluent into a light ethyl-acetate-rich vapour overhead (the prime product at 1.55 ?/kg) and a heavy water/acid-rich liquid bottoms (a low-value byproduct at 0.30 ?/kg). Esterification conserves total mass; what conversion buys you is the reshuffling of that mass toward the valuable overhead.}
 \tutreadme{$\ast$ V\_R --- a bigger reactor raises the residence time $\tau$ = V\_R/Q, so the isothermal-CSTR conversion X = k$\cdot$$\tau$/(1+k$\cdot$$\tau$) climbs and the priced overhead grows. But a bigger vessel costs more steel --- the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) up. Revenue rises with diminishing returns (X saturates toward 1) while CAPEX keeps climbing $\to$ an NPV maximum exists. $\ast$ T\_feed --- a higher feed temperature raises the Arrhenius rate k = A$\cdot$exp(-E?/RT), the cheap conversion $\ast$accelerator$\ast$. Its bounds stay inside the window where the flash splits cleanly (below the \textasciitilde{}353 K edge that boils the bottoms dry).}
 \tutreadme{We deliberately set the size cap tighter than where the NPV-greedy design would otherwise stop, so the reactor-size constraint binds at the optimum.}
-\tutreadme{The optimiser drives the money-losing initial design (V\_R = 4 m$^3$, T\_feed = 350 K $\to$ NPV $\approx$ -164 M?) to a profitable, certified optimum:}
+\tutreadme{The project loses money at every design (see the flowsheetDict header); the optimiser drives the initial design (V\_R = 4 m$^3$, T\_feed = 350 K $\to$ NPV $\approx$ -769 M?) to the least-bad, certified optimum. T\_feed is the feed inlet temperature, varied as the stream channel streams.feed.T (until 2026-11-28 it was declared as variables.T\_feed, which nothing read, so the optimiser moved an inert variable):}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.138888888889}
 \goldrow{stream}{hotStream}{F}{0.138888888889}
@@ -11576,6 +11773,85 @@ Two design variables, written through \$references so the SQP can drive them and
 \goldrow{kpi}{vessel}{Gamma\_Ca\_elem6}{0.277306770816}
 \goldrow{kpi}{vessel}{Gamma\_Ca\_elem7}{0.257981387968}
 \goldmore{156}
+\end{tutgolden}
+
+\clearpage
+\tutentry{optim09\_sqp\_fdmode\_auto}{tutorials/steady/optimisation/optim09\_sqp\_fdmode\_auto}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny cstr}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (heater) at (2.9,-0.0) {\textbf{heater}\\[-1pt]{\tiny heater}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (5.8,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (reactor) -- (heater) node[midway, above, font=\tiny] {reactorOut};
+  \draw[->] (heater) -- (separator) node[midway, above, font=\tiny] {hotStream};
+  \draw[->] ($(separator.east)+(0,-0.17)$) -- ($(separator.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liqProd};
+  \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapProd};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{optim05 with fdMode auto: noise-aware differences, error bars on the shadow prices, a certificate that needs a fresh gradient. Esterification CSTR sized \& operated for MAX NPV by hand-rolled SQP, subject to a reactor-size cap and a capital-budget cap (active-constraint shadow prices)}
+\begin{tutnarrative}
+(the problem of optim05\_reactor\_npv) -- CONSTRAINED ECONOMIC optimisation: size \& operate an esterification CSTR plant for MAXIMUM NPV.
+
+Same esterification plant as the economics01 flagship --
+
+feed -$\to$ reactor (CSTR) -$\to$ heater -$\to$ separator (flash) |$\to$ vapProd (ethyl-acetate-rich | overhead, the prime | product @ 1.55 EUR/kg) |$\to$ liqProd (water/acid-rich bottoms, low-value byproduct @ 0.30 EUR/kg)
+
+-- but instead of a FIXED design we ask the engine the design question:
+
+maximise economics.NPV varying V\_R (reactor volume, m\textasciicircum{}3) T\_feed (feed/reactor T, K) subject to reactor.V\_R <= V\_max (a physical SIZE cap) economics.FCI <= FCI\_max (a CAPITAL-BUDGET cap)
+
+THE ECONOMIC TRADE-OFF (why this is a genuine optimum, not a corner)
+
+The heater runs at a FIXED partial duty, so the downstream flash SPLITS the reactor effluent into a light, ethyl-acetate-rich VAPOUR overhead (sold high) and a heavy, water/acid-rich LIQUID bottoms (sold cheap). Esterification conserves total mass; what conversion buys you is the RESHUFFLING of that mass toward the valuable overhead. Both knobs raise conversion -- and the CSTR is ISOTHERMAL at the feed temperature (CSTR.cpp: T = feed.T), so:
+
+V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
+
+T\_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
+
+We deliberately set the size cap TIGHTER than where the NPV-greedy design would otherwise stop, so at the optimum the reactor-size constraint BINDS.
+
+HOW TO READ THE SHADOW PRICES (the whole point of the tutorial)
+
+The SQP prints, at the certified optimum, a Lagrange multiplier (lambda) for each inequality. A constraint with lambda > 0 is ACTIVE (binding) and its multiplier is the SHADOW PRICE -- the marginal NPV you would gain by relaxing that cap by one unit:
+
+reactor.V\_R cap ACTIVE $\to$ lambda = d(NPV)/d(V\_max) [EUR of NPV per extra m\textasciicircum{}3 of reactor head-room]. economics.FCI cap $\to$ lambda = d(NPV)/d(FCI\_max) [EUR of NPV per extra EUR of capital you may spend].
+
+A constraint with lambda \textasciitilde{} 0 is SLACK (not binding) -- relaxing it buys nothing. Here the FCI cap is deliberately generous: it stays SLACK so the student sees BOTH an active and an inactive constraint side by side. The trace marks the active set and the KKT certificate proves the point is a true constrained optimum (||grad L|| \textasciitilde{} 0, complementarity \textasciitilde{} 0).
+
+The two design variables are case-level \$references so the SQP can drive them through `variables.<name>` and the trace shows their canonical-SI values.
+
+THE ECONOMICS INVERTED ON 2026-08-09, AND THE OPTIMISER DID NOT
+
+Everything above about the SQP is unchanged and still true: the run converges, the reactor-size cap is ACTIVE with a positive multiplier, the FCI cap stays SLACK, and the KKT certificate closes. What changed is the SIGN of the money.
+
+The `heater` used to invert its fixed 200 kW on a SENSIBLE enthalpy relation, which walked the stream 11.8 K to 364.27 K without paying any latent heat. The flash then found 98.8 \% vapour, and the ethyl-acetate-rich overhead -- the whole revenue of this case -- existed because the heater had crossed the bubble point for free. The heater now solves for the outlet STATE whose enthalpy is H\_in + Q: 200 kW reaches 356.55 K and 7.7 \% vapour, the flash splits V/F 0.077, revenue falls 321.7 $\to$ 88.2 M EUR against an essentially unchanged 221 M EUR cost of manufacture, and the optimum NPV is -646 M EUR (IRR and payback are UNDEFINED and published as null -- the project never breaks even).
+
+So this case still demonstrates constrained SQP, shadow prices and a KKT certificate, and it now demonstrates them on a project that loses money. Restoring the intended economics is a DESIGN decision, not a code fix: the duty (or the pressure, or the product spec) has to be chosen so the overhead is actually made. It is deliberately NOT chosen here -- picking a number to make the old answer come back would be fitting the case to a result nobody re-derived. Record: docs/design/tp-stream-energy-coherence.md.
+
+\end{tutnarrative}
+\tutreadme{This case is optim05\_reactor\_npv with fdMode auto; instead of fdStep 2e-2; fdMode central; and without the inert variable T\_feed (below). Same flowsheet, same economics, one variable and two constraints; what changes is how the SQP differences its responses and what it is allowed to call a result.}
+\tutreadme{$\ast$ The step of each variable comes from the NOISE the engine measures in the NPV (about 2e-4 EUR on 6.6e8, nine points 1e-3 apart, never the same point twice) and from its curvature. The first line of each iteration's fd: row says which variable was differenced forward or central, with which step and why. $\ast$ The shadow prices print with an error bar (lam (+-bar), 2 sd, first order, through the QP's own multiplier map), inactive: exactly 0 for the slack capital cap, and error bar unavailable whenever the bar cannot be defended. $\ast$ CONVERGED needs the gradient re-estimated AT the optimum and its error bar (3 sd of ) below the tolerance; the tolerance is scaled by the size of the gradient terms (an absolute 1e-5 on a 6.6e8 objective with a shadow price of 2.4e6 is a relative 1e-11). The optimum block prints the bar beside the tolerance. When the bar is too large the word is STATIONARY, NOT CERTIFIED, exit code 1. $\ast$ Theory Guide, section "Noise-aware differences: fdMode auto". It costs more simulator runs than the default on a response that is smooth to rounding (40 against 16 from the tutorial start): measured in docs/audits/2026-11-24-optimizer-bench-results.md, section 8.}
+\tutreadme{Finding (2026-11-25, C496 review 2): T\_feed is INERT in optim05, so optim09 does not carry it. In optim05 variables.T\_feed is declared and the optimiser varies it, but nothing reads it: the feed stream's temperature is the 352.5 K of 0/feed (the reactor and the replayed JSON show 352.5 K while the history prints T\_feed = 350). Its gradient is zero, and under fdMode auto the noise bar of that component (the NPV, 6.6e8, carries 2e-4 of noise) is far above any tolerance a zero-gradient component can have, so the run could never be certified for a variable that does nothing. optim09 therefore has ONE variable, V\_R, against the size cap and the (slack) capital cap; everything else is optim05's. The prose below, which credits T\_feed with raising the conversion, describes optim05's intention, not its wiring.}
+\tutreadme{Take the economics01 ethyl-acetate plant and stop $\ast$fixing$\ast$ the design --- let the engine choose it. The hand-rolled SQP sizes and operates the reactor to maximise the net present value, subject to inequality caps, and prints the shadow prices (Lagrange multipliers) of the binding caps.}
+\tutreadme{The objective economics.NPV is a KPI published by the EconomicsPass in the system/postDict chain (sizing $\to$ costing $\to$ economics). The optimiser runs that whole post chain on every evaluation, so the economics scalars (economics.NPV, economics.FCI, ?) are reachable as ordinary objective/constraint paths --- exactly like a sweep reads them.}
+\tutreadme{The heater runs at a fixed partial duty, so the flash $\ast$splits$\ast$ the reactor effluent into a light ethyl-acetate-rich vapour overhead (the prime product at 1.55 ?/kg) and a heavy water/acid-rich liquid bottoms (a low-value byproduct at 0.30 ?/kg). Esterification conserves total mass; what conversion buys you is the reshuffling of that mass toward the valuable overhead.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.138888888889}
+\goldrow{stream}{hotStream}{F}{0.138888888889}
+\goldrow{stream}{liqProd}{F}{0.128482375685}
+\goldrow{stream}{reactorOut}{F}{0.138888888889}
+\goldrow{stream}{vapProd}{F}{0.010406513204}
+\goldrow{kpi}{economics}{COM\_d}{221221146.357}
+\goldrow{kpi}{economics}{FCI}{509710.813033}
+\goldrow{kpi}{economics}{NPV}{-656434027.842}
+\goldrow{kpi}{economics}{TCI}{586167.434987}
+\goldrow{kpi}{economics}{WC}{76456.6219549}
+\goldrow{kpi}{economics}{revenue}{86091825.6846}
+\goldrow{kpi}{heater}{F}{0.138888888889}
+\goldrow{kpi}{heater}{P}{101325}
+\goldrow{kpi}{heater}{Q}{200000}
+\goldmore{121}
 \end{tutgolden}
 
 \clearpage
@@ -11711,12 +11987,12 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{combustor}{Q}{20000}
 \goldrow{kpi}{combustor}{Q\_kW}{20}
 \goldrow{kpi}{combustor}{Q\_per\_mol}{20000}
-\goldrow{kpi}{combustor}{T\_in}{633.374172563}
-\goldrow{kpi}{combustor}{T\_out}{1246.40394079}
-\goldrow{kpi}{combustor}{dT}{613.029768231}
+\goldrow{kpi}{combustor}{T\_in}{633.37417254}
+\goldrow{kpi}{combustor}{T\_out}{1246.4039402}
+\goldrow{kpi}{combustor}{dT}{613.029767665}
 \goldrow{kpi}{compressor}{F}{0.001}
 \goldrow{kpi}{compressor}{P\_in}{100000}
-\goldmore{42}
+\goldmore{44}
 \end{tutgolden}
 
 \clearpage
@@ -11797,8 +12073,8 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{compressor}{P\_in}{100000}
 \goldrow{kpi}{compressor}{P\_out}{828817.033759}
 \goldrow{kpi}{compressor}{T\_in}{300}
-\goldrow{kpi}{compressor}{T\_out}{592.090873473}
-\goldmore{121}
+\goldrow{kpi}{compressor}{T\_out}{592.090873455}
+\goldmore{123}
 \end{tutgolden}
 
 \clearpage
@@ -11823,13 +12099,13 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{cooler}{Q}{-5000}
 \goldrow{kpi}{cooler}{Q\_kW}{-5}
 \goldrow{kpi}{cooler}{Q\_per\_mol}{-5000}
-\goldrow{kpi}{cooler}{T\_in}{530.878445241}
-\goldrow{kpi}{cooler}{T\_out}{388.087132345}
-\goldrow{kpi}{cooler}{dT}{-142.791312896}
+\goldrow{kpi}{cooler}{T\_in}{530.878444954}
+\goldrow{kpi}{cooler}{T\_out}{388.087132043}
+\goldrow{kpi}{cooler}{dT}{-142.79131291}
 \goldrow{kpi}{generator}{W\_electric}{9700}
 \goldrow{kpi}{generator}{W\_electric\_kW}{9.7}
 \goldrow{kpi}{generator}{W\_losses}{300}
-\goldmore{34}
+\goldmore{36}
 \end{tutgolden}
 
 \clearpage
@@ -12059,20 +12335,20 @@ CHANGED, and each change is a consequence of the converter: the INTERCHANGER fal
 \tutreadme{A quench converter follows the locus instead --- in a staircase. Inside a bed the gas climbs its adiabatic line; at the cold shot it drops vertically (cold gas removes heat, and dilutes, but converts nothing). Up, down, up, down, up. That zigzag is the whole design.}
 \tutreadme{The picture is Dyson and Simon's. The rate contours in the conversion--temperature plane, the descending locus of maximum rate, and a cold-shot trajectory drawn as a zigzag about it, are Figure 2 of D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 (1968) 605--610. This case executes that figure with equilibrium beds. Their rate law is what would put the contours on it; see ?6.}
 \begin{tutgolden}
-\goldrow{stream}{bed1Out}{F}{3.31962494411}
-\goldrow{stream}{bed1Out}{T}{820.544775459}
-\goldrow{stream}{bed2Feed}{F}{5.24573084228}
-\goldrow{stream}{bed2Feed}{T}{666.449918424}
-\goldrow{stream}{bed2Out}{F}{4.90898795683}
-\goldrow{stream}{bed2Out}{T}{779.844351186}
-\goldrow{stream}{bed3Feed}{F}{7.06622656278}
-\goldrow{stream}{bed3Feed}{T}{665.985347182}
-\goldrow{stream}{chilledEffluent}{F}{6.67967636467}
-\goldrow{stream}{chilledEffluent}{T}{324.424644376}
+\goldrow{stream}{bed1Out}{F}{3.31962507115}
+\goldrow{stream}{bed1Out}{T}{820.544776882}
+\goldrow{stream}{bed2Feed}{F}{5.24573103297}
+\goldrow{stream}{bed2Feed}{T}{666.449926271}
+\goldrow{stream}{bed2Out}{F}{4.90898814908}
+\goldrow{stream}{bed2Out}{T}{779.844354476}
+\goldrow{stream}{bed3Feed}{F}{7.06622682632}
+\goldrow{stream}{bed3Feed}{T}{665.985355122}
+\goldrow{stream}{chilledEffluent}{F}{6.67967663036}
+\goldrow{stream}{chilledEffluent}{T}{324.424644019}
 \goldrow{stream}{compMakeup}{F}{2.22222222222}
-\goldrow{stream}{compMakeup}{T}{656.394257943}
-\goldrow{stream}{compRecycle}{F}{5.48220137045}
-\goldrow{stream}{compRecycle}{T}{273.421976894}
+\goldrow{stream}{compMakeup}{T}{656.394258382}
+\goldrow{stream}{compRecycle}{F}{5.48220162505}
+\goldrow{stream}{compRecycle}{T}{273.422005439}
 \goldmore{287}
 \end{tutgolden}
 
@@ -12111,7 +12387,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \end{tutnarrative}
 \tutreadme{Four cases over ONE unchanged ammonia synthesis loop. Between consecutive rungs exactly one thing moves: the reactor model. Feed, pressure, components, property package, recycle plan, tear seed, separator, let-down and purge are the same; diff two system/flowsheetDict files and the converter block is what differs (rung 4 also adds a V\_bed variable and a feed preheater).}
 \tutreadme{Read the rungs in order; each README says what its rung claims and what it cannot. Background: docs/design/how-a-process-design-is-staged.md and the props bench tutorials/props/kinetics/ammoniaRate01\_dyson\_simon for the rate law of rung 4.}
-\tutreadme{This is a TEACHING SEQUENCE, not a family of plants. The reference plants of the same process live in tutorials/plant/ (ammonia02\_full\_plant, the conventional loop; greenAmmoniaPEQ\_baseCase, the green-ammonia project). These cases moved here from tutorials/plant/ under DEV.md 4c C244 with their names, goldens and contents unchanged; the old identifiers resolve through tutorials/ALIASES.}
+\tutreadme{This is a TEACHING SEQUENCE, not a family of plants. The reference plants of the same process live in tutorials/plant/ (ammonia02\_full\_plant, the conventional loop; ammoniaPEQ\_baseCase, the ammonia project). These cases moved here from tutorials/plant/ under DEV.md 4c C244 with their names, goldens and contents unchanged; the old identifiers resolve through tutorials/ALIASES.}
 \tutreadme{A DECLARED CONVERSION AND NOTHING ELSE. The reactor is a conversionReactor: it converts 25 \% of the inlet nitrogen because this case's dictionary says so, and it would do the same at any temperature and any pressure, whether or not equilibrium allows it. That is what a yield reactor $\ast$is$\ast$.}
 \tutreadme{SECTION 4 IS A HISTORY. DEV.md's C8 entry gives this stage exactly one claim --- $\ast$"Claims a mass balance"$\ast$. This case used to be unable to claim a converged HEAT balance, because the conversion reactor priced its duty on a different enthalpy surface from its streams (the first law was out by 2 278.14 kW); the outlet now means its own equilibrium (C72) and the global residual is 0.028 kW. Section 4 keeps the diagnosis, as it was written.}
 \tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Feed, pressure, components, property package, recycle plan, tear seed, separator, let-down and purge are byte-identical across all three.}
@@ -12351,9 +12627,9 @@ THE MARGINS ARE IN THE README, NOT IN THE ENGINE. A level-1 margin is arithmetic
 \end{tutnarrative}
 \tutreadme{The common entry to the ammonia cases. Before any flowsheet exists, three production routes to ammonia are compared on their input-output balance --- Douglas' first level --- and on the energy each one needs, so that only the routes worth a feasibility study go on to one.}
 \tutreadme{Illustrated design stage: screening (FEL-1 in a three-stage numbering). No equipment exists yet, so nothing here is sized or costed.}
-\tutreadme{The ammonia cases refine a simulation along two independent axes, and each case is named by its purpose on one of them. The project-stage axis follows one green-ammonia plant from screening to basic design: what the project must decide at each stage, and the detail that decision needs --- here the reactor model, the exchangers and the economics all move together. The reactor-model axis keeps one synthesis loop fixed and changes only the converter, from a declared conversion to a bed whose volume the engine solves. They are two ladders, not one: a project does not mature by swapping an equilibrium reactor for a kinetic one, and a kinetic reactor does not make a study a basic design. A stage column says "illustrated design stage" for the same reason: the AACE class of an estimate is set by how far the project is defined, never by the stage a case illustrates or by the model it runs, so where a case declares estimateClass it is the author's statement of maturity.}
-\tutreadme{The green-ammonia sequence (project stage; 1200 t/day, the PEQ 2026-27 base data):}
-\tutreadme{What changes between rungs 2 and 3 --- consumptions, investment and the NPV, each difference traced to what changed between the two stages --- is a section of the basic-design case's README, generated from the engine's runs of both: [From feasibility to basic design](../greenAmmonia03\_basicDesign/README.md\#from-feasibility-to-basic-design-what-changed-and-why).}
+\tutreadme{The ammonia cases refine a simulation along two independent axes, and each case is named by its purpose on one of them. The project-stage axis follows one ammonia plant from screening to basic design: what the project must decide at each stage, and the detail that decision needs --- here the reactor model, the exchangers and the economics all move together. The reactor-model axis keeps one synthesis loop fixed and changes only the converter, from a declared conversion to a bed whose volume the engine solves. They are two ladders, not one: a project does not mature by swapping an equilibrium reactor for a kinetic one, and a kinetic reactor does not make a study a basic design. A stage column says "illustrated design stage" for the same reason: the AACE class of an estimate is set by how far the project is defined, never by the stage a case illustrates or by the model it runs, so where a case declares estimateClass it is the author's statement of maturity.}
+\tutreadme{The ammonia sequence (project stage; 1200 t/day, the PEQ 2026-27 base data):}
+\tutreadme{What changes between rungs 2 and 3 --- consumptions, investment and the NPV, each difference traced to what changed between the two stages --- is a section of the basic-design case's README, generated from the engine's runs of both: [From feasibility to basic design](../ammoniaPEQ03\_basicDesign/README.md\#from-feasibility-to-basic-design-what-changed-and-why).}
 \tutreadme{The reactor-model ladder (one 200 bar synthesis loop, nothing but the converter moves):}
 \begin{tutgolden}
 \goldrow{stream}{feedCombustion}{F}{0.000833333333333}
@@ -13238,6 +13514,86 @@ NOT here, and said: any rate (whisker and encapsulating carbon and their kinetic
 \end{tutgolden}
 
 \clearpage
+\tutentry{equil05\_order\_independent\_a}{tutorials/steady/reactors/equil05\_order\_independent\_a}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformer) at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(reformer.west)+(-1.05,0.00)$) -- ($(reformer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reformer.east)+(0,0.00)$) -- ($(reformer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K}
+\begin{tutnarrative}
+the EQUILIBRIUM reactor (REquil) with MULTIPLE simultaneous reactions.
+
+Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry data), solved together by the multivariate Newton:
+
+smr : CH4 + H2O <$\to$ CO + 3 H2 (strongly endothermic) wgs : CO + H2O <$\to$ CO2 + H2 (mildly exothermic)
+
+The stoichiometry lives in constant/reactions and is referenced BY NAME -- the same `reactions ( r1 r2 );` grammar the batch / dynamic reactors take.
+
+Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00166666666667}
+\goldrow{stream}{feed}{T}{1100}
+\goldrow{stream}{syngas}{F}{0.00166593958576}
+\goldrow{stream}{syngas}{T}{1100}
+\goldrow{kpi}{reformer}{F\_in\_kmol\_h}{6}
+\goldrow{kpi}{reformer}{F\_out\_kmol\_h}{5.99738250873}
+\goldrow{kpi}{reformer}{Kp\_smr}{312.740523794}
+\goldrow{kpi}{reformer}{Kp\_wgs}{0.978425617548}
+\goldrow{kpi}{reformer}{Q\_kW}{6.20687718107}
+\goldrow{kpi}{reformer}{T}{1100}
+\goldrow{kpi}{reformer}{conversion\_smr}{-0.00130874563718}
+\goldrow{kpi}{reformer}{conversion\_wgs}{-0.670693979077}
+\goldrow{kpi}{reformer}{extent\_smr\_kmol\_h}{-0.00130874563718}
+\goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{-0.670693979077}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{equil05\_order\_independent\_b}{tutorials/steady/reactors/equil05\_order\_independent\_b}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformer) at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(reformer.west)+(-1.05,0.00)$) -- ($(reformer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reformer.east)+(0,0.00)$) -- ($(reformer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K}
+\begin{tutnarrative}
+the EQUILIBRIUM reactor (REquil) with MULTIPLE simultaneous reactions.
+
+Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry data), solved together by the multivariate Newton:
+
+smr : CH4 + H2O <$\to$ CO + 3 H2 (strongly endothermic) wgs : CO + H2O <$\to$ CO2 + H2 (mildly exothermic)
+
+The stoichiometry lives in constant/reactions and is referenced BY NAME -- the same `reactions ( r1 r2 );` grammar the batch / dynamic reactors take.
+
+Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00166666666667}
+\goldrow{stream}{feed}{T}{1100}
+\goldrow{stream}{syngas}{F}{0.00166593958576}
+\goldrow{stream}{syngas}{T}{1100}
+\goldrow{kpi}{reformer}{F\_in\_kmol\_h}{6}
+\goldrow{kpi}{reformer}{F\_out\_kmol\_h}{5.99738250873}
+\goldrow{kpi}{reformer}{Kp\_smr}{312.740523794}
+\goldrow{kpi}{reformer}{Kp\_wgs}{0.978425617548}
+\goldrow{kpi}{reformer}{Q\_kW}{6.20687718107}
+\goldrow{kpi}{reformer}{T}{1100}
+\goldrow{kpi}{reformer}{conversion\_smr}{-0.00130874563718}
+\goldrow{kpi}{reformer}{conversion\_wgs}{-0.670693979077}
+\goldrow{kpi}{reformer}{extent\_smr\_kmol\_h}{-0.00130874563718}
+\goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{-0.670693979077}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ladder01\_wgs\_three\_rungs}{tutorials/steady/reactors/ladder01\_wgs\_three\_rungs}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -13862,13 +14218,13 @@ The wire makes the energy flow visible at the case level --- a single edge in th
 \goldrow{kpi}{compressor}{P\_in}{100000}
 \goldrow{kpi}{compressor}{P\_out}{890211.642995}
 \goldrow{kpi}{compressor}{T\_in}{298.15}
-\goldrow{kpi}{compressor}{T\_out}{633.374206884}
-\goldrow{kpi}{compressor}{T\_out\_isen}{551.37943898}
+\goldrow{kpi}{compressor}{T\_out}{633.374206837}
+\goldrow{kpi}{compressor}{T\_out\_isen}{551.396476548}
 \goldrow{kpi}{compressor}{W\_isen}{3750}
 \goldrow{kpi}{compressor}{W\_isen\_kW}{3.75}
 \goldrow{kpi}{compressor}{W\_shaft}{5000}
 \goldrow{kpi}{compressor}{W\_shaft\_kW}{5}
-\goldmore{27}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -14062,15 +14418,47 @@ Per the credo, P\_out is a RESULT. If the turbine must exhaust at a fixed back-p
 \goldrow{kpi}{turbine01}{P\_in}{1000000}
 \goldrow{kpi}{turbine01}{P\_out}{131729.126973}
 \goldrow{kpi}{turbine01}{T\_in}{900}
-\goldrow{kpi}{turbine01}{T\_out}{582.935206477}
-\goldrow{kpi}{turbine01}{T\_out\_isen}{524.463853734}
+\goldrow{kpi}{turbine01}{T\_out}{582.935206382}
+\goldrow{kpi}{turbine01}{T\_out\_isen}{524.574044253}
 \goldrow{kpi}{turbine01}{W\_gen\_kW}{10}
 \goldrow{kpi}{turbine01}{W\_generated}{10000}
 \goldrow{kpi}{turbine01}{W\_shaft}{-10000}
-\goldrow{kpi}{turbine01}{dS\_gen}{3.19034018436}
-\goldrow{kpi}{turbine01}{dT}{-317.064793523}
-\goldrow{kpi}{turbine01}{dT\_isen}{-375.536146266}
-\goldmore{9}
+\goldrow{kpi}{turbine01}{dS\_gen}{3.19034017942}
+\goldrow{kpi}{turbine01}{dT}{-317.064793618}
+\goldrow{kpi}{turbine01}{dT\_isen}{-375.425955747}
+\goldmore{11}
+\end{tutgolden}
+
+\clearpage
+\tutentry{turbine02\_n2\_isentropic\_state}{tutorials/steady/rotating/turbine02\_n2\_isentropic\_state}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (turbine) at (0.0,-0.0) {\textbf{turbine}\\[-1pt]{\tiny turbine}};
+  \draw[->] ($(turbine.west)+(-1.05,0.00)$) -- ($(turbine.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(turbine.east)+(0,0.00)$) -- ($(turbine.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {exhaust};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic turbine on N2, 600 K, 10 bar, eta 1: the published T\_out\_isen satisfies S(T\_out\_isen, P\_out) = S\_in}
+\begin{tutnarrative}
+witness: the PUBLISHED isentropic discharge temperature satisfies S(T\_out\_isen, P\_out) = S\_in. An external review found T\_out\_isen taken at a finite-difference neighbour pressure of the outer Newton (313.1225 K against 313.2192 K); the discharge now re-solves at P\_out.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{exhaust}{F}{0.001}
+\goldrow{stream}{exhaust}{T}{329.019573516}
+\goldrow{stream}{feed}{F}{0.001}
+\goldrow{stream}{feed}{T}{600}
+\goldrow{kpi}{turbine}{F}{0.001}
+\goldrow{kpi}{turbine}{P\_in}{1000000}
+\goldrow{kpi}{turbine}{P\_out}{118845.780457}
+\goldrow{kpi}{turbine}{T\_in}{600}
+\goldrow{kpi}{turbine}{T\_out}{329.019573516}
+\goldrow{kpi}{turbine}{T\_out\_isen}{329.019573516}
+\goldrow{kpi}{turbine}{W\_gen\_kW}{8}
+\goldrow{kpi}{turbine}{W\_generated}{8000}
+\goldrow{kpi}{turbine}{W\_shaft}{-8000}
+\goldrow{kpi}{turbine}{W\_shaft\_kW}{-8}
+\goldmore{11}
 \end{tutgolden}
 
 \subsection{separation}
@@ -15143,19 +15531,19 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
 \begin{tutgolden}
 \goldrow{stream}{expanded}{F}{0.0138888888889}
 \goldrow{stream}{feed}{F}{0.0138888888889}
-\goldrow{stream}{liquid}{F}{0.00946427990629}
-\goldrow{stream}{vapor}{F}{0.00442460898259}
-\goldrow{kpi}{flash}{F\_alpha}{0.00946427990629}
-\goldrow{kpi}{flash}{F\_beta}{0.00442460898259}
+\goldrow{stream}{liquid}{F}{0.00946427990105}
+\goldrow{stream}{vapor}{F}{0.00442460898784}
+\goldrow{kpi}{flash}{F\_alpha}{0.00946427990105}
+\goldrow{kpi}{flash}{F\_beta}{0.00442460898784}
 \goldrow{kpi}{flash}{F\_in}{0.0138888888889}
 \goldrow{kpi}{flash}{K\_ethanol}{1.45034938624}
-\goldrow{kpi}{flash}{K\_water}{0.650061126046}
+\goldrow{kpi}{flash}{K\_water}{0.650061126047}
 \goldrow{kpi}{flash}{P}{100000}
-\goldrow{kpi}{flash}{Q}{-451021.728762}
-\goldrow{kpi}{flash}{Q\_kW}{-451.021728762}
+\goldrow{kpi}{flash}{Q}{-451005.163167}
+\goldrow{kpi}{flash}{Q\_kW}{-451.005163167}
 \goldrow{kpi}{flash}{T}{353}
-\goldrow{kpi}{flash}{V\_over\_F}{0.318571846747}
-\goldmore{35}
+\goldrow{kpi}{flash}{V\_over\_F}{0.318571847124}
+\goldmore{37}
 \end{tutgolden}
 
 \clearpage
