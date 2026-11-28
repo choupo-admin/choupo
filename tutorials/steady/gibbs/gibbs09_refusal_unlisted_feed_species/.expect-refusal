@@ -1,0 +1,2 @@
+# Deliberate refusal: must exit non-zero and print this text (see header of the flowsheetDict).
+not listed in operation.species: CH4

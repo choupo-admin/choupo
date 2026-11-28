@@ -2277,8 +2277,8 @@ from that list is dropped in silence --- which is how the first
 \code{verdict} append reported ``refreshed'' over an unchanged file.  The point is the diff: a change git, a gate and a reader
 can verify line by line.  A case with no golden is skipped (creating one
 is a recording decision, not a sweep side-effect), and a case marked
-\file{.expect-nonconvergence} or \file{.known-broken} is never
-recorded.  It reports \code{+ N new row(s) appended}.
+\file{.expect-nonconvergence}, \file{.known-broken} or \file{.expect-refusal} is never
+recorded.  \file{.expect-refusal} (first non-comment line: a substring) RUNS the case and passes only on a non-zero exit with that text in the output, so a refusal deleted from the engine fails, which \file{.expect-nonconvergence} (it skips the run) cannot catch.  It reports \code{+ N new row(s) appended}.
 
 \paragraph{Three instruments that are deliberately NOT gates.}  Each
 needs something \code{bin/runTests} cannot guarantee --- a browser, a
