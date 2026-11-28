@@ -3212,7 +3212,11 @@ carries that enthalpy, and the outlet is published with the vapour fraction
 it resolves to — a two-phase merge leaves as ONE combined two-phase stream
 (the mixer does not SEPARATE; put a flash after it to split the phases).  A
 pure fluid inside its saturation jump (steam into condensate) leaves at its
-saturation T with its quality pinned.  Until 2026-10-24 the balance used one
+saturation T with its quality pinned.  Since 2026-11-28 (D9) a fluid-only merge takes
+that state from `flashState::specifiedFlash` (PH at (P_out, SUM H_in), 1e-6 J/mol absolute;
+witness `mixer01_water_steam_plateau`: 36 kmol/h water 300 K + 36 kmol/h steam 450 K, IF97, 1 bar -> 372.756 K, vf 0.46678);
+a failed flash reports `Converged: NO` and publishes the seed T.  A merge carrying crystals keeps
+the older inversion (the home does not price solids).  Until 2026-10-24 the balance used one
 dominant phase and published that label, which the report contradicted: the
 first law of `cavett01` was open by 88 % on its two mixers.  Without
 formation data on every component the sensible dominant-phase balance is

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1962,
+  "cases": 1963,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -27732,6 +27732,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/mixer01_water_steam_plateau": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/valve02_wet_letdown_water": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33190,6 +33204,7 @@
     "tutorials/steady/flash/leaf01_flash",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
     "tutorials/steady/flash/valve02_wet_letdown_water",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
@@ -34029,6 +34044,7 @@
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
@@ -36803,6 +36819,7 @@
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
+    "tutorials/steady/flash/mixer01_water_steam_plateau",
     "tutorials/steady/flash/valve02_wet_letdown_water",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",

@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Adiabatic mixing of 36 kmol/h liquid water at 300 K with 36 kmol/h steam at
+  450 K, both at 1 bar (IF97).  The summed enthalpy lies inside the saturation
+  plateau of water at 1 bar: no temperature carries it (H jumps by the whole
+  latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the
+  vapour fraction of the lever rule on the saturated legs (0.4668), taken from
+  the pure-fluid plateau route of flashState::specifiedFlash.  Before (D9,
+  2026-11-28) the mixer's own inversion in T asked IF97 for 175 K and failed.
+  Held: the energy report's mixer remainder (zero) and the mass balance.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        mix;
+        type        mixer;
+        inputs      ( liquid steam );
+        outputs     ( out );
+        operation   { }
+    }
+);

@@ -37202,8 +37202,13 @@ specification) is not where the modelling effort goes.
 
 \begin{description}[leftmargin=*,style=nextline]
   \item[Mixer] Sums the component molar flows of its inlets and closes
-        an adiabatic energy balance for the outlet temperature
-        (a Newton-1D in $T$ on $\sum H_{\text{in}} = H_{\text{out}}$).
+        an adiabatic energy balance: the outlet is the state at
+        $(P_{\text{out}},\sum H_{\text{in}})$ from the one (P, H) flash
+        (\code{flashState::specifiedFlash}, $10^{-6}$ J/mol), so $H_{\text{out}}=\sum H_{\text{in}}$.
+        A pure fluid inside its saturation plateau leaves at $T_{\text{sat}}(P)$ with the
+        lever-rule vapour fraction (witness \code{mixer01\_water\_steam\_plateau}:
+        $372.756$~K, $V/F=0.46678$).  A merge carrying crystals keeps the earlier
+        inversion in $T$ (the home does not price solids).
   \item[Splitter] Divides one inlet into outlets by furnished split
         fractions --- same $T$, $P$, composition in every branch (a
         flow split, \emph{not} a separation: contrast the

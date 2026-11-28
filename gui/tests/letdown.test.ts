@@ -473,8 +473,8 @@ describe("letdown: the lesson text", () => {
     //  new one is added here, with the words it is cited for.
     const expectAt: { [cite: string]: string } = {
       "src/unitOperations/valve/Valve.H:32": "isenthalpic",
-      "src/unitOperations/valve/Valve.cpp:151": "flashState::specifiedFlash(thermo, z, spec",
-      "src/unitOperations/valve/Valve.cpp:212": "HOMOGENEOUS, NO SLIP",
+      "src/unitOperations/valve/Valve.cpp:161": "flashState::specifiedFlash(thermo, z, spec",
+      "src/unitOperations/valve/Valve.cpp:234": "HOMOGENEOUS, NO SLIP",
       "src/thermo/ThermoPackage.cpp:2621": "ThermoPackage::density",
       "src/unitOperations/flash/StreamEquilibrium.H:1141": "inline scalar priceState(",
       "src/propertyOps/PropertyPoint.cpp:89": "Cp_ig / (Cp_ig - constant::R)",

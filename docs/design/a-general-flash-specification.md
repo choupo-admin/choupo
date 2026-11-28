@@ -191,9 +191,18 @@ that does not satisfy its specification is never returned.
   KNOWN, registered not fixed: water on the `pureFluids` IF97 override WITH a
   trace of methanol in a gamma-phi mixture is refused (root not found) (the H step is not
   resolved); the same feed on the catalogue water converges.
-* **The adiabatic `mixer` via
-  `reactorOutlet::temperatureOfEnthalpy` (D7), `compressor`, `turbine`: NOT
-  migrated** — §6.  (Next slices, one unit each.)
+* **The adiabatic `mixer`: MIGRATED (2026-11-28, D9)** for fluid-only merges.
+  Outlet = `specifiedFlash` PH at (P_out, SUM priceState inlets), 1e-6 J/mol
+  ABSOLUTE; failure caught, `Converged: NO`, seed T published; a pure fluid on
+  its plateau is pinned.  IF97 36 kmol/h water 300 K + 36 kmol/h steam 450 K, 1 bar:
+  372.756 K, vf 0.46678 (before: asked IF97 for 175 K and failed).  Witness
+  `mixer01_water_steam_plateau`.  **SOLIDS EXCEPTION (registered debt):** a merge
+  carrying crystals keeps `reactorOutlet::temperatureOfEnthalpy`, because the
+  home prices no solids at T_out; Mixer.cpp stays in the door ratchet for it.
+  Moved golden (a CORRECTION): `column13_sour_water_stage_identity`'s `recombine`
+  was the reactive package's fictitious 483 K readout, now the real two-phase
+  state 366.8775 K, vf 0.25; adiabaticFlash's high-side fallback is no longer
+  reached by any shipped case.  `compressor`, `turbine`: NOT migrated — §6.
 
 A PURE state ON its curve (the plateau, a pure (T, V/F) or (P, V/F)) is
 priced on the saturated legs (`pureSaturationLegs` and its entropy twin

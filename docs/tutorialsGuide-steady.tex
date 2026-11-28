@@ -1584,7 +1584,7 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \begin{tutnarrative}
 THE STAGE IDENTITY, UNDER CHEMISTRY.
 
-This is column12 (`column12\_stage\_is\_a\_flash`) with one thing changed: the thermodynamic package resolves an aqueous EQUILIBRIUM. Read that case first -- the construction, the mixer's fictitious temperature and the tolerance are all explained there and not repeated here.
+This is column12 (`column12\_stage\_is\_a\_flash`) with one thing changed: the thermodynamic package resolves an aqueous EQUILIBRIUM. Read that case first -- the construction, the construction and the tolerance are explained there (its mixer's former fictitious temperature is history here: see `restage`) and not repeated here.
 
 feed -$\to$ [tower] -$\to$ distillate, bottoms -$\to$ stageLiquid, stageVapour (stage 2) stageLiquid + stageVapour -$\to$ [recombine] -$\to$ stageMix stageMix -$\to$ [restage] -$\to$ checkLiquid, checkVapour
 
@@ -1615,8 +1615,8 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \tutreadme{The ion inventories agreeing is the claim that a comparison of apparent compositions alone would miss: an effective K could reproduce the apparent split while resting on a different chemistry underneath.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0259166666667}
-\goldrow{stream}{checkLiquid}{F}{0.000416666648318}
-\goldrow{stream}{checkVapour}{F}{0.000138888907237}
+\goldrow{stream}{checkLiquid}{F}{0.000416666666672}
+\goldrow{stream}{checkVapour}{F}{0.000138888888883}
 \goldrow{stream}{distillate}{F}{0.000833333333333}
 \goldrow{stream}{feed}{F}{0.0273055555556}
 \goldrow{stream}{stageLiquid}{F}{0.000416666666667}
@@ -1624,9 +1624,9 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \goldrow{stream}{stageVapour}{F}{0.000138888888889}
 \goldrow{kpi}{recombine}{F\_out}{0.000555555555556}
 \goldrow{kpi}{recombine}{P\_out}{101325}
-\goldrow{kpi}{recombine}{T\_out}{482.89249658}
+\goldrow{kpi}{recombine}{T\_out}{366.877511915}
 \goldrow{kpi}{recombine}{n\_in}{2}
-\goldrow{kpi}{recombine}{vf}{0}
+\goldrow{kpi}{recombine}{vf}{0.24999999999}
 \goldrow{kpi}{restage}{F\_in}{0.000555555555556}
 \goldmore{47}
 \end{tutgolden}
@@ -6451,6 +6451,39 @@ This is the state marcilla01 could not reach: there the UNIFAC (VLE) backbone ke
 \goldrow{kpi}{flash01}{phaseSet}{0}
 \goldrow{stream}{feed}{T}{298.15}
 \goldmore{2}
+\end{tutgolden}
+
+\clearpage
+\tutentry{mixer01\_water\_steam\_plateau}{tutorials/steady/flash/mixer01\_water\_steam\_plateau}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mix) at (0.0,-0.0) {\textbf{mix}\\[-1pt]{\tiny mixer}};
+  \draw[->] ($(mix.west)+(-1.05,-0.17)$) -- ($(mix.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {liquid};
+  \draw[->] ($(mix.west)+(-1.05,0.17)$) -- ($(mix.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {steam};
+  \draw[->] ($(mix.east)+(0,0.00)$) -- ($(mix.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic mixer, IF97 water: 300 K liquid + 450 K steam at 1 bar end inside the saturation plateau}
+\begin{tutnarrative}
+Adiabatic mixing of 36 kmol/h liquid water at 300 K with 36 kmol/h steam at 450 K, both at 1 bar (IF97). The summed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.4668), taken from the pure-fluid plateau route of flashState::specifiedFlash. Before (D9, 2026-11-28) the mixer's own inversion in T asked IF97 for 175 K and failed. Held: the energy report's mixer remainder (zero) and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{liquid}{F}{0.01}
+\goldrow{stream}{liquid}{T}{300}
+\goldrow{stream}{out}{F}{0.02}
+\goldrow{stream}{out}{T}{372.755918611}
+\goldrow{stream}{steam}{F}{0.01}
+\goldrow{stream}{steam}{T}{450}
+\goldrow{kpi}{mix}{F\_out}{0.02}
+\goldrow{kpi}{mix}{P\_out}{100000}
+\goldrow{kpi}{mix}{T\_out}{372.755918611}
+\goldrow{kpi}{mix}{n\_in}{2}
+\goldrow{kpi}{mix}{vf}{0.46678299337}
+\goldrow{boundary}{global}{H\_feeds\_kW}{530.075245771}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{530.075245771}
+\goldmore{1}
 \end{tutgolden}
 
 \clearpage

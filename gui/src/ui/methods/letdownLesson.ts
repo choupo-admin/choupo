@@ -152,7 +152,7 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
         + "specification", unit: "Pa" },
     ],
     note: "The engine's valve: src/unitOperations/valve/Valve.H:32 states "
-      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:151 "
+      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:161 "
       + "asks the one (P, H) flash for the state at the outlet pressure and "
       + "the inlet's enthalpy (a pure fluid thrown into its saturation "
       + "plateau leaves at Tsat with the lever-rule vapour fraction), both "
@@ -224,7 +224,7 @@ u &= \frac{4\,Q}{\pi D^2}
       { sym: "\\pi", means: "the ratio of a circle's circumference to its "
         + "diameter, 3.14159...", unit: "–" },
     ],
-    note: "src/unitOperations/valve/Valve.cpp:212 is where the valve "
+    note: "src/unitOperations/valve/Valve.cpp:234 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
       + "equation of state (src/thermo/ThermoPackage.cpp:2621).  The "
