@@ -289,7 +289,11 @@ int GibbsReactor::solve(const DictPtr& dict,
         std::string missing;
         for (std::size_t k = 0; k < z.size(); ++k)
         {
-            if (z[k] <= 0.0) continue;
+            //  below kUnlistedTrace a fed amount is a finite-difference probe of
+            //  a zero tear flow (Newton-on-tears perturbs EVERY component), not
+            //  a feed: refusing it made a tear with an absent species unstartable
+            constexpr double kUnlistedTrace = 1.0e-6;
+            if (z[k] <= kUnlistedTrace) continue;
             bool listed = false;
             for (std::size_t i = 0; i < N; ++i) if (compIdx[i] == k) listed = true;
             if (!listed) missing += (missing.empty() ? "" : ", ") + thermo.comp(k).name();
