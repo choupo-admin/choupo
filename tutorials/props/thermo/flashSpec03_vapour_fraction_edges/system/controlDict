@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoProps;
+tier         witness;
+description  "The edges of the vapour-fraction specification's search: a pressure whose saturation temperature sits 0.01 K above IF97's floor (273.15 K) and a temperature at the floor and at the top of its saturation range, each in (P,VF) and (T,VF) on IAPWS-IF97; the window is cut to the package's declared temperature domain";
+verbosity    3;

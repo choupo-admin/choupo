@@ -41,14 +41,10 @@ Description
     feed" until 2026-11-03, which had stopped being true that day).  The
     outlet is the equilibrium two-phase state at (T, P_out).
 
-    The same (P, H) question, asked of any feed and on the props bench, is
-    `flashState::specifiedFlash` (SpecifiedFlash.H, DEV.md 4c C214 W1).
-    This unit keeps its own search for now: routed through that home its
-    T_out would move in the last printed digits (a tighter tolerance, a
-    different bracket and seed) and its declared high-side rule for an
-    unanswerable reactive trial would become a refusal -- a migration that
-    must carry its own list of moved rows
-    (docs/design/a-general-flash-specification.md §6).
+    The outlet is `flashState::specifiedFlash` at (P_out, H_in) (SpecifiedFlash.H,
+    DEV.md 4c C214 W1; the unit's own search was removed 2026-11-28, with its
+    declared high-side rule: a state the home refuses is reported
+    "Converged: NO" with the reason, as the valve does).
 
     Algorithm:  nested 1-D Newton in T (outer) over isothermal-flash
     inner calls.  Each inner call already iterates on composition; the

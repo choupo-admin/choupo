@@ -19977,6 +19977,13 @@ exactly on a window edge (or on a step of the bracketing walk) is accepted as
 a zero-width bracket; and near a bound the Newton derivative is a one-sided
 difference inside the window (case
 \code{tutorials/props/thermo/flashSpec02\_window\_edges}).
+The temperature domain is DECLARED by the pure-fluid model
+(\code{PureFluidModel::temperatureDomain}, unbounded by default, IF97 its own
+constants) and read through the package, not guessed by the search; the
+vapour-fraction pairs obey the same rule: the (P,VF) window is cut to it, its
+derivative is one-sided near a bound, and a (T,VF) flash held at a
+temperature outside it is refused naming the domain (case
+\code{tutorials/props/thermo/flashSpec03\_vapour\_fraction\_edges}).
 
 \begin{figure}[ht]
 \centering
@@ -37239,7 +37246,9 @@ specification) is not where the modelling effort goes.
         flash.  A pure fluid whose enthalpy lies inside its saturation
         plateau leaves at $T_{\text{sat}}(P)$ with the lever-rule vapour
         fraction (witness \code{adiabaticFlash02\_wet\_water\_letdown}:
-        water 450~K, 20 to 1~bar, 372.756~K, $V/F=0.147246$).
+        water 450~K, 20 to 1~bar, 372.756~K, $V/F=0.147246$).  A state the home refuses (a trial the package cannot answer) is
+        reported \code{Converged: NO} with the reason; the unit keeps no
+        search of its own.
   \item[Valve] An isenthalpic pressure let-down: the outlet pressure is
         furnished (the only hardware) and the outlet state is the
         \code{adiabaticFlash} of the inlet at that lower $P$, holding

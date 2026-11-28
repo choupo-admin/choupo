@@ -81,6 +81,7 @@ public:
     scalar p_sat   (scalar T_K) const override;
     scalar T_sat   (scalar p_Pa) const override;
     std::pair<scalar, scalar> saturationWindow() const override;   // region 4
+    std::pair<scalar, scalar> temperatureDomain() const override;  // regions 1-3-2
 
     // Transport: (T,p) in, density fetched from the IF97 kernel internally,
     // then the IAPWS R12-08 / R15-11 / R1-76 transport kernels.

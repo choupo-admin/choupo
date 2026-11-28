@@ -94,6 +94,7 @@ SourceFiles
 #include "core/Types.H"
 
 #include <functional>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -152,6 +153,14 @@ public:
     // the critical point there is no saturation curve to ask, and below the
     // triple point the liquid line this kernel draws does not exist.
     virtual std::pair<scalar, scalar> saturationWindow() const = 0;
+
+    // The temperature range [T_lo, T_hi] on which the model answers h, s, v at
+    // all (a state outside it THROWS) -- the package declares its domain and a
+    // search (specifiedFlash) cuts its window to it.  Default: unbounded.  For
+    // IF97 it is the regions 1-3-2 range, [273.15, 1073.15] K (region 5 is not
+    // implemented).
+    virtual std::pair<scalar, scalar> temperatureDomain() const
+    { return {0.0, std::numeric_limits<scalar>::infinity()}; }
 
     // ----- Transport properties on the model's OWN formulation -----------
     //

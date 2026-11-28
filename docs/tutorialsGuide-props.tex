@@ -6353,6 +6353,44 @@ the three edges of a (P,H)/(P,S) search. Each target is the state (T, 1 bar) of 
 \end{tutgolden}
 
 \clearpage
+\tutentry{flashSpec03\_vapour\_fraction\_edges}{tutorials/props/thermo/flashSpec03\_vapour\_fraction\_edges}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pureLowPVF}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pureBubble}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pureLowTVF}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pureHighTVF}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{mixFloorPVF}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{mixFloorTVF}\\[-1pt]{\tiny flashSpec}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The edges of the vapour-fraction specification's search: a pressure whose saturation temperature sits 0.01 K above IF97's floor (273.15 K) and a temperature at the floor and at the top of its saturation range, each in (P,VF) and (T,VF) on IAPWS-IF97; the window is cut to the package's declared temperature domain}
+\begin{tutnarrative}
+the edges of a (P,VF)/(T,VF) search. The package declares its temperature domain (IF97 water: 273.15 to 1073.15 K, PureFluidModel::temperatureDomain) and the search is cut to it, as in (P,H)/(P,S). A pure stream takes the closed saturation solve; the water + 100 ppm ethanol stream takes the SEARCH, whose root sits within 2e-5 K above the floor (the finite difference's own step), so the derivative must not step below it. pureLowPVF pure water, P = psat(273.16 K): root 0.01 K above the floor. pureBubble the same pressure, VF 0 (the bubble edge). pureLowTVF pure water, T = 273.16 K, VF 0.5. pureHighTVF pure water, T = 646 K, VF 0.5: the top of IF97's saturation range. mixFloorPVF mixture, P = 611.268 Pa: the search's root is 273.15002 K. mixFloorTVF mixture, T = 273.15 K: held ON the floor.
+
+\end{tutnarrative}
+\tutreadme{choupoProps on IAPWS-IF97 water, asking the vapour-fraction flash for states at the floor and the top of the package's temperature domain. The package declares that domain (PureFluidModel::temperatureDomain, IF97 water 273.15 to 1073.15 K) and the search window is cut to it: a trial state is never priced where the package refuses, and the finite difference turns one-sided near a bound, as in (P,H) and (P,S) (flashSpec02\_window\_edges).}
+\tutreadme{1. A pure stream is answered on its saturation curve, 0.01 K above the floor. 2. A mixture's search root 2e-5 K above the floor needs the one-sided difference; a held T outside the domain is refused by name, with the domain, instead of "the band is not crossed".}
+\tutreadme{Set T 250 K in mixFloorTVF: the run is refused naming the domain.}
+\begin{tutgolden}
+\goldrow{diag}{pureLowPVF}{H}{22526.9612948}
+\goldrow{diag}{pureLowPVF}{H\_per\_mass}{1250.45580321}
+\goldrow{diag}{pureLowPVF}{P}{611.657}
+\goldrow{diag}{pureLowPVF}{S}{82.4680888989}
+\goldrow{diag}{pureLowPVF}{S\_per\_mass}{4.5777457063}
+\goldrow{diag}{pureLowPVF}{T}{273.16}
+\goldrow{diag}{pureLowPVF}{flashes}{0}
+\goldrow{diag}{pureLowPVF}{iterations}{0}
+\goldrow{diag}{pureLowPVF}{onSaturationPlateau}{1}
+\goldrow{diag}{pureLowPVF}{residual}{0}
+\goldrow{diag}{pureLowPVF}{target}{0.5}
+\goldrow{diag}{pureLowPVF}{vaporFraction}{0.5}
+\goldrow{diag}{pureLowPVF}{x\_water}{1}
+\goldrow{diag}{pureLowPVF}{y\_water}{1}
+\goldmore{74}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heavyWater01\_isotope\_effect}{tutorials/props/thermo/heavyWater01\_isotope\_effect}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flashSpec03_vapour_fraction_edges -- the edges of a (P,VF)/(T,VF) search.
+  The package declares its temperature domain (IF97 water: 273.15 to
+  1073.15 K, PureFluidModel::temperatureDomain) and the search is cut to it,
+  as in (P,H)/(P,S).  A pure stream takes the closed saturation solve; the
+  water + 100 ppm ethanol stream takes the SEARCH, whose root sits within
+  2e-5 K above the floor (the finite difference's own step), so the
+  derivative must not step below it.
+    pureLowPVF   pure water, P = psat(273.16 K): root 0.01 K above the floor.
+    pureBubble   the same pressure, VF 0 (the bubble edge).
+    pureLowTVF   pure water, T = 273.16 K, VF 0.5.
+    pureHighTVF  pure water, T = 646 K, VF 0.5: the top of IF97's saturation range.
+    mixFloorPVF  mixture, P = 611.268 Pa: the search's root is 273.15002 K.
+    mixFloorTVF  mixture, T = 273.15 K: held ON the floor.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name pureLowPVF;  type flashSpec; composition { water 1; } spec { pair PVF; P 611.657 Pa; vaporFraction 0.5; } }
+    { name pureBubble;  type flashSpec; composition { water 1; } spec { pair PVF; P 611.657 Pa; vaporFraction 0; } }
+    { name pureLowTVF;  type flashSpec; composition { water 1; } spec { pair TVF; T 273.16 K; vaporFraction 0.5; } }
+    { name pureHighTVF; type flashSpec; composition { water 1; } spec { pair TVF; T 646 K; vaporFraction 0.5; } }
+    { name mixFloorPVF; type flashSpec; composition { water 0.9999; ethanol 0.0001; } spec { pair PVF; P 611.268 Pa; vaporFraction 0.5; } }
+    { name mixFloorTVF; type flashSpec; composition { water 0.9999; ethanol 0.0001; } spec { pair TVF; T 273.15 K; vaporFraction 0.5; } }
+);
