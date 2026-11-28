@@ -182,6 +182,7 @@ def _git(*a):
 
 
 _FIXCACHE = []
+DYNHUBS = set()   # files touched by more than 30 % of the 7-day landings, set by quality_section
 
 
 def _fixes(after_ts, hours, files, ref="main"):
@@ -192,14 +193,15 @@ def _fixes(after_ts, hours, files, ref="main"):
         for ln in _git("log", ref, "--no-merges", "--since=15 days ago", "--name-only", "--format=@@%H\t%ct\t%s").splitlines():
             if ln.startswith("@@"):
                 h, ct, subj = ln[2:].split("\t", 2)
-                cur = (h, int(ct), set()) if re.search(FIXRE, subj, re.I) else None
+                cur = (h, int(ct), set()) if re.search(FIXRE, subj, re.I) and not re.search(LANDRE, subj) else None
                 if cur:
                     _FIXCACHE.append(cur)
             elif ln and cur:
                 if not _hub(ln):
                     cur[2].add(ln)
         _FIXCACHE.append(("", 0, set()))
-    return [(h, files & fs) for h, ct, fs in _FIXCACHE if after_ts < ct <= after_ts + hours * 3600 and files & fs]
+    files = files - DYNHUBS
+    return [(h, files & fs) for h, ct, fs in _FIXCACHE if after_ts < ct <= after_ts + hours * 3600 and files & fs - DYNHUBS]
 
 
 def quality_section():
@@ -230,6 +232,11 @@ def quality_section():
             f = set(_git("diff", "--name-only", h + "^1", h).split()) if merge else \
                 set(_git("diff-tree", "--no-commit-id", "--name-only", "-r", h).split())
             land.append((h, int(ct), {x for x in f if not _hub(x)}))
+    hubs = []
+    if land:
+        c = Counter(x for _, _, f in land for x in f)
+        DYNHUBS.update(k for k, v in c.items() if v > 0.3 * len(land))
+        hubs = sorted(DYNHUBS)
     if not land:
         Q += [["none", "aterragens que precisaram de correção: sem dado"], ["none", "remendos depois de aterrar: sem dado"]]
     else:
@@ -265,6 +272,7 @@ def quality_section():
         Q.append(["none", "generais aceites à primeira: sem dado (nenhum ramo de general das últimas 24 h já está no main)"])
     ico = {"g": "🟢", "y": "🟡", "r": "🔴", "none": "⚪"}
     md = "### Qualidade (7 dias, calculado do git)\n\n" + "\n".join(f"- {ico[l]} {t}" for l, t in Q)
+    md += "\n- ficheiros-eixo excluídos (em mais de 30 % das aterragens): " + (", ".join(hubs) or "nenhum")
     return md, Q
 
 
