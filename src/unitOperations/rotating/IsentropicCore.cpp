@@ -28,6 +28,7 @@ License
 
 #include "IsentropicCore.H"
 #include "core/Constants.H"
+#include "thermo/activityCoefficient/ActivityModel.H"
 #include "solver/NewtonRaphson.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 
@@ -65,6 +66,13 @@ std::optional<FlashSolution> outletSplit(const ThermoPackage& thermo,
     {
         constexpr scalar kDryDewSum = 0.5;
         bool   priced = true;
+        //  The screen prices K by Raoult (gamma = 1).  Under gamma-phi with a
+        //  non-ideal activity model that K can be wrong by a factor gamma
+        //  (NRTL tau = -3: gamma = 0.12, a true dew sum 2.8 against a screened
+        //  0.3), so the screen is not applied: the flash is run.
+        if (thermo.vleWorld() != "phiPhi" && thermo.hasActivity()
+            && thermo.activity().modelName() != "ideal")
+            priced = false;
         sVector K0(thermo.n(), 1.0);
         try
         {
@@ -164,7 +172,8 @@ void announceCondensing(const std::string& machine, const std::string& unit,
 }
 
 scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
-                    scalar P_Pa, const sVector& y, scalar T_guess)
+                    scalar P_Pa, const sVector& y, scalar T_guess,
+                    scalar tol)
 {
     auto f  = [&](scalar T) { return outletS(thermo, T, P_Pa, y) - s_target; };
     auto df = [&](scalar T) {
@@ -172,7 +181,7 @@ scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
     };
     solver::NROptions o;
-    o.tolerance          = 1.0e-4;       // J/(mol*K)
+    o.tolerance          = tol;          // J/(mol*K)
     o.maxIter            = 50;
     o.lower              = 100.0;
     o.upper              = 2500.0;
@@ -302,6 +311,11 @@ DischargeResult solveDischarge(const ThermoPackage& thermo,
     if (!r.converged) return res;     // converged stays false
 
     res.P_out      = r.x;
+    //  T_isen_warm holds the root at the LAST pressure the outer Newton
+    //  evaluated, which is a finite-difference neighbour of P_out (the
+    //  derivative's P +- dP), not P_out itself: published as is it satisfied
+    //  S(T, P_out) = S_in only to ~0.01 J/(mol K).  Re-solve at P_out.
+    T_isen_warm    = solveT_for_S(thermo, s_in, r.x, y, T_isen_warm, 1.0e-9);
     res.T_out_isen = T_isen_warm;
     res.T_out      = solveT_for_H(thermo, h_out_real_target, res.P_out, y,
                                   T_isen_warm);

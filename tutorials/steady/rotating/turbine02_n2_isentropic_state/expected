@@ -1,0 +1,29 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  exhaust                F                0.001              1e-4
+stream  exhaust                T                329.019573516      1e-4
+stream  feed                   F                0.001              1e-4
+stream  feed                   T                600                1e-4
+kpi     turbine                F                0.001              1e-4
+kpi     turbine                P_in             1000000            1e-4
+kpi     turbine                P_out            118845.780457      1e-4
+kpi     turbine                T_in             600                1e-4
+kpi     turbine                T_out            329.019573516      1e-4
+kpi     turbine                T_out_isen       329.019573516      1e-4
+kpi     turbine                W_gen_kW         8                  1e-4
+kpi     turbine                W_generated      8000               1e-4
+kpi     turbine                W_shaft          -8000              1e-4
+kpi     turbine                W_shaft_kW       -8                 1e-4
+kpi     turbine                dS_gen           -6.8212102633e-13  1e-4
+kpi     turbine                dT               -270.980426484     1e-4
+kpi     turbine                dT_isen          -270.980426484     1e-4
+kpi     turbine                eta_isen         1                  1e-4
+kpi     turbine                ratio            8.41426591799      1e-4
+boundary global               H_feeds_kW       8.90064606977      1e-4
+boundary global               Q_boundary_kW    -8                 1e-4
+boundary global               H_products_kW    0.900500313838     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 8                  1e-4
+boundary global               W_shaft_kW       -8                 1e-4

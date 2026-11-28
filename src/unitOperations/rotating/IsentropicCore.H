@@ -109,7 +109,8 @@ void announceCondensing(const std::string& machine, const std::string& unit,
 // Newton-1D in T such that S(T, P, y) = s_target  (warm-seeded), S on the
 // outlet surface above.
 scalar solveT_for_S(const ThermoPackage& thermo, scalar s_target,
-                    scalar P_Pa, const sVector& y, scalar T_guess);
+                    scalar P_Pa, const sVector& y, scalar T_guess,
+                    scalar tol = 1.0e-4);
 
 // Newton-1D in T such that H(T, P, y) = h_target, H on the outlet surface.
 scalar solveT_for_H(const ThermoPackage& thermo, scalar h_target,
