@@ -1187,6 +1187,7 @@ LESSON_PROSE_CITATIONS_DEBT = {
 #  count may only fall (a new one needs a claim and a probe), measured at the
 #  commit that introduced the gate.
 LESSON_ABSENCE_UNCLASSIFIED = {
+    "gui/src/ui/methods/engineBench.tsx": 1,  # moved from MethodsWorkspace.tsx (C535 batch); a regex for the error line, not an absence claim
     "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/DryerSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/LinearAlgebraFigures.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
