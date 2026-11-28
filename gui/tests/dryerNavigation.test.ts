@@ -13,7 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  The dryer-selection page in four parts (Vítor, 2026-11-25: "the navigation
+  The dryer-selection page as a LessonDocument (C535 S3; was four parts) (Vítor, 2026-11-25: "the navigation
   between the parts is confusing").  Pins (1) the order of the parts and the
   steps in the chapter menu, (2) that every `&step=` key the page had before
   the reorder (read off its render that day) still opens a heading of the
@@ -30,7 +30,7 @@ vi.mock("plotly.js-basic-dist-min", () => ({ default: {} }));
 vi.mock("react-plotly.js/factory", () => ({ default: () => () => null }));
 
 import { CHAPTER_ALIASES, chapterSlug } from "../src/ui/methods/chapters.js";
-import { DRYER_PARTS, DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
+import { DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
 import { headingsOf, breaks } from "./chapterOrderKit.js";
 
 /** Every chapter key of the page as published on 2026-11-25 before the reorder. */
@@ -60,20 +60,29 @@ const OLD_KEYS = [
   "check-your-understanding",
   "what-this-does-not-show",
   "references",
+  "choose-which-dryers-stay-in-the-race",
+  "what-to-ask-of-the-product",
+  "which-way-the-gas-meets-the-solid",
+  "what-the-sale-does-not-show",
 ];
 
 const html = renderToStaticMarkup(createElement(MantineProvider, null, createElement(DryerSelectionTool)));
 const heads = headingsOf(html);
 const keys = new Set(heads.map((h) => chapterSlug(h.title)));
 
-describe("dryer-selection: four parts, numbered in reading order", () => {
-  it("the menu reads: four parts (h4) in order, the steps ascending, no repeated title", () => {
-    expect(heads.filter((h) => h.level === 4).map((h) => h.title)).toEqual(DRYER_PARTS.map((p) => p.title));
+const SECTIONS = [
+  "The question", "Try it with the engine", "What you see", "Why it goes wrong",
+  "Check yourself", "Limits and sources",
+];
+
+describe("dryer-selection: six fixed sections, steps numbered in reading order", () => {
+  it("the menu reads: the six fixed h4 in order, the steps ascending, no repeated title", () => {
+    expect(heads.filter((h) => h.level === 4).map((h) => h.title)).toEqual(SECTIONS);
     expect(breaks(heads)).toEqual([]);
     const nums = heads.map((h) => /^(\d+) · /.exec(h.title)?.[1]).filter(Boolean).map(Number);
     expect(nums).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   });
-  it("each step sits in the part it belongs to", () => {
+  it("each step sits in the section it belongs to", () => {
     const part = (n: number): string => {
       let cur = "";
       for (const h of heads) {
@@ -82,15 +91,13 @@ describe("dryer-selection: four parts, numbered in reading order", () => {
       }
       return "";
     };
-    for (const n of [1, 2, 3, 4]) expect(part(n)).toBe(DRYER_PARTS[0].title);
-    for (const n of [5, 6, 7, 8]) expect(part(n)).toBe(DRYER_PARTS[2].title);
-    for (const n of [9, 10, 11, 12]) expect(part(n)).toBe(DRYER_PARTS[3].title);
+    for (const n of [1, 2, 3]) expect(part(n)).toBe(SECTIONS[0]);
+    for (const n of [4, 5, 6, 7, 8, 9]) expect(part(n)).toBe(SECTIONS[2]);
+    for (const n of [10, 11, 12]) expect(part(n)).toBe(SECTIONS[3]);
   });
-  it("the part keys are the slugs of the part titles (the intro links open them)", () => {
-    for (const p of DRYER_PARTS) {
-      expect(chapterSlug(p.title)).toBe(p.key);
-      expect(html).toContain(`data-part-link="${p.key}"`);
-    }
+  it("the two kept part titles are headings of the page, in the sections that hold them", () => {
+    expect(keys.has("which-way-the-gas-meets-the-solid")).toBe(true);
+    expect(keys.has("what-the-sale-does-not-show")).toBe(true);
   });
 });
 
