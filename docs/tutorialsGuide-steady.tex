@@ -9690,6 +9690,42 @@ feed (N2, 8 bar, 300 K, 45 kmol/h) $\to$ [P1 pipe] D, L, roughness $\to$ P\_out 
 \end{tutgolden}
 
 \clearpage
+\tutentry{pump10\_supercritical\_outlet}{tutorials/steady/hydraulics/pump10\_supercritical\_outlet}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump10) at (0.0,-0.0) {\textbf{pump10}\\[-1pt]{\tiny pump}};
+  \draw[->] ($(pump10.west)+(-1.05,0.00)$) -- ($(pump10.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(pump10.east)+(0,0.00)$) -- ($(pump10.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Water pump to 300 bar, above the critical pressure: single-phase compressed-liquid outlet, no T\_sat asked}
+\begin{tutnarrative}
+What it shows: a pump whose DISCHARGE PRESSURE lies above the fluid's critical pressure. Water on IF97 is pumped from 1 bar, 298.15 K to 300 bar (critical pressure 220.64 bar), eta = 0.65.
+
+Above p\_c there is no saturation line, so the pump does not ask for T\_sat(P\_out) (IF97 region 4 refuses it above 22.064 MPa); the outlet is single-phase compressed liquid and the liquid-branch ceiling check is skipped. Before the fix this case stopped with "IF97 region 4: Tsat(p) called at p = 30 MPa", a refusal of a perfectly good state.
+
+Hand check: w\_real = v dP / eta with v \textasciitilde{} 1.8e-5 m3/mol, dP = 2.99e7 Pa gives \textasciitilde{} 830 J/mol; the part stored as pressure is v(1 - alpha T) dP, the rest heats the liquid by about 4-5 K (T\_out \textasciitilde{} 302.7 K, external review: 302.723 K). The run's energy balance closes: W\_shaft = F (h\_out - h\_in).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.01}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{out}{F}{0.01}
+\goldrow{stream}{out}{T}{302.722638153}
+\goldrow{kpi}{pump10}{F}{0.01}
+\goldrow{kpi}{pump10}{P\_in}{100000}
+\goldrow{kpi}{pump10}{P\_out}{30000000}
+\goldrow{kpi}{pump10}{T\_in}{298.15}
+\goldrow{kpi}{pump10}{T\_out}{302.722638153}
+\goldrow{kpi}{pump10}{W\_hydraulic}{5402.43604137}
+\goldrow{kpi}{pump10}{W\_shaft}{8311.44006364}
+\goldrow{kpi}{pump10}{W\_shaft\_kW}{8.31144006364}
+\goldrow{kpi}{pump10}{dP}{29900000}
+\goldrow{kpi}{pump10}{dT}{4.57263815285}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

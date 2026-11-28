@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1948,
+  "cases": 1949,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -28927,6 +28927,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/hydraulics/pump10_supercritical_outlet": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/hydraulics/pumpSystem01_operating_point": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33073,6 +33087,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -33896,6 +33911,7 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/swro01_campoDalias",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
@@ -36639,6 +36655,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",

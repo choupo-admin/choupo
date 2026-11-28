@@ -351,9 +351,11 @@ int Pump::solve(const DictPtr& dict,
         {
             const PureFluidModel& pm = *thermo.pureFluidModel(*i);
             const auto w = pm.saturationWindow();
-            const scalar Ts = pm.T_sat(P_out);
-            if (Ts >= w.first && Ts < w.second
-                && P_out <= pm.p_sat(w.second - 1.0e-9))
+            //  Above the critical pressure there is no saturation line: T_sat
+            //  is not asked (IF97 refuses it), the outlet is single-phase.
+            const bool hasSatLine = P_out <= pm.p_sat(w.second - 1.0e-9);
+            const scalar Ts = hasSatLine ? pm.T_sat(P_out) : 0.0;
+            if (hasSatLine && Ts >= w.first && Ts < w.second)
             {
                 const scalar hL = thermo.H_real(Ts, P_out, x, DensityPhase::Liquid);
                 T_liquidTop = Ts;

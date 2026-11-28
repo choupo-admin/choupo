@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pump10_supercritical_outlet
+  ===========================
+
+  What it shows: a pump whose DISCHARGE PRESSURE lies above the fluid's
+  critical pressure.  Water on IF97 is pumped from 1 bar, 298.15 K to
+  300 bar (critical pressure 220.64 bar), eta = 0.65.
+
+  Above p_c there is no saturation line, so the pump does not ask for
+  T_sat(P_out) (IF97 region 4 refuses it above 22.064 MPa); the outlet is
+  single-phase compressed liquid and the liquid-branch ceiling check is
+  skipped.  Before the fix this case stopped with "IF97 region 4: Tsat(p)
+  called at p = 30 MPa", a refusal of a perfectly good state.
+
+  Hand check: w_real = v dP / eta with v ~ 1.8e-5 m3/mol, dP = 2.99e7 Pa
+  gives ~ 830 J/mol; the part stored as pressure is v(1 - alpha T) dP, the
+  rest heats the liquid by about 4-5 K (T_out ~ 302.7 K, external review:
+  302.723 K).  The run's energy balance closes: W_shaft = F (h_out - h_in).
+\*---------------------------------------------------------------------------*/// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        pump10;
+        type        pump;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            P_out     300.0 bar;         // above the critical pressure (220.64 bar)
+            eta       0.65;              // pump efficiency
+        }
+    }
+);
