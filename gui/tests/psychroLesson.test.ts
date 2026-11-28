@@ -185,11 +185,14 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect((fn.match(/<PsychroPlot/g) ?? []).length,
       "the chart is drawn more than once").toBe(1);
     const at = (s: string): number => fn.indexOf(s);
-    expect(at("question: [{ kind: \"step\", n: 1 }]")).toBeGreaterThan(0);
+    expect(at("In ten minutes")).toBeGreaterThan(0);
+    expect(at("In ten minutes")).toBeLessThan(at("{ kind: \"step\", n: 1 }"));
+    expect(at("{ kind: \"step\", n: 1 }")).toBeLessThan(at("try:"));
     expect(at("question:")).toBeLessThan(at("try:"));
     expect(at("try:")).toBeLessThan(at("see:"));
     expect(at("see:")).toBeLessThan(at("why:"));
-    expect(fn).toMatch(/see: \[\{ kind: "step", n: 2 \}, \{ kind: "step", n: 3 \}, \{ kind: "step", n: 4 \}\]/);
+    //  The Lewis-number card sits right after step 3, the step that defines Le.
+    expect(fn).toMatch(/see: \[\{ kind: "step", n: 2 \}, \{ kind: "step", n: 3 \},\s*\{ kind: "bench", node: leCard \}, \{ kind: "step", n: 4 \}\]/);
     expect(fn).toMatch(/why: \[\{ kind: "step", n: 5 \}\]/);
   });
 

@@ -159,6 +159,36 @@ export function PsychroTool({ catalogue, componentFiles }: {
       </>
   );
 
+  // THE LE READOUT, a card of step 3 (it is the number that separates the two
+  // temperatures that step defines), so it sits right after that step.
+  const leCard = (
+    <Box>
+      <Title order={5}>Read the Lewis number of the pair on the chart</Title>
+      <Text size="sm" mt={4}>
+        Change the pair above: a pair whose Lewis number is far from one pulls
+        the two families — dashed (adiabatic saturation) and dotted (true wet
+        bulb) — visibly apart.
+      </Text>
+      {/*  THE NUMBER THAT SEPARATES THE TWO FAMILIES, on screen.  The engine
+           has always published it; a reader who sees a gap between the
+           dashed and dotted lines needs the value that produced it.  */}
+      {diags && Number.isFinite(diags["Lewis_last"]) && (
+        <Text size="sm" mt={6}>
+          For the pair on the chart right now, the engine reports{" "}
+          <Text span ff="monospace">Le = {diags["Lewis_last"]!.toFixed(4)}
+          </Text>.  Read it against the “Le ≈ 1” of the textbooks: at{" "}
+          {diags["Lewis_last"]!.toFixed(2)} the engine scales the wet-bulb
+          slope by Le^(2/3) (Chilton-Colburn), so the two slopes differ by
+          about {Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100 < 1
+            ? "less than a per cent"
+            : `${(Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100).toFixed(1)} %`}
+          {" "}— which is the whole distance between the adiabatic-saturation
+          family and the true wet-bulb family you are looking at.
+        </Text>
+      )}
+    </Box>
+  );
+
   const doc: LessonDoc = {
     title: "Moist gas, read as a map",
     question: "The densest diagram you will use, and it rewards being read the "
@@ -166,7 +196,33 @@ export function PsychroTool({ catalogue, componentFiles }: {
       + "on it with a direction that means something.",
     steps: PSYCHRO_STEPS, quiz: PSYCHRO_QUIZ, limits: PSYCHRO_LIMITS,
     sections: {
-      question: [{ kind: "step", n: 1 }],
+      question: [
+        { kind: "bench", node: (
+          <Box>
+            <Title order={5}>In ten minutes</Title>
+            <Text size="sm" mt={4}>
+              <b>The question.</b> How do you read, from one picture, how
+              humid a gas is and what heating, cooling or wetting it will do
+              to it?
+            </Text>
+            <Text size="sm" mt={4}>
+              <b>The one idea.</b> Two numbers fix the state of moist gas: its
+              temperature on an ordinary thermometer (dry bulb) and its
+              humidity ratio Y, the kilograms of vapour per kilogram of dry
+              gas.  Everything else (relative humidity, dew point, wet bulb)
+              is read off that point, and every process is a move along a
+              direction on the map.
+            </Text>
+            <Text size="sm" mt={4}>
+              <b>One worked number.</b> Air at 60 °C and 1 atm can carry at
+              most Y = 0.1525 kg of water vapour per kg of dry air (the top of
+              the chart at 60 °C); the same chart drawn for nitrogen reads
+              0.1576, because nitrogen is lighter than air (step 1).
+            </Text>
+          </Box>
+        ) },
+        { kind: "step", n: 1 },
+      ],
       try: [
         { kind: "bench", node: (
           <>
@@ -176,39 +232,13 @@ export function PsychroTool({ catalogue, componentFiles }: {
             The engine computes the whole chart at your pressure — the
             saturation ceiling, the relative-humidity family, the
             adiabatic-saturation lines and, where the transport data allow it,
-            the true wet-bulb lines beside them.  Changing the pair is part of
-            the lesson: nitrogen with water gives a chart of the printed shape
-            with every humidity ratio about 3.4 % above a printed air chart
-            (pick air to land on it), and a pair whose Lewis number is far from one pulls the
-            two families — dashed and dotted — visibly apart.
+            the true wet-bulb lines beside them.  The default pair, nitrogen
+            with water, gives a chart of the printed shape with every humidity
+            ratio about 3.4 % above a printed air chart (pick air to land on
+            it).
           </Text>
-          {/*  THE NUMBER THAT SEPARATES THE TWO FAMILIES, on screen.  The
-               lesson's step 3 turns entirely on Le, says "Le ~ 1 for
-               air-water is why they are so often treated as one", and never
-               printed a value for any pair -- so a reader saw a gap between
-               the dashed and dotted lines and could not tell what produced
-               it.  The engine has always published it.  */}
-          {diags && Number.isFinite(diags["Lewis_last"]) && (
-            <Text size="sm" mt={6}>
-              For the pair on the chart right now, the engine reports{" "}
-              <Text span ff="monospace">Le = {diags["Lewis_last"]!.toFixed(4)}
-              </Text>.  Read it against the “Le ≈ 1” of the textbooks: at{" "}
-              {diags["Lewis_last"]!.toFixed(2)} the engine scales the wet-bulb
-              slope by Le^(2/3) (Chilton-Colburn), so the two slopes differ by
-              about {Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100 < 1
-                ? "less than a per cent"
-                : `${(Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100).toFixed(1)} %`}
-              {" "}— which is the whole distance between the adiabatic-saturation
-              family and the true wet-bulb family you are looking at.
-            </Text>
-          )}
         </Box>
-
-          </>
-        ) },
-        { kind: "bench", node: (
-          <>
-        <Box style={{ display: "grid", gap: 14,
+        <Box style={{ display: "grid", gap: 14, marginTop: 14,
           gridTemplateColumns: "minmax(220px, 260px) 1fr" }}>
           <Stack gap={8}>
             <OriginMark of="assumption" note="the pair, the T range and P you choose" />
@@ -220,12 +250,12 @@ export function PsychroTool({ catalogue, componentFiles }: {
             {plotPane}
           </Box>
         </Box>
-
           </>
         ) },
         { kind: "bench", node: <HandOffFooter spec={spec} alerts={[]} /> },
       ],
-      see: [{ kind: "step", n: 2 }, { kind: "step", n: 3 }, { kind: "step", n: 4 }],
+      see: [{ kind: "step", n: 2 }, { kind: "step", n: 3 },
+        { kind: "bench", node: leCard }, { kind: "step", n: 4 }],
       why: [{ kind: "step", n: 5 }],
     },
   };

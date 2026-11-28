@@ -325,12 +325,12 @@ export const METHOD_FAMILIES: readonly MethodPath[] = [
   {
     id: "drying",
     title: "Drying",
-    intro: "From choosing a dryer to the drying curve, its diagnosis and the humidity chart.",
+    intro: "From the humidity chart that defines the basics, to the drying curve, choosing a dryer, and diagnosing a run that ended wetter than hoped.",
     steps: [
-      { tool: "dryer-selection", label: "Choose", why: "Which dryer suits the product." },
-      { tool: "drying", label: "Curve", why: "How the moisture falls with time." },
-      { tool: "why-did-it-not-dry", label: "Diagnose", why: "Why a run ended wetter than hoped." },
       { tool: "psychro", label: "Chart", why: "The air's state on the psychrometric chart." },
+      { tool: "drying", label: "Curve", why: "How the moisture falls with time." },
+      { tool: "dryer-selection", label: "Choose", why: "Which dryer suits the product." },
+      { tool: "why-did-it-not-dry", label: "Diagnose", why: "Why a run ended wetter than hoped." },
     ],
   },
 ];
