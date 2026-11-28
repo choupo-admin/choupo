@@ -408,13 +408,30 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             for (std::size_t i = 0; i < n && !repaired; ++i)
             {
                 if (!logged[i] || isSolid[i] || ni[i] > seedFoothold) continue;
+                // Every reaction that touches species i is a candidate (either
+                // direction); keep the one that leaves the SMALLEST logged
+                // inventory largest, so the start does not depend on the order
+                // in which the reactions are listed.
+                std::size_t bestJ = R;
+                scalar bestMargin = -std::numeric_limits<scalar>::infinity();
+                scalar bestDelta = 0.0;
                 for (std::size_t j = 0; j < R; ++j)
-                    if (nu[j][i] != 0.0)
-                    {
-                        xiSeed[j] += (1.0e-6 * F_in + seedFoothold - ni[i]) / nu[j][i];
-                        repaired = true;
-                        break;
-                    }
+                {
+                    if (nu[j][i] == 0.0) continue;
+                    const scalar delta = (1.0e-6 * F_in + seedFoothold - ni[i]) / nu[j][i];
+                    sVector trial = xiSeed;
+                    trial[j] += delta;
+                    const sVector nt = molesAt(trial);
+                    scalar margin = std::numeric_limits<scalar>::infinity();
+                    for (std::size_t k = 0; k < n; ++k)
+                        if (logged[k] && !isSolid[k]) margin = std::min(margin, nt[k]);
+                    if (margin > bestMargin) { bestMargin = margin; bestJ = j; bestDelta = delta; }
+                }
+                if (bestJ < R)
+                {
+                    xiSeed[bestJ] += bestDelta;
+                    repaired = true;
+                }
             }
             if (!repaired || pass == 31)
                 throw std::runtime_error("equilibriumReactor: cannot construct an "

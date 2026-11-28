@@ -23753,6 +23753,8 @@ literature 1.40 --- the same accuracy as the 800~K case.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\paragraph{The declared-reaction reactor and its starting point.}\label{sec:equil-start}  The \texttt{equilibriumReactor} solves the same problem over the extents of the reactions the case names, in $\ln n_i$.  Its start must have a positive inventory of every species, and a species absent from the feed is given a foothold along a reaction that produces it; every such reaction is tried, in both directions, and the one that leaves the smallest inventory largest is kept, so the converged answer does not depend on the order of the \texttt{reactions} list (witnesses \texttt{equil05\_order\_independent\_a} and \texttt{\_b}, identical goldens).  The start is refused only when no reaction can supply the species.
+
 \subsection{Equilibrium maps and the temperature approach}\label{sec:gibbs-maps}
 
 A single Gibbs solve answers ``what is the equilibrium composition at

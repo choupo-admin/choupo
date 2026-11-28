@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Reaction library for the steam-methane reforming equilibrium.
+
+  The `equilibriumReactor` needs ONLY the stoichiometry: each reaction's
+  equilibrium constant Kp(T) is computed from the species' `standardThermochemistry`
+  data (K = exp(-dG°/RT)), not from a rate law.  No `kinetics` block here --
+  a kinetic reactor (cstr/pfr) would add one; an equilibrium reactor must not
+  need one.  The two reactions are INDEPENDENT (the overall
+  CH4 + 2 H2O <-> CO2 + 4 H2 is their sum, not a third degree of freedom).
+\*---------------------------------------------------------------------------*/
+
+smr                     // steam-methane reforming: CH4 + H2O <-> CO + 3 H2
+{
+    stoichiometry
+    (
+        { component CH4;    nu -1; }
+        { component water;  nu -1; }
+        { component CO;     nu  1; }
+        { component H2;     nu  3; }
+    );
+}
+
+wgs                     // water-gas shift: CO + H2O <-> CO2 + H2
+{
+    stoichiometry
+    (
+        { component CO;     nu -1; }
+        { component water;  nu -1; }
+        { component CO2;    nu  1; }
+        { component H2;     nu  1; }
+    );
+}

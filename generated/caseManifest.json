@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1948,
+  "cases": 1950,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -30120,6 +30120,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/equil05_order_independent_a": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/equil05_order_independent_b": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/ladder01_wgs_three_rungs": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33148,6 +33176,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -33593,6 +33623,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/screen01_methanol_routes"
    ],
@@ -36708,6 +36740,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
