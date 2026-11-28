@@ -16,5 +16,5 @@ componentMolarFlows
     aceticAcid    250 kmol/h;
 }
 
-T               352.5 K;
+T               350.0 K;
 P               101325 Pa;

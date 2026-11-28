@@ -16859,9 +16859,9 @@ the step is small, on a gradient that is only as good as its estimate.
   attempt that certified $K=2\times10^{10}$, $x=1$, $f=1.6$ (optimum $0.6$,
   $f=0$) is a regression arm of the gate.  The price of the per-component
   scale: a variable the model does not read has a zero gradient and the noise of
-  the objective in its bar, and can never be certified (the shipped
-  \code{optim05} varies such a variable, \code{T\_feed}, and so ends
-  \code{STATIONARY, NOT CERTIFIED} under \code{fdMode auto}).
+  the objective in its bar, and can never be certified (\code{optim05} used to vary such a variable,
+  \code{T\_feed}, declared but read by nothing; it now varies the feed
+  temperature \code{streams.feed.T}, which the flowsheet does read).
 \end{enumerate}
 
 \paragraph{Error bars on the shadow prices.}  The multiplier printed is the
@@ -16921,7 +16921,7 @@ is about $10^{-13}$ and where the problem it solves is absent, it finds the
 same optima with $1.3$ to $3.3$ times the simulator runs of the default and ends
 \code{CONVERGED} in 5 of 12 starts (the rest \code{STATIONARY, NOT CERTIFIED}:
 three of \code{optim02} whose bar is $8\cdot10^{-5}$ against $10^{-5}$, three of
-\code{optim05} with its inert variable, one of \code{optim04} with an unresolved
+\code{optim05} (then with its inert variable, since replaced), one of \code{optim04} with an unresolved
 multiplier).  A converged verdict is a first-order
 statement to the tolerance, not a statement that $f$ is near its minimum
 (HS25's gradient is below $10^{-5}$ over a wide region around its start).

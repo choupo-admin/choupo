@@ -15,7 +15,7 @@ feed → reactor (CSTR) → heater → separator (flash) → vapProd  (EtOAc-ric
 ```
 maximise   economics.NPV
 varying    V_R     (reactor volume,        m³)
-           T_feed  (feed / reactor T,      K)
+           T_feed  (feed T, streams.feed.T, K)
 subject to reactor.V_R    ≤ 12 m³     (a physical SIZE cap)
            economics.FCI  ≤ 1.0 M€    (a CAPITAL-BUDGET cap)
 ```
@@ -50,17 +50,21 @@ would otherwise stop, so the reactor-size constraint **binds** at the optimum.
 
 ## What the SQP prints
 
-The optimiser drives the **money-losing** initial design (V_R = 4 m³,
-T_feed = 350 K → **NPV ≈ −164 M€**) to a **profitable, certified optimum**:
+The project **loses money at every design** (see the flowsheetDict header);
+the optimiser drives the initial design (V_R = 4 m³, T_feed = 350 K →
+**NPV ≈ −769 M€**) to the **least-bad, certified optimum**.  T_feed is the
+feed inlet temperature, varied as the stream channel `streams.feed.T`
+(until 2026-11-28 it was declared as `variables.T_feed`, which nothing read,
+so the optimiser moved an inert variable):
 
 ```
 status:        CONVERGED  (KKT conditions satisfied)
 best variables:  V_R = 12.0 m³,  T_feed = 352.5 K
-best objective:  NPV ≈ +478 M€
+best objective:  NPV ≈ −656 M€
 Lagrange multipliers (shadow prices):
-  reactor.V_R    lambda = 1.80e7   ← ACTIVE   (the size cap binds)
+  reactor.V_R    lambda = 2.37e6   ← ACTIVE   (the size cap binds)
   economics.FCI  lambda = 0.0                 (SLACK — capital is not the limit)
-KKT certificate:  ||grad L|| ≈ 4e-6,  complementarity ≈ 3e-8,  feasibility 0
+KKT certificate:  ||grad L|| ≈ 5e-7,  complementarity ≈ 3e-8,  feasibility 0
 ```
 
 ## How to read the shadow prices (the point of the tutorial)
@@ -69,10 +73,8 @@ A constraint with **λ > 0 is ACTIVE** (binding); its multiplier is the
 **shadow price** — the marginal NPV you would gain by relaxing that cap by one
 unit:
 
-* **reactor.V_R cap — ACTIVE, λ ≈ 1.8e7**: every extra **m³** of reactor
-  head-room is worth **≈ 18 M€ of NPV** at the margin. (A finite-difference
-  cross-check confirms it: NPV at a 13 m³ cap exceeds the 12 m³ optimum by
-  ≈ 12 M€, the slope being steeper at the cap itself.)
+* **reactor.V_R cap — ACTIVE, λ ≈ 2.4e6**: every extra **m³** of reactor
+  head-room is worth **≈ 2.4 M€ of NPV** at the margin (the loss shrinks).
 * **economics.FCI cap — SLACK, λ = 0**: capital is *not* the limiting
   resource here, so loosening the budget buys nothing. The student sees an
   **active** and an **inactive** constraint side by side.
