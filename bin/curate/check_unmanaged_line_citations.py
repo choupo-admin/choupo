@@ -41,6 +41,8 @@ PINS = os.path.join(HERE, "unmanaged_line_citations.tsv")
 INDEX = re.compile(r"\[\s*\d+\s*-\s*1\s*\]|\.slice\(\s*\d+\s*-\s*1\b")
 LIST = re.compile(r"\b\w+\.(?:cpp|H|hpp):\d+\s*,\s*\d+")
 READS_SRC = re.compile(r"\bsrc/")
+# The tree this gate walks, declared so bin/integrate --plan can see it (check_scan_roots).
+SCAN_ROOTS = ("gui/src/**/*.ts", "gui/src/**/*.tsx", "gui/tests/**/*.ts", "gui/tests/**/*.tsx")
 SKIP = {"node_modules", "build", ".git", "dist", "_dist", "wasm"}
 
 
