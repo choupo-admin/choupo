@@ -145,17 +145,39 @@ int Valve::solve(const DictPtr& dict,
     //  The throttle's own tolerance (1e-6 J/mol, as the unit's Newton kept) is
     //  the verdict's, declared so the report's H_out = H_in check holds.
     spec.controls = flashState::FlashSpecification::defaultControls(flashState::SpecPair::PH);
-    spec.controls.tolerance = 1.0e-9;       // normalised (relative to |H|)
+    //  ABSOLUTE, in J/mol: the verdict's residual {phi, target} is degenerate
+    //  for the normaliser, so it falls back to the raw residual (Convergence.H);
+    //  1e-6 J/mol is the contract the unit's own Newton kept.
+    spec.controls.tolerance = 1.0e-6;
     spec.controlsDeclared = true;
-    const flashState::SpecifiedState st =
-        flashState::specifiedFlash(thermo, z, spec, verbosity, false);
-    FlashSolution lastSol = st.phases;
-    const bool converged = true;       // a state that misses its specification REFUSES
-    recordResidual(std::abs(st.H - Hreq));
-    if (verbosity >= 3)
-        std::cout << "\nOutlet state (P, H) flash: " << st.route << "\n";
-    const scalar Tout = st.T;
-    const scalar vf   = lastSol.V_over_F;
+    flashState::SpecifiedState st;
+    FlashSolution lastSol;
+    bool converged = true;
+    std::string failure;
+    scalar Tout = Tfeed;
+    scalar vf   = vfFeed;
+    try
+    {
+        st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
+        lastSol = st.phases;
+        recordResidual(std::abs(st.H - Hreq));
+        if (verbosity >= 3)
+            std::cout << "\nOutlet state (P, H) flash: " << st.route << "\n";
+        for (const auto& note : st.notes)       // e.g. the supercritical discard (C34)
+            std::cout << "  " << note << "\n";
+        Tout = st.T;
+        vf   = lastSol.V_over_F;
+    }
+    catch (const std::exception& e)
+    {
+        //  One bad iterate (a recycle's tear) must not end the run: say it,
+        //  publish the last state (the feed's) and report non-converged.
+        converged = false;
+        failure = e.what();
+        lastSol.regime = "unsolved";
+        recordResidual(1.0e30);
+        std::cout << "\nOutlet state (P, H) flash FAILED: " << failure << "\n";
+    }
 
     std::cout << "\n============================  Valve Result  ==========================\n"
               << "  Converged:     " << (converged ? "yes" : "NO") << "\n"
