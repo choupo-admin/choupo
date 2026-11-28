@@ -4,7 +4,7 @@ Date 2026-11-24, tree at eb2077e79a (`src/` unchanged, no case or engine file ed
 
 ## Rule and method
 
-**Plants chosen.**  `build/suiteTimings.csv` holds only nine rows and none is a plant, so the rule was: time ten candidates once with the main checkout's `choupoSolve` (CHOUPO_HOME on the main checkout, one run at a time, on a machine shared with other generals): `tutorials/plant/*` with tears and the recycle cases of `tutorials/steady/flowsheets`.  Wall seconds, single run: aceticAcid02_plant 62.6, greenAmmonia03_basicDesign 47.6, greenAmmoniaPEQ_baseCase 21.8, acetonePlant 4.2, cavett01_recycle_train 1.0, ammonia02_full_plant 0.9, process05_isomerization_recycle 0.3, ammonia01_synthesis_loop 0.2, hda 0.2, polycaprolactonePlant 0.1.  The first six were measured in full (they cover Wegstein x2 and Newton-on-tears x4, and two columns-in-recycle); process05 (Newton, column in the loop, 0.3 s) was used for one probe only.
+**Plants chosen.**  `build/suiteTimings.csv` holds only nine rows and none is a plant, so the rule was: time ten candidates once with the main checkout's `choupoSolve` (CHOUPO_HOME on the main checkout, one run at a time, on a machine shared with other generals): `tutorials/plant/*` with tears and the recycle cases of `tutorials/steady/flowsheets`.  Wall seconds, single run: aceticAcid02_plant 62.6, ammoniaPEQ03_basicDesign 47.6, ammoniaPEQ_baseCase 21.8, acetonePlant 4.2, cavett01_recycle_train 1.0, ammonia02_full_plant 0.9, process05_isomerization_recycle 0.3, ammonia01_synthesis_loop 0.2, hda 0.2, polycaprolactonePlant 0.1.  The first six were measured in full (they cover Wegstein x2 and Newton-on-tears x4, and two columns-in-recycle); process05 (Newton, column in the loop, 0.3 s) was used for one probe only.
 
 **Instrument.**  A scratch copy of the tree (`/tmp/claude-0/gen-recyc/tree`, never committed) with timing probes: a wall-clock record around every `unit->solve(...)` in `Flowsheet.cpp` (line 1211 of the committed file) tagged with the sweep number, the recycle iteration number (set where the loop prints its row) and whether it is the final pass; counters in `newtonND` (iterations, residual evaluations, and the iteration at which the residual first fell under 100 x its tolerance), in the 1-D Newton (`newton1D`, `newton1DSafeguarded`, same three numbers) and at the end of `IsothermalFlash::solve` (composition-outer passes).  `perf` is not installed; valgrind exists but a 20-50x slowdown on a 60 s case was not needed.  Overhead: one `steady_clock` pair and a vector push per unit solve; the instrumented walls (54.6 to 73 s for aceticAcid02) sit inside the load noise of the shared machine (plain run 62.6 s), so no overhead is claimable or detectable.  Walls below are therefore indicative; the shares, the iteration counts and the results are what the measurement stands on.
 
@@ -38,7 +38,7 @@ Inner iterations, early / middle / last third of the recycle: column 6.0 / 6.0 /
 
 C1 does 83 iterations at every recycle iteration (83 / 83 / 83); the count is the recovery search, not a tolerance.
 
-### greenAmmonia03_basicDesign, Newton-on-tears, 12 variables, 5 iterations (the plant runs two recycle solves, 264 sweeps)
+### ammoniaPEQ03_basicDesign, Newton-on-tears, 12 variables, 5 iterations (the plant runs two recycle solves, 264 sweeps)
 
 | unit | share of wall | iter/solve | upper bound | x100 estimate |
 |---|---|---|---|---|
@@ -47,7 +47,7 @@ C1 does 83 iterations at every recycle iteration (83 / 83 / 83); the count is th
 | flashes, compressors, mixers, phase changers | 2.5 % | | 1.0 % | 0.4 % |
 | **total** | 97.4 % | | **2.5 %** | **0.9 %** |
 
-### greenAmmoniaPEQ_baseCase, Newton-on-tears, 12 variables, 5 iterations (132 sweeps)
+### ammoniaPEQ_baseCase, Newton-on-tears, 12 variables, 5 iterations (132 sweeps)
 
 | unit | share of wall | upper bound | x100 estimate |
 |---|---|---|---|
@@ -95,7 +95,7 @@ Wall 1.3 s.
 | cavett01 (Newton, 36 variables), flash x100 / x1e4 / x1e6 | 7 -> 7 -> 7 -> 7 | within noise | 1.1e-8 / 4.6e-9 / 4.6e-9 |
 | process05 (Newton, column), column x100 | 2 -> 2 | within noise | 2.7e-8 |
 | process05, column x1e4 and x1e6 | **run refused** | | "unit 'column' failed to converge" |
-| greenAmmoniaPEQ (Newton), PFR `nSteps` / 4 on all but the final pass | 5 -> 5 | **20.4 -> 5.2 s (3.9x)** | 1.0e-8 |
+| ammoniaPEQ (Newton), PFR `nSteps` / 4 on all but the final pass | 5 -> 5 | **20.4 -> 5.2 s (3.9x)** | 1.0e-8 |
 | PEQ, `nSteps` / 2, / 10, / 25 (4 steps) | 5 -> 5 each | 10.3, 3.7, 3.5 s | 5.9e-10, 4.1e-7, 1.8e-5 |
 
 **The FD-Jacobian pitfall was not triggered, and is not cleared.**  Loosening a solver's *tolerance* by up to 10^6 did not degrade newtonOnTears on Gibbs (ammonia02) or on the flashes (cavett01): the iteration counts held and the results moved at most 1.3e-5.  The reason is the quadratic tail: a Newton stopped by a looser tolerance usually lands below it (the achieved residual was not recorded here; the results moved at most 1.3e-5), so the noise the tear Jacobian sees stays small.  The arithmetic of the margin is unfavourable all the same: the perturbation is h = 1e-7 x scale, the inner tolerances are 1e-9 relative, so the noise is already about 1 % of the perturbation at full tolerance and would be about 100 % at x100 if the solves really stopped at the loose tolerance.  A scheme that limits iterations (an iteration cap, not a tolerance) would meet it at once.  Second finding: a solver-level override is not enough, because units hold their own acceptance tests: the column refuses at x1e4 (`DistillationColumn.cpp:4037`, "against 1e-9"), so an inexact scheme needs the tolerance passed down through each unit's own acceptance test.

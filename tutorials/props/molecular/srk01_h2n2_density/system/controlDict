@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "Does SRK describe the ammonia synthesis loop's gas?  Sixteen MEASURED (T, P, x, rho) points on the nitrogen + hydrogen binary -- Hernandez-Gomez, Tuma, Gomez-Hernandez and Chamorro, J. Chem. Eng. Data (2017), doi:10.1021/acs.jced.7b00694 -- evaluated with the same SRK the green-ammonia plant runs on, and with kij = 0 because the catalogue carries no N2-H2 pair.  The engine computes the molar volume; the case's own evidence file carries the measurement; the comparison is the lesson.";
+description   "Does SRK describe the ammonia synthesis loop's gas?  Sixteen MEASURED (T, P, x, rho) points on the nitrogen + hydrogen binary -- Hernandez-Gomez, Tuma, Gomez-Hernandez and Chamorro, J. Chem. Eng. Data (2017), doi:10.1021/acs.jced.7b00694 -- evaluated with the same SRK the ammonia plant runs on, and with kij = 0 because the catalogue carries no N2-H2 pair.  The engine computes the molar volume; the case's own evidence file carries the measurement; the comparison is the lesson.";
 verbosity     2;

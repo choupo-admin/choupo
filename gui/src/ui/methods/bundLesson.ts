@@ -121,7 +121,7 @@ export const BUND_SOURCES: readonly BundSource[] = [
       + "else.  The page identified no Portuguese rule on the capacity of a "
       + "bund that it could verify, and so states none." },
   { id: "choupo-witnesses", kind: "example",
-    cite: "Choupo tutorials: plant/greenAmmoniaPEQ_baseCase and "
+    cite: "Choupo tutorials: plant/ammoniaPEQ_baseCase and "
       + "plant/ammonia02_full_plant, system/layoutDict",
     used: "A bund round two refrigerated tanks (a 1.1 margin over the "
       + "largest, plus 100 mm of rain) and two impounding areas leading to "

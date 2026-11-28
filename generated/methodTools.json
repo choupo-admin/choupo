@@ -912,7 +912,7 @@
       "label": "Large pressure letdown: choked flow, cavitation, flashing and noise",
       "blurb": "See what a large pressure letdown does: choking, cavitation, flashing.",
       "discipline": "Hydraulics & control",
-      "teaches": "What a valve taking a large pressure drop does to the stream, and why its severity depends on the fluid's state, its vapour pressure, the valve's F_L and x_T, its geometry and the flow: the green-ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to the two-phase equilibrium state at the outlet pressure and the volume growing about forty times; the purge gas's mass flow choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours) and the liquid choke; staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
+      "teaches": "What a valve taking a large pressure drop does to the stream, and why its severity depends on the fluid's state, its vapour pressure, the valve's F_L and x_T, its geometry and the flow: the ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to the two-phase equilibrium state at the outlet pressure and the volume growing about forty times; the purge gas's mass flow choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours) and the liquid choke; staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
       "origins": [
         "engine",
         "page",
@@ -1448,7 +1448,7 @@
       "label": "Front-End Loading: how industry stages a design",
       "blurb": "See how industry stages a design behind decision gates.",
       "discipline": "Process design & economics",
-      "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; why separated bands are sufficient, not necessary, to choose between two options (correlated errors, the difference estimated directly, expected cost and risk); and where Choupo stands at each stage, from the ammonia ladder to the green-ammonia base case.",
+      "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; why separated bands are sufficient, not necessary, to choose between two options (correlated errors, the difference estimated directly, expected cost and risk); and where Choupo stands at each stage, from the ammonia ladder to the ammonia base case.",
       "origins": [
         "page",
         "reference",

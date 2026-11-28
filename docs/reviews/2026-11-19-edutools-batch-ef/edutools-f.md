@@ -77,7 +77,7 @@ The tree is the detached main at `.../edu2/tree`. Paths below are relative to it
 ## 4. Limiting reactant (limitingReactantLesson.ts, LimitingReactantTool.tsx)
 
 **WRONG**
-- Step 4 and step 6 (lesson:179-199 and :265-268) quote a converter inlet of 3.589 and X = 0.355, as if these were the case's present values. The tool's default does the same: "Start where the green ammonia case sits ... 35.5 % conversion" (Tool, the "Now move it" text). The shipped golden (tutorials/plant/greenAmmoniaPEQ_baseCase/expected:76-88) gives something else:
+- Step 4 and step 6 (lesson:179-199 and :265-268) quote a converter inlet of 3.589 and X = 0.355, as if these were the case's present values. The tool's default does the same: "Start where the green ammonia case sits ... 35.5 % conversion" (Tool, the "Now move it" text). The shipped golden (tutorials/plant/ammoniaPEQ_baseCase/expected:76-88) gives something else:
   - From the expected values N_in = 5435.410, N_out = 4622.170 mol/s, y_N2 = 0.163387 and y_H2 = 0.636942 (all gas): ξ = 406.62 mol/s, N2 in = 1161.82, H2 in = 4163.91.
   - So **r_in = 3.584 and X = 0.350**.
   - The page dates its numbers to 2026-10-02, but it states them in the present tense and as the slider default. The test pins only the text (limitingReactant.test.ts:77).

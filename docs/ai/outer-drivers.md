@@ -156,7 +156,7 @@ report  { file designspec_history.csv; }    // optional; iteration history
   fall as the knob grows, it solves the SMALLEST knob at which every one is
   within the bound without naming in advance which one binds (e.g. a
   converter's one diameter against every bed's `dP_over_allowable`,
-  `tutorials/plant/greenAmmonia03_basicDesign`).  The run names the one it
+  `tutorials/plant/ammoniaPEQ03_basicDesign`).  The run names the one it
   found largest at the design point, and says so when a second sits within
   `tol` of it (the kink of max()).  At least two quantities; `path`/`lhs`/
   `rhs` beside it are refused.

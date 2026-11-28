@@ -92,7 +92,7 @@ Rank = cases reached × severity of the failure. Severity means: a wrong answer 
   - A forward difference when x_j − h_j < lower_j.
   - The tear Newton passes its existing `scale[]` as typX and an h_rel no smaller than √(inner tolerance).
   - Residual owners **throw `InfeasibleTrial`** on γx ≤ 0 or a negative flow instead of clamping; the clamp stays only on the final, announced unpack.
-- **Test:** a gate arm on a 2×2 residual with x₁ = 1e-10 inside ln x₁: the FD Jacobian must match the analytic one to 1e-4 relative. Cases: column05 and column19 converge without the 1e-4 seed floor; process05 and greenAmmoniaPEQ_baseCase converge their tear Newton in no more iterations than today.
+- **Test:** a gate arm on a 2×2 residual with x₁ = 1e-10 inside ln x₁: the FD Jacobian must match the analytic one to 1e-4 relative. Cases: column05 and column19 converge without the 1e-4 seed floor; process05 and ammoniaPEQ_baseCase converge their tear Newton in no more iterations than today.
 
 ### Rank 3: Residuals that are not functions of the state (class B; H1, H10, H11, H12, H16 + medium/low)
 
@@ -107,7 +107,7 @@ Each row below is the same disease: a value that depends on solver history or fa
 | 3e | `ThermoPackage.cpp:1124-1219` (H1) | K branch chosen by `NonConvergence`; +inf K for xApp == 0 | Choose the branch from the reactive bubble/dew test (Σp_eq/P, Σz/K); above the dew point use the dew-side incipient construction; replace inf with a finite cap or a fixed-K flag, announced | A gate arm on stripper01's stage composition sweeping T across the band asserts K(T) is continuous to 1e-6 relative at the band edges, and that the same (T,x) gives the same K regardless of call order |
 | 3f | `Flowsheet.cpp:1208-1238` (H16) | Negative trial P replaced by P_inherit | Quiet branch throws `InfeasibleTrial`; Wegstein treats it as a rejected extrapolation | Gate arm: a two-unit recycle whose pipe drop exceeds the inlet P at the first Newton trial must converge or refuse by name, never with P = P_in |
 | 3g | `AdiabaticFlash.cpp:189-211` | Inner flash `converged` never read; inner tolerance (1e-6 on the composition step) about the size of the outer 0.01 J/mol | Refuse the trial when the inner flash fails; report both flags; inner tolerance ≥ 1e3× tighter, or a relative outer tolerance | adiabaticFlash01 unchanged; an arm with maxOuterIter = 3 must report not converged |
-| 3h | `ReactorOutlet.cpp:220-236` | T(H) inversion returns with no residual check after 40 steps or cp ≈ 0 | Require \|h − H(T1)\| ≤ 1e-9·max(1,\|h\|), else fall through to the Illinois branch | pfr04, pfr05 and greenAmmonia03 beds: the H residual of every RHS call ≤ 1e-9 (counter printed at verbosity 4) |
+| 3h | `ReactorOutlet.cpp:220-236` | T(H) inversion returns with no residual check after 40 steps or cp ≈ 0 | Require \|h − H(T1)\| ≤ 1e-9·max(1,\|h\|), else fall through to the Illinois branch | pfr04, pfr05 and ammoniaPEQ03 beds: the H residual of every RHS call ≤ 1e-9 (counter printed at verbosity 4) |
 | 3i | `SaturatedVapour.cpp:137-147` | factor = 1 on an EoS failure mid-range (about a 40 % step), announced once | Retry at the hold T or use the cached last good value; else throw; at T ≤ 0 use the T → 0 limit | Gate arm: force a PC-SAFT throw at one T and assert K is continuous to the neighbouring T |
 
 ### Rank 4: EoS root continuity and accuracy (class C; H2 + medium)
@@ -191,7 +191,7 @@ Each row below is the same disease: a value that depends on solver history or fa
 |---|---|---|---|
 | `Flowsheet.cpp:3343-3349`, 1806-1838 | Wegstein keeps the unprojected x while the sweep saw the projected one | `x = packTears(...)` after unpack, or accelerate on F_i | aceticAcid02, acetonePlant, cavett01: iterations ≤ today |
 | `Flowsheet.cpp:3332/3342`, 1784-1790 | Absolute L2 norm over mixed units [F, z, T, P] | Use the Newton branch's scaled residual, printed in both tables | A 1e-3 kmol/s tear converges to the stated relative tolerance |
-| `Flowsheet.cpp:3437-3455` | Scales frozen from the seed, floor 1e-12; traces scaled by the total flow | Refuse a near-empty seed or rescale after the first sweep; per-component scale max(F_i, 1e-6 F) | greenAmmoniaPEQ: Ar/CH4 loop inventory converged to 1e-8 relative to itself |
+| `Flowsheet.cpp:3437-3455` | Scales frozen from the seed, floor 1e-12; traces scaled by the total flow | Refuse a near-empty seed or rescale after the first sweep; per-component scale max(F_i, 1e-6 F) | ammoniaPEQ: Ar/CH4 loop inventory converged to 1e-8 relative to itself |
 | `DominantEigenvalue.cpp:96` | Unscaled norms: the T mode dominates | Pass the tear scales | Same cases |
 
 ### Rank 11: Column outer methods (class A + D; medium/low)
@@ -218,7 +218,7 @@ Each row below is the same disease: a value that depends on solver history or fa
 |---|---|---|---|
 | `AdaptiveTimeStep.H:299` | Carries `hLast` instead of `hNext` across write boundaries | Use the same line as FixedBedAdsorber.cpp:1572 | ctrl03, batch06, diafilter03: accepted plus rejected step counts drop, results unchanged |
 | `AdaptiveTimeStep.H:231` | One scalar atol for every row of the packed state | Per-row scale on OdeUnit | Rows with energy or temperature declare their scale |
-| `PFR.cpp:1020-1046`, 326-352 | Fixed-step RK4 with no error estimate | Embedded RK4(5) or step doubling | pfr05 and the greenAmmonia03 beds agree with 2·nSteps to a stated tolerance |
+| `PFR.cpp:1020-1046`, 326-352 | Fixed-step RK4 with no error estimate | Embedded RK4(5) or step doubling | pfr05 and the ammoniaPEQ03 beds agree with 2·nSteps to a stated tolerance |
 | `PFR.cpp:1038` | Fraction-to-boundary scales P and coolant increments too | Scale only species and H, or shorten the step | Ergun bed run to exhaustion: outlet P exact |
 
 ### Rank 14: Tolerance hygiene (class D; low)
@@ -257,7 +257,7 @@ Shared root causes go first: slices 1-3 make most of the later column, flash and
 | Slice | Content | Why here | Validation (written reason) |
 |---|---|---|---|
 | 1 | NewtonND contract: `typX`, `lower`, `upper`, `maxStep`; fraction-to-boundary; forward difference at a bound; Armijo; Levenberg-Marquardt on exhaustion (retires `maxStalledSteps`); relative pivot and finite checks. Defaults keep current behaviour until a caller declares bounds | Root of ranks 1-2; every Newton caller benefits | Gate arm `check_newton_globalisation`. **Full sweep:** the solver is a path that every MESH, tear-Newton and CSTR case goes through, so targeted cases cannot cover it |
-| 2 | Callers declare bounds and stop clamping: column MESH (T box, x ≥ 0, Σ ≤ 1, V and L ≥ 0, `InfeasibleTrial` on γx ≤ 0); tear Newton (scale as typX, `InfeasibleTrial` on negative flow or P, sweep exceptions rethrown); CSTR multi-reaction | Turns slice 1 on; removes the clamps of rank 2 and H14-H16 | column05/06/07/08/19/20, stripper01/02, acetone06/07, process05, hda, greenAmmoniaPEQ, cstr03-07. Then re-record the moved golden rows with a reason per row |
+| 2 | Callers declare bounds and stop clamping: column MESH (T box, x ≥ 0, Σ ≤ 1, V and L ≥ 0, `InfeasibleTrial` on γx ≤ 0); tear Newton (scale as typX, `InfeasibleTrial` on negative flow or P, sweep exceptions rethrown); CSTR multi-reaction | Turns slice 1 on; removes the clamps of rank 2 and H14-H16 | column05/06/07/08/19/20, stripper01/02, acetone06/07, process05, hda, ammoniaPEQ, cstr03-07. Then re-record the moved golden rows with a reason per row |
 | 3 | Residual purity in units (rank 3a-3d, 3g, 3h): Gibbs safeguarded 1-D solve, CSTR `ok`, Treflux as an unknown, stageVapourK `&ok`, AdiabaticFlash flags, ReactorOutlet residual check | Same root cause as slice 2, inside the units | Cases listed in rank 3 and the reactor family through `--fast` |
 | 4 | EoS: generic cubic base (SRK/PR merged, PR `hasLiquidRoot`, Newton polish, signed √a, pseudo-root flag); PC-SAFT polish, relative tolerance, kij refusal, verification fix | Largest surface discontinuity (rank 4); shared thermo path | **Full sweep:** every phiPhi and SRK/PR vapour case goes through it |
 | 5 | Vapour-pressure continuity in the `VaporPressureModel` base, the IF97 window blend, `saturationPressure` as the only route, water H endpoints, SaturatedVapour retry/cache, stageK branch by state (3e) | Rank 8 and 3e/3i; removes the Tc-class steps at their source | **Full sweep:** Psat is on every gamma-phi K |

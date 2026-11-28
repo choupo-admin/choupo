@@ -4,7 +4,7 @@
 
 ## The question
 
-The green ammonia plant in `tutorials/plant/greenAmmoniaPEQ_baseCase` runs its
+The ammonia plant in `tutorials/plant/ammoniaPEQ_baseCase` runs its
 synthesis loop at around 200 bar and condenses its product near 250 K, and it
 prices every stream with a **Soave–Redlich–Kwong** equation of state whose only
 inputs are each component's critical temperature, critical pressure and acentric

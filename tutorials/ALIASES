@@ -26,12 +26,17 @@
 #
 # THE AMMONIA CASES, renamed by PURPOSE (Vitor, 2026-10-12, C68 NAMES
 # REVISED): two axes, two ladders.  The green-ammonia PROJECT-STAGE ladder
-# (greenAmmonia02/03, numbered after ammoniaRoutes01_screening) and the
+# (now ammoniaPEQ02/03, formerly greenAmmonia02/03, numbered after ammoniaRoutes01_screening) and the
 # REACTOR-MODEL ladder in one synthesis loop (ammoniaReactor01..04).
-plant/greenAmmoniaFeasibility        plant/greenAmmonia02_feasibility150bar
-plant/greenAmmoniaFeasibility50bar   plant/greenAmmonia02_feasibility50bar
-plant/greenAmmoniaBasicDesign        plant/greenAmmonia03_basicDesign
-plant/greenAmmoniaIndustrialN2       plant/greenAmmoniaPEQ_baseCase
+plant/greenAmmoniaFeasibility        plant/ammoniaPEQ02_feasibility150bar
+plant/greenAmmoniaFeasibility50bar   plant/ammoniaPEQ02_feasibility50bar
+plant/greenAmmoniaBasicDesign        plant/ammoniaPEQ03_basicDesign
+plant/greenAmmoniaIndustrialN2       plant/ammoniaPEQ_baseCase
+# 2026-11-25 (C526): the 'green' label dropped, the plant is the PEQ ammonia plant.
+plant/greenAmmoniaPEQ_baseCase       plant/ammoniaPEQ_baseCase
+plant/greenAmmonia02_feasibility150bar plant/ammoniaPEQ02_feasibility150bar
+plant/greenAmmonia02_feasibility50bar plant/ammoniaPEQ02_feasibility50bar
+plant/greenAmmonia03_basicDesign     plant/ammoniaPEQ03_basicDesign
 plant/ammoniaStaged01_yield          steady/reactors/ammoniaReactor01_fixedConversion
 plant/ammoniaStaged02_equilibrium    steady/reactors/ammoniaReactor02_equilibrium
 plant/ammoniaStaged03_approach       steady/reactors/ammoniaReactor03_equilibriumApproach

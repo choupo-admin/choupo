@@ -127,7 +127,7 @@ that happened to agree with the model's.
       source registers no `Guthrie` key.  See `check_retired_name_refused`.
 
   (q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
-      DEV.md 4c C44 slice 4).  On greenAmmoniaPEQ_baseCase every line of
+      DEV.md 4c C44 slice 4).  On ammoniaPEQ_baseCase every line of
       `workingCapital { ... }` -- raw-material stock, process inventory,
       product stock (valued at COST), receivables, minimum cash, payables --
       is recomputed from the case's declarations and the run's published
@@ -609,7 +609,7 @@ def check_retired_name_refused(fails):
 
 #  THE WORKING-CAPITAL WITNESS (2026-10-07, DEV.md 4c C44 slice 4): the one
 #  corpus case that declares `workingCapital { ... }` as a model.
-WCCASE = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+WCCASE = ROOT / "tutorials/plant/ammoniaPEQ_baseCase"
 
 
 def _nc(text):
@@ -626,7 +626,7 @@ def _kpi_line(out, unit):
 
 def check_working_capital(fails):
     """(q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
-    DEV.md 4c C44 slice 4).  On greenAmmoniaPEQ_baseCase, which declares
+    DEV.md 4c C44 slice 4).  On ammoniaPEQ_baseCase, which declares
     `workingCapital { rawMaterialStock; receivables; payables; minimumCash; }`
     in days, every line is RECOMPUTED here from the case's own declarations
     and the run's published streams and items -- never from the engine's
@@ -1649,7 +1649,7 @@ def check_operating_crew(fails):
 #  mass, a catalyst charge) printed C_TM = C_BM while the FCI charged
 #  `contingencyFee` on their C_BM like any other row's.
 #  ---------------------------------------------------------------------------
-STEELCASE = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+STEELCASE = ROOT / "tutorials/plant/ammoniaPEQ_baseCase"
 CATCASE = ROOT / "tutorials/steady/reactors/pfr05_cooled_multitubular"
 #  Turton's contingency and fee, transcribed here -- never read off the
 #  engine, so an engine that drops it is caught.
@@ -1690,7 +1690,7 @@ def check_contingency_printed(fails):
     `EconomicsPass` built FCI = contingencyFee x SUM C_BM + siteFactor x
     SUM C_BM_base over every row, theirs included.
 
-      w1  on greenAmmoniaPEQ_baseCase (ten H2Buffer vessels priced by their
+      w1  on ammoniaPEQ_baseCase (ten H2Buffer vessels priced by their
           steel mass): EVERY row of the console costing table prints C_TM =
           1.18 C_BM, the `declared-unit-price` rows among them (ten H2Buffer
           vessels named on that shape in the provenance table); the TOTALS
@@ -1723,7 +1723,7 @@ def check_contingency_printed(fails):
           1.15 -- the probe is what makes the arm able to fire.
     RE-RUN 2026-10-24 on the revived branch (on main past C110 wave 1):
       the arm FAILED on correct output first -- its SUM C_BM / FCI patterns
-      required ONE space before `EUR`, which greenAmmoniaPEQ prints and
+      required ONE space before `EUR`, which ammoniaPEQ prints and
       economics01 (a narrower column, padded) does not, so (w3) reported
       "did not print its CAPEX ladder" on a run that printed it.  Now
       `\s+EUR`.  W1, W2 and W3 re-run after the fix, each caught as above."""
@@ -2368,7 +2368,7 @@ def main():
 
     print("check_cost_provenance: OK -- THE PRINTED C_TM IS THE ARITHMETIC "
           "THE FCI APPLIED (C110): every costing row of "
-          "greenAmmoniaPEQ_baseCase, its ten steel-mass vessels among them, "
+          "ammoniaPEQ_baseCase, its ten steel-mass vessels among them, "
           "prints C_TM = 1.18 C_BM on the console, in costs.csv and in the "
           "result JSON, the table's C_TM total is contingencyFee x SUM C_BM "
           "and equals the FCI less its siteFactor term, pfr05's catalyst "
@@ -2405,7 +2405,7 @@ def main():
           "payback, every cashFlow.csv row), a missing or mis-summed schedule "
           "is refused by name, and the one-year form keeps the old shape; "
           "the WORKING CAPITAL built up on "
-          "greenAmmoniaPEQ_baseCase RECOMPUTES line by line (stocks valued at "
+          "ammoniaPEQ_baseCase RECOMPUTES line by line (stocks valued at "
           "COST, receivables, cash, payables; GROSS = capital circulante, NET = "
           "fundo de maneio = the cash flow's WC), the fraction form is "
           "untouched and malformed day counts are refused by name; "

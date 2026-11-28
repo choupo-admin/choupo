@@ -108,7 +108,7 @@ describe("a link renders (C264 addition: 31 of 133 case READMEs carry one)", () 
     expect(linkTextNamesTarget("`docs/design/x.md`", "../../../docs/design/x.md")).toBe(true);
     expect(linkTextNamesTarget("the dossier", "../../docs/design/dossier.md")).toBe(false);
     expect(linkTextNamesTarget("From feasibility to basic design",
-      "../greenAmmonia03_basicDesign/README.md#from-feasibility")).toBe(false);
+      "../ammoniaPEQ03_basicDesign/README.md#from-feasibility")).toBe(false);
   });
   it("a link inside a table cell and inside bold parses", () => {
     const b = parseLesson("# T\n\n| a | b |\n|---|---|\n| [x](../y) | **[z](https://q)** |\n");

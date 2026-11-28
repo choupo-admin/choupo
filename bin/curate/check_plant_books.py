@@ -22,7 +22,7 @@ the hand ones account by account and the six identities to hold.
 WHAT IT CHECKS, on economics01 (unlevered, loss-making: negative cash), a
 copy of economics01 WITH a loan declared, economics03 (three construction
 years, ramp-up, start-up cost, a shipped loan), economics04 (building,
-royalty), greenAmmoniaPEQ_baseCase (the reference plant, unedited), and a
+royalty), ammoniaPEQ_baseCase (the reference plant, unedited), and a
 copy of economics01 with `taxOnLoss none;`:
 
   (a) the hand statements equal the engine's, account by account, every year;
@@ -329,7 +329,7 @@ CASES = [
      "economics01 taxOnLoss none (copy)"),
     ("tutorials/steady/economics/economics03_startup_years", None, "economics03"),
     ("tutorials/steady/economics/economics04_building_royalty_breakeven", None, "economics04"),
-    ("tutorials/plant/greenAmmoniaPEQ_baseCase", None, "greenAmmoniaPEQ_baseCase"),
+    ("tutorials/plant/ammoniaPEQ_baseCase", None, "ammoniaPEQ_baseCase"),
 ]
 
 

@@ -109,13 +109,13 @@ fix FAILS with +1.264e-4 and +7.800e-4.
   PengRobinson | PR`, or `eos SRK | PengRobinson`; 32 cases) plus pxy01 was
   run with `--scope`: 36 PASS, 2 FAIL.
 - **Two cases moved, 9 golden rows.  They were changed BY HAND, row by row.**
-  A `--record` of greenAmmonia03 was tried first.  It re-pinned about 300
+  A `--record` of ammoniaPEQ03 was tried first.  It re-pinned about 300
   stream rows that drift only at round-off (1e-11 relative) and appended two
   new rows to envelope03, so it was undone.
 
 | case | row | was | now | why |
 |---|---|---|---|---|
-| greenAmmonia03_basicDesign | LetdownHP/psv fire_T1 [K] | 325.904286868 | 325.621274845 | the fire case boils the liquid at its bubble point at P1 (`BubblePoint::compute`, ReliefValveSize.cpp), and its incipient vapour is now its own composition, richer in the dissolved gases than y = x |
+| ammoniaPEQ03_basicDesign | LetdownHP/psv fire_T1 [K] | 325.904286868 | 325.621274845 | the fire case boils the liquid at its bubble point at P1 (`BubblePoint::compute`, ReliefValveSize.cpp), and its incipient vapour is now its own composition, richer in the dissolved gases than y = x |
 | | fire_lambda [J/mol] | 15081.4485755 | 14944.7834542 | lambda = sum y_i dHvap_i, and the gases (above their Tc) carry none: -0.9 % |
 | | fire_W [kg/h] | 185.646823998 | 186.565079118 | W = Q / lambda x M_v |
 | | fire_M [kg/kmol] | 16.1487373966 | 16.0815525468 | M of the incipient vapour |

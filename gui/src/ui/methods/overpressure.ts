@@ -71,8 +71,8 @@ export type LoopOp = typeof LOOP_OPS[number];
 
 /** The plants each loop operation copies its gas from (held by the test). */
 export const LOOP_PLANT: Readonly<Record<LoopOp, string>> = {
-  loop150: "plant/greenAmmonia02_feasibility150bar",
-  loop50: "plant/greenAmmonia02_feasibility50bar",
+  loop150: "plant/ammoniaPEQ02_feasibility150bar",
+  loop50: "plant/ammoniaPEQ02_feasibility50bar",
 };
 
 /** The OPERATING state of each loop's converter feed, as the plant's

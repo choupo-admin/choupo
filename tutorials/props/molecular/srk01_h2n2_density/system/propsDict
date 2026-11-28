@@ -18,7 +18,7 @@
   WHAT IT DOES.  Sixteen `propertyPoint` operations, one per MEASURED state of
   the nitrogen + hydrogen binary, at exactly the (T, P, x) the experimenters
   reported.  The engine computes the molar volume with the SAME declaration
-  the green ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 --
+  the ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 --
   and prints it.  The measurement sits beside it in
   `constant/experiments/N2-H2-density-jced-7b00694.dat`, cited to its primary
   publication.

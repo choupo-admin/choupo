@@ -373,7 +373,7 @@ function citedLine(text: string, file: string): string {
   if (!m) throw new Error(`no citation of ${file}`);
   return tree(`src/postProcessing/sizing/${file}`).split("\n")[Number(m[1]) - 1]!;
 }
-const BASIC = "tutorials/plant/greenAmmonia03_basicDesign";
+const BASIC = "tutorials/plant/ammoniaPEQ03_basicDesign";
 
 describe("overpressure (C112 point 1): the governing scenario is the largest AREA", () => {
   //  API 520's Examples 1 (gas) and 5 (liquid), the published numbers above.

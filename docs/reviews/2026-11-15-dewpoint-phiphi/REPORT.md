@@ -17,7 +17,7 @@ wrong T.
 Both commits built, each with its own library; an independent PR phi-phi
 solver (full Newton on (ln K, T) continued in P) and an SRK one for column08;
 58 shipped cases on both commits (all 19 phiPhi, every dewT/bubbleT unit,
-T_bubble key, envelope/scan op, plus column14, greenAmmonia03, temperature02,
+T_bubble key, envelope/scan op, plus column14, ammoniaPEQ03, temperature02,
 hda), every output compared after normalisation; about 20 probes (pure
 fluids, a CO2/ethane azeotrope at kij 0.13, near-critical mixtures, a lean
 gas); 7 sabotages.  No full sweep.

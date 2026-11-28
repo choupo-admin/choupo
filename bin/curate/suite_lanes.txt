@@ -450,7 +450,7 @@ PRE  | SERIAL | bin/curate/check_record_law_values.py                | C470: sta
 POST | SERIAL | bin/curate/check_degenerate_limits.py              | has its own pool of workers: it runs alone, with the machine
 POST | ISO      | bin/curate/check_unread_keys.py                    | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/steady/economics/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+16 more)
 POST | PAR    | bin/curate/check_postdict_audit.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-POST | ISO      | bin/curate/check_cost_provenance.py                | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/plant/greenAmmoniaPEQ_baseCase/converged (+84 more)
+POST | ISO      | bin/curate/check_cost_provenance.py                | C167 slice 4 (2026-11-19: run alone and pooled, identical output, no leak); was SERIAL: writes tutorials/plant/ammoniaPEQ_baseCase/converged (+84 more)
 POST | PAR    | bin/curate/check_economic_sensitivity.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | PAR    | bin/curate/check_debt_financing.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | PAR*2  | bin/curate/check_plant_books.py                     | C524: six probe copies in gatekit temp dirs, no make, no node, no nested walk; 39 s alone

@@ -51,7 +51,7 @@ coincidence of four digits can be registered wrongly; the registrant reads
 the sentence.
 
 THE REAL DEFECT IT WOULD HAVE CAUGHT.  limitingReactantLesson typed 3.589 and
-0.355 for greenAmmoniaPEQ_baseCase while the run gave 3.584 and 0.350
+0.355 for ammoniaPEQ_baseCase while the run gave 3.584 and 0.350
 (batch-ef REPORT 8); had the literal been registered against a row, the
 re-record that moved it would have failed here.  runLog's second residual is
 the other defect: 1.8432e-13 against a golden of 4.4550e-16.
@@ -98,10 +98,10 @@ TYPED = [
     (M + "VanHeerdenTool.tsx", "0.00126615", "cstr08_furusawa_bistable", "kpi reactor V_R"),
     (M + "WhatIsExergyTool.tsx", "4.22615345389", "compressor01_air", "kpi compressor01 dS_gen"),
     (M + "WhatIsExergyTool.tsx", "4.2262", "compressor01_air", "kpi compressor01 dS_gen"),
-    (M + "compressorChoicePlant.ts", "3.77536", "greenAmmoniaPEQ_baseCase", "kpi N2Boost ratio"),
-    (M + "compressorChoicePlant.ts", "2.2237342", "greenAmmoniaPEQ_baseCase", "kpi MakeupComp1 ratio"),
-    (M + "compressorChoicePlant.ts", "2.2674662", "greenAmmoniaPEQ_baseCase", "kpi MakeupComp2 ratio"),
-    (M + "compressorChoicePlant.ts", "1.0770158", "greenAmmoniaPEQ_baseCase", "kpi RecycleComp ratio"),
+    (M + "compressorChoicePlant.ts", "3.77536", "ammoniaPEQ_baseCase", "kpi N2Boost ratio"),
+    (M + "compressorChoicePlant.ts", "2.2237342", "ammoniaPEQ_baseCase", "kpi MakeupComp1 ratio"),
+    (M + "compressorChoicePlant.ts", "2.2674662", "ammoniaPEQ_baseCase", "kpi MakeupComp2 ratio"),
+    (M + "compressorChoicePlant.ts", "1.0770158", "ammoniaPEQ_baseCase", "kpi RecycleComp ratio"),
     (M + "calculatedToBoughtMath.ts", "4.877", "hxBought01_margin_and_stock", "equipment column17/condenser values.tubeLength_calculated"),
     (M + "calculatedToBoughtMath.ts", "6.096", "hxBought01_margin_and_stock", "equipment column17/condenser values.tubeLength"),
     (M + "compressionLesson.ts", "0.1379", "compressor03_staged_design", "equipment compressor1 values.intercooler1_dP"),
@@ -113,7 +113,7 @@ TYPED = [
     (M + "dryingLesson.ts", "300.5343", "dryer02_characteristic_curves", "kpi concave T_wb"),
     (M + "layoutExercise.ts", "1.894", "ammonia02_full_plant", "layout separation:separator:letdown value"),
     (M + "overpressure.ts", "399.459968689", "relief02_acetone_fire_case", "diag relieving T"),
-    (M + "overpressure.ts", "4994421.174", "greenAmmonia02_feasibility50bar", "kpi FeedPreheater P"),
+    (M + "overpressure.ts", "4994421.174", "ammoniaPEQ02_feasibility50bar", "kpi FeedPreheater P"),
     (M + "reactorLadderLesson.ts", "0.420716387613", "ladder01_wgs_three_rungs", "kpi gibbs y_CO2"),
     (M + "reactorLadderLesson.ts", "0.8195501646", "ladder01_wgs_three_rungs", "kpi approach conversion_wgs"),
     (M + "reactorLadderLesson.ts", "0.8414", "ladder01_wgs_three_rungs", "kpi kinetic X_limiting"),

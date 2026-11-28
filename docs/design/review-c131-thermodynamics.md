@@ -99,8 +99,8 @@ good practice expects).
 * **Reach.** 23 corpus cases declare γ-φ with a non-ideal vapour
   (`fugacityModel PengRobinson|SRK|PCSAFT`): every ammonia-loop case
   (`ammonia01_synthesis_loop`, `ammonia02_full_plant`,
-  `ammonia03_quench_converter`, `ammoniaReactor01-04`, `greenAmmonia02/03`,
-  `greenAmmoniaPEQ_baseCase`, `letdown01/02`, `relief01`, `gibbs10`, `gibbs13`,
+  `ammonia03_quench_converter`, `ammoniaReactor01-04`, `ammoniaPEQ02/03`,
+  `ammoniaPEQ_baseCase`, `letdown01/02`, `relief01`, `gibbs10`, `gibbs13`,
   `economics03`), the Klemola C4 splitter (`column14`, `column15`), both
   envelopes, `relief02`, `temperature01`. The ammonia separators condense NH3
   at 150–220 bar, where φ^sat of NH3 is far from 1.

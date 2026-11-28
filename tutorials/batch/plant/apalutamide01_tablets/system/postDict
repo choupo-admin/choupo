@@ -517,7 +517,7 @@ costing
 {
     method    Turton;
     year      2026;
-    cepci     820;        // a projection -- AUTHOR-SET (greenAmmoniaPEQ's)
+    cepci     820;        // a projection -- AUTHOR-SET (ammoniaPEQ's)
     cepci2001 397;        // the correlations' own basis year
     usdToEur  0.92;
 

@@ -5,7 +5,7 @@ Tree: detached main `2ade5c5351` (2026-11-19). Read-only. The registry ids are `
 ## 1. Process safety (`processSafetyLesson.ts`, `ProcessSafetyTool.tsx`, `processSafety.ts`)
 
 **WRONG**
-- `ProcessSafetyTool.tsx:860-865`, row "hydrogen and ammonia held in the loop": the page says "not computed: these cases size no vessel, so there is no volume to hold anything (lesson step 15)". Step 15 (`processSafetyLesson.ts`, the n:15 body) and the goldens say the opposite. `greenAmmonia02_feasibility150bar/expected:316-325` gives `Converter inventory.mass.total 192.8 kg`, and `Separator RawLiquid.mass` is 4328.6 kg at 150 bar and 23418.8 kg at 50 bar. This is the C259 correction, and it only reached the prose. The test that guards against the old wording (`processSafety.test.ts:563-565`) checks the lesson body and `SAFETY_LIMITS` but not the Tool. *Consequence: the loop table tells the student there is no inventory, and the step directly below it quotes 193 kg and 23.4 t.*
+- `ProcessSafetyTool.tsx:860-865`, row "hydrogen and ammonia held in the loop": the page says "not computed: these cases size no vessel, so there is no volume to hold anything (lesson step 15)". Step 15 (`processSafetyLesson.ts`, the n:15 body) and the goldens say the opposite. `ammoniaPEQ02_feasibility150bar/expected:316-325` gives `Converter inventory.mass.total 192.8 kg`, and `Separator RawLiquid.mass` is 4328.6 kg at 150 bar and 23418.8 kg at 50 bar. This is the C259 correction, and it only reached the prose. The test that guards against the old wording (`processSafety.test.ts:563-565`) checks the lesson body and `SAFETY_LIMITS` but not the Tool. *Consequence: the loop table tells the student there is no inventory, and the step directly below it quotes 193 kg and 23.4 t.*
 
 **SUSPECT**
 - `registry.ts:1951-1952` (teaches): "the engine cannot call it safer without sizing the equipment". The cases do size the converter and three drums. What is missing is the pipes, the exchanger hold-up and the release scenarios. This is a softer form of the same stale claim.
@@ -42,7 +42,7 @@ Tree: detached main `2ade5c5351` (2026-11-19). Read-only. The registry ids are `
 - Wall loads: F = ρgh²/2 and M = ρgh³/6. Doubling the wall halves the pool and multiplies M by 8.
 - Drain: C_d·πd²/4·√(2ge) in m³/s, multiplied by dt in s. Leak: m³/h divided by 3600.
 - Exercise: net = (55 − 12.975) × 0.55 = 23.11 m³ against 22 m³ required. Wall gap 1.0 m against the 1 m clearance.
-- Green-ammonia bund rule (1.1 × largest + 100 mm) matches `greenAmmoniaPEQ_baseCase/system/layoutDict:799-821`.
+- Green-ammonia bund rule (1.1 × largest + 100 mm) matches `ammoniaPEQ_baseCase/system/layoutDict:799-821`.
 
 **Licence.** The 110 %/25 % figures, the 1 m / 2 m clearance and the 225 mm / 600 mm wall figures are from HSE HSG176 and SI 2001/2954. Both are Crown copyright and reusable under the Open Government Licence, and the page paraphrases them with paragraph numbers. This is not a no-grant table.
 

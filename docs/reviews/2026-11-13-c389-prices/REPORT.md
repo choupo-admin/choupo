@@ -1,7 +1,7 @@
 # Review by measurement: the prices of the green-ammonia cases (C389)
 
 Date: 2026-11-13.  Asked by the coordinator (board, R3).  Reviewed on
-main at d783c6c236: `tutorials/plant/greenAmmoniaPEQ_baseCase/constant/
+main at d783c6c236: `tutorials/plant/ammoniaPEQ_baseCase/constant/
 economics` (three provenance blocks), its three byte-identical copies,
 the four READMEs and the generated stage comparison.  Findings:
 `findings.tsv` (PR-01 .. PR-14).  `sources_fetched.txt` lists every URL
@@ -36,7 +36,7 @@ institute's own URL answered 403): its "pdf p. 25" is p. 26 there.
 
 | id | where | observed | should be |
 |---|---|---|---|
-| PR-03 | `tutorials/steady/reactors/ammoniaRoutes01_screening/README.md:153-155, 227-229` | "1.00 / 4.50 / 0.05 EUR/kg ... PEQ base data, `greenAmmoniaPEQ_baseCase/constant/economics` (itself author-set there)"; a gross margin of 56.08 M EUR/yr | that file holds 0.530 / 8.0 / 0.0175 with sources; the golden's `grossMargin_RM` is -360.33 M EUR/yr |
+| PR-03 | `tutorials/steady/reactors/ammoniaRoutes01_screening/README.md:153-155, 227-229` | "1.00 / 4.50 / 0.05 EUR/kg ... PEQ base data, `ammoniaPEQ_baseCase/constant/economics` (itself author-set there)"; a gross margin of 56.08 M EUR/yr | that file holds 0.530 / 8.0 / 0.0175 with sources; the golden's `grossMargin_RM` is -360.33 M EUR/yr |
 | PR-04 | `constant/economics:64`; the feasibility case's postDict and README | low 0.439 (US FOB, estimated), base 0.530 (EU CIF 2025), high 0.726 (EU CIF, nine months of 2026) presented as one range | one series: the 2025 monthly EU values span 0.380 (June: 86 337 832 EUR / 227 498 011 kg) to 0.692 (November: 97 952 040 / 141 512 757); or say the three are different quantities |
 | PR-05 | `constant/economics:77` | low end 4.95 described as what ammonia producers "reported they would pay" | the report: "Average offtake prices calculated by sector", "Based on the information submitted among all the bids" of a subsidised auction; the base is a modelled cost |
 | PR-07 | `EconomicsPass.cpp:3394-3395` | the run prints `0.5300 EUR/kg` and `8.0000 EUR/kg`; the result's economics block has no provenance | the origin the engine already reads, printed beside the price and published |

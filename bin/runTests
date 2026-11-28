@@ -2136,7 +2136,7 @@ auto_generate_raw() {
         # kpis: every numeric key per unit (skip iterations).  A unit of a
         # SECTORED plant is named `SECTOR.unit` (2026-10-12, DEV.md 4c C69):
         # the unit pattern admits the dot, or every KPI of every unit inside a
-        # sector arrives unpinned -- measured on greenAmmonia03_basicDesign the
+        # sector arrives unpinned -- measured on ammoniaPEQ03_basicDesign the
         # day its beds became the CONVERTER sector, 136 rows the recorder no
         # longer wrote.  The reader (get_value) always accepted the dotted name.
         printf '%s\n' "$kpis_sec" | grep -P '"[\w.]+": \{' | while read -r line; do

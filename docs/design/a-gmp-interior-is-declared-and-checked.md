@@ -191,7 +191,7 @@ the result JSON carries the same sentence -- and was narrowed to the block.
 ## 7. Byte-neutrality, measured
 
 A build of origin/main (`b1a54185b`) and this branch ran
-`ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase`, `aceticAcid02_plant`
+`ammonia02_full_plant`, `ammoniaPEQ_baseCase`, `aceticAcid02_plant`
 (the three corpus layouts), `sprayDryer07_design` and
 `ChemicalPlantTutorial`: stdout and stderr identical, the banner's commit
 stamp aside.

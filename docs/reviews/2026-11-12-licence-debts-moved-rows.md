@@ -4,11 +4,11 @@ For Vitor, BEFORE any re-record (CLAUDE.md 10, the golden re-record rule).  Noth
 
 **How measured.**  Each case was exported from the branch (`git archive` of commit 4ed71d331) into a scratch directory, sealed there by `bin/choupo-import` from the current catalogue, and checked by `bin/runTests <copy>` against its unchanged `expected`; unmodified copies of two of them PASS in the same scratch location, so the location moves nothing.  For the four green-ammonia plants the importer reads its utility closure from the golden's `utility` rows, so in the scratch copy only, its validation was given those rows at a loose tolerance; the runTests comparison is against the full, unchanged golden.  Every row printed below is a value the run published and the golden pins; none is MISSING.
 
-**Attribution.**  greenAmmonia02_feasibility150bar and greenAmmonia03_basicDesign were also run with ONLY `components/NH3.dat` refreshed (its manifest entry updated to match): the same 257 and 497 rows move to the same values, to the last printed digit.  So cause A is the NH3 record's own C65 correction; which property of liquid NH3 reaches the loop flows and the sizing was not traced in this slice.  Cause B was not split further.
+**Attribution.**  ammoniaPEQ02_feasibility150bar and ammoniaPEQ03_basicDesign were also run with ONLY `components/NH3.dat` refreshed (its manifest entry updated to match): the same 257 and 497 rows move to the same values, to the last printed digit.  So cause A is the NH3 record's own C65 correction; which property of liquid NH3 reaches the loop flows and the sizing was not traced in this slice.  Cause B was not split further.
 
-**Count: 1358 moved rows in 9 cases** -- greenAmmonia02_feasibility150bar 257, greenAmmonia02_feasibility50bar 243, greenAmmonia03_basicDesign 497, greenAmmoniaPEQ_baseCase 321, ignition01_h2o2 9, ignition02_h2air_slack 9, nox01_zeldovich_postflame 3, claus01_thermal_stage 11, gibbs06_h2_flame_radicals 8.  By row kind: equipment 716, kpi 482, utility 75, stream 60, layout 22, boundary 3.  Relative change = (new - old)/|old|; the tolerance is the golden's own (mostly 1e-4 relative).
+**Count: 1358 moved rows in 9 cases** -- ammoniaPEQ02_feasibility150bar 257, ammoniaPEQ02_feasibility50bar 243, ammoniaPEQ03_basicDesign 497, ammoniaPEQ_baseCase 321, ignition01_h2o2 9, ignition02_h2air_slack 9, nox01_zeldovich_postflame 3, claus01_thermal_stage 11, gibbs06_h2_flame_radicals 8.  By row kind: equipment 716, kpi 482, utility 75, stream 60, layout 22, boundary 3.  Relative change = (new - old)/|old|; the tolerance is the golden's own (mostly 1e-4 relative).
 
-**Proposed smallest sequence.**  (1) The five cause-B cases (40 rows; small shifts from the C170 re-sourcing of radical thermochemistry): re-import and re-record each, one commit.  (2) greenAmmonia02_feasibility150bar and _50bar: one commit.  (3) greenAmmonia03_basicDesign and greenAmmoniaPEQ_baseCase: one commit.  Each step: `bin/choupo-import <case>` once its rows are approved here, then `bin/runTests --record <case>` (the importer refuses until the golden agrees, so the order is: re-record against the staged answer, then import -- or approve and let the commander run both).
+**Proposed smallest sequence.**  (1) The five cause-B cases (40 rows; small shifts from the C170 re-sourcing of radical thermochemistry): re-import and re-record each, one commit.  (2) ammoniaPEQ02_feasibility150bar and _50bar: one commit.  (3) ammoniaPEQ03_basicDesign and ammoniaPEQ_baseCase: one commit.  Each step: `bin/choupo-import <case>` once its rows are approved here, then `bin/runTests --record <case>` (the importer refuses until the golden agrees, so the order is: re-record against the staged answer, then import -- or approve and let the commander run both).
 
 **Also outstanding, NOT in this list.**  `basis01_two_unit_chain`: its re-import moves NO row (measured on a scratch copy: runTests PASS), but `bin/choupo-import` crashes inside its own validator on that case's `closure` rows (`AttributeError: 'list' object has no attribute 'get'` at `res.get("energyClosures")`), so it cannot be installed through the importer as it stands -- an importer fix, outside this slice's edit scope.  `nox01_zeldovich_postflame`'s `N.dat` and `NH.dat` are ADOPTED (authored) records naming the compilation; no re-import touches them.
 
@@ -16,7 +16,7 @@ For Vitor, BEFORE any re-record (CLAUDE.md 10, the golden re-record rule).  Noth
 ## A. The NH3 mirror refreshed from the corrected catalogue record (C65: `Vliq` at 25 C, 2.50e-5 -> 2.8245e-5 m3/mol; liquid viscosity refitted to Monogenidou et al. 2018), with the other records of the same closure that drifted since the seal (H2, N2, water, the H/NH4/OH species)
 
 
-### greenAmmonia02_feasibility150bar (257 rows)
+### ammoniaPEQ02_feasibility150bar (257 rows)
 
 | row | old (golden) | new | relative change |
 |---|---|---|---|
@@ -278,7 +278,7 @@ For Vitor, BEFORE any re-record (CLAUDE.md 10, the golden re-record rule).  Noth
 | `kpi.economics.taxCreditOnLoss` | 226727245.112 | 227961885.426 | +0.5445 % |
 | `kpi.economics.taxCreditOnLoss_NPV` | 116126456.003 | 116766131.817 | +0.5508 % |
 
-### greenAmmonia02_feasibility50bar (243 rows)
+### ammoniaPEQ02_feasibility50bar (243 rows)
 
 | row | old (golden) | new | relative change |
 |---|---|---|---|
@@ -526,7 +526,7 @@ For Vitor, BEFORE any re-record (CLAUDE.md 10, the golden re-record rule).  Noth
 | `kpi.economics.taxCreditOnLoss` | 225495565.984 | 226449386.106 | +0.4230 % |
 | `kpi.economics.taxCreditOnLoss_NPV` | 115329872.526 | 115827993.538 | +0.4319 % |
 
-### greenAmmonia03_basicDesign (497 rows)
+### ammoniaPEQ03_basicDesign (497 rows)
 
 | row | old (golden) | new | relative change |
 |---|---|---|---|
@@ -1028,7 +1028,7 @@ For Vitor, BEFORE any re-record (CLAUDE.md 10, the golden re-record rule).  Noth
 | `kpi.pinch.Q_recovery_max_kW` | 64390.8316898 | 64430.3453228 | +0.0614 % |
 | `kpi.pinch.violation_heat_below_pinch_kW` | 77.7979847956 | 76.5870514336 | -1.5565 % |
 
-### greenAmmoniaPEQ_baseCase (321 rows)
+### ammoniaPEQ_baseCase (321 rows)
 
 | row | old (golden) | new | relative change |
 |---|---|---|---|

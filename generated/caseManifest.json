@@ -22752,7 +22752,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia02_feasibility150bar": {
+  "tutorials/plant/ammoniaPEQ02_feasibility150bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22760,7 +22760,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia02_feasibility50bar": {
+  "tutorials/plant/ammoniaPEQ02_feasibility50bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22768,7 +22768,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmonia03_basicDesign": {
+  "tutorials/plant/ammoniaPEQ03_basicDesign": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -22776,7 +22776,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaPEQ_baseCase": {
+  "tutorials/plant/ammoniaPEQ_baseCase": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -32894,10 +32894,10 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
-    "tutorials/plant/greenAmmonia02_feasibility150bar",
-    "tutorials/plant/greenAmmonia02_feasibility50bar",
-    "tutorials/plant/greenAmmonia03_basicDesign",
-    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/plant/ammoniaPEQ02_feasibility150bar",
+    "tutorials/plant/ammoniaPEQ02_feasibility50bar",
+    "tutorials/plant/ammoniaPEQ03_basicDesign",
+    "tutorials/plant/ammoniaPEQ_baseCase",
     "tutorials/plant/hda",
     "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/lithiumBrinePlant",

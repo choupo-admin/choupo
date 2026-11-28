@@ -193,7 +193,7 @@ WHAT THIS CHECKS:
       author-set, the original), `U` + `utility <name>` (the LMTD computed
       counter-current from the unit's own `T_in`/`T_out` KPIs and the
       utility record's `T_in`/`T_out`), and neither (a RATED unit's own
-      `area` passed through).  On `greenAmmoniaPEQ_baseCase` every cooler
+      `area` passed through).  On `ammoniaPEQ_baseCase` every cooler
       declaring a `utility` has its sheet's `LMTD` and `A` RECOMPUTED here
       from the run's KPI line, the postDict's `U` and the utility record
       read from `data/standards/utilities/`, at the sheet's printed
@@ -224,7 +224,7 @@ WHAT THIS CHECKS:
       RESULT: the run finds the smallest tube count delivering the duty and
       writes the bundle, both films, five resistances, F, the area required
       and installed, the utility flow and both pressure drops.  On
-      `greenAmmoniaPEQ_baseCase` (all six exchangers) every sheet is held to
+      `ammoniaPEQ_baseCase` (all six exchangers) every sheet is held to
       arithmetic written out again here: the declarations reach the sheet
       (tube sizes, passes, shells, both foulings, the wall conductivity of
       the material RECORD); nTubes = tubesPerPass x passes; A = n_shells pi
@@ -254,7 +254,7 @@ WHAT THIS CHECKS:
 
   (q) A STORAGE TANK IS SIZED FROM ITS STREAM AND PRICED ON THE ROW THE
       PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
-      `greenAmmoniaPEQ_baseCase` the store attached to `ProductNH3` has its
+      `ammoniaPEQ_baseCase` the store attached to `ProductNH3` has its
       density RECOMPUTED from the case's component records, its volumes and
       tank count from the postDict's declarations and the stream's own
       `F_mass`, and each tank's three costs from the CAPCOST 2017
@@ -276,7 +276,7 @@ WHAT THIS CHECKS:
       each refuse BY NAME.  Sabotages in `check_storage_link`.
 
   (r) WHAT EACH ITEM HOLDS IS V x FRACTION x RHO x COMPOSITION (2026-10-07,
-      DEV.md 4c C44 slice 3).  On `greenAmmoniaPEQ_baseCase` every item
+      DEV.md 4c C44 slice 3).  On `ammoniaPEQ_baseCase` every item
       publishing an `inventory` has each held phase's density RECOMPUTED from
       the case's records (anchored Rackett for a liquid, the SRK vapour root
       for a gas), its mass and per-component split recomputed, its sheet's
@@ -355,7 +355,7 @@ WHAT THIS CHECKS:
             first.
 
   (v) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK (2026-10-18, DEV.md
-      4c C89).  On `greenAmmoniaPEQ_baseCase` the H2 buffer attached to
+      4c C89).  On `ammoniaPEQ_baseCase` the H2 buffer attached to
       `H2Feed` (`gasStorage ( ... )`) has its two SRK densities RECOMPUTED
       from the case's records, its working gas, vessel count, volume,
       diameter, wall and weight from the postDict's declarations, each
@@ -513,7 +513,7 @@ SPACEV  = "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach"
 #  THE EXCHANGER-ROUTES WITNESS (2026-10-07).  The one corpus case whose
 #  coolers declare a `utility` instead of an LMTD, and whose rated
 #  interchanger is sized on its own area.
-HXROUTE = "tutorials/plant/greenAmmoniaPEQ_baseCase"
+HXROUTE = "tutorials/plant/ammoniaPEQ_baseCase"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 #  Turton's contingency and fee, C_TM = 1.18 C_BM, on EVERY costed row --
@@ -531,7 +531,7 @@ SCAN_ROOTS = (
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/ammonia02_full_plant",
-    "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "tutorials/plant/ammoniaPEQ_baseCase",
     "tutorials/steady/distillation/column09_tray_hydraulics",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/economics/economics03_startup_years",
@@ -2591,7 +2591,7 @@ def _door_liquid_rho(case: Path, comp: dict, T: float, out: str, P=None):
 def check_storage(problems, notes):
     """(q) A STORAGE TANK IS SIZED FROM ITS STREAM AND COSTED ON THE ROW THE
     PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
-    `greenAmmoniaPEQ_baseCase`, whose postDict attaches `NH3Storage` to the
+    `ammoniaPEQ_baseCase`, whose postDict attaches `NH3Storage` to the
     boundary stream `ProductNH3`:
 
       * the tank's `massFlow` is the stream's own published `F_mass`;
@@ -2895,7 +2895,7 @@ def check_storage_link(problems, notes):
         own pressure refusal NAMING `productNH3`, the unit's inlet -- the
         stream came from the unit, not from the entry.  Every copy exits 0:
         a refused store refuses the ITEM, never the run.
-      * THE UNLINKED PATH is arm (q)'s: `greenAmmoniaPEQ_baseCase`'s
+      * THE UNLINKED PATH is arm (q)'s: `ammoniaPEQ_baseCase`'s
         `NH3Storage` declares no `unit` and is recomputed there from its own
         declarations, unchanged.
 
@@ -3069,7 +3069,7 @@ def check_storage_link(problems, notes):
 def check_inventory(problems, notes):
     """(r) WHAT EACH ITEM HOLDS IS ITS VOLUME x FRACTION x DENSITY x
     COMPOSITION, AND NOTHING ELSE (2026-10-07, DEV.md 4c C44 slice 3).  On
-    `greenAmmoniaPEQ_baseCase`, for every item whose result line carries an
+    `ammoniaPEQ_baseCase`, for every item whose result line carries an
     `inventory` object:
 
       * the volume is the item's own `V_R`; each held stream's fraction is
@@ -4187,7 +4187,7 @@ def check_material_limits(problems, notes):
 def check_gas_store(problems, notes):
     """(v) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK, ON THE CASE'S OWN
     EQUATION OF STATE (2026-10-18, DEV.md 4c C89).  On
-    `greenAmmoniaPEQ_baseCase`, whose postDict attaches `H2Buffer` to the
+    `ammoniaPEQ_baseCase`, whose postDict attaches `H2Buffer` to the
     boundary stream `H2Feed` (`gasStorage ( ... )`), everything is RECOMPUTED
     here from the postDict's own declarations, the stream's published state
     and the case's component records -- never read off the sheet it checks:
@@ -4226,7 +4226,7 @@ def check_gas_store(problems, notes):
     SABOTAGES, BY HAND, 2026-10-18, each restored with `cp` and the engine
     rebuilt; the gate then returned OK:
       S1  GasStoreSize.cpp: dRho = rhoMax (the cushion forgotten)  -> FAILED:
-          "greenAmmoniaPEQ_baseCase failed (rc=2)" -- the store shrank to 7
+          "ammoniaPEQ_baseCase failed (rc=2)" -- the store shrank to 7
           vessels and the case's plot plan, which places ten, REFUSED the run
           ("item `H2Buffer/vessel8` names no sized item").  Caught, but by the
           layout and not by the value arm; S2 is the one that reaches the

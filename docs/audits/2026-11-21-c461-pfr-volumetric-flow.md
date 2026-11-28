@@ -8,13 +8,13 @@ cracking, +40 %), or whose T or P move along the bed, that is wrong.
 
 Method: a prototype fix behind a temporary switch (`CHOUPO_PFR_Q_FIXED=1` = the old behaviour) and the
 23 `type pfr` units of `tutorials/` (21 case roots; the three ammonia beds run inside
-`greenAmmonia03_basicDesign`), every case run old and new on the same binary and compared line by line
+`ammoniaPEQ03_basicDesign`), every case run old and new on the same binary and compared line by line
 (paths normalised).  The switch is removed in the landed commit.
 
 | case | feed / rate-law basis | moved by the corrected Q? |
 |---|---|---|
 | cracking01_ethane_sundaram_froment | vapour, concentration laws, +40 % moles | YES: the whole slate (see Step 3) |
-| greenAmmonia03_basicDesign (Bed1-3) | vapour, expression laws in T, p, x (no c[i]) | no (byte-identical output) |
+| ammoniaPEQ03_basicDesign (Bed1-3) | vapour, expression laws in T, p, x (no c[i]) | no (byte-identical output) |
 | ammoniaReactor04_kineticSizing | vapour, expression law in p, x | no |
 | pfr05_cooled_multitubular | vapour, expression law | no |
 | elementary01a/01b, 02a/02b, 03a/03b | vapour, concentration laws, mole-conserving | no (output identical) |

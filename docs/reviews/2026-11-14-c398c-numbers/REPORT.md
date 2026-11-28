@@ -65,7 +65,7 @@ table03; check_transport_correlations with one sabotage (restored, then
 7. Byte identity on 35 cases chosen by the reviewer (16 props incl.
    transport01/02 and ammoniaRate01; steady flash01, column01, column03,
    trayEfficiency02, cstr02, ammoniaReactor04, hx02, heatExchanger03,
-   pump01, liquidDensity01-06, greenAmmonia03; batch02, still01; ctrl01):
+   pump01, liquidDensity01-06, ammoniaPEQ03; batch02, still01; ctrl01):
    logs identical apart from the banner commit, every output file
    byte-identical; transport01/02 differ only by the new bench entry
    (dev_table 9.0e-16, n_arithmetic_anchors 8 -> 9).  Rate-law tables: the

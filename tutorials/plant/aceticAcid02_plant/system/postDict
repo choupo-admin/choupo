@@ -12,7 +12,7 @@
   (system/layoutDict).  SIZING ONLY: there is no costing and no economics
   pass here on purpose -- pricing the plant is part of the students'
   optimisation, and adding one is a `costing {}` block (see
-  greenAmmoniaPEQ_baseCase for the shape).
+  ammoniaPEQ_baseCase for the shape).
 
   WHAT IS SIZED, AND ON WHAT BASIS.  Eight of the thirteen units -- one
   item each for the first four and for the product cooler, four for the
@@ -31,7 +31,7 @@
                   follow the run: change the flowsheet and redo it).
     condenser     (isothermalFlash)   vessel, the knock-out drum, by VAPOUR
                   residence time (V = Q_vapour * tau, ideal gas) -- the
-                  greenAmmoniaPEQ_baseCase precedent.  The cooling duty that
+                  ammoniaPEQ_baseCase precedent.  The cooling duty that
                   makes the 330 K is NOT sized as an exchanger: the flowsheet
                   models the condenser as ONE flash, a sizing entry is ONE
                   item per unit, and a cooler sized beside it would need an

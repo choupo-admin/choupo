@@ -123,7 +123,7 @@ Largest numeric move: `kpi.DRYING.SD.rho_liquid` 0.315 %.
 | `kpi.DRYING.SD.water_residual` | 0.0195397297708 | 0.0195447942693 | 0.0002592 |
 | `source.DRYING.SD.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett+flatVliq]' | 'idealMixing[referenceEquation.IAPWS95+flatVliq]' | - |
 
-## greenAmmonia02_feasibility150bar  (tutorials/plant/greenAmmonia02_feasibility150bar)
+## ammoniaPEQ02_feasibility150bar  (tutorials/plant/ammoniaPEQ02_feasibility150bar)
 6 rows beyond tolerance (6 `source`, 0 numeric). Causes: R.
 
 | row | golden | now | relative move |
@@ -135,7 +135,7 @@ Largest numeric move: `kpi.DRYING.SD.rho_liquid` 0.315 %.
 | `source.inventory_'StorageFlash'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 | `source.storage_'NH3Storage'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 
-## greenAmmonia02_feasibility50bar  (tutorials/plant/greenAmmonia02_feasibility50bar)
+## ammoniaPEQ02_feasibility50bar  (tutorials/plant/ammoniaPEQ02_feasibility50bar)
 6 rows beyond tolerance (6 `source`, 0 numeric). Causes: R.
 
 | row | golden | now | relative move |
@@ -147,7 +147,7 @@ Largest numeric move: `kpi.DRYING.SD.rho_liquid` 0.315 %.
 | `source.inventory_'StorageFlash'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 | `source.storage_'NH3Storage'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 
-## greenAmmonia03_basicDesign  (tutorials/plant/greenAmmonia03_basicDesign)
+## ammoniaPEQ03_basicDesign  (tutorials/plant/ammoniaPEQ03_basicDesign)
 9 rows beyond tolerance (9 `source`, 0 numeric). Causes: R.
 
 | row | golden | now | relative move |
@@ -162,7 +162,7 @@ Largest numeric move: `kpi.DRYING.SD.rho_liquid` 0.315 %.
 | `source.reliefValve_'StorageFlash'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 | `source.storage_'NH3Storage'.liquidDensity` | 'liquidVolume.idealMix[anchoredRackett]' | 'idealMixing[anchoredRackett]' | - |
 
-## greenAmmoniaPEQ_baseCase  (tutorials/plant/greenAmmoniaPEQ_baseCase)
+## ammoniaPEQ_baseCase  (tutorials/plant/ammoniaPEQ_baseCase)
 9 rows beyond tolerance (9 `source`, 0 numeric). Causes: R.
 
 | row | golden | now | relative move |
@@ -1090,4 +1090,4 @@ The feed to the cartridge filters is a seawater of NaCl mass fraction w with a m
 
 ## Rows appended, not moved
 
-`--record` appended two rows to 18 of the 70 goldens (ChemicalPlantTutorial, the greenAmmonia02/03/PEQ plants, swro01_campoDalias, column09 to column11, the economics cases and others; the record log prints each): `boundary global noBoundary` and `boundary global residual_denom_kW`, which the golden writer emits now and the golden of the day did not carry (the same rows the C421 door slices appended).  They are not moves of any number.  Rows that moved inside their own tolerance (below 1e-4 relative, e.g. swro01's `layout unbundedLiquid` values, 3e-5) are in the files and not listed above.
+`--record` appended two rows to 18 of the 70 goldens (ChemicalPlantTutorial, the ammoniaPEQ02/03/PEQ plants, swro01_campoDalias, column09 to column11, the economics cases and others; the record log prints each): `boundary global noBoundary` and `boundary global residual_denom_kW`, which the golden writer emits now and the golden of the day did not carry (the same rows the C421 door slices appended).  They are not moves of any number.  Rows that moved inside their own tolerance (below 1e-4 relative, e.g. swro01's `layout unbundedLiquid` values, 3e-5) are in the files and not listed above.

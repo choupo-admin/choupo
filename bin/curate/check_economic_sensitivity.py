@@ -166,8 +166,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 SRC = ROOT / "src/postProcessing/EconomicsPass.cpp"
-FEAS = [ROOT / "tutorials/plant/greenAmmonia02_feasibility150bar",
-        ROOT / "tutorials/plant/greenAmmonia02_feasibility50bar"]
+FEAS = [ROOT / "tutorials/plant/ammoniaPEQ02_feasibility150bar",
+        ROOT / "tutorials/plant/ammoniaPEQ02_feasibility50bar"]
 ECON01 = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
 
 fails = []
@@ -828,7 +828,7 @@ def main():
             print("  - " + f)
         return 1
     print("check_economic_sensitivity: OK -- the tornado of both feasibility"
-          " cases (greenAmmonia02_feasibility150bar / 50bar) is published row by"
+          " cases (ammoniaPEQ02_feasibility150bar / 50bar) is published row by"
           " row in sensitivity.csv, the console and the result JSON, which agree;"
           " the result's economics.sensitivity block (the one input of the GUI"
           " tornado) reproduces the CSV row for row, in its tornado order, under"

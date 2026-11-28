@@ -732,7 +732,7 @@ both, and the plant now closes at +0.0064 kW.
 every published number, measured against a build of the parent commit: three
 price ideal gas on an all-vapour inlet, which IS the sum the old code
 performed, and three publish no duty at all, so the suite says nothing about
-theirs either way.  (3) The negative result, again: `greenAmmoniaPEQ_baseCase` got
+theirs either way.  (3) The negative result, again: `ammoniaPEQ_baseCase` got
 WORSE (-12.70 -> -13.72 kW) BECAUSE its Deoxo now closes exactly and its
 1.0166 kW had been cancelling someone else's.  **And what the fix then made
 visible is not an engine defect at all**: `acetone02`/`acetone03` run no EoS --
@@ -1818,7 +1818,7 @@ total; no price refuses the COST by name and the total reads INCOMPLETE.  Every 
 pressure refuses (the gas could not flow back into the line).  The charging
 compressor and any renewable profile behind the hours are NOT included and
 are announced on every run.  One home: `sizing/GasStoreSize`.  Gate:
-`check_design_sheet` arm (v).  Witness `greenAmmoniaPEQ_baseCase` (H2Buffer).
+`check_design_sheet` arm (v).  Witness `ammoniaPEQ_baseCase` (H2Buffer).
 **A PRESSURISED LIQUID is stored the same way (2026-10-18, DEV.md 4c C92):**
 `liquefiedGasStorage ( ... )` sizes it on a hold time and a fill fraction into
 the SAME vessel bank and steel-mass cost, and REFUSES a `designPressure` below
@@ -1951,7 +1951,7 @@ bed's own `L_over_D` refuses there.  D is solved by a `designSpec` target
 advance); the shell sizer CHECKS it (`D_smallestAdmissible`, binding bed,
 bracket).  The first cut compared one shell at the widest bed with three
 shells at three diameters -- a comparison of different vessels; at EQUAL D
-the one shell costs MORE on greenAmmonia03 (its coolers sit inside it at full
+the one shell costs MORE on ammoniaPEQ03 (its coolers sit inside it at full
 diameter and 167 bar).  NAMED, not fixed: the coolers' shells are counted
 twice.  Gates: `check_cooled_pfr` · `check_converter_shell` ·
 `check_pfr_ergun`.  Record:
@@ -2067,7 +2067,7 @@ non-depreciable capital at the START of construction, recovered untaxed at
 its purchase value at end of life (CAPCOST 2017's placement), not in TCI;
 `land.price` is a sensitivity input.  Gates: `check_economic_sensitivity`
 (i)-(l), `check_cost_provenance` (s).  Gate: `check_economic_sensitivity`.  Witnesses:
-`greenAmmonia02_feasibility150bar` / `50bar`.
+`ammoniaPEQ02_feasibility150bar` / `50bar`.
 
 ### A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase B, on stated defaults)
 

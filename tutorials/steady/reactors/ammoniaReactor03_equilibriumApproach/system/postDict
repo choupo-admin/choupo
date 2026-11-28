@@ -15,7 +15,7 @@
   =========================================================================
   WHY THE CONVERTER'S VOLUME IS NOT TYPED IN
   =========================================================================
-  The flagship green-ammonia plant and `ammonia02_full_plant` both sized this
+  The flagship ammonia plant and `ammonia02_full_plant` both sized this
   converter with `designRules { volume <m3>; }` and put where the number came
   from in a `//` comment beside it.  The design sheet then recorded the basis
   as "volume (author-set)" and said nothing about a space velocity, because

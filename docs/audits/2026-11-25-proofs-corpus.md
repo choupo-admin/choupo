@@ -101,7 +101,7 @@ tool; the numbers above are after the fixes.  What remains:
 
 ### T4: 0 violations in 250
 Independent mass closure equals the engine's to 1e-4 pp in all 250.  The lowest closures: claus01_thermal_stage
-99.9947, pfr_polyesterification 99.9963, polycaprolactonePlant 99.9963, greenAmmonia03 / PEQ 99.9971,
+99.9947, pfr_polyesterification 99.9963, polycaprolactonePlant 99.9963, ammoniaPEQ03 / PEQ 99.9971,
 ammonia01_synthesis_loop and ammoniaReactor02 99.9974; 22 cases are below 99.999 %, none below 99.99 %.
 One known debt shows in the engine's own element report and is not a proof failure: membrane08_softened_scaling
 (Ca 0.012 %, Mg 0.020 %, K 0.23 %, Na 142.6 %: the SAC resin takes the cations and no stream carries them; pinned in

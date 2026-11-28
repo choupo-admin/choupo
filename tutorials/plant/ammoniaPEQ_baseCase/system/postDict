@@ -1,0 +1,650 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Ammonia, 1200 t/day           |
+|      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- SIZING and COSTING of every unit that is a piece of equipment
+  (DEV.md 4c C44, slice 1), of the PRODUCT STORAGE (slice 2), of what each
+  vessel HOLDS while the plant runs (slice 3), and the ECONOMIC APPRAISAL
+  with its WORKING CAPITAL built up from those holdings (slice 4).
+
+  INVENTORY (what each item holds, "retida em cada equipamento").  An item
+  may declare `inventory { held ( { stream <s>; fraction <f>; } ... ); }`:
+  it then holds, per phase, V x fraction x rho x w, where V is its own
+  sized volume and rho and w the density and mass fractions of the stream
+  named for that phase, at the state that stream carries.  The phase is
+  READ off the stream, never declared.  Declared here, every fraction an
+  AUTHOR-SET ASSUMPTION:
+    Converter     NOT DECLARED since the beds are `pfr` units sized by their
+                  kinetics (C440): the pfr sizer publishes no held volume of
+                  gas, so the beds are listed as not declared rather than
+                  given one.  (The Gibbs vessel held 0.40 of its volume.)
+    Separator     a liquid level of 0.25 (RawLiquid) under 0.75 of gas
+                  (UnreactedGas).
+    LetdownHP     half liquid (LetdownLiquid), half gas (LetdownGas).
+    StorageFlash  half liquid (ProductNH3), half gas (FlashGas).
+  The drums' volumes are now the detailed sizing's shell volumes (the two
+  let-down drums were lower bounds before C318).  The storage tanks hold their own working level --
+  21 days of production -- and declare nothing more.  NOT DECLARED, and the
+  run lists them by name rather than as zero: the compressors and the
+  exchangers.  They hold gas, but no sizer here publishes the volume they
+  hold it in, and none is invented.  For scale only: the whole 25 m3
+  Separator holds ~0.9 t of loop gas, against the tanks' ~25 000 t.
+
+  WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units (the CONVERTER sector counts as one, its five calculations being sized below):
+
+    compressors (4)   N2Boost MakeupComp1 MakeupComp2 RecycleComp
+                      by SHAFT POWER, the unit's own result (pass-through).
+    exchangers  (6)   N2Cooler Intercooler Aftercooler WaterCooler Chiller
+                      FEHE -- DESIGNED in detail by the Kern method
+                      (`design {}` below; DEV.md 4c C48), no longer
+                      A = Q/(U*LMTD) on a typed U.  The AUTHOR chooses the
+                      bundle and the fouling; the RUN finds the smallest
+                      number of tubes N for which
+                          U * F * LMTD * n_shells * pi d_o L N >= |Q|,
+                      U on the outside area from the two films (Gnielinski
+                      in the tubes, Kern on the shell), the tube wall (the
+                      item's material record's conductivity) and the
+                      declared fouling; F of one 1-2 shell (Bowman, Mueller
+                      & Nagle 1940), or 1 for one tube pass or a boiling
+                      utility.  The SAME kernel the two-stream heatExchanger
+                      unit rates and designs with (htc/ShellTubeDesign).
+                      The sheet carries N, the shell ID, the baffles, h on
+                      each side, the five resistances whose sum is 1/U, U
+                      clean and dirty, F, the area required and installed,
+                      the utility flow and both pressure drops.  The
+                      INSTALLED area is what is costed.
+                      Properties: the process gas by the case's own package
+                      (constant/thermoPhysPropDict, whose `transport {}`
+                      exists for this) at the MEAN of its terminal
+                      temperatures and its inlet pressure; the cooling water
+                      by the system its OWN record declares (IF97,
+                      data/standards/utilities/coolingWater.dat), its flow
+                      |Q| / dutyPerKg.  The LMTD is still COMPUTED from the
+                      unit's own temperatures and the utility's -- no
+                      temperature is typed: every cooler inlet here is a
+                      compressor discharge, which moves the day a group
+                      re-tunes a shaft power.
+                      THE CHOICES, all AUTHOR-SET, none cited:
+                        * tubes 25.4 mm OD x 2.77 mm wall (19.86 mm ID),
+                          6.096 m (20 ft), pitch 31.75 mm (1.25 OD) -- the
+                          gas in the TUBES, because it is the high-pressure
+                          side; SQUARE pitch where the cooling water is on
+                          the shell (cleanable lanes), triangular elsewhere;
+                        * 2 tube passes on the water coolers; 4 on the
+                          Chiller (its utility boils, so F = 1 whatever the
+                          passes and passes only buy gas velocity); ONE on
+                          the FEHE -- its ends cross (hot out 336 K, cold out
+                          651 K), so no 1-2 shell can serve it -- over FOUR
+                          6.1 m shells in counter-current series;
+                        * baffles at 1.0 x the shell ID, the widest
+                          customary spacing: at 0.4 x the shell ID (the first
+                          trial, measured) the water side lost 1.2-4.7 bar;
+                        * fouling 0.0002 m2.K/W on the process gas, 0.00035
+                          on the tower water, 0.0002 on the refrigerant --
+                          TEMA-typical orders of magnitude; no table was read;
+                        * the Chiller's BOILING-ammonia coefficient, 2500
+                          W/m2/K, is TYPED (`utilitySideFilm`): a boiling
+                          film is not a single-phase correlation and none is
+                          wired into the design, so it is declared, said on
+                          the sheet, and no shell-side pressure drop is
+                          computed for it.
+                      THREE THINGS THE SHEETS SAY, read them:
+                        * the gas viscosity and conductivity are DILUTE-GAS
+                          values (Chung, Eucken); at 150 bar the real gas is
+                          more viscous and more conductive;
+                        * the WaterCooler and the Chiller CONDENSE ammonia:
+                          they are designed on the GAS film of the vapour
+                          that leaves (its own equilibrium vapour, its own
+                          mass flow), the condensate film -- which is better
+                          -- not credited, so they are on the SAFE side; their
+                          pressure drop is the whole inlet flow as gas;
+                        * the FEHE's own 2000 m2 (U 550, declared on the
+                          unit, which forms the loop's answer) is published
+                          beside the design as A_rated / U_rated and moves
+                          nothing; the DESIGNED area is costed, because it is
+                          the hardware that delivers the same duty on
+                          computed films and declared fouling.
+                      Several exchangers exceed the cost correlation's
+                      1000 m2 ceiling (a real plant splits such a duty over
+                      several shells), and the costing pass says so.
+    converter   (6)   THREE catalyst BEDS sized by their KINETICS, TWO interbed
+                      waste-heat boilers and ONE pressure shell around the
+                      sector CONVERTER (DEV.md 4c C440, C66, C69).  The beds
+                      run the Dyson & Simon (1968) rate for an iron catalyst
+                      times the effectiveness factor xi of its Eq 39 (read on
+                      Table I at max(P, 150 atm)); each volume is SOLVED by
+                      system/outerDict against a stated criterion (bed 1
+                      leaves at 515 C, beds 2 and 3 5 K short of equilibrium)
+                      and the beds share ONE diameter, the smallest at which
+                      every Ergun drop is within 1 bar.  `CatalystBedSize`
+                      reads each solved volume, `ConverterShellSize` stacks
+                      the beds and the coolers into one shell at 166 bar g and
+                      prices it on the Turton vessel set.  The space-velocity
+                      basis the Gibbs converter used is retired.
+    drums       (3)   Separator LetdownHP StorageFlash, DETAILED (C318): the
+                      Souders-Brown allowable vapour velocity (Towler & Sinnott
+                      10.9, K = 0.07 m/s, with a demister), the diameter from
+                      the vapour area, the liquid levels from a declared 600 s
+                      hold-up and 120 s surge above a 0.3 m low level, the
+                      orientation CHOSEN by the sizer (vertical unless H/D >
+                      5) and printed, a Haider-Levenspiel check of a 150 um
+                      droplet, and the three nozzles; Theory Guide
+                      `sec:drum-sizing`.  It used to be V = Q_vapour * tau
+                      on the ideal gas, which fitted the Separator and could
+                      not size the two LET-DOWN drums, which are LIQUID drums
+                      (99.6 % and 98.6 % of the moles entering leave as
+                      liquid) -- their volumes were lower bounds, said on
+                      every run; now the liquid density comes through the
+                      sizing pass's density door and the hold-up sets them.
+                      The two let-down drums come out HORIZONTAL, the
+                      Separator VERTICAL (H/D 4.98, on the 3-5 window's
+                      edge: 5.02 on ideal mixing); the plot plan follows.
+                      Every number the source does not fix is ASSUMED, below.
+
+    storage     (1)   NH3Storage, attached to the boundary stream ProductNH3
+                      (`storage ( ... )` below; Vitor ruled a tank a postDict
+                      item attached to a stream, DEV.md 4c C44).  Basis, all
+                      AUTHOR-SET design assumptions, none cited:
+                        * 21 days of production -- the commander's decision
+                          for this case, a design basis, not a datum;
+                        * refrigerated atmospheric storage at the
+                          StorageFlash outlet (238.15 K, 1 atm), the
+                          state the stream carries;
+                        * a working level of 90 % of the tank volume;
+                        * at most 30 000 m3 per tank -- the ceiling of the
+                          tank cost correlation, so every tank is priced
+                          inside its range.
+                      V = 21 day x mdot / (rho x 0.90), split into equal tanks.
+                      rho is the case's own liquid density at 238.15 K
+                      (announced on the run; READ the README: the NH3
+                      record's Vliq gives ~769 kg/m3 there, which is likely
+                      ~12 % high, so the tanks are likely ~12 % small).
+                      COST: the only tank row read (CAPCOST 2017, the
+                      authors' program for Turton App. A) is an ATMOSPHERIC
+                      API fixed-roof tank.  A refrigerated, insulated,
+                      double-containment ammonia tank costs more, so the
+                      storage cost below is a LOWER BOUND, said on every run.
+                      A gas is refused by this tank sizer by name: a gas is
+                      stored in pressure vessels -- `gasStorage ( ... )`,
+                      the H2Buffer (GAS STORAGE, after the working capital
+                      below).  NOT STORED HERE, by decision: the NITROGEN
+                      supply belongs to the ASU, outside this battery limit,
+                      and so does the electrolyser that makes the hydrogen;
+                      the hydrogen BUFFER is in this battery limit.
+
+  WHAT IS NOT SIZED, and why it is not an omission: LoopMix, MakeupMix and
+  PurgeSplit are a tee and two pipe junctions -- no vessel, no area, no
+  driver -- so they are not costed equipment and no item is invented for
+  them.  Outside the battery limit, as the flowsheet header says: the
+  electrolysers, the ASU, the cooling-water system, the refrigeration
+  package and the steam system.
+
+  EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET DESIGN ASSUMPTION, declared
+  with its reason on its line, and none cites a source because none was
+  read.  The rules they follow:
+    * pressureDesign (GAUGE) = max(1.1 x Pg, Pg + 1.7 bar), the Design Guide's
+      preliminary rule on the GAUGE operating pressure, rounded UP (not 1.1 x
+      the absolute, as before C150 R01).  The loop shares one: 151.27 bar abs
+      = 150.26 bar g -> 166 bar g.  For a compressor the value is recorded only: the
+      correlation folds the discharge pressure into the power (F_P = 1).
+    * MATERIAL, one rule: SS316 where the process side exceeds the carbon
+      steel record's maxT (700 K) -- the converter outlet is at 733 K;
+      SS304 where it goes below 0 C, because austenitic stainless keeps its
+      toughness there and the generic carbon-steel record states no
+      minimum design temperature; carbon steel everywhere else, HYDROGEN
+      SERVICE INCLUDED.  The material records carry no hydrogen-service
+      limit, so whether carbon steel resists hydrogen at these partial
+      pressures and temperatures is NOT checked here -- it is the groups'
+      materials question, and moving an item to SS316 is one word.  Every
+      item designed above 100 bar also exceeds the material records' maxP
+      (100 bar), and the run warns about every one of them -- the two
+      vessels (the converter shell, Separator), the exchangers and the compressors
+      (the exchangers and compressors since DEV.md 4c C86); the item is
+      still sized and priced.  For a compressor
+      the material is recorded only (the correlation's F_BM 2.7 carries no
+      material factor).
+    * U is not declared: it is each exchanger's design RESULT (the
+      exchanger paragraph above lists what IS declared instead).
+    * vessels: a fully radiographed joint (jointEfficiency 1.0) and 3 mm of
+      corrosion allowance; L/D 6 for the catalyst vessel (ammonia02's), 3
+      for the drums.
+
+  The price constants are ammonia02's (CEPCI 2026 = 820 is a projection,
+  not a published index value; EUR/USD 0.92).
+
+  UTILITIES, C_UT (DEV.md 4c C52).  C_UT is the utility allocation priced:
+  every heat duty a unit publishes is served by the lowest-grade utility in
+  constant/utilities/ that can take it across dTmin 10 K, carried by the
+  unit's own process streams (the FEHE), or LISTED unserved -- never dropped.
+  The converter's heat (~30 MW, now released in the two INTERBED coolers and
+  the third bed's own effluent) is served by a DECLARED utility,
+  `utility steamGenerationHP;` on the two interbed coolers: HP steam raised in a
+  waste-heat boiler at the steamHP header's 41 bar, valued at -18 EUR/GJ --
+  a CREDIT, an AUTHOR-SET ASSUMPTION stated in the case-local record
+  constant/utilities/steamGenerationHP.dat (an upper bound: the steam is
+  worth that only if the plant uses it).  The credit is printed on its own
+  line under C_UT and published as C_UT_credit.  One duty stays UNSERVED:
+  the StorageFlash cools to -35 C and the coldest utility boils at -33.3 C,
+  so C_UT is a LOWER BOUND and says so.
+
+  ECONOMICS (slice 4).  Prices are in constant/economics, every one a CITED
+  public figure with its source, date and arithmetic (its header says which
+  kind each is).  The plant sells ammonia at the market price of CONVENTIONAL
+  ammonia (0.530 EUR/kg) and buys hydrogen at ACER's cost of CONVENTIONAL
+  (natural-gas) hydrogen, 2.0 EUR/kg: at those prices it does NOT pay (README,
+  'Hydrogen price scenarios'); it pays below the break-even hydrogen price
+  the run prints (1.685 EUR/kg), and at the 8 EUR/kg cost of electrolytic
+  hydrogen it loses heavily.
+  The appraisal knobs below
+  are ammonia02's, also assumptions.  N_np, the number of processing steps
+  Turton's labour correlation counts (compressors, exchangers, reactors;
+  not drums, tanks or pumps), is COUNTED from this flowsheet: 4 + 6 + 1 =
+  11.
+
+  WORKING CAPITAL, BUILT UP instead of 15 % of FCI.  The working capital is
+  the money a running plant keeps tied up in things that are not equipment.
+  Its GROSS figure -- the current assets, "capital circulante" -- is:
+    raw-material stock    the HYDROGEN the full H2Buffer holds, at its
+                          purchase price (a store attached to a priced raw
+                          material is that raw material's stock: DEV.md
+                          C89); and 0 days of nitrogen, which arrives by pipe
+                          from the ASU, its buffer outside this battery
+                          limit (the commander's decision, DEV.md C44);
+    process inventory     what the vessels hold (slice 3), at cost;
+    product stock         what the two product tanks hold -- 21 days of
+                          production -- at the cost of making it, never at
+                          its sales price;
+    receivables           30 days of sales;
+    minimum cash          15 days of the cash cost of manufacture (COM_d).
+  Its NET figure -- "fundo de maneio" -- is the gross minus what the plant
+  owes its suppliers (payables, 30 days of raw-material purchases).  The net
+  is what the owners put in at year 0 and recover at the end, and it is the
+  WC of the cash flow.  The run prints both, line by line, beside the 15 %
+  figure for comparison.  The days are the commander's decisions for this
+  case (DEV.md C44), design-basis assumptions, not data.
+
+  GAS STORAGE (DEV.md 4c C89).
+    H2 buffer         H2Buffer, attached to the boundary stream H2Feed
+                      (`gasStorage ( ... )` below; DEV.md 4c C89).  WHY: the
+                      electrolysers follow an intermittent renewable supply
+                      and the synthesis loop wants a steady feed, so the
+                      hydrogen is BUFFERED.  The vessels give back only the
+                      gas between a full and an emptied state:
+                          working gas  = autonomy x mdot(H2Feed)
+                          V_total      = working gas
+                                         / (rho(Pmax, T) - rho(Pmin, T))
+                      rho from the case's OWN package (SRK; the run prints
+                      Z at both ends -- hydrogen is supercritical here and
+                      SRK puts it slightly above ideal), split into equal
+                      STANDING vessels of at most maxVesselVolume (the Turton
+                      vessel set the tree carries is the vertical one), each
+                      wall at Pmax as gauge.
+                      Basis, all AUTHOR-SET design assumptions, none cited:
+                        * 2 h of autonomy at full rate -- a short-term buffer
+                          that rides through a cloud or a wind lull; a
+                          day/night or seasonal buffer is a different store
+                          (caverns, pipelines) and the groups' question;
+                        * Pmax 100 bar -- the carbonSteel record's own maxP
+                          ("typical pressure-vessel rating"), so the store
+                          sits inside the rating the record declares;
+                        * Pmin 32 bar -- the make-up train takes H2 at 30
+                          bar (MakeupMix), plus 2 bar for the let-down valve
+                          that controls the delivery;
+                        * 313.15 K, the stream's own temperature (the vessels
+                          are uninsulated and take what they are given);
+                        * at most 400 m3 per vessel, inside the vessel cost
+                          correlation's 0.3-520 m3 range; L/D 3, 3 mm of
+                          corrosion allowance and a fully radiographed joint,
+                          the drums' own constants;
+                        * COST BY STEEL MASS (Vitor's ruling on C89): each
+                          vessel = its published shell steel (rho pi D H t,
+                          the cylindrical shell only) x 8 EUR/kg, an
+                          INSTALLED price per kg of shell with heads,
+                          nozzles and supports folded in -- a round
+                          placeholder, not a quotation and not from any
+                          source.  No index and no module factor are
+                          applied to it; like every item it carries the
+                          1.18 contingency and fee (C_TM = 1.18 C_BM).  The Turton vessel set is printed
+                          beside it as an EXTRAPOLATED comparison (F_P ~ 32
+                          on a 200 mm wall) and is NOT in the total.
+                      NOT INCLUDED, said on every run: the CHARGING
+                      COMPRESSOR from 30 bar to Pmax (neither the machine nor
+                      its power is sized or priced: the buffer's cost is a
+                      LOWER BOUND), and any renewable-power profile -- the 2 h
+                      are assumed, not derived.  The hydrogen the full
+                      buffer holds is RAW-MATERIAL STOCK in the working
+                      capital, at its purchase price.
+
+  PINCH TARGETS (C302).  A `pinchPass` below reads the converged result only
+  and changes none of it: the Linnhoff-Flower targets of the duties the
+  units publish as a generic `Q` (the four water coolers, the chiller,
+  the three flash drums; the FEHE's two
+  sides as recovered heat), as in the FEL-2 case, with the same dTmin of
+  10 K.  The two interbed coolers publish a generic `Q`, so the converter's heat is
+  a stream segment of this pinch (the segments are the coolers' T in and out;
+  C302: the Gibbs converter published only `Q_kW` and was outside it).
+\*---------------------------------------------------------------------------*/
+pinchPass
+{
+    dTmin   10 K;      // process-process approach -- AUTHOR-SET, the same value
+                       // as the FEL-2 case (ammoniaPEQ02_feasibility150bar)
+                       // and the utility allocation's own default approach
+                       // (UTILITIES C_UT, base case header).  This plant's
+                       // exchangers state no approach of their own: each
+                       // Kern design RESULTS in its approach, so nothing
+                       // here overrides 10 K.  A TARGET, not a design: it
+                       // reads the converged result only and changes none.
+}
+sizing
+{
+    units
+    (
+        //  ---- compressors: the shaft power is the unit's own result ------
+        { unitName N2Boost;      type compressor;  material carbonSteel;      // dry N2, 474 K discharge
+          designRules { pressureDesign 33; } }                                 // 30.2 bar abs = 29.19 bar g; max(1.1 x, +1.7 bar) -> 33 bar g
+        { unitName MakeupComp1;  type compressor;  material carbonSteel;      // H2/N2, 420 K discharge
+          designRules { pressureDesign 73; } }                                 // 66.7 bar abs = 65.69 bar g; max(1.1 x, +1.7 bar) -> 73 bar g
+        { unitName MakeupComp2;  type compressor;  material carbonSteel;      // H2/N2, 425 K discharge
+          designRules { pressureDesign 166; } }                                // the loop's
+        { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
+          designRules { pressureDesign 166; } }                                // the loop's
+
+        //  ---- the six exchangers: DESIGNED in detail (Kern), see header ----
+        //  Every geometry and fouling number below is AUTHOR-SET (see the
+        //  header for each one's reason); U, N, the shell, the films, F, the
+        //  area and both pressure drops are the design's RESULTS.
+        { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;      // 25 -> 35 C, the plant tower
+                        pressureDesign 33;
+                        design { method Kern;
+                                 processSide tube;            // the 30 bar gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;   // 1 in, 2.77 mm wall
+                                 tubeLength 6.096 m;          // 20 ft
+                                 tubePitch 31.75 mm;  tubePattern square;  // 1.25 OD, cleanable water lanes
+                                 tubePasses 2;
+                                 baffleSpacingRatio 1.0;      // B = 1.0 x shell ID: see the header
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
+                                           shellSide 0.00035 m2.K/W; }  // treated tower water
+                               } } }
+        { unitName Intercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;
+                        pressureDesign 73;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;      // part of the NH3 condenses: gas-film basis
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
+          designRules { utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;   // a kettle: gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;  // clean refrigerant
+                                 tubePasses 4;                // F = 1 here: passes buy gas velocity
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 2500 W/m2/K; // boiling NH3 -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+        { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
+          designRules { pressureDesign 166;
+                        design { method Kern;
+                                 tubeStream CONVERTER.HotEffluent;   // the hot effluent in the tubes (the sector outlet, by its identity)
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // counter-current: the ends cross
+                                 shellsInSeries 4;            // 4 x 6.1 m shells in series
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+
+        //  ---- the two interbed coolers: waste-heat boilers, DESIGNED (Kern) --
+        //  The bed effluent in the TUBES (the high-pressure side), boiler
+        //  feedwater boiling on the shell at the steamHP header's 41 bar.
+        //  F = 1 (a boiling utility); the passes only buy gas velocity.
+        { unitName CONVERTER.InterbedCooler1; type shellTubeHX; material SS316;          // bed 1 outlet ~790 K
+          designRules { utility steamGenerationHP;  // HP steam raised -- the declared credit
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // F = 1 anyway (boiling); 1 pass keeps the gas dP down
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+        { unitName CONVERTER.InterbedCooler2; type shellTubeHX; material SS316;
+          designRules { utility steamGenerationHP;
+                        pressureDesign 166;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+
+        //  ---- the three catalyst beds: sized by their KINETICS ---------
+        //  The `pfr` sizer READS each bed's own V_R -- the DesignSpec's
+        //  answer (system/outerDict) -- sizes the shell around it, and
+        //  prices the catalyst charge from the two DECLARED numbers below,
+        //  which are AUTHOR-SET ASSUMPTIONS (see the header).
+        //  NO geometry here: each bed declares the converter's ONE
+        //  diameter (CONVERTER/Bed<N>/system/flowsheetDict `operation.
+        //  diameter $D_converter;`, the cross-section its Ergun pressure
+        //  drop is integrated on) and the sizer READS it from the unit --
+        //  one home (DEV.md 4c C66, C69).
+        { unitName CONVERTER.Bed1;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
+                        catalystPrice        15.0; } } // EUR/kg -- AUTHOR-SET ASSUMPTION
+        { unitName CONVERTER.Bed2;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+        { unitName CONVERTER.Bed3;  type pfr;  material SS316;
+          designRules { pressureDesign       166;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+
+        //  ---- THE CONVERTER: ONE pressure shell around the sector ------
+        //  AFTER every member's entry: the shell reads what its members
+        //  were sized as, and refuses a member not yet sized.  The loop's
+        //  design pressure, as every high-pressure item here.  NO `D`: the
+        //  converter's diameter is its beds' (system/flowsheetDict
+        //  `D_converter`, solved by system/outerDict).
+        { unitName CONVERTER;  type converterShell;  material SS316;
+          designRules { pressureDesign  166; } }
+
+        //  ---- the three flash drums: DETAILED sizing (C318; see the header) --
+        //  Souders-Brown allowable velocity (Towler & Sinnott 10.9), levels from a
+        //  declared hold-up and surge, the orientation CHOSEN and printed, the
+        //  three nozzles.  Every number the source does not fix is ASSUMED here:
+        //  hold-up 600 s (Towler: 10 min typical), surge 120 s, low level 0.3 m
+        //  (Towler Example 10.5), droplet 150 um, nozzle velocities inside
+        //  Towler section 5's windows (liquid 1-3, vapour 15-30 m/s).
+        { unitName Separator;   type vessel;  material SS304;                 // -20 C
+          designRules { pressureDesign 166;                                   // the loop's
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream UnreactedGas;  liquidStream RawLiquid;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
+          inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
+                             { stream UnreactedGas;  fraction 0.75; } ); }  }
+        { unitName LetdownHP;   type vessel;  material SS304;                 // -20 C
+          designRules { pressureDesign 21;                                   // 20 bar abs = 18.99 bar g; max(1.1 x, +1.7 bar) -> 21 bar g
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream LetdownGas;  liquidStream LetdownLiquid;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
+          inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream LetdownGas;    fraction 0.50; } ); }  }
+        { unitName StorageFlash;type vessel;  material SS304;                 // -35 C
+          designRules { pressureDesign 2;                                   // 1.013 bar abs = 0 bar g; the +1.7 bar floor -> 2 bar g
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream FlashGas;  liquidStream ProductNH3;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
+          inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream FlashGas;      fraction 0.50; } ); }  }
+    );
+
+    //  ---- storage: attached to a boundary stream (see the header) ----
+    storage
+    (
+        { name          NH3Storage;
+          stream        ProductNH3;      // the product, at 238.15 K and 1 atm
+          material      SS304;           // below 0 C (the rule above); the tank
+                                         // row carries NO material factor
+          storageTime   21 day;          // days of production -- AUTHOR-SET
+          fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
+    );
+
+    //  ---- gas storage: the H2 buffer, pressure vessels (see the header) --
+    gasStorage
+    (
+        { name            H2Buffer;
+          stream          H2Feed;        // electrolytic H2, 30 bar, 313.15 K
+          material        carbonSteel;   // hydrogen service NOT checked (the rule above)
+          autonomy        2 h;           // hours at full rate -- AUTHOR-SET
+          reason          "a short-term buffer that rides through a cloud or a wind lull of up to two hours at full rate; a day/night or seasonal buffer is a different store (caverns, pipelines) and the groups' question";
+          maxPressure     100 bar;       // absolute: the carbonSteel record's maxP -- AUTHOR-SET
+          minPressure     32 bar;        // absolute: the 30 bar make-up suction + 2 bar valve -- AUTHOR-SET
+          temperature     313.15 K;      // the stream's own -- AUTHOR-SET
+          maxVesselVolume 400;           // m3 per vessel, inside the cost correlation's range
+          L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;   // the drums' constants
+          steelPrice      8;             // EUR per kg of SHELL steel, INSTALLED -- AUTHOR-SET
+          steelPriceReason "a round placeholder for a fabricated, installed carbon-steel pressure vessel per kg of its shell, heads, nozzles and supports folded in; not a quotation and not taken from any source -- replace it with a vendor's price";
+        }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // projection, author-set (see the header)
+    cepci2001 397;        // the correlation's own basis year
+    usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;          // yr -- assumption (ammonia02's)
+    constructionPeriod  1;
+    discountRate        0.10;        // assumption
+    taxRate             0.21;        // assumption
+    depreciation        straightLine;
+    depreciableLife     9;           // yr
+    salvageFraction     0.0;
+    streamFactor        0.90;        // 7884 h/yr on stream -- assumption
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    N_np                15;          // 4 compressors + 8 exchangers (6 + 2 interbed boilers) + 3 beds
+    estimateClass       4;           // the AUTHOR's statement of how far the project is defined (AACE's primary characteristic) -- not a consequence of the model or of the design stage illustrated
+    accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
+    refuseOnMissingPrice 1;
+
+    //  THE BREAK-EVEN IN PRICE: at what price of the product does the NPV
+    //  reach zero (the minimum selling price of ammonia), and what is the
+    //  highest price of hydrogen the plant can bear, every other price held.
+    //  The ammonia price is the market price of CONVENTIONAL ammonia
+    //  (constant/economics); the first number is the price this plant needs
+    //  for its product (a little above the market at the 2.0 EUR/kg
+    //  hydrogen) and the second is how cheap the hydrogen must be (about
+    //  1.69 EUR/kg) for the NPV to reach zero.
+    breakEven
+    {
+        price ( ProductNH3 H2Feed );
+    }
+
+    //  THE SENSITIVITY (C526): each input below is moved ALONE to its two
+    //  ends and the plant is priced again by the same cash flow, on the same
+    //  converged run -- the tornado, printed sorted by NPV swing, published as
+    //  `economics.sens_<input>_...` and written to
+    //  reports/economics/sensitivity.csv.  A sensitivity, NOT an uncertainty
+    //  analysis.  THE HYDROGEN ENDS: the HIGH end 8.0 EUR/kg is CITED, ACER's
+    //  cost of renewable (RFNBO) hydrogen, p. 40 para 78 (constant/economics);
+    //  the LOW end 1.5 EUR/kg is an ASSUMPTION of this case, not read from
+    //  any source: a site with cheap hydrogen, below the 2025 EU conventional
+    //  cost (the base, 2.0).  Together with the base they are the three
+    //  rows of the README's scenario table.  Ammonia 0.380-0.692: the lowest
+    //  and highest monthly EU import unit value of 2025 (constant/economics);
+    //  nitrogen 0.01594-0.01754 (OIES Table 2); the FCI's ends are this
+    //  block's own `accuracyBand`; the electricity bill +/- 20 %, a customary
+    //  round figure of a feasibility study (NOT cited); discount rate 8 / 12 %
+    //  around the 10 % above; stream factor 0.85 / 0.95 around 0.90.
+    sensitivity
+    {
+        FCI                       { relative accuracyBand; }
+        price.ProductNH3          { absolute ( 0.380 0.692 ); }
+        price.H2Feed              { absolute ( 1.5 8.0 ); }
+        price.N2Feed              { absolute ( 0.01594 0.01754 ); }
+        utility.electricity       { relative ( -0.20 0.20 ); }
+        discountRate              { absolute ( 0.08 0.12 ); }
+        streamFactor              { absolute ( 0.85 0.95 ); }
+    }
+
+    //  THE WORKING CAPITAL, built up (see the header).  Every key needs its
+    //  unit: a bare number would be read as SECONDS.
+    workingCapital
+    {
+        rawMaterialStock   0 day;    // H2 and N2 by pipe; no stock here
+        receivables       30 day;    // days of sales customers owe
+        payables          30 day;    // days of raw-material purchases owed
+        minimumCash       15 day;    // days of cash operating cost (COM_d)
+    }
+
+    //  THE LAND (DEV.md 4c C82): the plot area the layout publishes
+    //  (system/layoutDict, `plot { margin; }` included) priced as
+    //  non-depreciable capital, bought at the start of construction and
+    //  recovered at its purchase value at the end of the project.  The price
+    //  is a ROUND PLACEHOLDER FOR THE STUDENTS' SITE; NOT A MARKET QUOTATION.
+    land
+    {
+        price   50;     // EUR per m2 of plot
+        source  "placeholder for the students' site; not a market quotation";
+        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
+    }
+}
