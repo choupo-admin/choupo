@@ -14468,6 +14468,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/iapws/IF97.H",
+   "src/thermo/pureFluid/IF97WaterFluid.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -16456,6 +16458,7 @@
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ReadLog.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -16473,6 +16476,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/FlowCurve.H",
@@ -21170,6 +21174,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/saturation/DewPoint.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
   ],
@@ -27603,6 +27608,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],
   "src/thermo/activityCoefficient/CosmoSac.H": [
@@ -28236,7 +28242,8 @@
   "src/thermo/iapws/IF97.H": [
    "src/propertyOps/SteamTables.cpp",
    "src/thermo/iapws/IF97.cpp",
-   "src/thermo/pureFluid/PureFluidModel.cpp"
+   "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/unitOperations/flash/SpecifiedFlash.cpp"
   ],
   "src/thermo/liquidProperty/DensityLeaf.H": [
    "src/thermo/LiquidPropertyDoor.cpp",
@@ -28416,7 +28423,8 @@
    "src/thermo/phase/VaporPhase.cpp"
   ],
   "src/thermo/pureFluid/IF97WaterFluid.H": [
-   "src/thermo/pureFluid/PureFluidModel.cpp"
+   "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/unitOperations/flash/SpecifiedFlash.cpp"
   ],
   "src/thermo/pureFluid/PureFluidModel.H": [
    "src/applications/choupoBatch/main.cpp",

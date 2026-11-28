@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1952,
+  "cases": 1959,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -25143,6 +25143,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/flashSpec02_window_edges": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/heavyWater01_isotope_effect": {
    "application": "choupoProps",
    "ops": [
@@ -28058,6 +28069,20 @@
    "roles": [],
    "hasGolden": false
   },
+  "tutorials/steady/flowsheets/valve_refusal_pressure_raise": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/gas-solid/bagFilter01_dust": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28373,6 +28398,20 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": {
    "application": "choupoSolve",
@@ -28961,6 +29000,20 @@
    ],
    "unitModels": [
     "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pump10_supercritical_outlet": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -30180,6 +30233,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/equil05_order_independent_a": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/equil05_order_independent_b": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/ladder01_wgs_three_rungs": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -30469,6 +30550,20 @@
    "hasGolden": true
   },
   "tutorials/steady/rotating/turbine01_air": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/turbine02_n2_isentropic_state": {
    "application": "choupoSolve",
    "unitTypes": [
     "turbine"
@@ -32852,6 +32947,7 @@
     "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
+    "tutorials/props/thermo/flashSpec02_window_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
@@ -33076,6 +33172,7 @@
     "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -33097,6 +33194,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -33136,6 +33234,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -33212,6 +33311,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -33233,6 +33334,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
@@ -33660,6 +33762,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/screen01_methanol_routes"
    ],
@@ -33726,6 +33830,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -33966,6 +34071,7 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/swro01_campoDalias",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
@@ -34125,12 +34231,14 @@
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl"
    ],
    "valve": [
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing"
    ],
    "williamsOttoPlant": [
@@ -36549,6 +36657,7 @@
     "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
+    "tutorials/props/thermo/flashSpec02_window_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/refEoS01_iapws95_verification",
@@ -36658,6 +36767,7 @@
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/flowsheets/table05_sector_table_pins",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -36677,6 +36787,7 @@
     "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
     "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
@@ -36712,6 +36823,7 @@
     "tutorials/steady/hydraulics/pipe07_turbulent_refused",
     "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pipe09_isothermal_gas_line",
+    "tutorials/steady/hydraulics/pump10_supercritical_outlet",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -36782,6 +36894,8 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/equil05_order_independent_a",
+    "tutorials/steady/reactors/equil05_order_independent_b",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -36803,6 +36917,7 @@
     "tutorials/steady/rotating/pump03_generic_selection",
     "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/rotating/turbine02_n2_isentropic_state",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
