@@ -91,6 +91,82 @@ THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
 
+LOGS = Path.home() / ".claude" / "projects" / "-home-vitor-Choupo"
+LAST_WEEK_M = 4980   # re-read tokens (millions) of the week before Vitor's request, measured 2026-11-27
+
+
+def _scan(hours):
+    """Per-message context (cache read + creation + input) from the local Claude Code logs,
+    as ~/.cache/choupo/meter.py reads them: main session and subagents apart."""
+    from datetime import timedelta
+    t0 = datetime.now(timezone.utc) - timedelta(hours=hours)
+    main, gens, tot = [], {}, 0
+    for f in LOGS.glob("**/*.jsonl"):
+        if f.stat().st_mtime < t0.timestamp():
+            continue
+        sub = "/subagents/" in str(f)
+        seen = set()
+        for line in f.open(errors="ignore"):
+            if '"usage"' not in line:
+                continue
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            m = r.get("message") or {}
+            ts = r.get("timestamp")
+            if r.get("type") != "assistant" or not ts or m.get("id") in seen:
+                continue
+            if datetime.fromisoformat(ts.replace("Z", "+00:00")) < t0:
+                continue
+            seen.add(m.get("id"))
+            u = m["usage"]
+            c = u.get("cache_read_input_tokens", 0) + u.get("cache_creation_input_tokens", 0) + u.get("input_tokens", 0)
+            tot += c
+            (gens.setdefault(f, []) if sub else main).append(c)
+    return main, gens, tot
+
+
+def _light(v, g, y):
+    return "🟢" if v <= g else ("🟡" if v <= y else "🔴")
+
+
+def efficiency_section():
+    """Context efficiency of the agents, computed from the logs (Vitor, 2026-11-28)."""
+    import statistics as st
+    try:
+        m, g, t = _scan(24)
+        _, _, t7 = _scan(168)
+    except OSError:
+        return "### Eficiência de contexto\n\nsem dado (registos locais ilegíveis)"
+    k = lambda x: f"{x / 1000:.0f} mil"
+    L = ["### Eficiência de contexto (últimas 24 h, calculado dos registos)", ""]
+    if m:
+        med = st.median(m)
+        L.append(f"- {_light(med/1000,150,300)} sessão principal: mediana **{k(med)}** relidos por mensagem, última **{k(m[-1])}** (alvo < 150 mil)")
+    else:
+        L.append("- sessão principal: sem dado")
+    gl = [v for v in g.values() if v]
+    if gl:
+        n = [len(v) for v in gl]
+        L.append(f"- {_light(max(n),60,90)} generais hoje: **{len(gl)}**; chamadas por general: mediana {st.median(n):.0f}, máximo {max(n)} (alvo <= 60)")
+        L.append(f"- contexto por general: na 1.ª chamada mediana {k(st.median(v[0] for v in gl))}, no fim mediana {k(st.median(v[-1] for v in gl))}; "
+                 f"tokens por general: mediana {st.median(sum(v) for v in gl)/1e6:.1f} M, máximo {max(sum(v) for v in gl)/1e6:.1f} M")
+    else:
+        L.append("- generais hoje: sem dado")
+    L.append(f"- {_light(t/1e6,300,800)} relido hoje: **{t/1e6:.0f} M** · {_light(t7/1e6,2100,4980)} 7 dias: **{t7/1e6:.0f} M** (a semana passada: {LAST_WEEK_M} M)")
+    L.append("")
+    for f, v in sorted(g.items(), key=lambda kv: -sum(kv[1]))[:12]:
+        desc, model = "sem descrição", "?"
+        try:
+            meta = json.loads(f.with_suffix(".meta.json").read_text())
+            desc, model = meta.get("description", desc), meta.get("model", "?")
+        except (OSError, ValueError):
+            pass
+        L.append(f"  - {desc[:48]} · {model} · {len(v)} chamadas · pico {k(max(v))} · {sum(v)/1e6:.1f} M")
+    return "\n".join(L)
+
+
 def main():
     if len(sys.argv) != 2:
         print(__doc__); return 2
@@ -139,17 +215,17 @@ def main():
             return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} | " \
                    + (f"{pg[r['item']][0]} %" if r["item"] in pg else "") + " |"
         nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
-        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n{efficiency_section()}\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
               f"\n### ▶ A andar agora ({len(now)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in now) + "\n"
               f"\n### A seguir, por prioridade ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
-              f"\n### O resto, por tema\n")
+              f"\n### O resto, por tema\n\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
         for t in THEME_ORDER + ([] if "Outros" in THEME_ORDER else ["Outros"]):
             lst = [r for r in rest if (th.get(r["item"], "Outros") if th.get(r["item"]) in THEME_ORDER else "Outros") == t]
             if lst:
-                md += f"\n**{t}** ({len(lst)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in lst) + "\n"
+                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] + (f" ({pg[r['item']][0]} %)" if r["item"] in pg else "") for r in lst) + "\n"
         md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Feito: estimativa, partes no main.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
         Path(sys.argv[1]).write_text(md)
         print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")
