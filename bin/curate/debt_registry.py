@@ -1403,6 +1403,7 @@ LESSON_TYPED_CANDIDATES_DEBT = {
 #  Pitzer validity, overpressure P2 above the relieving pressure).  Per file;
 #  may only fall.
 LESSON_KNOBS_UNDECLARED = {
+    "gui/src/ui/methods/PsychroTool.tsx": 4,  # moved from MethodsWorkspace.tsx (C535 S4); the four setup knobs, undeclared
     "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/FaultDiagnosisTool.tsx": 1,  # arrived from main 2026-11-21, undeclared at seeding
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 4,
