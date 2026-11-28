@@ -93,7 +93,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper, TexText, LessonReferences } from "./lessonStep.js";
+import { TexText } from "./lessonStep.js";
+import { LessonDocument, type LessonDoc, type Piece } from "./lessonDocument.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
   Tooltip,
@@ -106,7 +107,6 @@ import {
   KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
 import { DRYING_LIMITS, DRYING_QUIZ, DRYING_STEPS } from "./dryingLesson.js";
-import { LessonQuiz } from "./lessonQuiz.js";
 // The padded display domain is a pure view helper with ONE home already (the
 // Levenspiel-imports-Rayleigh precedent for sharing a helper between two
 // method tools) -- re-declaring it here would be a second copy of the same
@@ -1016,84 +1016,10 @@ export function DryingCurveTool(): JSX.Element {
     </Alert>
   ) : null;
 
-  /*  ONE renderer for the lesson, hoisted above BOTH returns: a page whose
-   *  explanation lives only in the branch that HAS a diagram loses the
-   *  explanation exactly when there is nothing to explain. */
-  const lessonStep = lessonStepper(DRYING_STEPS);
-
-  const lessonHead = (
-    <Box>
-      <Title order={3}>The drying curve, and what decides the time</Title>
-      <Text size="sm" c="dimmed" mt={4}>
-        The air controls the first half and the solid controls the second —
-        and a dryer sized on the first half is a dryer that is too small.
-      </Text>
-    </Box>
-  );
-
-  const lessonLimits = (
-    <>
-    <LessonQuiz title="Check your understanding" questions={DRYING_QUIZ}
-      lesson={DRYING_STEPS} />
-    <Box>
-      <Title order={5}>What this does not model</Title>
-      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
-        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
-        {DRYING_LIMITS.map((l) => (
-          <Text key={l.id} size="xs" c="dimmed">
-            <b>{l.title}</b> {l.body}
-          </Text>
-        ))}
-      </Box>
-    </Box>
-    </>
-  );
-
-  // ---- No drawable view yet: the lesson still stands, with an honest state --
-  if (view === null) {
-    return (
-      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
-          {lessonHead}
-          {alerts}
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(lessonStep)}
-          <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
-          <Box style={{ display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 12 }}>
-            {src === "classroom" && err === null
-              && (busy || classroom === null) ? (
-                <Group gap="sm" wrap="nowrap" align="center">
-                  <Loader size="sm" />
-                  <Text size="sm" c="dimmed">
-                    the engine is integrating the tray — seconds, not instantly
-                  </Text>
-                </Group>
-              ) : (
-                <Text size="sm" c="dimmed" ta="center" maw={500}>
-                  {src === "classroom"
-                    ? "The classroom run finished but published no drying "
-                      + "surface"
-                    : "This run publishes no drying surface"}
-                  {" "}— the two diagrams activate when a choupoBatch unit
-                  emits the trajectory columns <b>{X_COLUMN_SUFFIX}</b> and{" "}
-                  <b>{R_COLUMN_SUFFIX}</b> and the matching KPIs (
-                  {REQUIRED_DRYING_KPIS.join(", ")}), which is what a{" "}
-                  <code>batchDryer</code> publishes.  A batch run of any other
-                  kind has no drying curve to draw — run{" "}
-                  <code>tutorials/{DRYING_WITNESS}</code> and return here.
-                </Text>
-              )}
-          </Box>
-          {lessonLimits}
-        </Stack>
-      </Box>
-    );
-  }
-
-  const k = view.k;
+  const k = view === null ? null : view.k;
 
   /* Chips: each states WHAT it claims and on whose number. */
-  const chips = (
+  const chips = k === null || view === null ? null : (
     <Group gap="sm" wrap="wrap" align="center">
       <Tooltip withArrow multiline w={430}
         label={"The engine's KPI `T_wb`: the wet-bulb temperature of the "
@@ -1179,109 +1105,140 @@ export function DryingCurveTool(): JSX.Element {
     </Group>
   );
 
-  return (
-    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
-        {lessonHead}
-        {alerts}
-
-        {lessonStep(1)}
-
-        <Box>
-          <Title order={5}>Now read the curve the engine integrated</Title>
-          <Text size="sm" mt={4}>
-            X(t) carries the two periods in two colours; R(X) is the diagram
-            the corner is read off.  Every number below is an engine KPI and
-            both curves are engine columns — the one thing computed here is
-            which side of X_c each emitted sample falls on, using the
-            engine&apos;s own comparison.  Move a knob and the tray is
-            re-integrated.
+  const emptyState = (
+    <Box style={{ display: "flex", alignItems: "center",
+      justifyContent: "center", padding: 12 }}>
+      {src === "classroom" && err === null
+        && (busy || classroom === null) ? (
+          <Group gap="sm" wrap="nowrap" align="center">
+            <Loader size="sm" />
+            <Text size="sm" c="dimmed">
+              the engine is integrating the tray — seconds, not instantly
+            </Text>
+          </Group>
+        ) : (
+          <Text size="sm" c="dimmed" ta="center" maw={500}>
+            {src === "classroom"
+              ? "The classroom run finished but published no drying "
+                + "surface"
+              : "This run publishes no drying surface"}
+            {" "}— the two diagrams activate when a choupoBatch unit
+            emits the trajectory columns <b>{X_COLUMN_SUFFIX}</b> and{" "}
+            <b>{R_COLUMN_SUFFIX}</b> and the matching KPIs (
+            {REQUIRED_DRYING_KPIS.join(", ")}), which is what a{" "}
+            <code>batchDryer</code> publishes.  A batch run of any other
+            kind has no drying curve to draw — run{" "}
+            <code>tutorials/{DRYING_WITNESS}</code> and return here.
           </Text>
-        </Box>
+        )}
+    </Box>
+  );
 
-        <OriginMark of={["engine", "assumption"]} note="curves and KPIs: the tray integrated in this browser (choupoBatch); X_c is a declared input, said on its chip" />
-        {chips}
+  const readCurve = (
+    <Box>
+      <Title order={5}>Now read the curve the engine integrated</Title>
+      <Text size="sm" mt={4}>
+        X(t) carries the two periods in two colours; R(X) is the diagram
+        the corner is read off.  Every number below is an engine KPI and
+        both curves are engine columns — the one thing computed here is
+        which side of X_c each emitted sample falls on, using the
+        engine&apos;s own comparison.  Move a knob and the tray is
+        re-integrated.
+      </Text>
+    </Box>
+  );
 
-        <Box style={{ display: "grid", gap: 14,
-          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
-          <Stack gap={8}>{controls}</Stack>
-          <Box style={{ minWidth: 0, height: 460, display: "flex" }}>
-            {pane === "Xt" ? (
-              <XversusTSvg t={view.t} X={view.X} segments={view.segments} k={k}
-                tCrit={view.tCrit} busyOverlay={src === "classroom" && busy} />
-            ) : (
-              <RversusXSvg X={view.X} R={view.R} segments={view.segments} k={k}
-                busyOverlay={src === "classroom" && busy} />
-            )}
-          </Box>
-        </Box>
+  const plots = view === null || k === null ? (
+    <Stack gap="md">
+      <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+      {emptyState}
+    </Stack>
+  ) : (
+    <Stack gap="md">
+      <OriginMark of={["engine", "assumption"]} note="curves and KPIs: the tray integrated in this browser (choupoBatch); X_c is a declared input, said on its chip" />
+      {chips}
 
-        {/* What this file computes, it declares (the standing Methods rule). */}
-        <Box>
+      <Box style={{ display: "grid", gap: 14,
+        gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+        <Stack gap={8}>{controls}</Stack>
+        <Box style={{ minWidth: 0, height: 460, display: "flex" }}>
           {pane === "Xt" ? (
-            <Text size="xs" c="dimmed">
-              X(t) is the dryer&apos;s published column{" "}
-              <b>{view.unit}.{X_COLUMN_SUFFIX}</b> against the driver&apos;s
-              own t.  The colour split is the one thing computed here: each
-              emitted sample is compared with the engine&apos;s X_c using the
-              engine&apos;s own strict inequality (X &gt; X_c is constant
-              rate), so a sample sitting exactly on X_c is falling-rate here
-              for the same reason it is in the solver.
-            </Text>
+            <XversusTSvg t={view.t} X={view.X} segments={view.segments} k={k}
+              tCrit={view.tCrit} busyOverlay={src === "classroom" && busy} />
           ) : (
-            <Text size="xs" c="dimmed">
-              R(X) is the published column <b>{view.unit}.{R_COLUMN_SUFFIX}</b>
-              {" "}plotted against <b>{view.unit}.{X_COLUMN_SUFFIX}</b> — the
-              same two engine series, one against the other.  Time runs right
-              to left (the tray dries).  The flat stretch sits at R_c; the
-              corner is at X_c; the sloping segment heads for R = 0 at X_eq,
-              which is where the declared law puts it.
-            </Text>
+            <RversusXSvg X={view.X} R={view.R} segments={view.segments} k={k}
+              busyOverlay={src === "classroom" && busy} />
           )}
-
-          {/* The break time — present or absent, always a sentence. */}
-          <Text size="xs" c={view.tCrit.present ? "dimmed" : "orange"} mt={2}>
-            {view.tCrit.present
-              ? `t_critical = ${fmt(view.tCrit.t)} s — ${view.tCrit.note}`
-              : `t_critical NOT PUBLISHED — ${view.tCrit.note}`}
-          </Text>
-
-          {/* The engine's own words about the law that draws the tail. */}
-          <Text size="xs" c="dimmed" mt={2}>
-            {view.notice !== null
-              ? `Engine, verbatim: ${view.notice}`
-              : "The engine's falling-rate sentence could not be read from "
-                + "this run's log — it is quoted here when present, and never "
-                + "paraphrased when absent."}
-          </Text>
         </Box>
+      </Box>
 
-        {/* The curve comes second (DEV.md 4c C277); steps 2-5 explain it. */}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
-        {lessonStep(5)}
+      {/* What this file computes, it declares (the standing Methods rule). */}
+      <Box>
+        {pane === "Xt" ? (
+          <Text size="xs" c="dimmed">
+            X(t) is the dryer&apos;s published column{" "}
+            <b>{view.unit}.{X_COLUMN_SUFFIX}</b> against the driver&apos;s
+            own t.  The colour split is the one thing computed here: each
+            emitted sample is compared with the engine&apos;s X_c using the
+            engine&apos;s own strict inequality (X &gt; X_c is constant
+            rate), so a sample sitting exactly on X_c is falling-rate here
+            for the same reason it is in the solver.
+          </Text>
+        ) : (
+          <Text size="xs" c="dimmed">
+            R(X) is the published column <b>{view.unit}.{R_COLUMN_SUFFIX}</b>
+            {" "}plotted against <b>{view.unit}.{X_COLUMN_SUFFIX}</b> — the
+            same two engine series, one against the other.  Time runs right
+            to left (the tray dries).  The flat stretch sits at R_c; the
+            corner is at X_c; the sloping segment heads for R = 0 at X_eq,
+            which is where the declared law puts it.
+          </Text>
+        )}
 
-        {/* C508: what decides the time (loading), what the last percent
-            costs, and the spray chamber.  Each card runs the engine. */}
-        {lessonStep(6)}
-        {src === "classroom" && (
+        {/* The break time — present or absent, always a sentence. */}
+        <Text size="xs" c={view.tCrit.present ? "dimmed" : "orange"} mt={2}>
+          {view.tCrit.present
+            ? `t_critical = ${fmt(view.tCrit.t)} s — ${view.tCrit.note}`
+            : `t_critical NOT PUBLISHED — ${view.tCrit.note}`}
+        </Text>
+
+        {/* The engine's own words about the law that draws the tail. */}
+        <Text size="xs" c="dimmed" mt={2}>
+          {view.notice !== null
+            ? `Engine, verbatim: ${view.notice}`
+            : "The engine's falling-rate sentence could not be read from "
+              + "this run's log — it is quoted here when present, and never "
+              + "paraphrased when absent."}
+        </Text>
+      </Box>
+    </Stack>
+  );
+
+  const bench = (node: JSX.Element): Piece => ({ kind: "bench", node });
+  const doc: LessonDoc = {
+    title: "The drying curve, and what decides the time",
+    question: "The air controls the first half and the solid controls the second — "
+      + "and a dryer sized on the first half is a dryer that is too small.",
+    steps: DRYING_STEPS, quiz: DRYING_QUIZ, limits: DRYING_LIMITS,
+    sections: {
+      question: [{ kind: "step", n: 1 }],
+      try: [
+        bench(readCurve),
+        bench(plots),
+        ...(src === "classroom" ? [bench(
           <LoadingCollapseCard loading={knobs["area"] ?? 4}
             endTime={knobs["endTime"] ?? 3000}
             overridesAt={(L, T) => knobOverrides({ ...knobs, area: L, endTime: T })}
-            baseKey={JSON.stringify({ ...knobs, area: 0, endTime: 0 })} />
-        )}
-        {lessonStep(7)}
-        <LastPercentCard run={{ traj: trajectory, kpis: kpis?.[view.unit] }} />
-        <TrayDayCard />
-        <HotProductCard />
-        {lessonStep(8)}
-        <SprayChamberCard />
-
-        {lessonLimits}
-
-        <LessonReferences tool="drying" />
-      </Stack>
-    </Box>
-  );
+            baseKey={JSON.stringify({ ...knobs, area: 0, endTime: 0 })} />)] : []),
+        ...(view !== null ? [bench(
+          <LastPercentCard run={{ traj: trajectory, kpis: kpis?.[view.unit] }} />)] : []),
+        bench(<TrayDayCard />),
+        bench(<HotProductCard />),
+        bench(<SprayChamberCard />),
+      ],
+      see: [2, 3, 4].map((n) => ({ kind: "step" as const, n })),
+      why: [5, 6, 7, 8].map((n) => ({ kind: "step" as const, n })),
+    },
+  };
+  return <LessonDocument tool="drying" doc={doc} alerts={alerts} />;
 }
