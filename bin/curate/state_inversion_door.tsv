@@ -3,9 +3,12 @@
 # Census CORRECTED 2026-11-28 (per-function match, wider target names, .H scanned):
 # +ReactorOutlet.cpp (temperatureOfEnthalpy(scalar h...)), -IsothermalFlash.cpp and -CSTR.cpp
 # (their search and their enthalpy target are in different functions).
+# adiabaticFlash migrated 2026-11-28, with ONE documented exception the census cannot see: when the home
+# refuses an unanswerable reactive trial, the unit falls back, announced, to its own search with the declared
+# high-side rule (column13_sour_water_stage_identity needs it).  Removing it needs a per-trial
+# "unanswerable is above" option in specifiedFlash (registered debt, C532 c).
 # file
 src/unitOperations/agitation/AgitatedVessel.cpp
-src/unitOperations/flash/AdiabaticFlash.cpp
 src/unitOperations/heatTransfer/HeatExchanger.cpp
 src/unitOperations/heatTransfer/Heater.cpp
 src/unitOperations/heatTransfer/PhaseChanger.cpp
