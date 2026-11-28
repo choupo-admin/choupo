@@ -168,7 +168,7 @@ def efficiency_section():
 
 FIXRE = r"fix|repair|red\b|reds\b|correct|restore"
 LANDRE = r"^(Merge(?! branch 'main')|Landing|Batch|integrate)"
-HUBS = ("BACKLOG.tsv", "DEV.md", "PLAN.md", "BRAIN.md", "SESSIONS.md", "CHANGELOG.md")
+HUBS = ("BACKLOG.tsv", "DEV.md", "PLAN.md", "BRAIN.md", "SESSIONS.md", "CHANGELOG.md", "bin/curate/backlog_themes.tsv")  # registers: the backlog view's own theme map changes with every backlog edit
 
 
 def _hub(f):
