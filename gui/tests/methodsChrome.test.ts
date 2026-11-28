@@ -214,3 +214,13 @@ describe("collapse flags — the optional posture default", () => {
  * untested by the deletion: it is now `autoCollapseDefault` in
  * tests/panelContract.test.ts, asked of the panel's minimum against the
  * measured host. */
+
+describe("a family is listed once in the chooser and the menu (C535 S6)", () => {
+  it("the menu and the chooser read the registry family, not a typed list", async () => {
+    const { readFileSync } = await import("node:fs");
+    for (const f of ["../src/ui/MenuBar.tsx", "../src/ui/MethodsWorkspace.tsx"]) {
+      const t = readFileSync(new URL(f, import.meta.url), "utf-8");
+      expect(t, f).toMatch(/familyOf\(/);
+    }
+  });
+});

@@ -41,7 +41,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, NumberInput, Stack, Table, Text, Title,
+  Alert, Badge, Box, Group, Loader, NumberInput, Table, Text, Title,
 } from "@mantine/core";
 
 import type { RunResult } from "../../adapters/SolverAdapter.js";
@@ -56,8 +56,7 @@ import {
   type DryerFacts, type Verdict, type VerdictResult,
 } from "./dryingBalance.js";
 import { KnobSlider } from "./knobPanel.js";
-import { LessonQuiz } from "./lessonQuiz.js";
-import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
+import { LessonDocument, type LessonDoc } from "./lessonDocument.js";
 import { OriginMark } from "./origin.js";
 import { WHY_LIMITS, WHY_QUIZ, WHY_STEPS } from "./whyDidItNotDryLesson.js";
 
@@ -431,7 +430,6 @@ function CardHumid({ spec, onSpec, sweep }: {
 const NO_OVERRIDES: readonly DictOverride[] = [];
 
 export function WhyDidItNotDryTool(): JSX.Element {
-  const step = lessonStepper(WHY_STEPS);
   // The four fixed runs (hook order is constant: one per verdict case).
   const r0 = useMethodRun(VERDICT_CASES[0]!.witness, NO_OVERRIDES, "", "choupoSolve");
   const r1 = useMethodRun(VERDICT_CASES[1]!.witness, NO_OVERRIDES, "", "choupoSolve");
@@ -453,30 +451,22 @@ export function WhyDidItNotDryTool(): JSX.Element {
   ]), []);
   const humid = useMethodRunSweep(W_TRAY, humidSets, "humid", "choupoBatch");
 
-  return (
-    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
-        <Box>
-          <Title order={3}>Why did it not dry?</Title>
-          <Text size="sm" c="dimmed" mt={4}>
-            The water, the air, the clock: what a dryer is asked to remove, what the air can carry and
-            pay for, how long the product has, and the floor that no clock passes.  Every number
-            below is an engine run of a bundled case.
-          </Text>
-        </Box>
-
-        {step(1)}
-        <CardBasis runs={runs} />
-        {step(2)}
-        {step(3)}
-        <CardCeilings runs={runs} live={live} flow={flow} onFlow={setFlow} sweep={airSweep} />
-        {step(4)}
-        <CardHumid spec={spec} onSpec={setSpec} sweep={humid} />
-
-        <LessonQuiz title="Check your understanding" questions={WHY_QUIZ} lesson={WHY_STEPS} />
-        <LessonLimits limits={WHY_LIMITS} title="What this does not show" />
-        <LessonReferences tool="why-did-it-not-dry" />
-      </Stack>
-    </Box>
-  );
+  const doc: LessonDoc = {
+    title: "Why did it not dry?",
+    question: "The water, the air, the clock: what a dryer is asked to remove, what the air can carry and "
+      + "pay for, how long the product has, and the floor that no clock passes.  Every number "
+      + "below is an engine run of a bundled case.",
+    steps: WHY_STEPS, quiz: WHY_QUIZ, limits: WHY_LIMITS,
+    sections: {
+      question: [{ kind: "step", n: 1 }],
+      try: [
+        { kind: "bench", node: <CardBasis runs={runs} /> },
+        { kind: "bench", node: <CardCeilings runs={runs} live={live} flow={flow} onFlow={setFlow} sweep={airSweep} /> },
+        { kind: "bench", node: <CardHumid spec={spec} onSpec={setSpec} sweep={humid} /> },
+      ],
+      see: [{ kind: "step", n: 2 }, { kind: "step", n: 3 }],
+      why: [{ kind: "step", n: 4 }],
+    },
+  };
+  return <LessonDocument tool="why-did-it-not-dry" doc={doc} />;
 }

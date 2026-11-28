@@ -53,10 +53,11 @@ License
 import { useMemo, useState } from "react";
 
 import {
-  Anchor, Badge, Box, Button, Group, NativeSelect, NumberInput, SimpleGrid, Stack, Switch, Table, Text, Title,
+  Badge, Box, Button, Group, NativeSelect, NumberInput, SimpleGrid, Stack, Switch, Table, Text, Title,
 } from "@mantine/core";
 
 import { caseTabSearch, openAppTab } from "../openInTab.js";
+import { LessonDocument, type LessonDoc, type Piece } from "./lessonDocument.js";
 import { DryerTestsCard } from "./DryerTestsCard.js";
 import { DrawingLegend, DryerDrawing } from "./dryerDrawings.js";
 import { ArrangementCards, ArrangementRuns, ArrangementUses } from "./DryerArrangements.js";
@@ -74,10 +75,7 @@ import {
   VTL_T32_LEFT, VTL_T32_RIGHT, VTL_T3_SRC, G_PER_M2S_TO_KG_PER_M2H, mujumdarDrumEfficiency,
   perryDrumEvapKgPerM2h,
 } from "./dryerTables.js";
-import { LessonQuiz } from "./lessonQuiz.js";
-import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
-import { openMethodToolAt } from "./registry.js";
 
 const fx = (v: number, d: number): string => (Number.isFinite(v) ? v.toFixed(d) : "—");
 const NOT_CITED = "not cited";
@@ -616,84 +614,41 @@ function EnergyBench(): JSX.Element {
   );
 }
 
-/** The four parts of the page, in reading order.  A part is an <h4> (the chapter menu shows it as
- *  a group); its steps are the <h5> chapters under it, numbered in the order a reader meets them.
- *  `key` is the chapter key the intro link opens (chapterSlug of the title). */
-export const DRYER_PARTS = [
-  { key: "choose-which-dryers-stay-in-the-race", title: "Choose: which dryers stay in the race" },
-  { key: "what-to-ask-of-the-product", title: "What to ask of the product" },
-  { key: "which-way-the-gas-meets-the-solid", title: "Which way the gas meets the solid" },
-  { key: "what-the-sale-does-not-show", title: "What the sale does not show" },
-] as const;
-
 export function DryerSelectionTool(): JSX.Element {
-  const step = lessonStepper(DRYER_SELECTION_STEPS);
-  return (
-    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-      <Stack gap="md" style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <Box>
-          <Title order={3}>Which dryer for which product</Title>
-          <Text size="sm" c="dimmed" mt={4} data-dryer-parts="">
-            Four parts, in the order a choice is made:{" "}
-            {DRYER_PARTS.map((p, i) => (
-              <span key={p.key}>
-                {i > 0 ? (i === DRYER_PARTS.length - 1 ? ", and " : ", ") : ""}
-                <Anchor component="a" href="#" data-part-link={p.key}
-                  onClick={(e: { preventDefault: () => void }) => {
-                    e.preventDefault();
-                    openMethodToolAt("dryer-selection", p.key);
-                  }}>{p.title.toLowerCase()}</Anchor>
-              </span>
-            ))}
-            .  A shortlist to take to a drying test, not a design: every rule is read from
-            Mujumdar's Handbook of Industrial Drying, Perry's Handbook, van 't Land's Drying in
-            the Process Industry or Towler's Chemical Engineering Design, at its page.
-          </Text>
-        </Box>
-
-        <Title order={4} data-section="choose">{DRYER_PARTS[0].title}</Title>
-        <Text size="sm" fw={600} data-dryer-first-screen-top="">{FIRST_SCREEN.text}</Text>
-        <Text size="xs" c="dimmed">{citeOf(FIRST_SCREEN.src)}</Text>
-        <Tree />
-        {step(1)}
-        <FeedFitTable />
-        {step(2)}
-        {step(3)}
-        <TypeCards />
-        {step(4)}
-        <Title order={5}>The nine side by side</Title>
-        <ComparisonTable />
-
-        <Title order={4} data-section="ask">{DRYER_PARTS[1].title}</Title>
-        <Checklist />
-        <DryerTestsCard />
-
-        <Title order={4} data-section="arrangements">{DRYER_PARTS[2].title}</Title>
-        <OriginMark of={["engine"]}
-          note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />
-        {step(5)}
-        <ArrangementCards />
-        <Box><DrawingLegend /></Box>
-        {step(6)}
-        {step(7)}
-        <ArrangementRuns />
-        {step(8)}
-        <ArrangementUses />
-
-        <Title order={4} data-section="sale">{DRYER_PARTS[3].title}</Title>
-        <AroundCard />
-        {step(9)}
-        {step(10)}
-        <EnergyBench />
-        {step(11)}
-        <HabitualTables />
-        {step(12)}
-
-        <LessonQuiz title="Check your understanding" questions={DRYER_SELECTION_QUIZ}
-          lesson={DRYER_SELECTION_STEPS} />
-        <LessonLimits limits={DRYER_SELECTION_LIMITS} title="What this does not show" />
-        <LessonReferences tool="dryer-selection" />
-      </Stack>
-    </Box>
-  );
+  const b = (node: JSX.Element): Piece => ({ kind: "bench", node });
+  const st = (n: number): Piece => ({ kind: "step", n });
+  const doc: LessonDoc = {
+    title: "Which dryer for which product",
+    question: "A shortlist to take to a drying test, not a design: every rule is read from "
+      + "Mujumdar's Handbook of Industrial Drying, Perry's Handbook, van 't Land's Drying in "
+      + "the Process Industry or Towler's Chemical Engineering Design, at its page.",
+    steps: DRYER_SELECTION_STEPS,
+    quiz: DRYER_SELECTION_QUIZ,
+    limits: DRYER_SELECTION_LIMITS,
+    sections: {
+      question: [
+        b(<Box>
+          <Text size="sm" fw={600} data-dryer-first-screen-top="">{FIRST_SCREEN.text}</Text>
+          <Text size="xs" c="dimmed">{citeOf(FIRST_SCREEN.src)}</Text>
+        </Box>),
+        st(1), st(2), st(3),
+      ],
+      try: [b(<Tree />), b(<FeedFitTable />), b(<ArrangementRuns />), b(<EnergyBench />)],
+      see: [
+        st(4), b(<TypeCards />),
+        { kind: "heading", title: "The nine side by side" }, b(<ComparisonTable />),
+        { kind: "heading", title: "Which way the gas meets the solid" },
+        b(<OriginMark of={["engine"]}
+          note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />),
+        st(5), b(<ArrangementCards />), b(<Box><DrawingLegend /></Box>),
+        st(6), st(7), st(8), b(<ArrangementUses />), st(9),
+      ],
+      why: [
+        { kind: "heading", title: "What the sale does not show" },
+        st(10), st(11), st(12),
+        b(<Checklist />), b(<DryerTestsCard />), b(<AroundCard />), b(<HabitualTables />),
+      ],
+    },
+  };
+  return <LessonDocument tool="dryer-selection" doc={doc} />;
 }

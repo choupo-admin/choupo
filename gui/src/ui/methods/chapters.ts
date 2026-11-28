@@ -93,6 +93,10 @@ export const CHAPTER_ALIASES: Readonly<Record<string, { tool: string; key: strin
   // dryer-selection, 2026-11-25: the "steps 9 to 12" group became part C of four.
   "co-current-counter-current-cross-flow-steps-9-to-12":
     { tool: "dryer-selection", key: "which-way-the-gas-meets-the-solid" },
+  // dryer-selection, 2026-11-28 (C535 S3): the four parts became the fixed sections; the two
+  // part titles that are no longer headings open the section that holds their content.
+  "choose-which-dryers-stay-in-the-race": { tool: "dryer-selection", key: "the-question" },
+  "what-to-ask-of-the-product": { tool: "dryer-selection", key: "why-it-goes-wrong" },
 };
 
 /** The element a chapter key names inside `root`, or null when the page does

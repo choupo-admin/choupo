@@ -658,7 +658,7 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   },
   psychro: {
     quiz: PSYCHRO_QUIZ, quizName: "PSYCHRO_QUIZ", lesson: PSYCHRO_STEPS, lessonName: "PSYCHRO_STEPS",
-    file: "src/ui/MethodsWorkspace.tsx",
+    file: "src/ui/methods/PsychroTool.tsx",
   },
   "pump-system": {
     quiz: PUMP_QUIZ, quizName: "PUMP_QUIZ", lesson: PUMP_STEPS, lessonName: "PUMP_STEPS",
@@ -837,6 +837,15 @@ describe.each(quizzed.map((t) => [t.id, t] as const))("%s: its quiz", (id, t) =>
   });
   it("(c) is drawn by its own tool, with its own lesson", () => {
     const src = read(e.file);
+    if (src.includes("<LessonDocument")) {
+      //  Document pages: the tool hands its quiz and steps to the one
+      //  renderer, which draws the single <LessonQuiz> (checked below).
+      expect(src, `${e.file} hands ${e.quizName} to the document`)
+        .toMatch(new RegExp(`quiz:\\s*${e.quizName}\\b`));
+      expect(src, `${e.file} hands ${e.lessonName} to the document`)
+        .toMatch(new RegExp(`steps:\\s*${e.lessonName}\\b`));
+      return;
+    }
     const calls = [...src.matchAll(/<LessonQuiz\b[^>]*?questions=\{(\w+)\}[^>]*?lesson=\{(\w+)\}/gs)];
     const mine = calls.filter((c) => c[1] === e.quizName);
     expect(mine.length, `${e.file} draws ${e.quizName}`).toBe(1);
@@ -855,10 +864,15 @@ describe("no quiz outside the table", () => {
   it("(c) every <LessonQuiz> in the GUI draws a quiz the table holds", () => {
     const files = ["src/ui/MethodsWorkspace.tsx",
       ...readdirSync(new URL("src/ui/methods/", GUI))
-        .filter((f) => f.endsWith(".tsx") && f !== "lessonQuiz.tsx")
+        .filter((f) => f.endsWith(".tsx") && f !== "lessonQuiz.tsx" && f !== "lessonDocument.tsx")
         .map((f) => `src/ui/methods/${f}`)];
     const known = new Set(Object.values(QUIZZES).map((e) => e!.quizName));
-    let seen = 0;
+    //  The document renderer draws exactly one quiz, from doc.quiz.
+    const docSrc = read("src/ui/methods/lessonDocument.tsx");
+    expect((docSrc.match(/<LessonQuiz\b/g) ?? []).length).toBe(1);
+    expect(docSrc).toMatch(/<LessonQuiz\b[^>]*questions=\{doc\.quiz\}/s);
+    const viaDocument = Object.values(QUIZZES).filter((e) => read(e!.file).includes("<LessonDocument")).length;
+    let seen = viaDocument;
     for (const f of files) {
       const src = read(f);
       for (const m of src.matchAll(/<LessonQuiz\b[^>]*?questions=\{(\w+)\}/gs)) {

@@ -42,13 +42,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MantineProvider } from "@mantine/core";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { EduToolsHome } from "../src/ui/methods/EduToolsHome.js";
+import { EduToolsHome, collapseFamilies } from "../src/ui/methods/EduToolsHome.js";
 import { PathBar } from "../src/ui/methods/PathBar.js";
 import { groupHits } from "../src/ui/methods/homeFilter.js";
 import { eduToolsIndex, searchEduTools } from "../src/ui/methods/eduToolsIndex.js";
 import {
   METHOD_DISCIPLINES, METHOD_PATHS, METHOD_TOOLS, bootTool, getActiveMethodTool, getActivePath,
-  goToEduToolsHome, startGuidedSequence,
+  familyById, familyOf, goToEduToolsHome, startGuidedSequence,
 } from "../src/ui/methods/registry.js";
 
 type G = { window?: unknown };
@@ -76,6 +76,14 @@ describe("the null boot", () => {
   });
 });
 
+describe("collapseFamilies (C535 S6)", () => {
+  it("keeps a family's first chapter and drops the rest", () => {
+    const out = collapseFamilies(METHOD_TOOLS).map((m) => m.id as string);
+    const steps = familyById("drying")!.steps.map((s) => s.tool as string);
+    expect(out.filter((id) => steps.includes(id))).toEqual([steps[0]]);
+  });
+});
+
 describe("the home", () => {
   const out = html(createElement(EduToolsHome));
   const live = METHOD_TOOLS.filter((m) => m.status === "live");
@@ -87,10 +95,16 @@ describe("the home", () => {
     expect(f).toBeLessThan(out.indexOf("data-method-home-tool="));
     expect(out).toContain("Find a method, a symbol, an equation");
   });
-  it("lists every live tool exactly once, with its blurb, by section", () => {
+  it("lists every live tool exactly once, with its blurb, by section; a family's members appear as the family", () => {
     for (const t of live) {
+      const fam = familyOf(t.id);
       const n = out.split(`data-method-home-tool="${t.id}"`).length - 1;
-      expect(n, t.id).toBe(1);
+      expect(n, t.id).toBe(fam ? 0 : 1);
+    }
+    // One Drying tile with its four chapter links (C535 S6).
+    expect(out.split('data-method-home-family="drying"').length - 1).toBe(1);
+    for (const st of familyById("drying")!.steps) {
+      expect(out.split(`data-method-home-family-chapter="${st.tool}"`).length - 1, st.tool).toBe(1);
     }
     for (const d of METHOD_DISCIPLINES) {
       if (live.some((m) => m.discipline === d)) expect(out).toContain(`data-method-shelf="${d.replace(/&/g, "&amp;")}"`);
