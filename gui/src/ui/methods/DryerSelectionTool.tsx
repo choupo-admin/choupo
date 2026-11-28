@@ -134,7 +134,7 @@ function TypeCards(): JSX.Element {
 const FIT_COLOR = { yes: "teal", conditional: "yellow", no: "gray" } as const;
 
 function FeedFitTable(): JSX.Element {
-  const forms = ["solution", "paste", "granular"] as const;
+  const forms = ["solution", "paste", "cake", "granular"] as const;
   return (
     <Box data-feed-fit="">
       <OriginMark of={["reference"]}
@@ -619,9 +619,18 @@ export function DryerSelectionTool(): JSX.Element {
   const st = (n: number): Piece => ({ kind: "step", n });
   const doc: LessonDoc = {
     title: "Which dryer for which product",
-    question: "A shortlist to take to a drying test, not a design: every rule is read from "
-      + "Mujumdar's Handbook of Industrial Drying, Perry's Handbook, van 't Land's Drying in "
-      + "the Process Industry or Towler's Chemical Engineering Design, at its page.",
+    question: "In ten minutes.  The question: which dryers can take this feed, at this "
+      + "temperature limit, scale and mode, so that you know what to put in a drying test.  "
+      + "The one idea: the form of the feed rules out most types at once (Mujumdar's Table 1.1 "
+      + "ticks the spray dryer for liquids, solution, slurry and paste, and never for a cake; "
+      + "a rotary, fluidised-bed or tray dryer takes the cake), and the product's temperature "
+      + "limit and the scale cut what is left.  One number: 1000 kg/h of dry solid dried from "
+      + "1.5 to 0.05 kg of water per kg of dry solid (the dry basis) must evaporate 1450 kg/h "
+      + "of water, which a spray dryer does at about 1,800 to 4,600 kW (Table 1.4's 4,500 to "
+      + "11,500 kJ per kg of water).  This is a shortlist to take to a test, not a design; "
+      + "the pages of the books are in Limits and sources.  The Chart page defines the wet-bulb "
+      + "temperature and the Curve page the falling-rate period, and each is defined again "
+      + "in one line where this page first uses it.",
     steps: DRYER_SELECTION_STEPS,
     quiz: DRYER_SELECTION_QUIZ,
     limits: DRYER_SELECTION_LIMITS,
@@ -631,9 +640,9 @@ export function DryerSelectionTool(): JSX.Element {
           <Text size="sm" fw={600} data-dryer-first-screen-top="">{FIRST_SCREEN.text}</Text>
           <Text size="xs" c="dimmed">{citeOf(FIRST_SCREEN.src)}</Text>
         </Box>),
-        st(1), st(2), st(3),
+        st(1), b(<FeedFitTable />), st(2), st(3),
       ],
-      try: [b(<Tree />), b(<FeedFitTable />), b(<ArrangementRuns />), b(<EnergyBench />)],
+      try: [b(<Tree />)],
       see: [
         st(4), b(<TypeCards />),
         { kind: "heading", title: "The nine side by side" }, b(<ComparisonTable />),
@@ -641,12 +650,12 @@ export function DryerSelectionTool(): JSX.Element {
         b(<OriginMark of={["engine"]}
           note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />),
         st(5), b(<ArrangementCards />), b(<Box><DrawingLegend /></Box>),
-        st(6), st(7), st(8), b(<ArrangementUses />), st(9),
+        st(6), st(7), b(<ArrangementRuns />), st(8), b(<ArrangementUses />), st(9),
       ],
       why: [
         { kind: "heading", title: "What the sale does not show" },
-        st(10), st(11), st(12),
-        b(<Checklist />), b(<DryerTestsCard />), b(<AroundCard />), b(<HabitualTables />),
+        st(10), b(<EnergyBench />), st(11), b(<HabitualTables />), st(12),
+        b(<Checklist />), b(<DryerTestsCard />), b(<AroundCard />),
       ],
     },
   };

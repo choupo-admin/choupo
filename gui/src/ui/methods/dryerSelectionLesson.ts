@@ -62,22 +62,30 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
   {
     n: 1,
     title: "The form of the feed is asked first",
-    body: "A dryer must be able to take the feed as it arrives.  Mujumdar's Table 1.1 (p.21) "
-      + "ticks, for each dryer, the feed forms it handles: the spray dryer and the drum dryer "
-      + "take liquids (solution, slurry, paste) and nothing else; the flash dryer takes cakes, "
-      + "powders, granules and fibres, never a liquid (Perry admits a slurry only with dry "
-      + "product mixed back); the belt dryer takes "
-      + "granules, pellets, fragile crystals, fibres and formed solids; the rotary and the "
-      + "fluidised-bed dryers take cakes, powders, granules and pellets, and the fluidised bed "
-      + "also solutions and slurries in the table; the tray dryer takes almost every solid "
-      + "form.  Perry's Table 12-11 (p.12-33 and 12-34) is more careful: it attaches the "
-      + "conditions.  A spray dryer takes a paste only if it can be pumped to the atomiser; a "
-      + "drum dryer takes a paste only if it can be made to flow; a tray takes a paste only "
-      + "if it can be pre-formed; a fluidised bed takes a liquid only as a granulator with an "
-      + "inert bed or with dry solid mixed back.  For liquid feeds the choice is normally "
-      + "limited to a spray dryer, a drum dryer or an agitated batch vacuum dryer "
-      + "(Mujumdar p.24).  A sheet or a web (paper, film, fabric) is none of the nine: it is "
-      + "dried on cylinders or by impinging gas (Perry p.12-34; Mujumdar Table 1.3, p.23).",
+    body: "A dryer must be able to take the feed as it arrives, so the first question is what "
+      + "form the wet material has.  Mujumdar's Table 1.1 ticks, for each dryer, the feed forms "
+      + "it handles, and it separates three kinds of wet material that are easy to confuse.  "
+      + "A LIQUID is a solution, a slurry (solid suspended in liquid) or a paste (a thick wet "
+      + "mass that flows, or can be made to).  A CAKE is the damp solid that comes off a "
+      + "centrifuge or a filter: lumpy, not a liquid, not free-flowing.  A FREE-FLOWING SOLID "
+      + "is a powder, a granule, a fragile crystal, a pellet or a fibre; the table's last "
+      + "column is formed solids.  The spray dryer and the drum dryer take the liquids "
+      + "(solution, slurry, paste) and nothing else; neither is ticked for a cake.  The rotary, "
+      + "fluidised-bed and flash dryers and the tray dryers are ticked for BOTH kinds of cake "
+      + "(centrifuge and filter) and for powders and granules, but not for a paste; the "
+      + "fluidised bed is also ticked for a solution and a slurry.  The belt dryer takes "
+      + "granules, pellets, fragile crystals, fibres and formed solids, and no cake.  So a "
+      + "paste and a cake send you to different dryers, which is why the tree below asks them "
+      + "as two answers.  A sheet or web (paper, film, fabric) is none of the nine: it is "
+      + "dried on cylinders or by impinging gas.  Perry's Table 12-11 is more careful than the "
+      + "ticks: it attaches conditions.  A spray dryer takes a paste only if it can be pumped "
+      + "to the atomiser (a cake is slurried first); a drum dryer takes a paste only if it can "
+      + "be made to flow; a tray takes a paste only if it can be pre-formed; a flash dryer "
+      + "takes a paste only with dry product mixed back and the lumps disintegrated, and a "
+      + "cake only with its lumps dispersed in the gas; a fluidised bed takes a liquid only as "
+      + "a granulator with an inert bed or with dry solid mixed back.  For liquid feeds the "
+      + "choice is normally limited to a spray dryer, a drum dryer or an agitated batch "
+      + "vacuum dryer.",
     note: "A tick in Table 1.1 means the type is used for that form, not that it is the "
       + "best; Perry's conditions are where the real decisions are.",
   },
@@ -85,14 +93,18 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Heat sensitivity: how long, how hot, and in which direction",
     body: "A product is hurt by temperature and by time, and the types differ greatly in both.  "
+      + "The residence time is how long the solid stays in the dryer.  "
       + "Mujumdar's Table 1.2 (p.21) gives the typical residence time: 10 to 30 s in a spray "
       + "dryer and in a drum dryer, 0 to 10 s in a flash dryer, 10 to 60 min in a fluidised bed, a "
       + "rotary dryer and a belt dryer, 1 to 6 h in a batch tray dryer, and Towler gives 3 to 12 h "
       + "for the cycle of a double-cone vacuum dryer (his Table 10.7 prints it '3.12 h'); van 't Land gives 10 to 20 h for a 1 cm layer of "
       + "a simple material in a freeze dryer (p.236).  While the surface is wet the solid sits "
-      + "at the wet-bulb temperature of the gas, and only in the falling-rate period does it "
-      + "approach the gas's dry-bulb temperature (Mujumdar p.21-22), a fact the book asks "
-      + "you to weigh when drying heat-sensitive solids.  The direction matters: in co-current flow the gas "
+      + "at the wet-bulb temperature of the gas (the temperature a wet surface settles at in "
+      + "a gas stream, where the heat arriving just pays for the water leaving, below the "
+      + "gas's own dry-bulb temperature), and only in the falling-rate period (the later "
+      + "stretch of the drying curve, when the surface is no longer wet and the rate falls) "
+      + "does it approach the gas's dry-bulb temperature (Mujumdar p.21-22), a fact the book asks "
+      + "you to weigh when drying heat-sensitive solids.  The direction matters: in co-current flow (gas and solid moving the same way) the gas "
       + "cools as it dries the wet solid, so the solid leaves far below the inlet gas "
       + "temperature, and Perry calls co-current, vacuum and freeze dryers particularly suitable "
       + "for heat-sensitive materials; counter-current dryers meet the driest solid with the "
@@ -113,7 +125,9 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "is stated by the same book that recommends it.  The same sentence says the heat of "
       + "sublimation is severalfold lower than that of evaporation, which is wrong by the book's "
       + "own Chapter 11: it gives 2840 kJ per kg of ice (p.259), against 2257 kJ per kg of "
-      + "water at 100 degC.  What makes freeze drying dear is the vacuum, the cold condenser "
+      + "water at 100 degC.  (The two figures are at different temperatures; at one "
+      + "temperature, 0 degC, the heats are about 2834 and 2501 kJ/kg, so sublimation is "
+      + "about 13 % larger, not 26 %; the conclusion that it is not severalfold lower stands.)  What makes freeze drying dear is the vacuum, the cold condenser "
       + "and the long cycle, not a lower heat.",
   },
   {
@@ -193,8 +207,11 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "place on the solid dries: in proportion to how far the gas there is from saturation, "
       + "the driving force, and to a function of how dry the solid is, the drying curve of "
       + "the page on drying curves.  Put together, the engine has one differential equation "
-      + "for the solid's moisture along the fraction of the contact area, because the gas "
-      + "humidity follows from the water balance (ConvectiveDryer.H:51).  In co-current flow "
+      + "for the solid's moisture (kilograms of water per kilogram of dry solid, the dry basis) "
+      + "along the fraction of the contact area: the gas humidity follows from the water "
+      + "balance, and the saturation humidity at the surface from the local gas temperature, "
+      + "which the heat balance gives, so the three balances are solved together "
+      + "(ConvectiveDryer.H:51).  In co-current flow "
       + "the gas humidity starts at the fed value and rises along the solid, and in "
       + "counter-current flow it starts, at the solid inlet, at the value of the exhaust "
       + "and falls to the fed value at the solid outlet (ConvectiveDryer.H:55).  So the gas "
@@ -357,7 +374,10 @@ Y = Y_\mathrm{ex} - \frac{S\,(X_\mathrm{in}-X)}{G} \quad \text{(counter-current)
       { sym: "\\Delta h_\\mathrm{vap}", means: "The heat of vaporisation of water, 2257 kJ/kg "
         + "at 100 degC in Perry's worked example.", unit: "kJ/kg" },
     ],
-    note: "An energy figure is about the dryer and its duty, not the product: a drum dryer's "
+    note: "The 2257 kJ/kg is the heat at 100 degC; a solid surface at the wet-bulb "
+      + "temperature of 30 to 60 degC has a heat of vaporisation of about 2.36 to 2.43 MJ/kg, "
+      + "so the shares above are a few percent low (about 4 to 8 % in relative terms).  "
+      + "An energy figure is about the dryer and its duty, not the product: a drum dryer's "
       + "low figure holds for a paste that suits a drum, and says nothing for a feed it cannot take.",
   },
   {
@@ -380,9 +400,11 @@ Y = Y_\mathrm{ex} - \frac{S\,(X_\mathrm{in}-X)}{G} \quad \text{(counter-current)
       + "to 12 kg/(h m2)) get a number the other books do not give.  For the tray, Perry's "
       + "performance data (p.12-39) give an overall 0.0025 to 0.025 kg of water per second per "
       + "m2 of tray area, which is 9 to 90 kg/(h m2): sixty to ninety times Towler's figure.  The lower "
-      + "ends agree if Towler's unit is read per minute (0.0025 kg/s is 0.15 kg/min), so the "
-      + "printed unit looks like the error, but that is a reading, not a proof, and the page "
-      + "keeps both.  Before choosing, Mujumdar's Table 1.6 (p.28) is the checklist vendors use to "
+      + "ends agree if Towler's unit is read per minute (0.0025 kg/s is 0.15 kg/min), but the "
+      + "upper ends do not (Perry's 0.025 kg/s is 1.5 kg/min, against Towler's 1.0), so the "
+      + "printed unit looks like the error only for the low end; that is a reading, not a "
+      + "proof, and the page keeps both.  A drying flux of about 2.4 kg/(h m2), the order the "
+      + "drying-curve page finds for a tray in warm air, lies between the two books.  Before choosing, Mujumdar's Table 1.6 (p.28) is the checklist vendors use to "
       + "select and quote a dryer, to be read with van 't Land's list of the data to assess "
       + "(Table 3.1) and of the criteria for judging the dried product (Table 3.2), both on "
       + "p.22.  Last, the drum dryer is the one place where two books give different "
@@ -483,6 +505,23 @@ export const DRYER_SELECTION_LIMITS: readonly LessonLimit[] = [
       + "not a measured dryer.",
   },
   {
+    id: "where-read",
+    title: "Where each rule is read, and where the books differ",
+    body: "Feed forms: Mujumdar's Table 1.1 (p.21) and Perry's Table 12-11 (pp.12-33 and "
+      + "12-34); Table 1.1 separates liquids (solution, slurry, paste), cakes (centrifuge, "
+      + "filter) and free-flowing solids, and its paste column holds only the spray and the "
+      + "drum dryer, while Perry attaches conditions to a paste for the tray and the flash "
+      + "dryer.  Residence times: Mujumdar's Table 1.2 (p.21), Towler's Table 10.7 and van 't "
+      + "Land (p.236).  Wet-bulb solid and the falling rate: Mujumdar pp.21 to 22.  Direction "
+      + "of flow: Perry p.12-36, van 't Land p.42 and Mujumdar's Chapter 3 (pp.63 to 66).  "
+      + "Scale: Perry p.12-36 (50 kg/h and 1 t/h), Mujumdar p.28 and van 't Land p.21 (100 "
+      + "kg/h).  Energy: Mujumdar's Table 1.4 (p.26) against Perry's Example 12-19 (p.12-71).  "
+      + "Drum dryer: Perry's Table 12-46 (p.12-81) against Mujumdar's Table 1.4 and Chapter "
+      + "9 (p.206).  Co-current rotary for heat-sensitive solids: Mujumdar p.151 and Perry "
+      + "p.12-36 against Towler's 'No' for the type.  Where books differ the page says so and "
+      + "averages nothing.",
+  },
+  {
     id: "tests",
     title: "No tree replaces a drying test",
     body: "Mujumdar and Perry both say that a dryer should be chosen after tests with the "
@@ -494,8 +533,8 @@ export const DRYER_SELECTION_LIMITS: readonly LessonLimit[] = [
 export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
   {
     id: "feed-form", steps: [1],
-    q: "A free-flowing granular crystal of about 2 mm is wet from a centrifuge.  By the "
-      + "feed-form tables, which of these can take it?",
+    q: "A damp filter cake of granular crystals, lumpy but not a liquid, comes off a "
+      + "centrifuge.  By the feed-form table, which of these can take it?",
     options: [
       "A spray dryer",
       "A drum dryer",
@@ -503,9 +542,11 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
       "None of the nine",
     ],
     correct: 2,
-    feedback: "Mujumdar's Table 1.1 ticks the rotary and the fluidised-bed dryers for cakes, "
-      + "powders and granules, and the spray and drum dryers only for liquids; Perry's Table "
-      + "12-11 says a spray dryer is not applicable to a solid unless it is made pumpable.",
+    feedback: "Mujumdar's Table 1.1 ticks the rotary and the fluidised-bed dryers for centrifuge "
+      + "and filter cakes, powders and granules, and the spray and drum dryers only for "
+      + "liquids (solution, slurry, paste), not for a cake; Perry's Table 12-11 says a spray "
+      + "dryer is not applicable to a solid unless it is made pumpable.  A paste is a "
+      + "different feed: it is the spray and the drum dryer, not the rotary or the fluid bed.",
   },
   {
     id: "which-end", steps: [5],
@@ -543,9 +584,9 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
       + "evaporating water takes 2257 kJ/kg.  What does the low end of the range say?",
     options: [
       "About half of the energy ends in the vapour as latent heat",
-      "The dryer is 4,500 % efficient",
+      "The dryer evaporates 4,500 kg of water per hour",
       "The dryer uses 4,500 kg of gas per kg of water",
-      "The product must be 4,500 s in the chamber",
+      "The product must stay 4,500 s in the chamber",
     ],
     correct: 0,
     feedback: "2257 divided by 4500 is about 0.5; at 11,500 it is about 0.2.  The rest of the "
@@ -566,7 +607,9 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
     feedback: "At 30 degC or less van 't Land's batch tree goes to vacuum drying, Perry names "
       + "vacuum and freeze dryers as particularly suitable for heat-sensitive materials and "
       + "freeze drying as the choice for high-value products, and the scale is a batch's.  "
-      + "The price is stated too: freeze drying costs two to three times spray drying.",
+      + "The price is stated too: freeze drying costs two to three times spray drying.  A "
+      + "spray dryer with very hot gas fails for a plain reason: the droplet sits near the "
+      + "wet-bulb temperature of the gas, and for hot air that is far above 25 degC.",
   },
   {
     id: "sublimation", steps: [2],
@@ -583,7 +626,8 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
     feedback: "Chapter 11 (p.259) gives 2840 kJ per kg of ice and Perry's Example 12-19 gives "
       + "2257 kJ per kg of water at 100 degC, so the sentence of Chapter 1 (p.22) is wrong by "
       + "its own book; freeze drying is dear because of the vacuum, the cold condenser and the "
-      + "10 to 20 h cycle, not because of the heat (step 2).",
+      + "10 to 20 h cycle, not because of the heat (step 2).  (At one temperature, 0 degC, "
+      + "the two heats are about 2834 and 2501 kJ/kg, about 13 % apart.)",
   },
   {
     id: "pick-arrangement", steps: [7, 8],
