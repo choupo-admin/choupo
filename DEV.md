@@ -5740,6 +5740,13 @@ accepts today, and that is a policy call.
 > C241 into C415, C319 into C329, C409 into C411, C457 into C456, C479 into C238), C309 and C454 proposed for ROADMAP (kept: only
 > Vitor moves one there), 12 finishable in about 77 hours, dispatched in groups, 32 kept.
 
+> **THE CLOUD'S QUEUE FROM SATURDAY 28 NOVEMBER, RECONCILED (Vitor, 2026-11-25).**  In this order: C184 (3) the
+> thermodynamic homotopy ladder; C522 A3-A5 (heuristics, adaptive barrier, the external bench) and B2, B3, C1-C3 (solids,
+> equations of state, the three-phase flash with the Michelsen test); C523 the optimal temperature profile; C217 the
+> optimal feed profile (needs an adjustable exponential signal); C477 the next family of figures; C522 D later.  The BFGS
+> page ("learning the curvature without computing it") is NOT a new tool while C535 stands: its picture is a chapter of
+> `optimizers`, its algebra a chapter of `linear-algebra-without-pain`.
+
 > **C535. EDUTOOLS BY FAMILY, ONE SKELETON (Vitor, 2026-11-25: "voltes a um ponto em que está simples e funciona ... O
 > EduTool Why did it not dry? é claramente um remendo").**  Weighed: the page's content is sound (four engine runs, a
 > verdict); the patch is its packaging: a new top-level tool for one day's question, the 110th of a flat list.  RULE: a
@@ -5747,6 +5754,8 @@ accepts today, and that is a policy call.
 > diagnosis, the choice, the limits); a diagnosis is a chapter of its family, never a new tool.  No big-bang merge: the
 > drying family is the pilot (choose, curve, diagnose, chart), old links alias.  No new EduTool until Vitor has read the
 > skeleton and seen the pilot.
+> FIRST WORK OF SATURDAY 28 NOVEMBER, WITH HIM: the architecture once and for all, and the NAME is open too (Vitor,
+> 2026-11-25: "simples que funciona muito bem e que depois possa escalar sem remendos").
 
 > **C534. PSYCHROMETRIC CHARTS: ONE HOME, THREE DOORS (Vitor, 2026-11-25, for Saturday 28 November).**  The chart
 > stays in its EduTool; the Explorer gets a card (a gas and a vapour) that opens it with the pair filled; Find answers
