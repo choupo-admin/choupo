@@ -2015,6 +2015,11 @@
       "exit": 0,
       "claim": "check_state_inversion_door: OK -- 14 unit file(s) still run their own T-from-H search (pin 14); none new.",
       "seconds": 0.1
+    },
+    "check_unmanaged_line_citations": {
+      "exit": 0,
+      "claim": "check_unmanaged_line_citations: OK 10 unmanaged line citation(s) in 6 file(s), each at its pin (ratchet: may only fall); no `arr[N - 1]` / `.slice(N - 1` read of a src/ file and no `File.cpp:N, A-B` list is unpinned.  NOT checked: a line number built in code.",
+      "seconds": 0.5
     }
   }
 }

@@ -3300,6 +3300,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lpc.$$
 
+    #  Unmanaged line citations gate (2026-11-28): no gui/ file indexes a
+    #  src/ file by `arr[N - 1]` / `.slice(N - 1` or cites `File.cpp:N, A-B`
+    #  (shapes the repointer does not manage); ratchet in
+    #  bin/curate/unmanaged_line_citations.tsv.  Pure file reading.
+    gate_exec "$ROOT/bin/curate/check_unmanaged_line_citations.py" > /tmp/ulc.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "unmanaged-line-citations-gate" "$(grep -m1 '^check_unmanaged_line_citations: OK' /tmp/ulc.$$ | cut -c1-110)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unmanaged_line_citations.py)\n" "unmanaged-line-citations-gate"
+        cat /tmp/ulc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ulc.$$
+
     #  Lesson absence-claims gate (DEV.md 4c C455 class 2): a "we do not have
     #  X" sentence in gui/src/ui/methods is held to the tree by a probe, or
     #  counted in a ratchet; the known-false ones are listed.  File reading.

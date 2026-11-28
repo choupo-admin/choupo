@@ -1,0 +1,7 @@
+# file<TAB>count: unmanaged line citations; a RATCHET, may only fall (check_unmanaged_line_citations.py)
+gui/src/ui/methods/batchMembraneLesson.ts	1
+gui/src/ui/methods/batchMembraneMath.ts	1
+gui/src/ui/methods/gasLineLesson.ts	1
+gui/tests/overpressure.test.ts	2
+gui/tests/physicsBatchMembraneClaims.test.ts	2
+gui/tests/physicsEpsilonNtu.test.ts	3

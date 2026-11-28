@@ -867,6 +867,12 @@ exit code 0; \code{bin/runTests} is the only honest gate (\S\ref{sec:regression}
 
 All previously-passing tutorials \emph{must} still pass.
 
+An EduTool lesson or its test that cites the engine should cite by symbol
+(\code{gui/tests/support/engineCite.ts}), not by line number; a surviving
+\code{File.cpp:N} is kept current by \code{bin/curate/repoint\_lesson\_citations.py},
+and \code{bin/curate/check\_unmanaged\_line\_citations.py} refuses the shapes it
+cannot manage (\code{arr[N - 1]}, \code{.slice(N - 1}, \code{File.cpp:N, A--B}).
+
 % =====================================================================
 \section{Declaring what a unit does to material}\label{sec:material-mapping}
 

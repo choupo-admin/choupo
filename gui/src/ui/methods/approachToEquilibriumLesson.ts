@@ -247,7 +247,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
         + "(`approachDirection`, GibbsReactor.cpp:70–163).  An isothermal run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
-        + "GibbsReactor.cpp:806)",
+        + "`GibbsReactor::solve`)",
         unit: "J/mol" },
       { sym: "X_\\mathrm{eq}",
         means: "the equilibrium conversion — or any monotone stand-in for it, "
@@ -472,8 +472,8 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "the engine does with a declared approach is to solve the equilibrium "
       + "on the shifted Kp and then price the outlet at the physical "
       + "temperature with that shifted composition: Q = H_out(T, shifted "
-      + "composition) − H_in (EquilibriumReactor.cpp:914, 977–981, 988; for "
-      + "the isothermal gibbsReactor, GibbsReactor.cpp:800–806).  So carry "
+      + "composition) − H_in (`EquilibriumReactor::solve`; for "
+      + "the isothermal gibbsReactor, `GibbsReactor::solve`).  So carry "
       + "from the shifted run the composition and whatever depends on "
       + "composition alone (conversion, selectivity); carry from the "
       + "unshifted run only the temperature, the pressure and the feed; and "

@@ -395,6 +395,7 @@ PRE  | ISO    | bin/curate/check_lee_kesler_ploecker.py              | C470 (202
 PRE  | ISO    | bin/curate/check_lesson_absence_claims.py            | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_lesson_knob_domains.py              | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | PAR    | bin/curate/check_lesson_prose_citations.py           | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
+PRE  | PAR    | bin/curate/check_unmanaged_line_citations.py         | 2026-11-28: pure file reading, no shared state, runs in ~1 s
 PRE  | ISO    | bin/curate/check_lesson_typed_numbers.py             | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_lhhw_detailed_balance.py            | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
 PRE  | ISO    | bin/curate/check_liquid_density_entry_callers.py     | C470 (2026-11-22: run alone and pooled at -j 3, identical output and exit code, no gate-isolation-leak); was unlisted, so SERIAL and a barrier
