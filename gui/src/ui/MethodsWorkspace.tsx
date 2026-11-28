@@ -122,7 +122,7 @@ License
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { lessonStepper, LessonReferences } from "./methods/lessonStep.js";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
+  ActionIcon, Alert, Badge, Box, Button,
   Group, Loader, Select, Stack, Text, Title, Tooltip,
 } from "@mantine/core";
 import { IconBook, IconExternalLink, IconSearch } from "@tabler/icons-react";
@@ -133,9 +133,8 @@ import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 import { PathBar } from "./methods/PathBar.js";
 import { EduToolsHome, collapseFamilies } from "./methods/EduToolsHome.js";
 
-import { resolveAdapter } from "../adapters/index.js";
 import {
-  EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec,
+  type ExploreSpec,
 } from "../case/exploreSynth.js";
 import {
   caseComponentFiles, mergeCatalogue, metaByName, type ComponentMeta,
@@ -145,7 +144,6 @@ import {
 } from "../case/methodFeeds.js";
 import { buildLocalUnifac, hasUnifacGroups } from "../case/unifacGroups.js";
 import { hasPair } from "../case/pairsCatalogue.js";
-import { fromJson, serialize } from "../dict/index.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
@@ -163,6 +161,7 @@ import { tabKindFor } from "./tabChrome.js";
 import {
   paToDisplay, parsePressure, pressureLabel,
 } from "../state/displayUnits.js";
+import { useEngineCsv, HandOffFooter } from "./methods/engineBench.js";
 
 // The three run-fed tools are lazy: BreakthroughTool reaches the plotly seam
 // at module scope (plotly.js-basic-dist-min cannot load under node), and
@@ -483,79 +482,6 @@ const LeastSquaresTool = lazy(() =>
   import("./methods/LeastSquaresTool.js")
     .then((m) => ({ default: m.LeastSquaresTool })));
 
-// ---- The engine runner ------------------------------------------------------
-// The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
-// synthesized transient choupoProps case), reduced to the single-run shape the
-// method tools need.  Debounced; a newer spec aborts the in-flight run.
-//  THE RUN'S DIAGNOSTICS TRAVEL TOO, and until now they did not.  This hook
-//  had the whole RunResult in hand and returned the CSV and the advisories,
-//  so every number an op PUBLISHES about the chart it drew was discarded at
-//  this line.  The psychrometric op publishes `Lewis_last` and says in its
-//  own source why ("a reader with only the curves cannot tell which
-//  situation is on the chart"), and no surface in the GUI could reach it.
-export function useEngineCsv(spec: ExploreSpec | null): {
-  csv: string | null; err: string | null; busy: boolean; advisories: string[];
-  diags: Record<string, number> | null;
-} {
-  const [csv, setCsv] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [advisories, setAdvisories] = useState<string[]>([]);
-  const [diags, setDiags] = useState<Record<string, number> | null>(null);
-  const runSeq = useRef(0);
-  const abortRef = useRef<AbortController | null>(null);
-  useEffect(() => {
-    if (!spec) {
-      abortRef.current?.abort();
-      setCsv(null); setErr(null); setAdvisories([]); setDiags(null);
-      setBusy(false);
-      return;
-    }
-    const t = setTimeout(() => {
-      abortRef.current?.abort();
-      const ctrl = new AbortController();
-      abortRef.current = ctrl;
-      const seq = ++runSeq.current;
-      setBusy(true); setErr(null);
-      void (async () => {
-        try {
-          const resolved = await resolveAdapter("wasm");
-          if (seq !== runSeq.current) return;
-          if (resolved.kind === "unavailable") {
-            setErr(resolved.fallbackReason
-              ?? "The real solver could not be loaded (build the WASM).");
-            setBusy(false);
-            return;
-          }
-          const result = await resolved.adapter.run(
-            synthesizeExploreCase(spec), () => {}, ctrl.signal, "choupoProps");
-          if (seq !== runSeq.current) return;
-          const out = result.csvFiles?.[EXPLORE_OUTPUT];
-          // Honesty: the tools show no log tab — lift the engine's advisory
-          // lines off the run log so they are SEEN, never swallowed.
-          setAdvisories(
-            (result.log.match(/^\s*\[advisory\].*$/gm) ?? []).map((s) => s.trim()));
-          setDiags(result.operationResults?.[0]?.diagnostics ?? null);
-          if (out) { setCsv(out); setErr(null); }
-          else {
-            const detail = result.log.split("\n").map((l) => l.trim()).reverse()
-              .find((l) => /(?:error|fatal|refused|failed)/i.test(l));
-            setErr(result.status !== "done"
-              ? `choupoProps did not finish${detail ? `: ${detail}` : "."}`
-              : "No data — the engine returned an empty result for this construction.");
-          }
-        } catch (e) {
-          if (seq === runSeq.current && !ctrl.signal.aborted)
-            setErr(e instanceof Error ? e.message : String(e));
-        } finally {
-          if (seq === runSeq.current) setBusy(false);
-        }
-      })();
-    }, 300);
-    return () => clearTimeout(t);
-  }, [spec]);
-  return { csv, err, busy, advisories, diags };
-}
 
 // ---- Workspace shell --------------------------------------------------------
 
@@ -997,47 +923,6 @@ function TeachesLine({ tool, pageRef }: {
   );
 }
 
-/** The authoring hand-off (unchanged from the Explorer — guard-rail 2): the
- *  tool EMITS the propsDict for the student / agent to author on disk.
- *  Dict-on-disk stays the source of truth; the workspace never writes it. */
-export function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: React.ReactNode[] }) {
-  const [open, setOpen] = useState(false);
-  const snippet = useMemo(() => {
-    if (!spec) return "(no run yet)";
-    try { return serialize(fromJson(synthesizeExploreCase(spec).propsDict!)); }
-    catch { return "(invalid spec)"; }
-  }, [spec]);
-  return (
-    <Box style={{ flexShrink: 0, padding: "4px 12px 8px",
-      borderTop: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      {alerts.length > 0 && <Stack gap={6} mb={6}>{alerts}</Stack>}
-      <Group gap="xs" wrap="nowrap" align="center">
-        <Button variant="subtle" size="compact-xs" onClick={() => setOpen((o) => !o)}>
-          {open ? "Hide propsDict" : "Author → copy propsDict"}
-        </Button>
-      </Group>
-      <Collapse in={open}>
-        <Stack gap={4} mt={6}>
-          <Text size="xs" c="dimmed">
-            Create or open a case, then put this block in <code>system/propsDict</code> under
-            <code> operations ( … )</code>; keep <code>constant/thermoPhysPropDict</code> in sync with
-            the components/models above, and <code>runCase</code>.
-          </Text>
-          <Group gap="xs">
-            <CopyButton value={snippet}>
-              {({ copied, copy }) => (
-                <Button size="xs" variant={copied ? "filled" : "light"} color="accent" onClick={copy}>
-                  {copied ? "Copied ✓" : "Copy propsDict"}
-                </Button>
-              )}
-            </CopyButton>
-          </Group>
-          <Code block style={{ fontSize: 11, maxHeight: 200, overflow: "auto" }}>{snippet}</Code>
-        </Stack>
-      </Collapse>
-    </Box>
-  );
-}
 
 // ---- McCabe-Thiele ----------------------------------------------------------
 // The SAME engine feed the Explorer's T-x-y uses (binaryVleSpec, kind mccabe):

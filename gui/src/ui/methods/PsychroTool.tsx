@@ -25,7 +25,7 @@ import {
   Alert, Box, Group, Loader, NumberInput, Select, Stack, Text, Title,
 } from "@mantine/core";
 
-import { HandOffFooter, useEngineCsv } from "../MethodsWorkspace.js";
+import { HandOffFooter, useEngineCsv } from "./engineBench.js";
 import { metaByName, type ComponentMeta } from "../../case/catalogue.js";
 import type { ExploreSpec } from "../../case/exploreSynth.js";
 import { psychroSpec } from "../../case/methodFeeds.js";
