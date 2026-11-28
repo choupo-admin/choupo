@@ -1,0 +1,2 @@
+# Deliberate refusal: must exit non-zero and name the species no reaction can start (see the flowsheetDict header).
+no reaction path can give a foothold from this feed to: CH4 (not in the feed; in reaction 1)

@@ -13622,6 +13622,24 @@ Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the 
 \end{tutgolden}
 
 \clearpage
+\tutentry{equil06\_refusal\_no\_carbon\_feed}{tutorials/steady/reactors/equil06\_refusal\_no\_carbon\_feed}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformer) at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(reformer.west)+(-1.05,0.00)$) -- ($(reformer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reformer.east)+(0,0.00)$) -- ($(reformer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K}
+\begin{tutnarrative}
+a DELIBERATE REFUSAL (C532 c).
+
+The reforming reactor of equil01 is fed steam ONLY: no carbon enters, so no reaction path can give CH4 or CO2 a foothold for the interior-point Newton. The engine refuses and NAMES those species and the reactions that touch them (it used to say only "some participating species"), and the case must exit non-zero with that text (.expect-refusal).
+
+\end{tutnarrative}
+\tutreadme{Deliberate refusal. The steam-methane reforming equilibrium reactor is fed steam only. No reaction can make CH4 or CO2 positive, so the interior starting point cannot be built, and the engine names those species and their reactions. Runs under .expect-refusal (exit non-zero plus the named text).}
+
+\clearpage
 \tutentry{ladder01\_wgs\_three\_rungs}{tutorials/steady/reactors/ladder01\_wgs\_three\_rungs}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

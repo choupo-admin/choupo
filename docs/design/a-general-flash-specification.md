@@ -204,6 +204,20 @@ that does not satisfy its specification is never returned.
   state 366.8775 K, vf 0.25; adiabaticFlash's high-side fallback is no longer
   reached by any shipped case.  `compressor`, `turbine`: NOT migrated — §6.
 
+* **`reactorOutlet::temperatureOfEnthalpy`: MIGRATED (2026-11-28, C532 c)** for
+  fluid streams (the PFR's march is its caller; the PFR itself is its own
+  slice).  A thin wrapper over `specifiedFlash` PH: window [10, 6000] K cut to
+  the package's own temperature domain (`packageTemperatureDomain`, IF97 water
+  [273.15, 1073.15] K), 1e-6 J/mol ABSOLUTE verdict; on a plateau it keeps the
+  old contract (T = Tsat, `unmatched_J_per_mol` carries the jump).  **SOLIDS
+  EXCEPTION (registered debt):** a stream with crystals keeps the private search
+  (`solidsCarryingInversion`, the home prices no solids at T_out).  No shipped
+  golden moved (48 PFR/mixer cases scoped, FAIL 0).  Honest limit: no witness
+  of the old failure was built, because IF97 refuses mixtures and a PFR needs a
+  reacting second species.  Folded in: the equilibrium reactor's refusal now
+  names the species no reaction can start (witness
+  `equil06_refusal_no_carbon_feed`, `.expect-refusal`).
+
 A PURE state ON its curve (the plateau, a pure (T, V/F) or (P, V/F)) is
 priced on the saturated legs (`pureSaturationLegs` and its entropy twin
 `pureSaturationEntropyLegs`, one shared translation

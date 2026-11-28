@@ -368,7 +368,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "heat that holding costs is the negative duty each one publishes.",
     note: "The equilibrium reactor is isothermal: its temperature defaults to "
       + "the feed's and is otherwise the declared one, "
-      + "EquilibriumReactor.cpp:64; its duty, EquilibriumReactor.cpp:1079.",
+      + "EquilibriumReactor.cpp:64; its duty, EquilibriumReactor.cpp:1099.",
   },
 
   // ---- Part 5: each destination asks its own ratio ---------------------------------
