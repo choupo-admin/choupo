@@ -205,8 +205,12 @@ that does not satisfy its specification is never returned.
   reached by any shipped case.  `compressor`, `turbine`: NOT migrated — §6.
 
 * **`reactorOutlet::temperatureOfEnthalpy`: MIGRATED (2026-11-28, C532 c)** for
-  fluid streams (the PFR's march is its caller; the PFR itself is its own
-  slice).  A thin wrapper over `specifiedFlash` PH: window [10, 6000] K cut to
+  fluid streams (the PFR's march is its caller).  **The PFR, MIGRATED (2026-11-28, C532 c):**
+  the home's refusal is caught where the march inverts, and the unit reports
+  "Converged: NO" with the home's reason and publishes the feed as the outlet,
+  never an exception through a recycle (witness
+  `tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy`; PFR.cpp is
+  out of the door ratchet).  A thin wrapper over `specifiedFlash` PH: window [10, 6000] K cut to
   the package's own temperature domain (`packageTemperatureDomain`, IF97 water
   [273.15, 1073.15] K), 1e-6 J/mol ABSOLUTE verdict; on a plateau it keeps the
   old contract (T = Tsat, `unmatched_J_per_mol` carries the jump).  **SOLIDS

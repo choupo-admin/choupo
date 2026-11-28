@@ -13887,6 +13887,37 @@ WHERE EACH NUMBER COMES FROM. Zuluaga-Botero, Dobrosz-Gomez \& Gomez-Garcia, Cat
 \end{tutgolden}
 
 \clearpage
+\tutentry{pfr06\_refusal\_unreachable\_enthalpy}{tutorials/steady/reactors/pfr06\_refusal\_unreachable\_enthalpy}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSAL WITNESS: an adiabatic PFR whose outlet-temperature inversion is refused by the shared enthalpy home reports Converged: NO with its reason}
+\begin{tutnarrative}
+REFUSAL WITNESS (C532 c): the adiabatic bed of pfr04 fed at 450 K, 15 bar. The marched enthalpy lands on a state the package cannot invert (the shared flashState::specifiedFlash PH refuses); the unit prints "Converged: NO" with the home's reason and the flowsheet fails by name, never an exception leaving a recycle.
+
+an ADIABATIC plug-flow reactor. The temperature is a RESULT, marched with the species by the same RK4:
+
+dF\_i/dV = SUM\_j nu\_ij r\_j(F,T) dT/dV = SUM\_j (-dH\_j(T)) r\_j / SUM\_i F\_i cp\_i(T)
+
+The esterification is only mildly exothermic in the liquid (dH\_rxn about -2.7 kJ/mol after the acetic-acid correction, docs/design/acetic-acid-latent-heat-closure.md), so the stream warms by only 6.6 K (356.6 K out, the hot spot is the outlet). The Arrhenius feedback is present but weak. T(V) is in the axial profile: plot it.
+
+The original teaching point of this case (positive feedback, a hot spot \textasciitilde{}100 K above the feed) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed.
+
+`thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
+
+The feed is declared at 15 bar, a leftover of the old design (a 454 K product had to be held liquid); at the corrected \textasciitilde{}357 K the outlet is liquid at 1 atm too.
+
+\end{tutnarrative}
+\tutreadme{A refusal witness (C532 c). The adiabatic bed of pfr04, fed at 450 K and 15 bar, marches to a state whose enthalpy the package cannot invert. The shared home (flashState::specifiedFlash, PH) refuses; the PFR catches it and prints}
+\tutreadme{Converged: NO The outlet-temperature inversion (flashState::specifiedFlash, PH) was refused: ...}
+\tutreadme{then the flowsheet stops by name (unit 'reactor' failed to converge). Before, the exception left the unit and could end a recycle.}
+\tutreadme{Set the feed back to 350 K (pfr04) and the bed runs: T is a result, 6.6 K of warming.}
+
+\clearpage
 \tutentry{pfr\_polyesterification}{tutorials/steady/reactors/pfr\_polyesterification}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

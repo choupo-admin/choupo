@@ -20929,6 +20929,8 @@ first-order kinetics it admits the textbook closed-form
 $X = 1 - e^{-k\tau}$ that the simulator's tutorial reproduces.
 \end{whatyoulllearn}
 
+\noindent When the bed is not isothermal, the temperature along it is recovered from the marched enthalpy by the shared pressure--enthalpy flash; if that flash refuses a state the package cannot reach, the unit reports \texttt{Converged: NO} with the reason and publishes the feed as its outlet, so a refusal never escapes a recycle as an exception.
+
 \subsection{The differential material balance}
 
 A PFR is a tube in which the molar flow of each component changes

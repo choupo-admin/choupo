@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1964,
+  "cases": 1965,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -30419,6 +30419,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/reactors/pfr_polyesterification": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -33394,6 +33408,7 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",
@@ -34100,6 +34115,7 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",
@@ -36987,6 +37003,7 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",

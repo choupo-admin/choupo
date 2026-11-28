@@ -151,6 +151,15 @@ scalar localVolumetricFlow(const ThermoPackage& thermo, scalar T, scalar P,
 
 } // namespace
 
+namespace
+{
+//  The shared enthalpy inversion refused a state along the bed (C532 c).
+struct PfrOutletRefused : std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
+}
+
 int PFR::solve(const DictPtr& dict,
                const ThermoPackage& thermo,
                int verbosity)
@@ -200,9 +209,36 @@ int PFR::solve(const DictPtr& dict,
     //  dF_i/dV = SUM_j nu_ij r_j(F), marched by the same RK4.  The single-
     //  reaction path below (`reaction <name>;`) is untouched.
     if (dict->hasDictList("reactions"))
-        return solveMultiReaction(dict, thermo, verbosity, F_in_kmols, T,
-                                  feedDict->lookupScalarOrDefault("P", 101325.0),
-                                  V_R, vf_in, nSteps, z_in);
+    {
+        try
+        {
+            return solveMultiReaction(dict, thermo, verbosity, F_in_kmols, T,
+                                      feedDict->lookupScalarOrDefault("P", 101325.0),
+                                      V_R, vf_in, nSteps, z_in);
+        }
+        catch (const PfrOutletRefused& e)
+        {
+            //  Publish the feed as the last state and report non-converged
+            //  (Valve.cpp's pattern): one bad iterate must not end a recycle.
+            std::cout << "\n============================  PFR Result  ============================\n"
+                      << "  Converged:     NO\n"
+                      << "  The outlet-temperature inversion (flashState::specifiedFlash, PH)"
+                         " was refused: " << e.what() << "\n"
+                      << "  The feed state is published as the outlet.\n";
+            produced_.clear();
+            ProcessStream out;
+            out.name = "out";
+            out.F    = F_in_kmols;
+            out.T    = T;
+            out.P    = 0.0;
+            out.z    = z_in;
+            out.vf   = vf_in;
+            produced_.push_back(out);
+            kpis_.clear();
+            closures_.clear();
+            return 1;
+        }
+    }
 
     auto rxnDict = dict->subDict("reaction");  refuseBedHydraulicsOnSinglePath(operDict);
 
@@ -988,12 +1024,25 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     bool   phaseAdvisoryGiven = false;             // C461 S3 (a): once per run
     scalar V_phase_now = 0.0;                      // the step's end volume, for that advisory
     scalar unmatched_last = 0.0;                   // J/mol, a pure fluid's jump only
-    auto T_from_h = [&](scalar h_target, const sVector& zz, scalar Tguess,
+    auto T_from_h = [&](scalar hMarch, const sVector& zz, scalar Tguess,
                         scalar Pk) -> scalar
     {
-        const reactorOutlet::EnthalpyInversion inv =
-            reactorOutlet::temperatureOfEnthalpy(h_target, Pk, zz, Tguess,
-                                                 vf_lastGuess, vf_in, thermo);
+        //  C532 c: the shared home (flashState::specifiedFlash, PH) REFUSES an
+        //  enthalpy the package cannot reach.  A refusal is reported by
+        //  `solve` as "Converged: NO" with the home's reason, never an
+        //  exception leaving a recycle (Valve.cpp is the template); a HARD
+        //  refusal still propagates.
+        reactorOutlet::EnthalpyInversion inv;
+        try
+        {
+            inv = reactorOutlet::temperatureOfEnthalpy(hMarch, Pk, zz, Tguess,
+                                                       vf_lastGuess, vf_in, thermo);
+        }
+        catch (const std::exception& e)
+        {
+            rethrowHardRefusal();
+            throw PfrOutletRefused(e.what());
+        }
         vf_lastGuess   = inv.vf;
         unmatched_last = inv.unmatched_J_per_mol;
         //  C461 S3 (a): the volumetric-flow basis and the kinetics stay on the

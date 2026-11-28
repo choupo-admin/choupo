@@ -229,6 +229,7 @@ liquid concentrations whatever the phase).  One case is announced rather
 than closed: a PURE product at its own saturation temperature, where (T, P)
 do not fix its quality (`[cstr|pfr] ... found no outlet temperature at which
 the published state carries the enthalpy it conserved`).
+A non-isothermal `pfr` whose enthalpy inversion the shared home (`flashState::specifiedFlash`, PH) refuses prints `Converged: NO` with the home's reason and publishes the feed as the outlet (witness `pfr06_refusal_unreachable_enthalpy`); the exception never leaves a recycle.
 
 **Rate laws** (`kinetics { type ... }`, shared by `cstr` and `pfr` via `RateLaw`).
 Two families, one formula.  With `theta_i` the concentration (mol/m³) or, when
