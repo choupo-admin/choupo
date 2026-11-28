@@ -640,6 +640,7 @@ double cannot carry it), `extent_<name>_kmol_h`, `conversion_<name>`,
 `Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)
 and `temperatureApproach_K` (the global magnitude, when declared).
 Examples: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift together);
+`tutorials/steady/reactors/equil05_order_independent_a` / `_b` (the order of the `reactions` list does not change the start or the answer);
 `tutorials/steady/reactors/equil02_methanol_declared_pathways` (one syngas, three
 equilibria: Gibbs over every species makes methane, the declared list without methanation
 makes methanol, the complete list reproduces Gibbs);

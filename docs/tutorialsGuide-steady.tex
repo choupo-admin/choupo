@@ -13383,6 +13383,86 @@ NOT here, and said: any rate (whisker and encapsulating carbon and their kinetic
 \end{tutgolden}
 
 \clearpage
+\tutentry{equil05\_order\_independent\_a}{tutorials/steady/reactors/equil05\_order\_independent\_a}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformer) at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(reformer.west)+(-1.05,0.00)$) -- ($(reformer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reformer.east)+(0,0.00)$) -- ($(reformer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K}
+\begin{tutnarrative}
+the EQUILIBRIUM reactor (REquil) with MULTIPLE simultaneous reactions.
+
+Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry data), solved together by the multivariate Newton:
+
+smr : CH4 + H2O <$\to$ CO + 3 H2 (strongly endothermic) wgs : CO + H2O <$\to$ CO2 + H2 (mildly exothermic)
+
+The stoichiometry lives in constant/reactions and is referenced BY NAME -- the same `reactions ( r1 r2 );` grammar the batch / dynamic reactors take.
+
+Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00166666666667}
+\goldrow{stream}{feed}{T}{1100}
+\goldrow{stream}{syngas}{F}{0.00166593958576}
+\goldrow{stream}{syngas}{T}{1100}
+\goldrow{kpi}{reformer}{F\_in\_kmol\_h}{6}
+\goldrow{kpi}{reformer}{F\_out\_kmol\_h}{5.99738250873}
+\goldrow{kpi}{reformer}{Kp\_smr}{312.740523794}
+\goldrow{kpi}{reformer}{Kp\_wgs}{0.978425617548}
+\goldrow{kpi}{reformer}{Q\_kW}{6.20687718107}
+\goldrow{kpi}{reformer}{T}{1100}
+\goldrow{kpi}{reformer}{conversion\_smr}{-0.00130874563718}
+\goldrow{kpi}{reformer}{conversion\_wgs}{-0.670693979077}
+\goldrow{kpi}{reformer}{extent\_smr\_kmol\_h}{-0.00130874563718}
+\goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{-0.670693979077}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{equil05\_order\_independent\_b}{tutorials/steady/reactors/equil05\_order\_independent\_b}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformer) at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(reformer.west)+(-1.05,0.00)$) -- ($(reformer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reformer.east)+(0,0.00)$) -- ($(reformer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K}
+\begin{tutnarrative}
+the EQUILIBRIUM reactor (REquil) with MULTIPLE simultaneous reactions.
+
+Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry data), solved together by the multivariate Newton:
+
+smr : CH4 + H2O <$\to$ CO + 3 H2 (strongly endothermic) wgs : CO + H2O <$\to$ CO2 + H2 (mildly exothermic)
+
+The stoichiometry lives in constant/reactions and is referenced BY NAME -- the same `reactions ( r1 r2 );` grammar the batch / dynamic reactors take.
+
+Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00166666666667}
+\goldrow{stream}{feed}{T}{1100}
+\goldrow{stream}{syngas}{F}{0.00166593958576}
+\goldrow{stream}{syngas}{T}{1100}
+\goldrow{kpi}{reformer}{F\_in\_kmol\_h}{6}
+\goldrow{kpi}{reformer}{F\_out\_kmol\_h}{5.99738250873}
+\goldrow{kpi}{reformer}{Kp\_smr}{312.740523794}
+\goldrow{kpi}{reformer}{Kp\_wgs}{0.978425617548}
+\goldrow{kpi}{reformer}{Q\_kW}{6.20687718107}
+\goldrow{kpi}{reformer}{T}{1100}
+\goldrow{kpi}{reformer}{conversion\_smr}{-0.00130874563718}
+\goldrow{kpi}{reformer}{conversion\_wgs}{-0.670693979077}
+\goldrow{kpi}{reformer}{extent\_smr\_kmol\_h}{-0.00130874563718}
+\goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{-0.670693979077}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ladder01\_wgs\_three\_rungs}{tutorials/steady/reactors/ladder01\_wgs\_three\_rungs}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
