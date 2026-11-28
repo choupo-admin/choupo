@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  adiabaticFlash03_near_pure_letdown -- meta-control
+\*---------------------------------------------------------------------------*/
+
+tier          tutorial;
+application   choupoSolve;
+description   "Adiabatic flash, water 450 K 20 bar -> 1 bar: the same letdown with 1e-5 methanol: a near-pure feed";
+
+verbosity     3;

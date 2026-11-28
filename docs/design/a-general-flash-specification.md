@@ -161,8 +161,48 @@ that does not satisfy its specification is never returned.
   `tutorials/props/thermo/flashSpec01_wet_steam_expansion`: steam at 80 bar
   and 500 °C expanded isentropically to 0.1 bar on IF97, ending wet — the
   answer a student checks against the steam table.
-* **`adiabaticFlash`, `valve`, `compressor`, `turbine`: NOT migrated** —
-  §6.
+* **`valve`: MIGRATED (2026-11-28, D5).**  Its outlet is `specifiedFlash`
+  PH at (P_out, H_in); the private T search is gone.  Water IF97 450 K,
+  20 -> 1 bar: 372.756 K, vf 0.14725 (before: vf 0, "Converged: NO").  No
+  shipped valve golden moved.  The inner flash is the unit's own (1e-9) and
+  the verdict tolerance 1e-9 normalised, because the energy report re-prices
+  the published stream.  `check_state_inversion_door` pins the 14 unit files
+  that still run their own T-from-H search; it may only shrink.
+* **`adiabaticFlash`: MIGRATED (2026-11-28, D8).**  Outlet = `specifiedFlash`
+  PH at (P_out, H_in); tolerance 0.01 J/mol ABSOLUTE (the raw verdict:
+  with terms {phi, target} the normalisation is degenerate, so a "1e-9"
+  declared there is 1e-9 J/mol, which stalls a near-pure feed -- review of the
+  valve, same day).  A failed (P, H) flash is caught in the unit: it reports
+  `Converged: NO` and publishes the feed T at P_out, so one bad tear iterate
+  in a recycle does not abort the run; the supercritical-discard note is
+  printed.  IF97 water 450 K, 20 -> 1 bar: 372.756 K, V/F 0.147246, residual 0
+  (before: "Outer T search converged: NO", V/F 1, 3.5e4 J/mol open).  Witnesses
+  `adiabaticFlash02_wet_water_letdown`, `adiabaticFlash03_near_pure_letdown`.
+  The declared HIGH-SIDE rule for an unanswerable reactive trial is KEPT as
+  a documented exception: `column13_sour_water_stage_identity` reaches it
+  (its re-flash arm hands the unit a fictitious 483 K readout the reactive
+  package cannot answer).  When the home refuses on an unanswerable package
+  trial (`FlashSpecification::lastUnanswerableT` says which), the unit falls
+  back, announced, to its own search with the rule.  Narrowing the window
+  cannot emulate it (the home evaluates the window's edges).  So
+  the gate's census no longer counts the file (it asks the home first), but the
+  fallback is a private T-from-H search for that one rule: the home should carry
+  it (a per-trial "unanswerable is above" option).  Next slice.
+  KNOWN, registered not fixed: water on the `pureFluids` IF97 override WITH a
+  trace of methanol in a gamma-phi mixture is refused (root not found) (the H step is not
+  resolved); the same feed on the catalogue water converges.
+* **The adiabatic `mixer`: MIGRATED (2026-11-28, D9)** for fluid-only merges.
+  Outlet = `specifiedFlash` PH at (P_out, SUM priceState inlets), 1e-6 J/mol
+  ABSOLUTE; failure caught, `Converged: NO`, seed T published; a pure fluid on
+  its plateau is pinned.  IF97 36 kmol/h water 300 K + 36 kmol/h steam 450 K, 1 bar:
+  372.756 K, vf 0.46678 (before: asked IF97 for 175 K and failed).  Witness
+  `mixer01_water_steam_plateau`.  **SOLIDS EXCEPTION (registered debt):** a merge
+  carrying crystals keeps `reactorOutlet::temperatureOfEnthalpy`, because the
+  home prices no solids at T_out; Mixer.cpp stays in the door ratchet for it.
+  Moved golden (a CORRECTION): `column13_sour_water_stage_identity`'s `recombine`
+  was the reactive package's fictitious 483 K readout, now the real two-phase
+  state 366.8775 K, vf 0.25; adiabaticFlash's high-side fallback is no longer
+  reached by any shipped case.  `compressor`, `turbine`: NOT migrated — §6.
 
 A PURE state ON its curve (the plateau, a pure (T, V/F) or (P, V/F)) is
 priced on the saturated legs (`pureSaturationLegs` and its entropy twin
@@ -174,7 +214,7 @@ lost — the first build did exactly that and its own verdict refused it
 
 ## 6. What is NOT done, and why
 
-* The four rotating/flash units keep their own searches.  Each would MOVE a
+* (HISTORY; `valve` and `adiabaticFlash` have since migrated, section 5.)  The four rotating/flash units kept their own searches.  Each would MOVE a
   published number if routed through this home, so none is migrated in this
   slice (CLAUDE.md §10, a golden re-record is a claim): `adiabaticFlash` and
   `valve` converge to 0.01 J/mol from a different bracket (200–700 K) and

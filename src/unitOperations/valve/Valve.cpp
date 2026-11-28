@@ -29,6 +29,7 @@ License
 #include "Valve.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/SpecifiedFlash.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "thermo/PricedDensity.H"
 #include "solver/NewtonRaphson.H"
@@ -121,98 +122,65 @@ int Valve::solve(const DictPtr& dict,
               << "Outlet:     P = " << (Pout * 1.0e-5)
               << " bar  (isenthalpic throttle, W = 0, Q = 0)\n";
 
-    FlashOptions iopts;
+    FlashOptions iopts;                 // the inlet's own flash, for the volume KPIs
     iopts.tolerance   = 1.0e-9;
     iopts.maxIter     = 60;
     iopts.verbosity   = (verbosity >= 4) ? 3 : 0;
     iopts.accelerator = OuterAccelerator::Wegstein;
 
-    //  A two-phase root above every present component's Tc is not a split:
-    //  the outlet is the single fluid phase, and the discard is said once,
-    //  after the search (the one home, StreamEquilibrium.H -- C34).
+    //  THE OUTLET STATE IS `flashState::specifiedFlash`'s (D5, 2026-11-28; the
+    //  migration planned in docs/design/a-general-flash-specification.md
+    //  section 5): the state at (P_out, H_in), by the one (P, H) home.  The
+    //  unit's own search in T had no root where a PURE fluid is throttled into
+    //  its saturation plateau (H jumps by the latent heat at Tsat: water 450 K,
+    //  20 -> 1 bar published 372.76 K with vf = 0 and "Converged: NO"); the
+    //  home answers it in closed form (T = Tsat(P), vf from the lever rule on
+    //  the saturated legs) and every other state by its bracketed search.
+    flashState::FlashSpecification spec;
+    spec.pair   = flashState::SpecPair::PH;
+    spec.P      = Pout;
+    spec.target = Hreq;
+    spec.seed   = Tfeed;
+    spec.flash  = iopts;               // the inner flash the throttle always used
+    //  The throttle's own tolerance (1e-6 J/mol, as the unit's Newton kept) is
+    //  the verdict's, declared so the report's H_out = H_in check holds.
+    spec.controls = flashState::FlashSpecification::defaultControls(flashState::SpecPair::PH);
+    //  ABSOLUTE, in J/mol: the verdict's residual {phi, target} is degenerate
+    //  for the normaliser, so it falls back to the raw residual (Convergence.H);
+    //  1e-6 J/mol is the contract the unit's own Newton kept.
+    spec.controls.tolerance = 1.0e-6;
+    spec.controlsDeclared = true;
+    flashState::SpecifiedState st;
     FlashSolution lastSol;
-    std::string   scDiscarded;
-    auto flashAt = [&](scalar T) -> FlashSolution
+    bool converged = true;
+    std::string failure;
+    scalar Tout = Tfeed;
+    scalar vf   = vfFeed;
+    try
     {
-        FlashInput in;
-        in.F = F; in.T = T; in.P = Pout; in.z = z;
-        return flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts,
-                                                             scDiscarded);
-    };
-    auto f = [&](scalar T)
-    {
-        lastSol = flashAt(T);
-        //  The OUTLET priced exactly as the stream this unit publishes will
-        //  be: unpinned, carrying the vapour fraction of this search's own
-        //  flash (the report resolves it at the same (T, P, z)).
-        const scalar b  = lastSol.V_over_F;
-        const scalar vf = (b <= 1.0e-9) ? 0.0 : (b >= 1.0 - 1.0e-9) ? 1.0 : b;
-        return flashState::priceState(T, Pout, z, 1.0, false, vf, thermo,
-                                      who + " outlet", nullptr)
-             - Hreq;
-    };
-    auto df = [&](scalar T)
-    {
-        //  1 mK, not 0.5 K (2026-10-11, C65 item d).  A central difference
-        //  across a whole kelvin straddles the bubble point of a nearly pure
-        //  liquid, where the slope jumps by the latent heat, and the Newton
-        //  then CREEPS (ValveLP: 34 iterations, each closing ~20 % of the
-        //  gap).  Inside one phase region the difference is the slope.
-        const scalar dT = 1.0e-3;
-        return (f(T + dT) - f(T - dT)) / (2.0 * dT);
-    };
-
-    solver::NROptions nro;
-    //  1e-6 J/mol, not 1 J/mol (2026-10-11, C65 item d).  The residual is
-    //  PER MOLE, so its kW is the tolerance times the flow: 1 J/mol on
-    //  letdown01's ValveLP (0.81 kmol/s) left 0.77 kW unattributed in the
-    //  energy report, which checks the unit's balance on its own streams.
-    nro.tolerance          = 1.0e-6;       // J/mol
-    //  200, not 30 (2026-10-11, DEV.md 4c C64).  A nearly pure liquid
-    //  throttled below its vapour pressure -- liquid ammonia, 20 bar ->
-    //  1 atm -- puts the root on the steep, kinked stretch of H(T) where
-    //  the whole latent heat is taken over a fraction of a kelvin.  The
-    //  central difference across 1 K straddles that kink, so the Newton
-    //  creeps (measured: 40 iterations to 1 J/mol on
-    //  letdown01_ammonia_flashing's ValveLP) and 30 refused a run that
-    //  converges.  A case that converged within 30 takes exactly the
-    //  same iterates and is byte-identical.
-    nro.maxIter            = 200;
-    nro.lower              = 200.0;
-    nro.upper              = 700.0;
-    nro.bracket            = true;
-    nro.monotoneIncreasing = true;
-    nro.maxStep            = 15.0;
-
-    if (verbosity >= 3)
-    {
-        std::cout << "\nOuter Newton in T_out (isenthalpic balance):\n"
-                  << "   it       T [K]       H_out-H_in    dH/dT          ΔT\n"
-                  << "  ----  -----------  -------------  -------------  -------------\n";
-    }
-    nro.onIter = [this, verbosity](const solver::NRTrace& tr)
-    {
-        recordResidual(std::abs(tr.f));
+        st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
+        lastSol = st.phases;
+        recordResidual(std::abs(st.H - Hreq));
         if (verbosity >= 3)
-            std::cout << "  " << std::setw(4) << tr.iteration
-                      << "  " << std::fixed << std::setprecision(4)
-                      << std::setw(11) << tr.x
-                      << "  " << std::scientific << std::setprecision(5)
-                      << std::setw(13) << tr.f
-                      << "  " << std::setw(13) << tr.dfdx
-                      << "  " << std::setw(13) << tr.dx << "\n";
-    };
-
-    auto r = solver::newton1D(f, df, Tfeed, nro);
-    scDiscarded.clear();    // say it only if the ANSWER is a discarded root
-    lastSol = flashAt(r.x);
-    const scalar Tout = r.x;
-    const scalar vf   = lastSol.V_over_F;
-    flashState::reportSupercriticalDiscard(scDiscarded, "valve", "valve outlet",
-                                           verbosity);
+            std::cout << "\nOutlet state (P, H) flash: " << st.route << "\n";
+        for (const auto& note : st.notes)       // e.g. the supercritical discard (C34)
+            std::cout << "  " << note << "\n";
+        Tout = st.T;
+        vf   = lastSol.V_over_F;
+    }
+    catch (const std::exception& e)
+    {
+        //  One bad iterate (a recycle's tear) must not end the run: say it,
+        //  publish the last state (the feed's) and report non-converged.
+        converged = false;
+        failure = e.what();
+        lastSol.regime = "unsolved";
+        recordResidual(1.0e30);
+        std::cout << "\nOutlet state (P, H) flash FAILED: " << failure << "\n";
+    }
 
     std::cout << "\n============================  Valve Result  ==========================\n"
-              << "  Converged:     " << (r.converged ? "yes" : "NO") << "\n"
+              << "  Converged:     " << (converged ? "yes" : "NO") << "\n"
               << "  P_in:          " << std::fixed << std::setprecision(3)
               << (Pfeed * 1.0e-5) << "  bar\n"
               << "  P_out:         " << (Pout * 1.0e-5) << "  bar   <- spec\n"
@@ -372,7 +340,7 @@ int Valve::solve(const DictPtr& dict,
                   << "\n\n";
     }
 
-    return r.converged ? 0 : 1;
+    return converged ? 0 : 1;
 }
 
 //  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models

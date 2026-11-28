@@ -104,8 +104,11 @@ move T or P to enter the band if a real split is what you wanted.
 <!-- END GENERATED unit-acceptance isothermalFlash,flash -->
 
 ### `adiabaticFlash`
-Same as isothermalFlash but the outer Newton finds T such that
-`H_out = H_in`.  Spec the pressure only:
+Same as isothermalFlash but the outlet is the (P, H) flash of the inlet's
+enthalpy (`flashState::specifiedFlash`): T such that `H_out = H_in`, to 0.01 J/mol.  A pure fluid
+flashed into its saturation plateau leaves at Tsat(P) with the lever-rule vapour
+fraction (`adiabaticFlash02_wet_water_letdown`; a near-pure mixture: `adiabaticFlash03_near_pure_letdown`).
+If the (P, H) flash cannot answer, the unit reports `Converged: NO` and still publishes.  Spec the pressure only:
 ```
 operation { P <Pa>; }
 ```
@@ -3209,7 +3212,11 @@ carries that enthalpy, and the outlet is published with the vapour fraction
 it resolves to — a two-phase merge leaves as ONE combined two-phase stream
 (the mixer does not SEPARATE; put a flash after it to split the phases).  A
 pure fluid inside its saturation jump (steam into condensate) leaves at its
-saturation T with its quality pinned.  Until 2026-10-24 the balance used one
+saturation T with its quality pinned.  Since 2026-11-28 (D9) a fluid-only merge takes
+that state from `flashState::specifiedFlash` (PH at (P_out, SUM H_in), 1e-6 J/mol absolute;
+witness `mixer01_water_steam_plateau`: 36 kmol/h water 300 K + 36 kmol/h steam 450 K, IF97, 1 bar -> 372.756 K, vf 0.46678);
+a failed flash reports `Converged: NO` and publishes the seed T.  A merge carrying crystals keeps
+the older inversion (the home does not price solids).  Until 2026-10-24 the balance used one
 dominant phase and published that label, which the report contradicted: the
 first law of `cavett01` was open by 88 % on its two mixers.  Without
 formation data on every component the sensible dominant-phase balance is
@@ -3287,7 +3294,7 @@ operation { fractions ( 0.6  0.4 ); }
 <!-- END GENERATED unit-acceptance splitter -->
 
 ### `valve`
-Isenthalpic throttle: drops pressure to `P` at constant enthalpy; `T_out`
+Isenthalpic throttle (outlet = the (P, H) flash via `flashState::specifiedFlash`; a pure fluid thrown into its saturation plateau leaves at Tsat(P) with the lever-rule vapour fraction: `valve02_wet_letdown_water`): drops pressure to `P` at constant enthalpy; `T_out`
 and the vapour fraction are RESULTS (a real-gas EoS flashes the let-down).
 Use it upstream of a flash to set the drum pressure.  REFUSES by name if `P > P_in` (a raise has w = 0 and delta s < 0; use a `pump` or `compressor`).
 ```

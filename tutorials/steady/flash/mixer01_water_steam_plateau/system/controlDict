@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  mixer01_water_steam_plateau -- meta-control
+\*---------------------------------------------------------------------------*/
+
+tier          tutorial;
+application   choupoSolve;
+description   "Adiabatic mixer, IF97 water: 300 K liquid + 450 K steam at 1 bar end inside the saturation plateau";
+
+verbosity     3;

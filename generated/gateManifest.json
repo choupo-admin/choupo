@@ -2010,6 +2010,11 @@
       "exit": 0,
       "claim": "check_multicomponent: OK -- 18 checks on synthetic two-solid and two-gas cases (order swapped, a component split in two identical halves, each specification recomputed on the published outlet); NOT checked: spray, batch and solid dryers, crystallisers",
       "seconds": 6.1
+    },
+    "check_state_inversion_door": {
+      "exit": 0,
+      "claim": "check_state_inversion_door: OK -- 14 unit file(s) still run their own T-from-H search (pin 14); none new.",
+      "seconds": 0.1
     }
   }
 }
