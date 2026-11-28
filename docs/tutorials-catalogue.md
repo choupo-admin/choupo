@@ -25,7 +25,9 @@ of them for completeness' sake would bury the ones worth reading.
 
 | Tutorial | Demonstrates |
 |---|---|
-| `adiabaticFlash01_benzene_toluene` | Nested Newton over T using Cp + ΔHvap(Watson) |
+| `adiabaticFlash01_benzene_toluene` | Outlet at (P, H_in) from the shared (P, H) flash (was a nested Newton over T); T_out 368.6618 K |
+| `adiabaticFlash02_wet_water_letdown` | Adiabatic flash of hot liquid water 450 K, 20 -> 1 bar: the outlet lies on the saturation plateau, T = Tsat(1 bar) = 372.756 K, V/F 0.147246 from the lever rule, energy closed (the old unit reported `Converged: NO`, V/F 1) |
+| `adiabaticFlash03_near_pure_letdown` | The same letdown with 1e-5 methanol: a near-pure feed, narrow two-phase band, balance closed to 0.01 J/mol (T 372.755 K, V/F 0.141) |
 | `valve02_wet_letdown_water` | Throttle of hot liquid water 450 K, 20 -> 1 bar (IF97): the outlet is on the saturation plateau, T = Tsat(1 bar) = 372.756 K, vf 0.14725 from the lever rule, balance closed |
 | `bubbleT01_ethanol_water` | NRTL γ + Newton-1D in T |
 | `compressor03_staged_design` | A compressor DESIGNED, not just sized (C440): air 1 to 12 bar picks a centrifugal machine from Brown's application chart, needs three sections to keep every discharge within a declared 450 K, two intercoolers (2 x 424 kW), 1 282 kW staged against the unit's 1 504 kW single pass, a 1 410 kW motor at API's 110 %; every defaulted input names its page; the README repeats one stage by hand; the EduTool `compression` (Compressing a gas) runs it and recomputes its section 1 The design sheet's `compressor { }` block also PUBLISHES the machine chart the selection read (Brown 2005 Fig 1-2: the four region boxes, the duty's inlet flow in cfm and its overall ratio, and the rule in words), so the EduTool `compressor-choice` ("Which compressor, and how far can I turn it down?") draws the engine's own rectangles; the same case is re-run there with its feed flow and temperature moved for the anti-surge card.  No golden row moved. |

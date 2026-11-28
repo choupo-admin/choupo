@@ -37220,10 +37220,15 @@ specification) is not where the modelling effort goes.
         \code{bubbleT} solves $\sum_i K_i(T)\,x_i = 1$ for the bubble
         temperature; \code{dewT} solves $\sum_i y_i/K_i(T) = 1$ for the
         dew temperature (Newton-1D in $T$).  The \code{adiabaticFlash}
-        wraps the isothermal flash (Chapter~\ref{ch:fugacity}'s
-        neighbourhood) in an outer Newton on $T$ that drives the
-        energy balance $H_{\text{out}}=H_{\text{in}}$ to zero --- the
-        Joule--Thomson / valve flash.
+        returns the outlet state at $(P_{\text{out}},H_{\text{in}})$
+        from the one (P, H) flash of the flash-specification home
+        (\code{flashState::specifiedFlash}: a bracketed Newton in $T$
+        over the isothermal flash, to $0.01$ J/mol), so that
+        $H_{\text{out}}=H_{\text{in}}$ --- the Joule--Thomson / valve
+        flash.  A pure fluid whose enthalpy lies inside its saturation
+        plateau leaves at $T_{\text{sat}}(P)$ with the lever-rule vapour
+        fraction (witness \code{adiabaticFlash02\_wet\_water\_letdown}:
+        water 450~K, 20 to 1~bar, 372.756~K, $V/F=0.147246$).
   \item[Valve] An isenthalpic pressure let-down: the outlet pressure is
         furnished (the only hardware) and the outlet state is the
         \code{adiabaticFlash} of the inlet at that lower $P$, holding

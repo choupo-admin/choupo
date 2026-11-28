@@ -14387,6 +14387,7 @@
    "src/unitOperations/flash/AdiabaticFlash.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/SpecifiedFlash.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/unitOperations/flash/IsothermalFlash.cpp": [
@@ -30275,6 +30276,7 @@
   ],
   "src/unitOperations/flash/SpecifiedFlash.H": [
    "src/propertyOps/FlashSpec.cpp",
+   "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/SpecifiedFlash.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],

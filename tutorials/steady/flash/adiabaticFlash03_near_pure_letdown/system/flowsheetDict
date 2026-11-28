@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The same letdown as adiabaticFlash02 with 1e-5 mole fraction of methanol:
+  the feed is NEARLY pure, the plateau is a narrow two-phase band, and the
+  (P, H) search must still close its balance to the unit's absolute 0.01 J/mol
+  (a relative tolerance would stall at ~1e-7 J/mol and refuse).  Held: the
+  energy balance H_out = H_in and the mass balance.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        flashAdiab;
+        type        adiabaticFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+        operation   { P 1 bar; }
+    }
+);

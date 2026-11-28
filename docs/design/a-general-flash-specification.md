@@ -168,7 +168,30 @@ that does not satisfy its specification is never returned.
   the verdict tolerance 1e-9 normalised, because the energy report re-prices
   the published stream.  `check_state_inversion_door` pins the 14 unit files
   that still run their own T-from-H search; it may only shrink.
-* **`adiabaticFlash` (D8) and the adiabatic `mixer` via
+* **`adiabaticFlash`: MIGRATED (2026-11-28, D8).**  Outlet = `specifiedFlash`
+  PH at (P_out, H_in); tolerance 0.01 J/mol ABSOLUTE (the raw verdict:
+  with terms {phi, target} the normalisation is degenerate, so a "1e-9"
+  declared there is 1e-9 J/mol, which stalls a near-pure feed -- review of the
+  valve, same day).  A failed (P, H) flash is caught in the unit: it reports
+  `Converged: NO` and publishes the feed T at P_out, so one bad tear iterate
+  in a recycle does not abort the run; the supercritical-discard note is
+  printed.  IF97 water 450 K, 20 -> 1 bar: 372.756 K, V/F 0.147246, residual 0
+  (before: "Outer T search converged: NO", V/F 1, 3.5e4 J/mol open).  Witnesses
+  `adiabaticFlash02_wet_water_letdown`, `adiabaticFlash03_near_pure_letdown`.
+  The declared HIGH-SIDE rule for an unanswerable reactive trial is KEPT as
+  a documented exception: `column13_sour_water_stage_identity` reaches it
+  (its re-flash arm hands the unit a fictitious 483 K readout the reactive
+  package cannot answer).  When the home refuses on an unanswerable package
+  trial (`FlashSpecification::lastUnanswerableT` says which), the unit falls
+  back, announced, to its own search with the rule.  Narrowing the window
+  cannot emulate it (the home evaluates the window's edges).  So
+  the gate's census no longer counts the file (it asks the home first), but the
+  fallback is a private T-from-H search for that one rule: the home should carry
+  it (a per-trial "unanswerable is above" option).  Next slice.
+  KNOWN, registered not fixed: water on the `pureFluids` IF97 override WITH a
+  trace of methanol in a gamma-phi mixture is refused (root not found) (the H step is not
+  resolved); the same feed on the catalogue water converges.
+* **The adiabatic `mixer` via
   `reactorOutlet::temperatureOfEnthalpy` (D7), `compressor`, `turbine`: NOT
   migrated** — §6.  (Next slices, one unit each.)
 
@@ -182,7 +205,7 @@ lost — the first build did exactly that and its own verdict refused it
 
 ## 6. What is NOT done, and why
 
-* The four rotating/flash units keep their own searches.  Each would MOVE a
+* (HISTORY; `valve` and `adiabaticFlash` have since migrated, section 5.)  The four rotating/flash units kept their own searches.  Each would MOVE a
   published number if routed through this home, so none is migrated in this
   slice (CLAUDE.md §10, a golden re-record is a claim): `adiabaticFlash` and
   `valve` converge to 0.01 J/mol from a different bracket (200–700 K) and

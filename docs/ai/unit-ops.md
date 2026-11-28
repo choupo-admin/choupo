@@ -104,8 +104,11 @@ move T or P to enter the band if a real split is what you wanted.
 <!-- END GENERATED unit-acceptance isothermalFlash,flash -->
 
 ### `adiabaticFlash`
-Same as isothermalFlash but the outer Newton finds T such that
-`H_out = H_in`.  Spec the pressure only:
+Same as isothermalFlash but the outlet is the (P, H) flash of the inlet's
+enthalpy (`flashState::specifiedFlash`): T such that `H_out = H_in`, to 0.01 J/mol.  A pure fluid
+flashed into its saturation plateau leaves at Tsat(P) with the lever-rule vapour
+fraction (`adiabaticFlash02_wet_water_letdown`; a near-pure mixture: `adiabaticFlash03_near_pure_letdown`).
+If the (P, H) flash cannot answer, the unit reports `Converged: NO` and still publishes.  Spec the pressure only:
 ```
 operation { P <Pa>; }
 ```

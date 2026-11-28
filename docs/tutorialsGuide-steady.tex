@@ -5049,20 +5049,86 @@ The outlet pressure is a plain editable value -- tweak it in the GUI's Propertie
 \tutreadme{Click the drum and edit P in the Properties box on the right --- the Case tab is a read-only view of the files, so nothing is typed there. Set 0.5 bar and run again: a deeper let-down flashes more, and the drum ends colder. The edit is transient --- it never touches the file, the node shows it in amber until you reset it, and Reset puts the declared value back.}
 \tutreadme{Now try the other direction, because it teaches more than it looks. Raise P to 1.5 bar and nothing happens: V/F goes to 0 and the temperature does not drop at all. That is not a broken run --- this feed's bubble pressure at 380 K is 1.4088 bar, so 1.5 bar leaves it 0.09 bar subcooled and there is nothing to flash. The engine says so in as many words (Regime: subcooled liquid). The wall is much closer above than below. Then look at the stream table printed $\ast$before$\ast$ the solve --- it shows the 0/ seed values, which look like an answer and are not one; the converged table further down is the answer.}
 \begin{tutgolden}
-\goldrow{kpi}{flashAdiab}{T\_out}{368.663785648}
-\goldrow{kpi}{flashAdiab}{V\_over\_F}{0.052161162592}
+\goldrow{kpi}{flashAdiab}{T\_out}{368.663786091}
+\goldrow{kpi}{flashAdiab}{V\_over\_F}{0.0521612252195}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{liquid}{F}{0.0263288565947}
-\goldrow{stream}{vapor}{F}{0.00144892118311}
+\goldrow{stream}{liquid}{F}{0.026328854855}
+\goldrow{stream}{vapor}{F}{0.00144892292276}
 \goldrow{stream}{feed}{T}{380}
-\goldrow{stream}{liquid}{T}{368.663785648}
-\goldrow{stream}{vapor}{T}{368.663785648}
+\goldrow{stream}{liquid}{T}{368.663786091}
+\goldrow{stream}{vapor}{T}{368.663786091}
 \goldrow{kpi}{flashAdiab}{F\_in}{0.0277777777778}
-\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0263288565947}
-\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00144892118311}
-\goldrow{kpi}{flashAdiab}{H\_residual}{-0.0020987453172}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.026328854855}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00144892292276}
+\goldrow{kpi}{flashAdiab}{H\_residual}{-2.80422682408e-07}
 \goldrow{kpi}{flashAdiab}{P}{101325}
-\goldrow{kpi}{flashAdiab}{T\_drop}{11.3362143518}
+\goldrow{kpi}{flashAdiab}{T\_drop}{11.3362139086}
+\goldmore{5}
+\end{tutgolden}
+
+\clearpage
+\tutentry{adiabaticFlash02\_wet\_water\_letdown}{tutorials/steady/flash/adiabaticFlash02\_wet\_water\_letdown}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flashAdiab) at (0.0,-0.0) {\textbf{flashAdiab}\\[-1pt]{\tiny adiabaticFlash}};
+  \draw[->] ($(flashAdiab.west)+(-1.05,0.00)$) -- ($(flashAdiab.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flashAdiab.east)+(0,-0.17)$) -- ($(flashAdiab.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flashAdiab.east)+(0,0.17)$) -- ($(flashAdiab.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic flash, IF97 water 450 K 20 bar $\to$ 1 bar: the outlet lies inside the saturation plateau}
+\begin{tutnarrative}
+Adiabatic flash of hot liquid water (IF97), 20 bar $\to$ 1 bar. The flashed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the unit's own balance H\_out = H\_in, and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.02}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{liquid}{F}{0.0170550749691}
+\goldrow{stream}{liquid}{T}{372.755918611}
+\goldrow{stream}{vapor}{F}{0.00294492503094}
+\goldrow{stream}{vapor}{T}{372.755918611}
+\goldrow{kpi}{flashAdiab}{F\_in}{0.02}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0170550749691}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00294492503094}
+\goldrow{kpi}{flashAdiab}{H\_residual}{0}
+\goldrow{kpi}{flashAdiab}{P}{100000}
+\goldrow{kpi}{flashAdiab}{T\_drop}{77.2440813887}
+\goldrow{kpi}{flashAdiab}{T\_feed}{450}
+\goldrow{kpi}{flashAdiab}{T\_out}{372.755918611}
+\goldmore{5}
+\end{tutgolden}
+
+\clearpage
+\tutentry{adiabaticFlash03\_near\_pure\_letdown}{tutorials/steady/flash/adiabaticFlash03\_near\_pure\_letdown}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flashAdiab) at (0.0,-0.0) {\textbf{flashAdiab}\\[-1pt]{\tiny adiabaticFlash}};
+  \draw[->] ($(flashAdiab.west)+(-1.05,0.00)$) -- ($(flashAdiab.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flashAdiab.east)+(0,-0.17)$) -- ($(flashAdiab.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flashAdiab.east)+(0,0.17)$) -- ($(flashAdiab.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic flash, water 450 K 20 bar $\to$ 1 bar: the same letdown with 1e-5 methanol: a near-pure feed}
+\begin{tutnarrative}
+The same letdown as adiabaticFlash02 with 1e-5 mole fraction of methanol: the feed is NEARLY pure, the plateau is a narrow two-phase band, and the (P, H) search must still close its balance to the unit's absolute 0.01 J/mol (a relative tolerance would stall at \textasciitilde{}1e-7 J/mol and refuse). Held: the energy balance H\_out = H\_in and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0200002}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{liquid}{F}{0.0171794711941}
+\goldrow{stream}{liquid}{T}{372.755401731}
+\goldrow{stream}{vapor}{F}{0.00282072880588}
+\goldrow{stream}{vapor}{T}{372.755401731}
+\goldrow{kpi}{flashAdiab}{F\_in}{0.0200002}
+\goldrow{kpi}{flashAdiab}{F\_liquid}{0.0171794711941}
+\goldrow{kpi}{flashAdiab}{F\_vapor}{0.00282072880588}
+\goldrow{kpi}{flashAdiab}{H\_residual}{0.000152203661855}
+\goldrow{kpi}{flashAdiab}{P}{100000}
+\goldrow{kpi}{flashAdiab}{T\_drop}{77.2445982692}
+\goldrow{kpi}{flashAdiab}{T\_feed}{450}
+\goldrow{kpi}{flashAdiab}{T\_out}{372.755401731}
 \goldmore{5}
 \end{tutgolden}
 

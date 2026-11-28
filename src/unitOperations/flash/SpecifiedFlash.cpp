@@ -193,6 +193,8 @@ struct Searcher
         catch (const std::exception& e)
         {
             rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
+            spec.lastUnanswerableT = T;
+            if (spec.lastUnanswerableSink) *spec.lastUnanswerableSink = T;
             refuse(spec.pair, "the package could not answer the trial state"
                 " T = " + num(T) + " K, P = " + num(P) + " Pa (" + e.what()
                 + ").  The specification is refused rather than searched"
@@ -400,6 +402,7 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
                               bool                      wantS)
 {
     FlashSpecification spec = specIn;
+    spec.lastUnanswerableSink = &specIn.lastUnanswerableT;   // the caller's copy, written by Searcher
     const SpecPair pair = spec.pair;
     const solver::ConvergenceControls ctl =
         spec.controlsDeclared ? spec.controls
