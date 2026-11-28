@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1948,
+  "cases": 1950,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -28028,6 +28028,22 @@
    "roles": [],
    "hasGolden": false
   },
+  "tutorials/steady/flowsheets/valve_refusal_pressure_raise": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/steady/gas-solid/bagFilter01_dust": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28343,6 +28359,22 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
   },
   "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": {
    "application": "choupoSolve",
@@ -33014,6 +33046,7 @@
     "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -33035,6 +33068,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -33659,6 +33693,7 @@
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
     "tutorials/steady/gibbs/gibbs07_wgs_cooled",
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
@@ -34060,6 +34095,7 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing"
    ],
    "williamsOttoPlant": [
@@ -36585,6 +36621,7 @@
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/flowsheets/table05_sector_table_pins",
+    "tutorials/steady/flowsheets/valve_refusal_pressure_raise",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -36604,6 +36641,7 @@
     "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
     "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs09_refusal_unlisted_feed_species",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",

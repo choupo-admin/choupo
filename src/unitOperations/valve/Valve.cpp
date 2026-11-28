@@ -54,13 +54,15 @@ int Valve::solve(const DictPtr& dict,
     const scalar Pout  = operDict->lookupScalar("P",     Dims::pressure);
 
     // A valve only DROPS pressure (it is a restriction, not a machine).
-    // Mirror FLOWTRAN's pump-pressure guard: warn but do not abort, so the
-    // student sees the inconsistency without losing the run.
-    if (Pout >= Pfeed)
-        std::cerr << "WARNING: valve outlet P (" << (Pout * 1.0e-5)
-                  << " bar) >= inlet P (" << (Pfeed * 1.0e-5)
-                  << " bar).  A valve can only DROP pressure --- to raise it,"
-                     " use a pump (liquid) or compressor (gas).\n";
+    // A raise would give w = 0 and delta s < 0 (second law), so it is REFUSED
+    // by name.  Tolerance: P_out may equal P_in to 1e-9 relative (a zero drop).
+    if (Pout > Pfeed * (1.0 + 1.0e-9))
+        throw std::runtime_error(
+            "Valve: outlet P (" + std::to_string(Pout * 1.0e-5)
+            + " bar) is above the inlet P (" + std::to_string(Pfeed * 1.0e-5)
+            + " bar).  A valve only drops pressure: an isenthalpic raise has"
+              " w = 0 and delta s < 0, which violates the second law.  To raise"
+              " the pressure use a `pump` (liquid) or a `compressor` (gas).");
 
     const std::size_t n = thermo.n();
     sVector z(n, 0.0);
