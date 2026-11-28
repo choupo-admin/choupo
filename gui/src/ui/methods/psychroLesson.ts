@@ -53,12 +53,18 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "Every point is a state of moist gas",
     body: "This is a map, not a graph.  Across the bottom is the dry-bulb "
-      + "temperature — an ordinary thermometer held in the stream.  Up the "
+      + "temperature — an ordinary thermometer held in the stream (\"dry\" "
+      + "only to tell it from the wet-bulb one of step 3).  Up the "
       + "side is the humidity ratio Y, the mass of vapour carried per unit "
-      + "mass of dry carrier gas.  Fix those two and the state of the moist "
-      + "gas is fixed; everything else the chart shows you — relative "
-      + "humidity, dew point, wet-bulb temperature, enthalpy — is a property "
-      + "read off at that point, not a third coordinate you get to set.  The "
+      + "mass of dry carrier gas: for air and water, the kilograms of water "
+      + "vapour riding with each kilogram of dry air.  Fix those two and the state of the moist "
+      + "gas is fixed; everything else the chart shows you is a property "
+      + "read off at that point, not a third coordinate you get to set: the "
+      + "relative humidity (how full the gas is, step 2), the dew point (the "
+      + "temperature at which cooling would first make it drop liquid, "
+      + "step 2), the wet-bulb temperature (what a wet wick reads, step 3) "
+      + "and the adiabatic-saturation temperature (where the gas would land "
+      + "if it evaporated liquid into itself until full, step 3).  The "
       + "curves are computed for the pair you name, so the carrier's molar "
       + "mass is part of the answer and not a decoration.",
     formula: String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v} \qquad [\text{kg vapour / kg dry gas}]`,
@@ -133,7 +139,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "variable you can do a mass balance in and φ is not.  It is also why "
       + "the dew point — where cooling at constant Y and constant P first "
       + "meets the saturation curve — is a horizontal walk to the left, and "
-      + "is a property of Y alone.  The curves stop before the condensable's "
+      + "is a property of Y at the given P.  The curves stop before the condensable's "
       + "boiling point on purpose: as P_sat approaches P the gas becomes pure "
       + "vapour and Y runs to infinity, so the engine cuts every curve where "
       + "the vapour would exceed 65 % of the total pressure — an asymptote "
@@ -152,7 +158,8 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "— and it is not, in general, the floor of adiabatic humidification: "
       + "that floor is the adiabatic-saturation temperature of the next "
       + "step, and the two coincide only when the Lewis number is close to "
-      + "one, as it happens to be for air and water.  Enthalpy "
+      + "one (it is heat diffusivity over vapour diffusivity, defined below), "
+      + "as it nearly is for air and water.  Enthalpy "
       + "is why the adiabatic-saturation lines nearly coincide with the isenthalps (neither is exactly straight in T-Y, since the humid heat depends on Y).  Counted per kilogram of the same "
       + "dry carrier, moist-gas enthalpy is sensible plus latent, and along "
       + "an adiabatic-saturation line the sensible heat given up is very "
@@ -179,8 +186,9 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         + "and sensible heat arriving from the gas cancel.  It comes from the "
         + "ratio of heat transfer to mass transfer, so it carries the Lewis "
         + "number.  It is a different quantity from T_as and equals it only "
-        + "when Le = 1 — a near-coincidence that air-water happens to "
-        + "satisfy, which is why most textbooks conflate them.", unit: "°C" },
+        + "when Le = 1.  Air and water have Le of about 0.85 to 0.9, near "
+        + "enough that the two temperatures differ by well under a kelvin, "
+        + "which is why a printed air-water chart can use one family for both.", unit: "°C" },
       { sym: "Y_\\mathrm{sat}",
         means: "The humidity ratio on the saturation curve: the "
         + "most vapour the gas can carry at that temperature and pressure.  "
@@ -215,7 +223,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         means: "The Lewis number: thermal diffusivity over mass "
         + "diffusivity — how fast heat spreads compared with how fast the "
         + "vapour does.  It is the single number that separates the two "
-        + "temperatures above, and Le ≈ 1 for air-water is why they are so "
+        + "temperatures above, and Le of about 0.85 to 0.9 for air-water is why they are so "
         + "often treated as one.", unit: "dimensionless" },
       { sym: "\\alpha", means: "Thermal diffusivity of the gas.",
         unit: "m²/s" },
@@ -228,9 +236,10 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "saturated to the end; the wet-bulb temperature comes from the ratio "
       + "of heat transfer to mass transfer at a wet surface, and that ratio "
       + "brings in the Lewis number Le = α/D_AB.  They coincide when Le ≈ 1, "
-      + "which air-water happens to satisfy — a near-coincidence of two "
-      + "transport properties, not a law, and the reason a printed air-water "
-      + "chart can label one set of lines with both names.  This chart draws "
+      + "and air-water, at 0.85 to 0.9, is close enough (the wet-bulb slope is "
+      + "scaled by Le^(2/3), so the gap is a few per cent of the slope) — a "
+      + "near-coincidence of two transport properties, not a law, and the "
+      + "reason a printed air-water chart can label one set of lines with both names.  This chart draws "
       + "them as separate families, dashed for adiabatic saturation and dotted "
       + "for the true wet bulb, so a pair with Le ≠ 1 shows the gap instead "
       + "of hiding it.  There is no enthalpy scale drawn: the expression "
@@ -246,7 +255,8 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "meeting point is the dew point — and further cooling can only run "
       + "down the curve, the gas staying saturated at the surface "
       + "temperature while the difference in Y drops out as liquid.  That is "
-      + "dehumidification, and the chart gives the condensate directly: the "
+      + "dehumidification, and for an ideal coil (all the gas touches the "
+      + "cold surface) the chart gives the condensate directly: the "
       + "vertical drop, in kg per kg of dry gas.  Adiabatic humidification "
       + "runs up an adiabatic-saturation line towards saturation (for air "
       + "and water, practically a wet-bulb line) — liquid evaporates, Y "
@@ -269,7 +279,9 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         + "operation.", unit: "kg vapour / kg dry gas" },
       { sym: "T_\\mathrm{surface}",
         means: "The temperature of the coil surface the gas "
-        + "touches — not the gas temperature.  Condensation is set by how "
+        + "touches — not the gas temperature.  The formula is the ideal-coil "
+        + "limit; a real coil lets part of the stream bypass, as the note "
+        + "below says.  Condensation is set by how "
         + "cold the metal is, which is why a coil can dehumidify air that is "
         + "nowhere near saturated in the bulk.", unit: "°C" },
       { sym: "Y_m", means: "The humidity ratio of the mixed stream: the "

@@ -135,7 +135,7 @@ function CardBasis({ runs }: { runs: readonly MethodRunState[] }): JSX.Element {
     <Box px="sm" py={8} style={BOX} data-card="basis">
       <Title order={5}>Try it: ten percent of what?</Title>
       <OriginMark of={["page", "engine"]}
-        note="the converter is algebra on the two definitions; the pairs below are each case's own feed and product, from the four runs of card 2" />
+        note="the converter is algebra on the two definitions; the pairs below are each case's own feed and product, from the four runs of the ceilings card (step 3)" />
       <Group gap="md" mt={6} align="flex-end">
         <NumberInput label="moisture on the wet basis, %" value={wetPct} onChange={setWetPct}
           min={0} max={99} step={1} w={190} size="xs" />
@@ -453,19 +453,25 @@ export function WhyDidItNotDryTool(): JSX.Element {
 
   const doc: LessonDoc = {
     title: "Why did it not dry?",
-    question: "The water, the air, the clock: what a dryer is asked to remove, what the air can carry and "
-      + "pay for, how long the product has, and the floor that no clock passes.  Every number "
-      + "below is an engine run of a bundled case.",
+    question: "In ten minutes.  The question: a dryer left the product wet; was it the air, the clock "
+      + "or the floor?  The one idea: three ceilings, and the numbers say which one you hit.  "
+      + "The first number: cutting a feed from 50 to 10 percent moisture on the wet basis "
+      + "removes 88.9 percent of its water (X falls from 1 to 0.111), not 40.  Every number "
+      + "below the lead is an engine run of a bundled case.",
     steps: WHY_STEPS, quiz: WHY_QUIZ, limits: WHY_LIMITS,
     sections: {
       question: [{ kind: "step", n: 1 }],
       try: [
         { kind: "bench", node: <CardBasis runs={runs} /> },
+      ],
+      see: [
+        { kind: "step", n: 2 }, { kind: "step", n: 3 },
         { kind: "bench", node: <CardCeilings runs={runs} live={live} flow={flow} onFlow={setFlow} sweep={airSweep} /> },
+      ],
+      why: [
+        { kind: "step", n: 4 },
         { kind: "bench", node: <CardHumid spec={spec} onSpec={setSpec} sweep={humid} /> },
       ],
-      see: [{ kind: "step", n: 2 }, { kind: "step", n: 3 }],
-      why: [{ kind: "step", n: 4 }],
     },
   };
   return <LessonDocument tool="why-did-it-not-dry" doc={doc} />;

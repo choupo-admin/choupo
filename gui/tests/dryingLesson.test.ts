@@ -146,13 +146,25 @@ describe("the honesty half — what is DECLARED versus what is COMPUTED", () => 
 describe("the design consequences, which are the point of the page", () => {
   it("states the time/water split and the sizing error it causes", () => {
     const body = prose(step(5).body);
-    expect(body).toContain("most of the water");
-    expect(body).toContain("most of the time");
+    //  W1 (student review 2026-11-28): the share of the TIME in each period
+    //  is not "usually the tail"; it depends on X_c and the target.  On the
+    //  witness (t_c 1027.7 s, tau 595 s, X 0.30 -> 0.05) the constant stretch
+    //  is the longer (1.03 ks against 0.66 ks).
+    expect(body).toContain("not fixed");
+    expect(body).toContain("1.03 ks");
+    expect(body).toContain("0.66 ks");
+    expect(body).not.toContain("most of the time is usually");
     expect(body).toContain("falling-rate");
     //  Named as an UNDER-estimate, and with the mechanism (pricing the whole
     //  job at the fastest rate it ever achieves).
     expect(body).toContain("underestimate");
     expect(body).toContain("fastest rate it ever achieves");
+    //  the hand arithmetic behind the numbers quoted in the text
+    const tc = 1027.7, tau = 595.0, Xeq = 0.0158;
+    const tail = tau * Math.log((0.12 - Xeq) / (0.05 - Xeq));
+    expect(tail).toBeCloseTo(662.9, 0);
+    expect(tc).toBeGreaterThan(tail);
+    expect(tc + tail).toBeCloseTo(1690.6, 0);
   });
 
   it("states the equilibrium floor and what actually moves it", () => {
@@ -287,8 +299,14 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
       .toBeLessThan(plot);
     //  C535: the plot is a "try" bench; steps 2-4 are "see", 5-8 are "why".
-    expect(SRC).toContain("see: [2, 3, 4]");
-    expect(SRC).toContain("why: [5, 6, 7, 8]");
+    //  Cards follow the step that explains them, inside whatever section.
+    expect(SRC).toMatch(/see: \[[^\]]*n: 2[\s\S]*?n: 4[\s\S]*?<HotProductCard/);
+    const why = SRC.slice(SRC.indexOf("why: ["));
+    for (const [a, b] of [["n: 5", "n: 6"], ["n: 6", "<LoadingCollapseCard"],
+      ["<LoadingCollapseCard", "n: 7"], ["n: 7", "<LastPercentCard"],
+      ["<LastPercentCard", "<TrayDayCard"], ["<TrayDayCard", "n: 8"],
+      ["n: 8", "<SprayChamberCard"]] as const)
+      expect(why.indexOf(a), `${a} before ${b}`).toBeLessThan(why.indexOf(b));
     expect(SRC).toContain("question: [{ kind: \"step\", n: 1 }]");
     expect(plot).toBeGreaterThan(0);
     //  The limits are the renderer's (LessonLimits), fed from DRYING_LIMITS.

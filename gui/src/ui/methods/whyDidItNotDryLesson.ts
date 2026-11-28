@@ -44,7 +44,7 @@ export const WHY_STEPS: readonly LessonStep[] = [
       + "things, and a plant says the first by habit.  On the wet basis the "
       + "ten percent is water as a share of the whole wet product; on the dry "
       + "basis, which the calculations of this chapter use, it is water per "
-      + "kilogram of bone-dry solid.  Ten percent wet is about 0.11 on the dry "
+      + "kilogram of bone-dry solid (the solid with no water in it).  Ten percent wet is about 0.11 on the dry "
       + "basis.  The two scales agree near zero and part company quickly: a "
       + "feed at half its mass water is X = 1 on the dry basis, and going "
       + "from 50 to 10 percent wet removes almost nine tenths of the water, "
@@ -70,19 +70,40 @@ export const WHY_STEPS: readonly LessonStep[] = [
   {
     n: 2,
     title: "The air must carry the water, and pay for it",
-    body: "A convective dryer moves water from the solid into a gas stream, "
-      + "and the gas is bounded twice.  It can carry only so much: leaving "
-      + "saturated, it holds the saturation humidity of its own outlet "
-      + "temperature and not a gram more.  And it can give up only so much "
-      + "heat: evaporating water cools the gas, and a gas that meets a wet "
-      + "surface cannot be cooled below its wet-bulb temperature.  So the "
-      + "water that can leave is the smallest of three amounts: what the "
-      + "solid still holds above the floor its air allows (the isotherm), "
-      + "what the exhaust can carry, and what the gas can pay for in heat.  "
-      + "When the exhaust leaves saturated, or the gas leaves at its wet bulb "
-      + "with water still on the solid, the dryer was starved of air, and "
-      + "the remedy is more air.  More time, in a unit without a clock, "
-      + "changes nothing.",
+    body: "A convective dryer moves water from the solid into a stream of "
+      + "hot gas, and three things can stop it.  The first is room: the gas "
+      + "can carry only so much, and the most it holds at its outlet "
+      + "temperature is the saturation humidity of that temperature.  The "
+      + "ratio of the water vapour pressure in the gas to the vapour pressure "
+      + "of water at the same temperature is its water activity, a_w, which "
+      + "is 1 for saturated gas.  The second is heat: evaporating water takes "
+      + "its latent heat from the gas and cools it, and a gas that meets a "
+      + "wet surface settles at the wet-bulb temperature, the temperature a "
+      + "wet surface takes in that gas (the Chart chapter of this family, "
+      + "the psychrometric chart, shows it), and evaporation cannot cool it "
+      + "below that.  The third is the solid's own floor: its sorption "
+      + "isotherm, the moisture the solid holds in balance with air of a "
+      + "given water activity, gives X_eq, the driest it can get in that "
+      + "air.  So the water that can leave is the smallest of three amounts: "
+      + "what the solid holds above X_eq, what the exhaust can carry, and "
+      + "what the gas can pay for in heat.  "
+      + "Are room and heat really two limits?  In an adiabatic dryer all the "
+      + "heat comes from the gas itself, and a gas that gives up heat only "
+      + "to evaporate water moves along its adiabatic-saturation line, "
+      + "which for air and water is, to a good approximation, the line of "
+      + "its wet bulb: it reaches the wet bulb just as it reaches saturation, "
+      + "so for pure evaporation the two bounds are one.  They part because "
+      + "the gas must also warm the solid and the water still in it from the "
+      + "feed temperature (and, in a real dryer, cover the wall loss): that "
+      + "heat evaporates nothing, so the gas can arrive at its wet bulb "
+      + "before it is saturated.  The page's chip calls both cases "
+      + "air-limited, the dryer starved of gas, and tells them apart: "
+      + "exhaust saturated means the gas ran out of room; gas at its wet "
+      + "bulb with the exhaust unsaturated means it ran out of heat.  The "
+      + "remedy is more gas, whose heat and whose room both grow with its "
+      + "flow, or hotter gas for the heat case.  More time, in a unit without "
+      + "a clock, changes nothing, and neither does more gas once the "
+      + "product is on its isotherm.",
     formula: String.raw`m_s\,(X_\mathrm{in} - X_\mathrm{out}) = G\,(Y_\mathrm{out} - Y_\mathrm{in}) \qquad Y_\mathrm{out} \le Y_\mathrm{sat}(T_\mathrm{out}) \qquad T_\mathrm{out} \ge T_\mathrm{wb}`,
     where: [
       { sym: "m_s", means: "The flow of bone-dry solid through the dryer.  "
@@ -102,14 +123,15 @@ export const WHY_STEPS: readonly LessonStep[] = [
         unit: "kg/kg dry gas" },
       { sym: "T_\\mathrm{out}", means: "The temperature of the exhaust.", unit: "K" },
       { sym: "T_\\mathrm{wb}", means: "The wet-bulb temperature of the inlet gas: "
-        + "where a wet surface in that gas settles.  The solid dryer's unit "
-        + "solves its outlet temperature between this floor and the inlet "
-        + "temperature (SolidDryer.cpp:268).", unit: "K" },
+        + "where a wet surface in that gas settles; it is the floor of the "
+        + "exhaust temperature.", unit: "K" },
     ],
     note: "The page reads which of these bound from the engine's own numbers: "
       + "the exhaust's water activity, and how far the outlet sits above the "
       + "wet bulb.  The balance on the left is the engine's first law "
-      + "restated; the page solves nothing.",
+      + "restated; the page solves nothing.  Mind the units: the air knob "
+      + "of the card below is in kmol/h of humid air, and the balance is "
+      + "written for kilograms of dry gas per second.",
   },
   {
     n: 3,
@@ -193,6 +215,19 @@ export const WHY_LIMITS: readonly { id: string; title: string; body: string }[] 
       + "numbers so that the reader can judge the margin.",
   },
   {
+    id: "heat-and-room-one-line",
+    title: "Heat and room are one bound until something else takes heat.",
+    body: "For pure evaporation in an adiabatic dryer the gas reaches its "
+      + "wet bulb as it reaches saturation (the equality is approximate, "
+      + "the psychrometric ratio being near 1 for air and water; Treybal "
+      + "1980).  The gas can leave at its wet bulb with room to spare only "
+      + "because the engine also charges it for warming the solid and its "
+      + "water: the solid dryer solves its outlet temperature between the "
+      + "wet-bulb floor and the inlet temperature (SolidDryer.cpp:268).  The "
+      + "chip separates the two by reading a_w and T_out - T_wb; it does not "
+      + "say how much of the heat went to the solid.",
+  },
+  {
     id: "no-kinetics-in-two-units",
     title: "Two of the units are without a clock.",
     body: "The solid dryer and the evaporative dryer are a mass and energy "
@@ -259,14 +294,16 @@ export const WHY_QUIZ: readonly QuizQuestion[] = [
     q: "The exhaust is not saturated, yet the gas leaves at its wet bulb with water still on the solid. What does that say?",
     options: [
       "The dryer is time-limited",
-      "The gas has given all the heat it holds, so it is air-limited by heat, not by carrying capacity",
+      "The gas ran out of heat before it ran out of room, because part of its heat went into warming the solid and its water; more or hotter gas helps",
       "The solid is on its isotherm",
       "The wet bulb was measured wrongly",
     ],
     correct: 1,
-    feedback: "The gas cannot cool below the wet bulb of the air it started "
-      + "as; arriving there it has paid all the heat it has, and the remedy "
-      + "is more or hotter gas (step 2).",
+    feedback: "For pure evaporation the gas reaches its wet bulb exactly "
+      + "when it is saturated, so an unsaturated exhaust at the wet bulb "
+      + "means heat went elsewhere: warming the solid and its water.  The "
+      + "gas has paid all the heat it has while it could still carry more "
+      + "water, and the remedy is more or hotter gas (step 2).",
   },
   {
     id: "clock", steps: [3],

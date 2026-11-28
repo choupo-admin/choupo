@@ -51,7 +51,13 @@ export const DRYING_STEPS: readonly LessonStep[] = [
     title: "One curve, two completely different operations",
     body: "Plot the moisture of a wet solid against time and, for many "
       + "materials — this witness's among them — you get a straight stretch "
-      + "that bends into a long tail.  Not for every material: a solid that "
+      + "that bends into a long tail.  The straight stretch is the "
+      + "constant-rate period, where the drying flux (kg of water leaving "
+      + "per square metre per second) does not change; the tail is the "
+      + "falling-rate period, where the flux drops as the solid dries.  The "
+      + "bend sits at the critical moisture X_c, and the tail ends at the "
+      + "equilibrium moisture X_eq, the lowest moisture the air in contact "
+      + "can bring the solid to.  Not for every material: a solid that "
       + "starts below its critical moisture, or whose water is bound rather "
       + "than free (many hygroscopic and biological materials), shows no "
       + "straight stretch at all and dries in the falling regime from the "
@@ -71,10 +77,8 @@ export const DRYING_STEPS: readonly LessonStep[] = [
         + "moisture per kg of bone-dry solid.  The dry solid is the one thing "
         + "drying does not change, which is what turns a moisture balance "
         + "into a subtraction — and it is also why X has no ceiling and can "
-        + "happily exceed 1.  In this corpus X is also conversion on the "
-        + "reactor-sizing page, a liquid solute mole ratio in Kremser, and "
-        + "Gilliland's reduced reflux coordinate on the shortcut-column "
-        + "page: four unrelated quantities, one letter.",
+        + "happily exceed 1.  Beware: the letter X means other "
+        + "things on other pages (a conversion, a mole ratio).",
         unit: "kg moisture / kg dry solid" },
       { sym: "m_\\mathrm{moisture}",
         means: "The mass of moisture in the charge — the "
@@ -86,7 +90,9 @@ export const DRYING_STEPS: readonly LessonStep[] = [
     note: "The dry basis is why X can exceed 1 and why the axis has no "
       + "ceiling: a solid holding twice its own dry weight in water sits at "
       + "X = 2.  A wet-basis fraction would compress the whole interesting "
-      + "part of the curve against its own upper bound.",
+      + "part of the curve against its own upper bound.  The witness is an "
+      + "amorphous, syrup-like sucrose solid (X_0 = 0.30); crystalline "
+      + "sucrose would hold far less water in the same air.",
   },
   {
     n: 2,
@@ -98,7 +104,12 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "students under-use is thermal.  Evaporation cools the surface until "
       + "the heat arriving from the air exactly matches the latent heat "
       + "leaving with the vapour, and that balance point is the air's wet-bulb "
-      + "temperature — well below its dry bulb.  So the material sits cool "
+      + "temperature (T_wb, the temperature a wet surface settles at in the "
+      + "moving air; the Chart chapter draws it) — well below the air's dry "
+      + "bulb, the temperature a plain thermometer in that air reads.  In "
+      + "a real tray dryer, conduction from the shelf and radiation from the "
+      + "walls lift the surface somewhat above T_wb; this model has none of "
+      + "either.  So the material sits cool "
       + "while it dries, which is why the constant-rate period is the safe one "
       + "for a heat-sensitive product, and why hot air is not automatically a "
       + "danger to it.",
@@ -127,7 +138,7 @@ R_c &= k_Y \left( Y_\mathrm{sat}(T_\mathrm{wb}) - Y \right) \qquad [\text{kg/(m}
         + "hypothesis for as long as the surface stays wet.", unit: "K" },
       { sym: "T_\\mathrm{air}",
         means: "The dry-bulb temperature of the air — constant "
-        + "for the whole run.  The solid is never integrated toward it, and "
+        + "for the whole run.  In this case (dryer01) the solid is never integrated toward it, and "
         + "note what that means precisely: the surface is held at T_wb by "
         + "hypothesis while it stays wet, but the vessel's own temperature "
         + "is not a state this model solves — it is carried at whatever the "
@@ -161,6 +172,9 @@ R_c &= k_Y \left( Y_\mathrm{sat}(T_\mathrm{wb}) - Y \right) \qquad [\text{kg/(m}
       + "and publishes it as the T_wb KPI; the flux is then formed on the "
       + "mass-transfer side alone.  Those are the same statement only because "
       + "Lewis = 1 is assumed — that is the hypothesis doing the work here.  "
+      + "(The Lewis number is the ratio of the air's thermal to its mass "
+      + "diffusivity; for air and water it is about 0.85 to 0.9, so the "
+      + "assumption is a close one, not an exact one.)  "
       + "And k_Y is declared sample and equipment data (air velocity, tray "
       + "geometry), not a correlation: this model does not predict a transfer "
       + "coefficient from the air's condition, so changing the air temperature "
@@ -269,24 +283,39 @@ n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t -
       + "rate against normalised moisture — a power law or a table of points, "
       + "which can carry the two falling-rate periods many real materials "
       + "show; the witness dryer02_characteristic_curves runs four).  And the "
-      + "warm-up toward "
-      + "the dry bulb is described here but not computed: the solid's own "
+      + "warm-up toward the dry bulb is described here but not computed by "
+      + "this witness (dryer01): the solid's own "
       + "temperature is not integrated at all, which the engine also announces "
-      + "as a named gap.  So this tool can tell you the product stays at T_wb "
+      + "as a named gap.  So this run can tell you the product stays at T_wb "
       + "during the constant-rate period; it cannot tell you how hot it gets "
-      + "afterwards.",
+      + "afterwards.  The card below, \"Where is the product hot?\", runs a "
+      + "different case (dryer03_solid_temperature) that does integrate one "
+      + "temperature for the solid, and shows the warm-up.",
   },
   {
     n: 5,
     title: "Two consequences you have to size for",
-    body: "First: most of the water usually leaves in the constant-rate "
-      + "period, and most of the time is usually spent in the falling-rate "
-      + "one.  Those two sentences are not in conflict — they are what an "
-      + "exponential tail does.  Size a dryer by taking the water to be "
-      + "removed and dividing by the constant rate and you will underestimate "
-      + "the drying time badly, because you priced the whole job at the "
-      + "fastest rate it ever achieves.  Read the break time against the run's "
-      + "horizon on the plot below and you can see the split for yourself.  "
+    body: "First: where the water and the time go.  The constant-rate "
+      + "stretch removes X_0 − X_c of moisture in t_c = L (X_0 − X_c)/R_c, "
+      + "and the falling-rate tail from X_c down to a target X takes "
+      + "τ ln[(X_c − X_eq)/(X − X_eq)] (n = 1).  Which period holds the "
+      + "larger share is not fixed: it depends on where X_c sits between the "
+      + "start and the target, and on how close the target is to X_eq.  The "
+      + "tail takes the longer time only when (X_c − X_eq) "
+      + "ln[(X_c − X_eq)/(X − X_eq)] exceeds X_0 − X_c, that is, for a tight "
+      + "specification or a high critical moisture.  On this page's tray "
+      + "(X_0 0.30, X_c 0.12, X_eq about 0.016, from the case's own hand "
+      + "estimate) the constant stretch is 1.03 ks and the tail down to "
+      + "X = 0.05 is 0.66 ks, so the constant stretch is the longer; the "
+      + "tail overtakes it only for targets below about X = 0.034 "
+      + "(to X = 0.03 the tail is 1.19 ks).  What is true at every "
+      + "specification is the sizing error: the rate is never above R_c, so "
+      + "dividing the water to be removed by the constant rate always "
+      + "underestimates the drying time, because it prices the whole job at "
+      + "the fastest rate it ever achieves (here 1.43 ks against 1.69 ks to "
+      + "X = 0.05, and 1.54 ks against 2.21 ks to X = 0.03).  Read the break "
+      + "time against the run's horizon on the plot above to see the split "
+      + "for yourself.  "
       + "Second: X_eq is a floor.  The rate vanishes there by construction, so "
       + "no amount of extra time gets you below it; drier product needs drier "
       + "or hotter air, not a longer run.  A dryer specified to a moisture "
@@ -297,17 +326,24 @@ n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t -
       + "flattens onto X_eq and, for n of 1 or more, never touches it "
       + "(for n < 1 the curve reaches X_eq in the finite time of step 4); on R(X) the sloping segment "
       + "aims at R = 0 exactly at X_eq.  X_eq here is a result, not a "
-      + "declaration — the GAB isotherm of the solid evaluated at the water "
-      + "activity of the declared air — so it moves when you move the air's "
+      + "declaration — the GAB isotherm of the solid (its equilibrium moisture "
+      + "as a function of water activity, a_w: the vapour pressure of the "
+      + "air's moisture over its saturation pressure) evaluated at the "
+      + "water activity of the declared air — so it moves when you move the air's "
       + "humidity, and that is the knob that raises or lowers the floor.",
   },
   {
     n: 6,
     title: "To dry faster, load less: what the time is proportional to",
-    body: "The flat stretch of the curve is set by the air film, so heating the "
-      + "air harder moves it less than one expects: hotter air raises the wet "
-      + "bulb too, by less than the air's own rise, and the driving force "
-      + "follows the wet bulb.  What does move the whole curve is how much "
+    body: "The flat stretch of the curve is set by the air film: R_c is k_Y "
+      + "times the driving force Y_sat(T_wb) − Y.  Heating the air does "
+      + "raise it, but less than the air's own rise, because the wet bulb "
+      + "climbs too: going from 60 to 80 °C at Y = 0.010 lifts T_wb by about "
+      + "4 K and the driving force by about half, so every time on the curve "
+      + "shortens by about a third (k_Y held where you typed it).  The other "
+      + "lever on R_c is the air velocity, through k_Y, which this model takes "
+      + "as declared data.  The lever the tray itself gives you, and the one "
+      + "that moves the whole curve proportionally, is how much "
       + "solid sits on each square metre of exposed surface.  Write the dry "
       + "solid per unit area as the loading L.  The time to reach the corner "
       + "and the time constant of the tail both carry L as a factor, and "
@@ -378,9 +414,13 @@ n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t -
       + "constant-rate time and the falling-rate constant, and a short one "
       + "that leaves the powder above its floor.  Two things move the time "
       + "the droplet needs: a coarser spray (a slower wheel), whose falling-"
-      + "rate constant grows faster than its size in the engine's runs "
-      + "(the card prints the exponent it read), and the heat transfer "
-      + "around it.  The page runs the chamber at four heights and two wheel "
+      + "rate constant grows faster than its size, because the "
+      + "transfer coefficients of a small particle go as one over its "
+      + "diameter while its mass goes as the diameter cubed: the time "
+      + "grows as the diameter squared for a drop in still gas, and with a "
+      + "lower power once the particle's own motion raises the Nusselt and "
+      + "Sherwood numbers (the card prints the exponent it read from two "
+      + "runs), and the heat transfer around it.  The page runs the chamber at four heights and two wheel "
       + "speeds and lays the engine's three times side by side.  The "
       + "engine's model has one drop size; a real chamber also has to serve "
       + "the coarse tail and the trajectories near the wall, which no "
@@ -428,16 +468,24 @@ export const DRYING_LIMITS: readonly { id: string; title: string; body: string }
       + "evaporation front and no case hardening, and this page's power "
       + "curve has one falling-rate period.  A material whose tail is governed by "
       + "liquid capillary flow and one governed by vapour diffusion are drawn "
-      + "identically by the same curve.",
+      + "identically by the same curve.  Sources for the page's formulas: the "
+      + "two-period times t_c and τ, and the corner at X_c, are Treybal 1980, "
+      + "chapter 12 (printed pp. 655–670); the split of time between the "
+      + "periods is derived here from those formulas, not quoted, and the "
+      + "compartment-dryer remark on the tray-day card is Perry 9th ed., "
+      + "p. 12-39.",
   },
   {
     id: "solid-temperature",
     title: "The solid's temperature is not integrated.",
-    body: "The surface is held at the wet bulb by hypothesis while X > X_c, "
-      + "and the falling-rate warm-up toward the air's dry bulb is a gap the "
-      + "engine names on every run. So this tool cannot tell you the product "
-      + "temperature after the break, and no thermal-degradation or "
-      + "product-quality claim can be read off it.",
+    body: "In this witness (dryer01) the surface is held at the wet bulb by "
+      + "hypothesis while X > X_c, and the falling-rate warm-up toward the "
+      + "air's dry bulb is a gap the engine names on every run.  So this run "
+      + "cannot tell you the product temperature after the break.  The "
+      + "case dryer03_solid_temperature integrates one temperature for the "
+      + "whole charge (the card on the page runs it), but its flux still "
+      + "does not feel that temperature, so no thermal-degradation or "
+      + "product-quality claim can be read off either.",
   },
   {
     id: "constant-air",
@@ -496,19 +544,19 @@ export const DRYING_QUIZ: readonly QuizQuestion[] = [
       + "(step 1).",
   },
   {
-    id: "wet-bulb", steps: [2],
-    q: "During the constant-rate period, at what temperature is the solid's surface?",
+    id: "break-time", steps: [3, 6],
+    q: "A tray holds 2.0 kg of dry solid on 0.5 m², dries from X_0 = 0.30 with X_c = 0.12, and R_c is 7.0e-4 kg/(m² s). How long does its constant-rate stretch last?",
     options: [
-      "The dry-bulb temperature of the air",
-      "The air's wet-bulb temperature, where heat arriving equals latent heat leaving",
-      "Room temperature, always",
-      "The boiling point of water",
+      "About 0.26 ks",
+      "About 0.51 ks",
+      "About 1.03 ks",
+      "About 1.7 ks",
     ],
-    correct: 1,
-    feedback: "Evaporation cools the surface until the heat from the air "
-      + "matches the latent heat taken with the vapour; the material stays "
-      + "well below the dry bulb, which matters for heat-sensitive products "
-      + "(step 2).",
+    correct: 2,
+    feedback: "t_c = L (X_0 − X_c)/R_c with L = 2.0/0.5 = 4 kg/m²: "
+      + "4 × 0.18 / 7.0e-4 = 1.03 ks.  Using the charge instead of the "
+      + "loading gives 0.51 ks, multiplying by the area 0.26 ks, and using "
+      + "X_0 instead of X_0 − X_c 1.7 ks (steps 3 and 6).",
   },
   {
     id: "critical-moisture", steps: [3],
@@ -539,17 +587,20 @@ export const DRYING_QUIZ: readonly QuizQuestion[] = [
   },
   {
     id: "size-the-time", steps: [5],
-    q: "Why does dividing the water to be removed by the constant rate underestimate the drying time?",
+    q: "Dividing the water to be removed by the constant rate gives 1.43 ks for this page's tray (X_0 0.30 to X = 0.05, X_c 0.12, X_eq 0.016, t_c = 1.03 ks, τ = 0.60 ks). How does that compare with the curve's own time?",
     options: [
-      "It prices the whole job at the fastest rate it ever achieves, while most of the time goes in the falling-rate tail",
-      "The constant rate is too small",
-      "Most of the water leaves in the falling-rate period",
-      "Drying stops at the critical moisture",
+      "Too short: the tail below X_c runs slower than R_c and adds about 0.66 ks, 1.69 ks in all",
+      "Too long: the constant rate is the largest rate, so it overprices the job",
+      "Exact, because most of the water leaves at the constant rate",
+      "Too short, because the falling-rate period always takes most of the time",
     ],
     correct: 0,
-    feedback: "Most of the water usually leaves in the constant-rate period "
-      + "and most of the time is spent in the falling-rate one, as "
-      + "an exponential tail does (step 5).",
+    feedback: "The rate is never above R_c, so the estimate is always a "
+      + "lower bound: here 1.43 ks against 1.69 ks (t_c 1.03 ks plus a tail "
+      + "of τ ln(0.104/0.034) = 0.66 ks).  Which period takes most of the "
+      + "time depends on X_c and the target: on this tray the constant "
+      + "stretch is the longer, and the tail overtakes it only for targets "
+      + "below about X = 0.034 (step 5).",
   },
   {
     id: "loading", steps: [6],

@@ -170,7 +170,7 @@ export type DryerId = typeof DRYER_IDS[number];
 /** A value read from a source, or `null`: "not cited". */
 export interface Cited<T> { value: T; src: readonly SourceId[] }
 
-export type FeedForm = "solution" | "paste" | "granular" | "sheet";
+export type FeedForm = "solution" | "paste" | "cake" | "granular" | "sheet";
 /** How a type meets a feed form: `yes`, `conditional` (the book attaches a
  *  condition, named in `why`) or `no`. */
 export interface FeedFit { fit: "yes" | "conditional" | "no"; why: string; src: readonly SourceId[] }
@@ -227,6 +227,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       paste: { fit: "conditional", why: "only if the paste can be pumped to the atomiser, which "
         + "needs special pumping equipment (a filter cake is re-slurried first)",
         src: ["perry-t12-11", "muj-feed"] },
+      cake: { fit: "no", why: "Table 1.1 ticks the spray dryer for solutions, slurries and pastes, not for cakes: a cake is re-slurried to a pumpable liquid first",
+        src: ["muj-t1.1","perry-t12-11"] },
       granular: { fit: "no", why: "a solid feed is not applicable unless it is made pumpable",
         src: ["perry-t12-11", "muj-t1.1"] },
     },
@@ -263,6 +265,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
         src: ["vtl-rotary", "perry-t12-11", "muj-t1.1"] },
       paste: { fit: "conditional", why: "only with dry product mixed back into the feed, so it "
         + "does not stick and can be handled", src: ["muj-feed", "perry-t12-11"] },
+      cake: { fit: "yes", why: "Table 1.1 ticks the direct rotary dryer for both centrifuge and filter cakes",
+        src: ["muj-t1.1"] },
       granular: { fit: "yes", why: "universally applicable to particulate materials; the usual "
         + "choice for granular crystals above about 300 micrometres", src: ["vtl-rotary", "muj-feed"] },
     },
@@ -295,6 +299,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
         + "dry-solids recirculation", src: ["perry-t12-11"] },
       paste: { fit: "conditional", why: "as for liquids: dispersion of the feed in a deep bed is "
         + "the difficulty", src: ["perry-t12-11", "muj-feed"] },
+      cake: { fit: "yes", why: "Table 1.1 ticks the fluid-bed dryer for both centrifuge and filter cakes",
+        src: ["muj-t1.1"] },
       granular: { fit: "yes", why: "suited to crystals, granules and short fibres, at high "
         + "capacities, when the particles fluidise (about 0.1 mm and larger in van 't Land; "
         + "Perry admits free-flowing powders of 150 micrometres or less 'if not too dusty'; "
@@ -329,6 +335,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       solution: { fit: "no", why: "not applicable to liquids", src: ["perry-t12-11", "muj-t1.1"] },
       paste: { fit: "conditional", why: "only if the paste can be pre-formed (extruded or "
         + "granulated) so a bed can be laid", src: ["perry-t12-11"] },
+      cake: { fit: "yes", why: "Table 1.1 ticks the batch tray dryer for both centrifuge and filter cakes",
+        src: ["muj-t1.1"] },
       granular: { fit: "yes", why: "takes granules, crystals and cakes of almost any shape; "
         + "Perry marks it unsuited below about 0.5 mm and not applicable to free-flowing "
         + "100-mesh powders, while Mujumdar's Table 1.1 admits powders: test it",
@@ -360,6 +368,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       solution: { fit: "no", why: "not applicable to liquids", src: ["perry-t12-11", "muj-t1.1"] },
       paste: { fit: "conditional", why: "only if the paste can be pre-formed into a permeable "
         + "layer (an extruder or granulator upstream)", src: ["perry-t12-11", "vtl-conveyor"] },
+      cake: { fit: "no", why: "Table 1.1 does not tick the belt dryer for cakes (its columns are the free-flowing and formed solids): the cake is pre-formed first",
+        src: ["muj-t1.1"] },
       granular: { fit: "yes", why: "coarse particles, from about 1 mm to several centimetres, "
         + "pellets and fragile crystals; the layer must be permeable",
         src: ["vtl-conveyor", "muj-t1.1", "perry-t12-11"] },
@@ -389,6 +399,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
       paste: { fit: "conditional", why: "only when the paste or sludge can be made to flow; a "
         + "top-fed single drum copes with viscous feeds that a double drum does not",
         src: ["perry-t12-11", "vtl-drum"] },
+      cake: { fit: "no", why: "Table 1.1 does not tick the drum dryer for cakes, only for solutions, slurries and pastes: a cake is slurried to a flowing liquid first",
+        src: ["muj-t1.1"] },
       granular: { fit: "no", why: "not applicable to solids", src: ["perry-t12-11", "muj-t1.1"] },
     },
     engine: null,
@@ -415,6 +427,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
         + "easily oxidised products such as pharmaceuticals", src: ["perry-t12-11"] },
       paste: { fit: "conditional", why: "as for solutions: only where the value of the product "
         + "carries the cost", src: ["perry-t12-11"] },
+      cake: { fit: "conditional", why: "not a row of Table 1.1; a cake is a solid like any other here, and the freeze dryer is for a product whose value carries its cost",
+        src: ["perry-t12-11"] },
       granular: { fit: "conditional", why: "expensive; used on pharmaceuticals and fine chemicals "
         + "that cannot be dried successfully by other means", src: ["perry-t12-11"] },
     },
@@ -451,6 +465,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
         + "mill in the feed line) to make it a friable, dispersible feed; Perry adds that "
         + "disintegration is usually required",
         src: ["perry-t12-11", "muj-feed", "vtl-flash"] },
+      cake: { fit: "conditional", why: "Table 1.1 ticks the flash dryer for both cakes, with the lumps disintegrated and dispersed in the gas (a flooded screw and a disperser, a mill, or dry product mixed back)",
+        src: ["muj-t1.1","vtl-flash"] },
       granular: { fit: "yes", why: "for solids that are easily suspended in a gas stream and lose "
         + "moisture readily, up to about 1 to 2 mm (larger particles are not entrained); only "
         + "surface moisture is removed, and fragile crystals can be broken by the gas velocity",
@@ -497,6 +513,8 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
         src: ["muj-feed", "vtl-agvac", "perry-t12-11"] },
       paste: { fit: "yes", why: "slurries and pastes are dried batchwise in it, again with solvent "
         + "recovery", src: ["vtl-agvac", "perry-t12-11"] },
+      cake: { fit: "conditional", why: "not a row of Table 1.1; the books place it with the wet solids that need vacuum, a closed vessel or low temperature, so test the cake in it",
+        src: ["muj-feed","perry-t12-11"] },
       granular: { fit: "yes", why: "free-flowing powders in small batches (1000 L or less), when the "
         + "product is heat-sensitive, oxidises in air, is toxic or is wet with a flammable "
         + "solvent; the agitation causes some degradation or balling up, so a fragile "
@@ -596,7 +614,7 @@ const flowNotes = (i: Inputs, picks: readonly DryerId[]): Reason[] => {
     out.push({
       text: "With a product limit below 75 degC run the spray or rotary dryer co-current: the "
         + "gas cools as it dries the wet solid, so the solid leaves far below the inlet gas "
-        + "temperature (a spray droplet starts at the adiabatic saturation temperature), while "
+        + "temperature (a spray droplet enters at the feed temperature and within milliseconds sits near the gas's wet-bulb temperature), while "
         + "counter-current meets the driest solid with the hottest gas.",
       src: ["perry-cons", "vtl-cont-tree", "vtl-spray-flow", "muj-rotary"] });
   }
@@ -771,6 +789,60 @@ export const RULES: readonly Rule[] = [
           + "rotary types, which need the feed blended with dry product or pre-formed.",
         src: ["muj-feed"] },
       ...flowNotes(i, ["drum", "spray", "flash"]),
+    ],
+  },
+  {
+    id: "cake-low-batch", label: "Cake, product limit 30 degC, batch",
+    when: (i) => i.feed === "cake" && i.heat === "low" && i.mode === "batch",
+    picks: ["tray", "freeze"], outside: null,
+    reasons: () => [
+      { text: "Table 1.1 ticks the batch tray dryer for filter and centrifuge cakes, and at a "
+          + "product limit of 30 degC or below the tray is run under vacuum (the vacuum tray "
+          + "dryer is the simplest, and its product usually needs sieving).",
+        src: ["muj-t1.1", "vtl-batch-tree", "vtl-text"] },
+      { text: "Freeze drying is the expensive alternative, for a product whose value carries "
+          + "the cost.", src: ["perry-t12-11"] },
+    ],
+  },
+  {
+    id: "cake-low-cont", label: "Cake, product limit 30 degC, continuous",
+    when: (i) => i.feed === "cake" && i.heat === "low" && i.mode === "continuous",
+    picks: ["freeze"], outside: null,
+    reasons: () => [
+      { text: "Vacuum drying is usually carried out batchwise, so a continuous plant at a "
+          + "product limit of 30 degC is rare; the continuous freeze-drying tunnel is the one "
+          + "the books describe, and it is expensive.  Table 1.1 gives no limit by temperature.",
+        src: ["vtl-text", "vtl-freeze", "muj-t1.1"] },
+    ],
+  },
+  {
+    id: "cake-batch", label: "Cake, batch",
+    when: (i) => i.feed === "cake" && i.mode === "batch",
+    picks: ["tray"], outside: null,
+    reasons: () => [
+      { text: "Table 1.1 ticks the batch tray dryer for both centrifuge and filter cakes; the "
+          + "tray dryer wants a bed of uniform depth, so a cake too lumpy or sticky to lay "
+          + "that way is pre-formed first.",
+        src: ["muj-t1.1", "perry-tray-cycle"] },
+      { text: "A batch tray dryer is rarely economical except for long cycles, several "
+          + "products needing strict batch identity, or quantities too small for continuous "
+          + "equipment.",
+        src: ["perry-tray"] },
+    ],
+  },
+  {
+    id: "cake-cont", label: "Cake, continuous",
+    when: (i) => i.feed === "cake" && i.mode === "continuous",
+    picks: ["rotary", "fluidBed", "flash"], outside: null,
+    reasons: (i) => [
+      { text: "Table 1.1 ticks the rotary, fluid-bed and flash dryers for both centrifuge and "
+          + "filter cakes, and does not tick the spray, drum or belt dryers for them.",
+        src: ["muj-t1.1"] },
+      { text: "A flash dryer takes a cake with the lumps disintegrated and dispersed in the gas "
+          + "(a flooded screw and a disperser, a mill, or dry product mixed back into the "
+          + "feed); a fluid bed has the same difficulty of dispersing the feed in the bed.",
+        src: ["vtl-flash", "perry-flash", "muj-feed"] },
+      ...flowNotes(i, ["rotary", "fluidBed", "flash"]),
     ],
   },
   {
@@ -1173,7 +1245,8 @@ export function energyBills(mw: number): EnergyBill[] {
 
 export const FEED_LABEL: Readonly<Record<FeedForm, string>> = {
   solution: "Solution or slurry (pumpable liquid)",
-  paste: "Paste, sludge or filter cake",
+  paste: "Paste or sludge (a wet mass that flows or can be made to)",
+  cake: "Filter or centrifuge cake (a damp, lumpy solid)",
   granular: "Granular or particulate solid",
   sheet: "Sheet, film or web",
 };

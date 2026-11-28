@@ -352,7 +352,7 @@ export function TrayDayCard(): JSX.Element {
         A batch dryer does not dry all day: the tray is loaded, dried, unloaded and cleaned, and only
         the second step is the curve.  Perry says a compartment dryer is rarely economical except for a
         long cycle, several products that need strict batch identity, or a quantity too small for a
-        continuous dryer, because of the labour of loading and unloading (p. 12-39).  Declare your three
+        continuous dryer, because of the labour of loading and unloading (Perry, 9th ed.).  Declare your three
         handling times; the engine gives the drying time.
       </Text>
       <Group gap="md" mt={6} align="flex-end">

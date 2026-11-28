@@ -1218,26 +1218,47 @@ export function DryingCurveTool(): JSX.Element {
   const doc: LessonDoc = {
     title: "The drying curve, and what decides the time",
     question: "The air controls the first half and the solid controls the second — "
-      + "and a dryer sized on the first half is a dryer that is too small.",
+      + "and a dryer sized on the first half is a dryer that is too small.  "
+      + "In ten minutes.  The question: how long does a wet solid take to "
+      + "dry, and what sets that time?  The one idea: the curve has two "
+      + "parts, a constant-rate period while the surface is wet, where the "
+      + "air sets the rate, and a falling-rate period below the critical "
+      + "moisture X_c, where the solid does; the wet-bulb temperature T_wb "
+      + "is the temperature a wet surface settles at in the moving air "
+      + "(the Chart chapter draws it).  One number, from this page's own "
+      + "sucrose tray (2.0 kg dry solid on 0.5 m², X from 0.30 to 0.05, "
+      + "X_c 0.12, X_eq about 0.016, R_c 7.0e-4 kg/(m² s), the case's hand "
+      + "estimate): dividing the water by the constant rate gives 1.43 ks, "
+      + "but the curve takes 1.69 ks, 1.03 ks constant plus 0.66 ks of tail.  "
+      + "The Try-it run below is that tray, integrated by the engine.",
     steps: DRYING_STEPS, quiz: DRYING_QUIZ, limits: DRYING_LIMITS,
     sections: {
       question: [{ kind: "step", n: 1 }],
       try: [
         bench(readCurve),
         bench(plots),
+      ],
+      see: [
+        { kind: "step" as const, n: 2 },
+        { kind: "step" as const, n: 3 },
+        { kind: "step" as const, n: 4 },
+        bench(<HotProductCard />),
+      ],
+      why: [
+        { kind: "step" as const, n: 5 },
+        { kind: "step" as const, n: 6 },
         ...(src === "classroom" ? [bench(
           <LoadingCollapseCard loading={knobs["area"] ?? 4}
             endTime={knobs["endTime"] ?? 3000}
             overridesAt={(L, T) => knobOverrides({ ...knobs, area: L, endTime: T })}
             baseKey={JSON.stringify({ ...knobs, area: 0, endTime: 0 })} />)] : []),
+        { kind: "step" as const, n: 7 },
         ...(view !== null ? [bench(
           <LastPercentCard run={{ traj: trajectory, kpis: kpis?.[view.unit] }} />)] : []),
         bench(<TrayDayCard />),
-        bench(<HotProductCard />),
+        { kind: "step" as const, n: 8 },
         bench(<SprayChamberCard />),
       ],
-      see: [2, 3, 4].map((n) => ({ kind: "step" as const, n })),
-      why: [5, 6, 7, 8].map((n) => ({ kind: "step" as const, n })),
     },
   };
   return <LessonDocument tool="drying" doc={doc} alerts={alerts} />;

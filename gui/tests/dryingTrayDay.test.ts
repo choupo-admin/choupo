@@ -65,12 +65,13 @@ describe("trayDay: the cycle arithmetic", () => {
 });
 
 describe("the card is on the page and its witness is the engine's tray", () => {
-  it("the drying page mounts TrayDayCard, between the last-percent and the hot-product cards", () => {
+  it("the drying page mounts TrayDayCard, after the last-percent card, and the hot-product card follows step 4", () => {
     const t = read("gui/src/ui/methods/DryingCurveTool.tsx");
     const i = t.indexOf("<LastPercentCard"), j = t.indexOf("<TrayDayCard"), k = t.indexOf("<HotProductCard");
     expect(i).toBeGreaterThan(0);
     expect(j).toBeGreaterThan(i);
-    expect(k).toBeGreaterThan(j);
+    expect(k).toBeGreaterThan(0);
+    expect(k).toBeLessThan(i);   // the hot-product card follows step 4, in "see"
   });
   it("runs dryer01_sucrose_tray, a bundled case that charges 2.0 kg of dry sucrose over 0.5 m2 (the batch mass is read from its kpis)", () => {
     const src = read("gui/src/ui/methods/DryingCards.tsx");

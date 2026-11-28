@@ -56,7 +56,7 @@ describe("method families", () => {
     const g = globalThis as { window?: unknown };
     const saved = g.window;
     g.window = { location: { search: "?workspace=methods&family=drying" } };
-    try { expect(bootTool()).toBe("dryer-selection"); } finally { g.window = saved; }
+    try { expect(bootTool()).toBe("psychro"); } finally { g.window = saved; }
   });
   it("the row shows the four labels with the open one current", () => {
     setActiveMethodTool("why-did-it-not-dry");
