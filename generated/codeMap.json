@@ -17463,6 +17463,7 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/SpecifiedFlash.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/valve/Valve.H"
   ]
@@ -30274,7 +30275,8 @@
   ],
   "src/unitOperations/flash/SpecifiedFlash.H": [
    "src/propertyOps/FlashSpec.cpp",
-   "src/unitOperations/flash/SpecifiedFlash.cpp"
+   "src/unitOperations/flash/SpecifiedFlash.cpp",
+   "src/unitOperations/valve/Valve.cpp"
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
    "src/dynamicDriver/DynamicDriver.cpp",

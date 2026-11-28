@@ -37232,7 +37232,11 @@ specification) is not where the modelling effort goes.
         above, exposed as a unit of its own.  A valve only drops
         pressure: a requested $P_{\text{out}}>P_{\text{in}}$ would give
         $w=0$ and $\Delta s<0$ (second law), so the unit refuses by name and
-        points to a pump or compressor.
+        points to a pump or compressor.  The outlet state is the (P, H) flash of the
+        inlet's enthalpy (\code{flashState::specifiedFlash}); a pure fluid
+        throttled into its saturation plateau leaves at
+        $T_{\text{sat}}(P_{\text{out}})$ with the vapour fraction of the lever
+        rule on the saturated legs (witness \code{valve02\_wet\_letdown\_water}).
   \item[ElectricLoad] A passive shaft sink: the electric generator (or
         any mechanical brake) wired to a turbine's shaft.  It carries no
         process stream --- the only thing crossing its boundary is the

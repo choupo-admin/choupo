@@ -1,0 +1,17 @@
+# Units that still run their own T-from-H search instead of flashState::specifiedFlash.
+# The pin only shrinks (check_state_inversion_door.py).  valve migrated 2026-11-28.
+# file
+src/unitOperations/agitation/AgitatedVessel.cpp
+src/unitOperations/flash/AdiabaticFlash.cpp
+src/unitOperations/flash/IsothermalFlash.cpp
+src/unitOperations/heatTransfer/HeatExchanger.cpp
+src/unitOperations/heatTransfer/Heater.cpp
+src/unitOperations/heatTransfer/PhaseChanger.cpp
+src/unitOperations/heatTransfer/SolidDryer.cpp
+src/unitOperations/heatTransfer/SprayDryer.cpp
+src/unitOperations/mixer/Mixer.cpp
+src/unitOperations/reactor/CSTR.cpp
+src/unitOperations/reactor/GibbsReactor.cpp
+src/unitOperations/reactor/PFR.cpp
+src/unitOperations/rotating/IsentropicCore.cpp
+src/unitOperations/rotating/Pump.cpp

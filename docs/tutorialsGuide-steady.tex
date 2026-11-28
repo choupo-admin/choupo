@@ -6388,6 +6388,38 @@ This is the state marcilla01 could not reach: there the UNIFAC (VLE) backbone ke
 \end{tutgolden}
 
 \clearpage
+\tutentry{valve02\_wet\_letdown\_water}{tutorials/steady/flash/valve02\_wet\_letdown\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (0.0,-0.0) {\textbf{letdown}\\[-1pt]{\tiny valve}};
+  \draw[->] ($(letdown.west)+(-1.05,0.00)$) -- ($(letdown.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(letdown.east)+(0,0.00)$) -- ($(letdown.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Valve, IF97 water 450 K 20 bar $\to$ 1 bar: the throttle ends inside the saturation plateau}
+\begin{tutnarrative}
+Isenthalpic let-down of hot liquid water (IF97), 20 bar $\to$ 1 bar. The throttled enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the valve's own balance H\_out = H\_in, and the mass balance.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.02}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{out}{F}{0.02}
+\goldrow{stream}{out}{T}{372.755918611}
+\goldrow{kpi}{letdown}{F}{0.02}
+\goldrow{kpi}{letdown}{P\_in}{2000000}
+\goldrow{kpi}{letdown}{P\_out}{100000}
+\goldrow{kpi}{letdown}{Q\_in}{0.000404355790572}
+\goldrow{kpi}{letdown}{Q\_out}{0.0901931838107}
+\goldrow{kpi}{letdown}{T\_in}{450}
+\goldrow{kpi}{letdown}{T\_out}{372.755918611}
+\goldrow{kpi}{letdown}{dP}{1900000}
+\goldrow{kpi}{letdown}{dT}{-77.2440813887}
+\goldrow{kpi}{letdown}{massFlow}{0.3603}
+\goldmore{12}
+\end{tutgolden}
+
+\clearpage
 \tutentry{vlle01\_waterButanol}{tutorials/steady/flash/vlle01\_waterButanol}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

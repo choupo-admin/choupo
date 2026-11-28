@@ -3287,7 +3287,7 @@ operation { fractions ( 0.6  0.4 ); }
 <!-- END GENERATED unit-acceptance splitter -->
 
 ### `valve`
-Isenthalpic throttle: drops pressure to `P` at constant enthalpy; `T_out`
+Isenthalpic throttle (outlet = the (P, H) flash via `flashState::specifiedFlash`; a pure fluid thrown into its saturation plateau leaves at Tsat(P) with the lever-rule vapour fraction: `valve02_wet_letdown_water`): drops pressure to `P` at constant enthalpy; `T_out`
 and the vapour fraction are RESULTS (a real-gas EoS flashes the let-down).
 Use it upstream of a flash to set the drum pressure.  REFUSES by name if `P > P_in` (a raise has w = 0 and delta s < 0; use a `pump` or `compressor`).
 ```

@@ -161,8 +161,16 @@ that does not satisfy its specification is never returned.
   `tutorials/props/thermo/flashSpec01_wet_steam_expansion`: steam at 80 bar
   and 500 °C expanded isentropically to 0.1 bar on IF97, ending wet — the
   answer a student checks against the steam table.
-* **`adiabaticFlash`, `valve`, `compressor`, `turbine`: NOT migrated** —
-  §6.
+* **`valve`: MIGRATED (2026-11-28, D5).**  Its outlet is `specifiedFlash`
+  PH at (P_out, H_in); the private T search is gone.  Water IF97 450 K,
+  20 -> 1 bar: 372.756 K, vf 0.14725 (before: vf 0, "Converged: NO").  No
+  shipped valve golden moved.  The inner flash is the unit's own (1e-9) and
+  the verdict tolerance 1e-9 normalised, because the energy report re-prices
+  the published stream.  `check_state_inversion_door` pins the 14 unit files
+  that still run their own T-from-H search; it may only shrink.
+* **`adiabaticFlash` (D8) and the adiabatic `mixer` via
+  `reactorOutlet::temperatureOfEnthalpy` (D7), `compressor`, `turbine`: NOT
+  migrated** — §6.  (Next slices, one unit each.)
 
 A PURE state ON its curve (the plateau, a pure (T, V/F) or (P, V/F)) is
 priced on the saturated legs (`pureSaturationLegs` and its entropy twin

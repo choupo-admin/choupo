@@ -8206,6 +8206,19 @@ PYEOF
     fi
     rm -f /tmp/stdwrite.$$
 
+    # state-inversion-door gate (2026-11-28): the units that invert H(T) with
+    # their own search (blind to a pure fluid's saturation plateau: a water
+    # letdown through a valve did not converge) may only shrink in number.
+    if gate_exec "$ROOT/bin/curate/check_state_inversion_door.py" > /tmp/stinv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "state-inversion-door-gate" "$(head -1 /tmp/stinv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_state_inversion_door.py)\n" "state-inversion-door-gate"
+        cat /tmp/stinv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stinv.$$
+
     # no-symlinks gate (2026-11-10, DEV.md 4c C296 slice 1).  No tracked symlink under data/: a record has one home.
     if gate_exec "$ROOT/bin/curate/check_no_symlinks.py" > /tmp/nosymlk.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "no-symlinks-gate" "$(head -1 /tmp/nosymlk.$$)"
