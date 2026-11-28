@@ -9,6 +9,10 @@
 # "unanswerable is above" option in specifiedFlash (registered debt, C532 c).
 # mixer migrated 2026-11-28 (row removed: the census asks the home first); ONE documented exception the census cannot see: a merge carrying crystals
 # keeps reactorOutlet::temperatureOfEnthalpy (specifiedFlash prices no solids at T_out).  Registered debt (C532 c).
+# reactorOutlet::temperatureOfEnthalpy migrated 2026-11-28 (row removed): the fluid case is flashState::specifiedFlash (PH),
+# window cut to the package's domain, absolute 1e-6 J/mol verdict; ONE documented exception the census cannot see: a stream
+# carrying crystals keeps the private search (static solidsCarryingInversion; the home prices no solids at T_out).
+# PFR migrated 2026-11-28 (row removed): its only fluid caller refuses by name ("Converged: NO"), C532 c.
 # file
 src/unitOperations/agitation/AgitatedVessel.cpp
 src/unitOperations/heatTransfer/HeatExchanger.cpp
@@ -17,7 +21,5 @@ src/unitOperations/heatTransfer/PhaseChanger.cpp
 src/unitOperations/heatTransfer/SolidDryer.cpp
 src/unitOperations/heatTransfer/SprayDryer.cpp
 src/unitOperations/reactor/GibbsReactor.cpp
-src/unitOperations/reactor/ReactorOutlet.cpp
-src/unitOperations/reactor/PFR.cpp
 src/unitOperations/rotating/IsentropicCore.cpp
 src/unitOperations/rotating/Pump.cpp

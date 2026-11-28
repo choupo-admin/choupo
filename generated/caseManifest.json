@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1963,
+  "cases": 1965,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -30317,6 +30317,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/equil06_refusal_no_carbon_feed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/reactors/ladder01_wgs_three_rungs": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -30404,6 +30418,20 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/steady/reactors/pfr_polyesterification": {
    "application": "choupoSolve",
@@ -33373,12 +33401,14 @@
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/equil05_order_independent_a",
     "tutorials/steady/reactors/equil05_order_independent_b",
+    "tutorials/steady/reactors/equil06_refusal_no_carbon_feed",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",
@@ -33826,6 +33856,7 @@
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/equil05_order_independent_a",
     "tutorials/steady/reactors/equil05_order_independent_b",
+    "tutorials/steady/reactors/equil06_refusal_no_carbon_feed",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/screen01_methanol_routes"
    ],
@@ -34084,6 +34115,7 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",
@@ -36964,12 +36996,14 @@
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/equil05_order_independent_a",
     "tutorials/steady/reactors/equil05_order_independent_b",
+    "tutorials/steady/reactors/equil06_refusal_no_carbon_feed",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
+    "tutorials/steady/reactors/pfr06_refusal_unreachable_enthalpy",
     "tutorials/steady/reactors/pfr_polyesterification",
     "tutorials/steady/reactors/plog01_onePressure",
     "tutorials/steady/reactors/plog02_atTabulated",

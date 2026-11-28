@@ -229,6 +229,7 @@ liquid concentrations whatever the phase).  One case is announced rather
 than closed: a PURE product at its own saturation temperature, where (T, P)
 do not fix its quality (`[cstr|pfr] ... found no outlet temperature at which
 the published state carries the enthalpy it conserved`).
+A non-isothermal `pfr` whose enthalpy inversion the shared home (`flashState::specifiedFlash`, PH) refuses prints `Converged: NO` with the home's reason and publishes the feed as the outlet (witness `pfr06_refusal_unreachable_enthalpy`); the exception never leaves a recycle.
 
 **Rate laws** (`kinetics { type ... }`, shared by `cstr` and `pfr` via `RateLaw`).
 Two families, one formula.  With `theta_i` the concentration (mol/m³) or, when
@@ -590,6 +591,8 @@ when you have neither rate data nor an equilibrium.  Example:
 `tutorials/steady/reactors/conversion02_parallel_selectivity` (75 % selectivity).
 
 ### `equilibriumReactor`  (alias `REquil`)
+
+When no reaction can give a species a foothold from the feed, the start is refused BY NAME: the species and the reactions that touch them are listed (witness `equil06_refusal_no_carbon_feed`).
 Stoichiometric **equilibrium** reactor (the "REquil" of process simulators): you give a
 **set of reactions**, each driven to **simultaneous** chemical equilibrium via its
 `Kp(T)` (from the species' `standardThermochemistry`, `K = exp(-ΔG°/RT)`) — **no kinetics, no
@@ -3216,7 +3219,7 @@ saturation T with its quality pinned.  Since 2026-11-28 (D9) a fluid-only merge 
 that state from `flashState::specifiedFlash` (PH at (P_out, SUM H_in), 1e-6 J/mol absolute;
 witness `mixer01_water_steam_plateau`: 36 kmol/h water 300 K + 36 kmol/h steam 450 K, IF97, 1 bar -> 372.756 K, vf 0.46678);
 a failed flash reports `Converged: NO` and publishes the seed T.  A merge carrying crystals keeps
-the older inversion (the home does not price solids).  Until 2026-10-24 the balance used one
+the older inversion (the home does not price solids).  The same inversion (`reactorOutlet::temperatureOfEnthalpy`, the PFR's march too) takes a fluid stream's T from `specifiedFlash` since 2026-11-28 (C532 c).  Until 2026-10-24 the balance used one
 dominant phase and published that label, which the report contradicted: the
 first law of `cavett01` was open by 88 % on its two mixers.  Without
 formation data on every component the sensible dominant-phase balance is

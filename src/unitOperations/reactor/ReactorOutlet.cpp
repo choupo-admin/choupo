@@ -31,6 +31,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "ReactorOutlet.H"
+#include "unitOperations/flash/SpecifiedFlash.H"
 
 #include "core/Advisory.H"
 #include "thermo/ThermoPackage.H"
@@ -186,7 +187,12 @@ PricedState pricedOutlet(scalar               T,
     return s;
 }
 
-EnthalpyInversion temperatureOfEnthalpy(scalar               h,
+//  THE CRYSTAL-CARRYING INVERSION (registered debt, C532 c): the private
+//  search every caller used before 2026-11-28.  It stays ONLY for a stream
+//  that also carries crystals, because the (P, H) home
+//  (`flashState::specifiedFlash`) prices no solids at the trial T.  Reached
+//  from `temperatureOfEnthalpy` below, never from a unit.
+static EnthalpyInversion solidsCarryingInversion(scalar               h,
                                         scalar               P,
                                         const sVector&       z,
                                         scalar               Tguess,
@@ -311,6 +317,72 @@ EnthalpyInversion temperatureOfEnthalpy(scalar               h,
     //  of a pure fluid's enthalpy at its saturation temperature (the header).
     if (std::abs(fc) > 1.0e-6 * std::max(1.0, std::abs(h)))
         inv.unmatched_J_per_mol = fc;
+    return inv;
+}
+
+EnthalpyInversion temperatureOfEnthalpy(scalar               h,
+                                        scalar               P,
+                                        const sVector&       z,
+                                        scalar               Tguess,
+                                        scalar               vfGuess,
+                                        scalar               vf_in,
+                                        const ThermoPackage& thermo,
+                                        const sVector*       solids,
+                                        scalar               F)
+{
+    //  A stream with crystals keeps the private search (see above).
+    if (solids != nullptr && F > 0.0)
+    {
+        for (auto v : *solids)
+            if (v > 0.0)
+                return solidsCarryingInversion(h, P, z, Tguess, vfGuess,
+                                               vf_in, thermo, solids, F);
+    }
+
+    //  THE FLUID CASE IS `flashState::specifiedFlash`'s (C532 c, 2026-11-28;
+    //  docs/design/a-general-flash-specification.md sections 5-6): the state
+    //  at (P, h) by the one (P, H) home, whose window is cut to the package's
+    //  own temperature domain (IF97 water: [273.15, 1073.15] K) so a trial is
+    //  never priced where the package refuses.  The private damped Newton
+    //  (-50 K steps, a 10 K floor) walked IF97 water below that domain.
+    //  `vfGuess` and `vf_in` are no longer needed: the home resolves every
+    //  trial at its own equilibrium.
+    (void)vfGuess; (void)vf_in;
+    FlashOptions iopts;
+    iopts.tolerance   = 1.0e-9;
+    iopts.maxIter     = 60;
+    iopts.verbosity   = 0;
+    iopts.accelerator = OuterAccelerator::Wegstein;
+    flashState::FlashSpecification spec;
+    spec.pair   = flashState::SpecPair::PH;
+    spec.P      = P;
+    spec.target = h;
+    spec.seed   = Tguess;
+    spec.Tmin   = 10.0;        // the window this inversion always searched
+    spec.Tmax   = 6000.0;      //  (the home cuts it to the package's domain)
+    spec.flash  = iopts;
+    spec.controls = flashState::FlashSpecification::defaultControls(
+                        flashState::SpecPair::PH);
+    //  ABSOLUTE, in J/mol: the normalised verdict is degenerate for
+    //  {phi, target} and falls back to the raw residual.
+    spec.controls.tolerance = 1.0e-6;
+    spec.controlsDeclared   = true;
+
+    EnthalpyInversion inv;
+    const flashState::SpecifiedState st =
+        flashState::specifiedFlash(thermo, z, spec, 0, false);
+    inv.T  = st.T;
+    inv.vf = st.phases.V_over_F;
+    if (st.onSaturationPlateau)
+    {
+        //  A pure fluid at its saturation temperature: (T, P) do not fix the
+        //  quality, so the caller's published state carries the jump it
+        //  cannot hold (the contract of `unmatched_J_per_mol`, unchanged).
+        const scalar vfR = (st.vaporFraction >= 0.5) ? 1.0 : 0.0;
+        inv.vf = vfR;
+        inv.unmatched_J_per_mol =
+            thermo.H_stream_formation(st.T, P, vfR, z) - h;
+    }
     return inv;
 }
 

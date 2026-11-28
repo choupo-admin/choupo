@@ -20929,6 +20929,8 @@ first-order kinetics it admits the textbook closed-form
 $X = 1 - e^{-k\tau}$ that the simulator's tutorial reproduces.
 \end{whatyoulllearn}
 
+\noindent When the bed is not isothermal, the temperature along it is recovered from the marched enthalpy by the shared pressure--enthalpy flash; if that flash refuses a state the package cannot reach, the unit reports \texttt{Converged: NO} with the reason and publishes the feed as its outlet, so a refusal never escapes a recycle as an exception.
+
 \subsection{The differential material balance}
 
 A PFR is a tube in which the molar flow of each component changes
@@ -24332,7 +24334,7 @@ element-potential method (the gate) is a comparison of two solutions of one prob
 the corpus's own gas-and-ideal-liquid cases.
 
 % ---------------------------------------------------------------------
-\paragraph{The declared-reaction reactor and its starting point.}\label{sec:equil-start}  The \texttt{equilibriumReactor} solves the same problem over the extents of the reactions the case names, in $\ln n_i$.  Its start must have a positive inventory of every species, and a species absent from the feed is given a foothold along a reaction that produces it; every such reaction is tried, in both directions, and the one that leaves the smallest inventory largest is kept, so the converged answer does not depend on the order of the \texttt{reactions} list (witnesses \texttt{equil05\_order\_independent\_a} and \texttt{\_b}, identical goldens).  The start is refused only when no reaction can supply the species.
+\paragraph{The declared-reaction reactor and its starting point.}\label{sec:equil-start}  The \texttt{equilibriumReactor} solves the same problem over the extents of the reactions the case names, in $\ln n_i$.  Its start must have a positive inventory of every species, and a species absent from the feed is given a foothold along a reaction that produces it; every such reaction is tried, in both directions, and the one that leaves the smallest inventory largest is kept, so the converged answer does not depend on the order of the \texttt{reactions} list (witnesses \texttt{equil05\_order\_independent\_a} and \texttt{\_b}, identical goldens).  The start is refused only when no reaction can supply the species, and the refusal names those species with the reactions that touch them (witness \texttt{equil06\_refusal\_no\_carbon\_feed}: a reformer fed steam only).
 
 \subsection{Equilibrium maps and the temperature approach}\label{sec:gibbs-maps}
 
@@ -37251,6 +37253,15 @@ specification) is not where the modelling effort goes.
         throttled into its saturation plateau leaves at
         $T_{\text{sat}}(P_{\text{out}})$ with the vapour fraction of the lever
         rule on the saturated legs (witness \code{valve02\_wet\_letdown\_water}).
+        \emph{The reactors' outlet door.}  Every reactor outlet that is
+        recovered from an enthalpy (the PFR's march, the mixer with crystals)
+        goes through \code{reactorOutlet::temperatureOfEnthalpy}; since
+        2026-11-28 a fluid stream takes its temperature from the same (P, H)
+        flash (window cut to the package's temperature domain, IF97 water
+        $[273.15, 1073.15]$ K, $10^{-6}$ J/mol absolute verdict), replacing a
+        damped Newton ($-50$ K steps, a 10 K floor) that walked below that
+        domain; a stream carrying crystals keeps the older search because the
+        flash prices no solids at the trial temperature.
   \item[ElectricLoad] A passive shaft sink: the electric generator (or
         any mechanical brake) wired to a turbine's shaft.  It carries no
         process stream --- the only thing crossing its boundary is the

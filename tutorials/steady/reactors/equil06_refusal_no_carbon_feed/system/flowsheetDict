@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  equil06_refusal_no_carbon_feed  --  a DELIBERATE REFUSAL (C532 c).
+
+  The reforming reactor of equil01 is fed steam ONLY: no carbon enters, so no
+  reaction path can give CH4 or CO2 a foothold for the interior-point Newton.
+  The engine refuses and NAMES those species and the reactions that touch
+  them (it used to say only "some participating species"), and the case must
+  exit non-zero with that text (.expect-refusal).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reformer;
+        type        equilibriumReactor;
+        in          feed;
+        outputs     ( syngas );
+        operation   { T 1100 K; }        // isothermal (a fired reformer holds it)
+        reactions   ( smr wgs );         // names from constant/reactions
+    }
+);

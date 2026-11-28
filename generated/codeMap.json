@@ -16084,6 +16084,7 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/SpecifiedFlash.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/ReactorOutlet.H"
   ],
@@ -30280,6 +30281,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/SpecifiedFlash.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [

@@ -434,10 +434,30 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                 }
             }
             if (!repaired || pass == 31)
+            {
+                //  NAME the species no reaction can make positive from this
+                //  feed (the ones still at or below the foothold), with the
+                //  reactions that touch each -- the diagnosis, not a hint.
+                std::string stuck;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    if (!logged[i] || isSolid[i] || ni[i] > seedFoothold) continue;
+                    std::string rx;
+                    for (std::size_t j = 0; j < R; ++j)
+                        if (nu[j][i] != 0.0)
+                            rx += (rx.empty() ? "" : ", ") + std::to_string(j + 1);
+                    stuck += (stuck.empty() ? "" : "; ") + thermo.comp(i).name()
+                           + " (" + (n0[i] > 0.0 ? "fed" : "not in the feed")
+                           + "; in reaction " + rx + ")";
+                }
                 throw std::runtime_error("equilibriumReactor: cannot construct an "
-                    "interior starting point -- some participating species has zero "
-                    "inventory and no reaction path can give it a foothold from this "
-                    "feed.  Check the feed composition against the reaction set.");
+                    "interior starting point -- no reaction path can give a foothold "
+                    "from this feed to: " + stuck + ".  Each of these species is "
+                    "produced only from reactants this feed does not carry (a "
+                    "reaction needs ALL its reactants present, or its products "
+                    "present to run backward).  Add a feed containing the missing "
+                    "reactants, or remove the reaction that cannot start.");
+            }
         }
         sVector x(nL, 0.0);                    // a solid's unknown starts at 0
         { const sVector ns = molesAt(xiSeed);

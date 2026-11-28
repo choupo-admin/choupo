@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  REFUSAL WITNESS (C532 c): the adiabatic bed of pfr04 fed at 450 K, 15 bar.  The
+  marched enthalpy lands on a state the package cannot invert (the shared
+  flashState::specifiedFlash PH refuses); the unit prints "Converged: NO" with
+  the home's reason and the flowsheet fails by name, never an exception
+  leaving a recycle.
+
+  pfr06_refusal_unreachable_enthalpy  --  an ADIABATIC plug-flow reactor.  The temperature is a
+                       RESULT, marched with the species by the same RK4:
+
+      dF_i/dV = SUM_j nu_ij r_j(F,T)
+      dT/dV   = SUM_j (-dH_j(T)) r_j / SUM_i F_i cp_i(T)
+
+  The esterification is only mildly exothermic in the liquid (dH_rxn about
+  -2.7 kJ/mol after the acetic-acid correction,
+  docs/design/acetic-acid-latent-heat-closure.md), so the stream warms by only
+  6.6 K (356.6 K out, the hot spot is the outlet).  The Arrhenius feedback is
+  present but weak.  T(V) is in the axial profile: plot it.
+
+  The original teaching point of this case (positive feedback, a hot spot
+  ~100 K above the feed) needs a genuinely exothermic reaction; a replacement
+  case on such a reaction is planned.  No parameter was changed.
+
+  `thermalMode` takes `isothermal` (default -- T imposed, duty a result),
+  `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T_coolant).
+  A non-isothermal reactor needs the heat of reaction, so every reacting species
+  must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
+
+  The feed is declared at 15 bar, a leftover of the old design (a 454 K
+  product had to be held liquid); at the corrected ~357 K the outlet is liquid
+  at 1 atm too.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation
+        {
+            V_R           0.005;        // m^3  (same volume as pfr01)
+            nSteps        100;
+            thermalMode   adiabatic;    // <-- T is a RESULT (a few K here)
+        }
+        reactions   ( esterification_etac );   // one-element list -> the general path
+    }
+);
