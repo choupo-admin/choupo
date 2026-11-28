@@ -57,7 +57,10 @@ VERIFIED_KEYS = {"method", "evidence", "date"}
 BLOCK_KEYS = {"pageSources", "references"}
 DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-CALL_RE = re.compile(r'<LessonReferences\s+tool="([\w-]+)"')
+#  A page draws its references itself, or hands its LessonDoc to the one
+#  renderer (<LessonDocument tool="...">, lessonDocument.tsx, C535), which
+#  places LessonReferences for that same id.
+CALL_RE = re.compile(r'<(?:LessonReferences|LessonDocument)\s+tool="([\w-]+)"')
 
 
 def norm(text: str) -> str:

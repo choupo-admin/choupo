@@ -212,7 +212,7 @@ export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
  *  those would be stay in the roadmap, not here.  check_method_tools holds
  *  that every step names a live tool, a path has at least three steps and no
  *  tool repeats inside one. */
-export interface MethodPathStep { tool: MethodToolId; why: string }
+export interface MethodPathStep { tool: MethodToolId; why: string; label?: string }
 export interface MethodPath {
   id: string;
   title: string;
@@ -317,6 +317,30 @@ export const METHOD_PATHS: MethodPath[] = [
     ],
   },
 ];
+
+/** FAMILIES (DEV.md 4c C535): tools that are chapters of one subject under one
+ *  door.  Same shape as a path; `label` is the chapter's short name.  A tool
+ *  sits in at most one family.  Pilot: drying. */
+export const METHOD_FAMILIES: readonly MethodPath[] = [
+  {
+    id: "drying",
+    title: "Drying",
+    intro: "From choosing a dryer to the drying curve, its diagnosis and the humidity chart.",
+    steps: [
+      { tool: "dryer-selection", label: "Choose", why: "Which dryer suits the product." },
+      { tool: "drying", label: "Curve", why: "How the moisture falls with time." },
+      { tool: "why-did-it-not-dry", label: "Diagnose", why: "Why a run ended wetter than hoped." },
+      { tool: "psychro", label: "Chart", why: "The air's state on the psychrometric chart." },
+    ],
+  },
+];
+
+export const familyById = (id: string | null | undefined): MethodPath | null =>
+  METHOD_FAMILIES.find((f) => f.id === id) ?? null;
+
+export function familyOf(tool: MethodToolId): MethodPath | null {
+  return METHOD_FAMILIES.find((f) => f.steps.some((s) => s.tool === tool)) ?? null;
+}
 
 export const pathById = (id: string | null | undefined): MethodPath | null =>
   METHOD_PATHS.find((p) => p.id === id) ?? null;
@@ -3077,6 +3101,9 @@ export function bootTool(): MethodToolId | null {
     // `&path=<id>` without a tool opens that sequence's first step.
     const p = pathById(q.get("path"));
     if (p) return p.steps[0]!.tool;
+    // `&family=<id>` opens that family's first chapter.
+    const f = familyById(q.get("family"));
+    if (f) return f.steps[0]!.tool;
   }
   // No tool named: the workspace opens on its HOME (DEV.md 4c C251), not on
   // whichever tool happened to be first.

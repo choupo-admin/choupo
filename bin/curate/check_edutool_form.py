@@ -103,7 +103,11 @@ SCROLL_MARKER = 'overflowY: "auto"'
 #  shape.  check_lesson_symbols selects a lesson on the substring
 #  "LessonStep" for exactly this reason: two homes for one question, and they
 #  disagreed about one live tool.
-SHARED_STEP_MARKERS = ("lessonStepper(", "LessonStepView")
+SHARED_STEP_MARKERS = ("lessonStepper(", "LessonStepView", "<LessonDocument")
+
+#  A page that mounts <LessonDocument> hands the container and the steps to the
+#  one renderer (C535); the renderer file itself must hold both markers.
+LESSON_DOCUMENT = UI / "methods/lessonDocument.tsx"
 
 #  ROUTE 2 -- the LEGACY route.  A tool that predates the shared step and
 #  draws its own equation block in the monospace typeface.  Thirteen live
@@ -256,6 +260,11 @@ def main():
              f"{', '.join(ghosts)} -- the registry names something gone.")
 
     shared_route, tex_route, own_route = [], [], []
+    ld = strip_comments(LESSON_DOCUMENT.read_text(encoding="utf-8"))
+    if SCROLL_MARKER not in ld or "LessonStepView" not in ld:
+        fail(f"{LESSON_DOCUMENT.relative_to(ROOT)} must hold the scroll container "
+             f"({SCROLL_MARKER!r}) and LessonStepView: every page that mounts "
+             "<LessonDocument> is proved by it.")
     for tid, label, src in lessons:
         #  COMMENTS ARE NOT CODE, on every arm and not only the panel one.
         #  The panel arm learnt this from TieTriangleTool's header describing
@@ -265,7 +274,7 @@ def main():
         #  Measured when this was applied: no verdict changed today, which is
         #  the state a guard should be put in before it is needed.
         code = strip_comments(src)
-        if SCROLL_MARKER not in code:
+        if SCROLL_MARKER not in code and "<LessonDocument" not in code:
             fail(f"{label} ({tid}) is not a panel and does not scroll either "
                  f"({SCROLL_MARKER!r} absent) -- it is neither form.")
         #  TWO ROUTES TO EQUATIONS, and the first is the stronger one -- see

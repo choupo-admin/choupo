@@ -266,8 +266,12 @@ describe("every limit survives, and each says something specific", () => {
 
 describe("the tool renders it as a scrolling lesson", () => {
   it("scrolls, is centred, and is no longer a panel", () => {
-    expect(SRC).toContain('overflowY: "auto"');
-    expect(SRC).toContain("maxWidth: 940");
+    //  C535: scroll container and 940 px stack now live in lessonDocument.tsx.
+    const DOC = readFileSync(
+      new URL("../src/ui/methods/lessonDocument.tsx", import.meta.url), "utf8");
+    expect(DOC).toContain('overflowY: "auto"');
+    expect(DOC).toContain("maxWidth: 940");
+    expect(SRC).toContain("<LessonDocument");
     expect(SRC).not.toContain("MethodSetupRail");
   });
 
@@ -282,14 +286,13 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(plot).toBeGreaterThan(0);
     expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
       .toBeLessThan(plot);
-    for (const n of [2, 3, 4, 5])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the plot`)
-        .toBeGreaterThan(plot);
-    //  lastIndexOf, deliberately: the limits are rendered on BOTH returns,
-    //  and the earlier occurrence is the no-data branch's.  It is the one in
-    //  the branch that HAS a plot that has to sit after it.
-    expect(SRC.lastIndexOf("{lessonLimits}"),
-      "the limits are before the plot").toBeGreaterThan(plot);
+    //  C535: the plot is a "try" bench; steps 2-4 are "see", 5-8 are "why".
+    expect(SRC).toContain("see: [2, 3, 4]");
+    expect(SRC).toContain("why: [5, 6, 7, 8]");
+    expect(SRC).toContain("question: [{ kind: \"step\", n: 1 }]");
+    expect(plot).toBeGreaterThan(0);
+    //  The limits are the renderer's (LessonLimits), fed from DRYING_LIMITS.
+    expect(SRC).toContain("limits: DRYING_LIMITS");
   });
 
   it("puts the knobs in a two-column grid beside the plot", () => {
@@ -305,10 +308,11 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  so the explanation cannot vanish exactly when there is nothing to
     //  explain.  Two `const lessonStep` would be a second copy of the prose
     //  renderer, which is the shape this file exists to avoid.
-    expect(SRC.match(/const lessonStep = /g)).toHaveLength(1);
-    const empty = SRC.indexOf("[1, 2, 3, 4, 5, 6, 7, 8].map(lessonStep)");
-    expect(empty).toBeGreaterThan(0);
-    expect(empty).toBeLessThan(SRC.indexOf("{lessonStep(1)}"));
+    //  C535: ONE layout; the empty-run state is the `alerts`/emptyState in
+    //  the try section, and every step is drawn by the shared renderer.
+    expect(SRC).not.toContain("const lessonStep = ");
+    expect(SRC).not.toContain("[1, 2, 3, 4, 5, 6, 7, 8].map(lessonStep)");
+    expect(SRC.match(/<LessonDocument /g)).toHaveLength(1);
   });
 
   it("keeps the equations in a bordered box, set as mathematics", () => {
@@ -328,7 +332,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  stronger claim, and the one that survives the next change to
     //  how a step is drawn, is that the tool uses the shared
     //  renderer rather than a seventeenth private one.
-    expect(SRC).toContain("lessonStepper(DRYING_STEPS)");
+    expect(SRC).toContain("steps: DRYING_STEPS");
     expect(SRC).not.toContain("DRYING_STEPS.find");
   });
 

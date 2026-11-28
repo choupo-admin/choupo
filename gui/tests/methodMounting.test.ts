@@ -202,9 +202,15 @@ describe("every EduTool can be scrolled", () => {
   it("declares the scroll container the working pages declare", () => {
     expect(toolFiles.length, "no tool files found — the glob moved")
       .toBeGreaterThan(20);
+    //  A page that mounts <LessonDocument> (C535) takes its container from the
+    //  one renderer, which is held to the same two properties here.
+    const doc = readFileSync(
+      new URL("../src/ui/methods/lessonDocument.tsx", import.meta.url), "utf-8");
+    expect(doc).toMatch(/minHeight:\s*0[^\n]*overflowY:\s*"auto"/);
     for (const f of toolFiles) {
       const src = readFileSync(
         new URL(`../src/ui/methods/${f}`, import.meta.url), "utf-8");
+      if (src.includes("<LessonDocument ")) continue;
       expect(src, `${f} never declares overflowY:"auto" — it renders into a `
         + "flex parent, so its content overflows instead of scrolling and "
         + "everything below the fold is unreachable")
