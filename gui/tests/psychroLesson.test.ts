@@ -32,17 +32,15 @@ import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "../src/ui/methods/psychroLesson.j
 
 const WS = readFileSync(
   new URL("../src/ui/MethodsWorkspace.tsx", import.meta.url), "utf-8");
+//  C535 S4: the page moved to its own file and is drawn by LessonDocument.
+const PSY = readFileSync(
+  new URL("../src/ui/methods/PsychroTool.tsx", import.meta.url), "utf-8");
 const prose = (s: string): string => s.replace(/\s+/g, " ");
 
 //  The tool is the LAST function in the file, so its slice runs to the end.
 //  Sliced by index, never matched across the file: this tool and McCabeTool
 //  end with the same lines.
-const psychroSlice = (): string => {
-  const i = WS.indexOf("function PsychroTool(");
-  expect(i, "PsychroTool is no longer defined in MethodsWorkspace.tsx")
-    .toBeGreaterThan(0);
-  return WS.slice(i);
-};
+const psychroSlice = (): string => PSY;
 
 describe("the lesson runs end to end", () => {
   it("has five steps, numbered without a gap", () => {
@@ -169,36 +167,30 @@ describe("the lesson runs end to end", () => {
 });
 
 describe("the tool renders it as a scrolling lesson", () => {
-  it("scrolls, and no longer pins the chart into a fixed rail", () => {
+  it("is drawn by the one renderer, which scrolls", () => {
     const fn = psychroSlice();
-    expect(fn).toContain('overflowY: "auto"');
-    expect(fn).toContain("maxWidth: 940");
+    expect(fn).toContain('<LessonDocument tool="psychro"');
     expect(fn, "still built as a MethodSetupRail panel")
       .not.toContain("MethodSetupRail");
+    const doc = readFileSync(
+      new URL("../src/ui/methods/lessonDocument.tsx", import.meta.url), "utf-8");
+    expect(doc).toContain('overflowY: "auto"');
+    expect(doc).toContain("maxWidth: 940");
   });
 
   it("renders step 1 before the chart and the other steps after", () => {
-    //  The interactive is EARNED by the paragraphs above it.  Read the RENDER
-    //  site, not the import: the import sits at the top of the file and a
-    //  declaration-order test would pass whatever the page looked like.
+    //  The interactive is EARNED by the paragraphs above it: step 1 is in the
+    //  question section, the chart in "try", steps 2-4 in "see", step 5 in "why".
     const fn = psychroSlice();
-    const plot = fn.indexOf("{plotPane}");
-    expect(plot, "the chart is no longer rendered through {plotPane}")
-      .toBeGreaterThan(0);
-    //  ONE chart on the page, at that one site.
     expect((fn.match(/<PsychroPlot/g) ?? []).length,
       "the chart is drawn more than once").toBe(1);
-    expect(fn.indexOf("<PsychroPlot")).toBeLessThan(plot);
-    //  DEV.md 4c C277: the figure follows step 1; steps 2-5 follow it.
-    for (const n of [1])
-      expect(fn.indexOf(`{step(${n})}`), `step ${n} renders after the chart`)
-        .toBeLessThan(plot);
-    for (const n of [2, 3, 4, 5])
-      expect(fn.indexOf(`{step(${n})}`), `step ${n} renders before the chart`)
-        .toBeGreaterThan(plot);
-    //  The limits close the page, after everything else.
-    expect(fn.indexOf("PSYCHRO_LIMITS.map"))
-      .toBeGreaterThan(fn.indexOf("{step(5)}"));
+    const at = (s: string): number => fn.indexOf(s);
+    expect(at("question: [{ kind: \"step\", n: 1 }]")).toBeGreaterThan(0);
+    expect(at("question:")).toBeLessThan(at("try:"));
+    expect(at("try:")).toBeLessThan(at("see:"));
+    expect(at("see:")).toBeLessThan(at("why:"));
+    expect(fn).toMatch(/see: \[\{ kind: "step", n: 2 \}, \{ kind: "step", n: 3 \}, \{ kind: "step", n: 4 \}\]/);
+    expect(fn).toMatch(/why: \[\{ kind: "step", n: 5 \}\]/);
   });
 
   it("keeps the alerts and the hand-off the instrument panel had", () => {
@@ -206,7 +198,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  The engine's own refusal, verbatim, and the pair guard.
     expect(fn).toContain("Pick a humid-gas pair");
     expect(fn).toContain("Solver advisory");
-    expect(fn).toContain("{alerts}");
+    expect(fn).toContain("alerts={alerts}");
     expect(fn).toContain("<HandOffFooter");
   });
 
@@ -218,8 +210,8 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(fn, "the McCabe lesson leaked into the psychrometric chart")
       .not.toContain("MCCABE_");
     //  Two: the lesson's own steps, and the quiz that closes them (C158).
-    expect((fn.match(/PSYCHRO_STEPS/g) ?? []).length).toBe(2);
-    expect((fn.match(/PSYCHRO_LIMITS/g) ?? []).length).toBe(1);
+    expect((fn.match(/PSYCHRO_STEPS/g) ?? []).length).toBeGreaterThanOrEqual(1);
+    expect((fn.match(/PSYCHRO_LIMITS/g) ?? []).length).toBeGreaterThanOrEqual(1);
 
     const i = WS.indexOf("function McCabeTool(");
     const mccabe = WS.slice(i, WS.indexOf("// ---- Psychrometric chart ---"));

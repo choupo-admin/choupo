@@ -123,7 +123,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { lessonStepper, LessonReferences } from "./methods/lessonStep.js";
 import {
   ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
-  Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
+  Group, Loader, Select, Stack, Text, Title, Tooltip,
 } from "@mantine/core";
 import { IconBook, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import { ChapterIndex } from "./methods/ChapterIndex.js";
@@ -141,19 +141,17 @@ import {
   caseComponentFiles, mergeCatalogue, metaByName, type ComponentMeta,
 } from "../case/catalogue.js";
 import {
-  binaryVleSpec, orderBinaryByVolatility, psychroSpec, type LocalUnifac,
+  binaryVleSpec, orderBinaryByVolatility, type LocalUnifac,
 } from "../case/methodFeeds.js";
 import { buildLocalUnifac, hasUnifacGroups } from "../case/unifacGroups.js";
 import { hasPair } from "../case/pairsCatalogue.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
-import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
 import { MCCABE_LIMITS, MCCABE_QUIZ, MCCABE_STEPS } from "./methods/mccabeLesson.js";
 import { LessonQuiz } from "./methods/lessonQuiz.js";
-import { PSYCHRO_LIMITS, PSYCHRO_QUIZ, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
   METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, theoryUrl,
@@ -163,14 +161,15 @@ import {
 import { hasCaseOpen, useStore } from "../state/store.js";
 import { tabKindFor } from "./tabChrome.js";
 import {
-  kToDisplay, paToDisplay, parsePressure, parseTemperature,
-  pressureLabel, temperatureLabel,
+  paToDisplay, parsePressure, pressureLabel,
 } from "../state/displayUnits.js";
 
 // The three run-fed tools are lazy: BreakthroughTool reaches the plotly seam
 // at module scope (plotly.js-basic-dist-min cannot load under node), and
 // deferring all three keeps this module importable by the vitest node
 // environment and the initial bundle unchanged until a tool is opened.
+const PsychroTool = lazy(() =>
+  import("./methods/PsychroTool.js").then((m) => ({ default: m.PsychroTool })));
 const KremserTool = lazy(() =>
   import("./methods/KremserTool.js").then((m) => ({ default: m.KremserTool })));
 const EpsilonNtuTool = lazy(() =>
@@ -494,7 +493,7 @@ const LeastSquaresTool = lazy(() =>
 //  this line.  The psychrometric op publishes `Lewis_last` and says in its
 //  own source why ("a reader with only the curves cannot tell which
 //  situation is on the chart"), and no surface in the GUI could reach it.
-function useEngineCsv(spec: ExploreSpec | null): {
+export function useEngineCsv(spec: ExploreSpec | null): {
   csv: string | null; err: string | null; busy: boolean; advisories: string[];
   diags: Record<string, number> | null;
 } {
@@ -678,9 +677,8 @@ export function MethodsWorkspace() {
           {tool === "mccabe" ? (
             <McCabeTool catalogue={catalogue}
               localUnifac={localUnifac} componentFiles={componentFiles} />
-          ) : tool === "psychro" ? (
-            <PsychroTool catalogue={catalogue} componentFiles={componentFiles} />
-          ) : tool === "kremser" ? <KremserTool />
+          ) : tool === "psychro" ? <PsychroTool catalogue={catalogue} componentFiles={componentFiles} />
+            : tool === "kremser" ? <KremserTool />
             : tool === "entu" ? <EpsilonNtuTool />
             : tool === "pinch-composite" ? <PinchCompositeTool />
             : tool === "pump-system" ? <PumpSystemTool />
@@ -1001,7 +999,7 @@ function TeachesLine({ tool, pageRef }: {
 /** The authoring hand-off (unchanged from the Explorer — guard-rail 2): the
  *  tool EMITS the propsDict for the student / agent to author on disk.
  *  Dict-on-disk stays the source of truth; the workspace never writes it. */
-function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: React.ReactNode[] }) {
+export function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: React.ReactNode[] }) {
   const [open, setOpen] = useState(false);
   const snippet = useMemo(() => {
     if (!spec) return "(no run yet)";
@@ -1257,216 +1255,3 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
   );
 }
 
-// ---- Psychrometric chart ----------------------------------------------------
-// The SAME engine feed the Explorer used (psychroSpec → the psychrometricChart
-// engine op): carrier = lower-Tb of the pair, condensable = higher-Tb; the
-// chart CSV arrives fully computed (saturation, RH, adiabatic-saturation and
-// true wet-bulb via the Lewis number) and PsychroPlot only draws it.
-
-function PsychroTool({ catalogue, componentFiles }: {
-  catalogue: ComponentMeta[];
-  componentFiles: Record<string, string>;
-}) {
-  const prefs = useStore((s) => s.displayPrefs);
-  const Tu = prefs.temperature, Pu = prefs.pressure;
-  const [carrier, setCarrier] = useState("N2");
-  const [condensable, setCondensable] = useState("water");
-  const [tFrom, setTFrom] = useState(290);    // K
-  const [tTo, setTTo] = useState(380);        // K
-  const [P, setP] = useState(101325);         // Pa
-  const [rhFrom, setRhFrom] = useState(10);
-  const [rhTo, setRhTo] = useState(90);
-  const [rhStep, setRhStep] = useState(20);
-  const [wbStep, setWbStep] = useState(10);   // °C between saturation anchor lines
-  const [yMax, setYMax] = useState(0);        // kg/kg cap; 0 = auto
-
-  const carrierNames = useMemo(
-    () => catalogue.filter((m) => m.isPermanentGas).map((m) => m.name).sort(),
-    [catalogue]);
-  const condensableNames = useMemo(
-    () => catalogue.filter((m) => m.vleAble && !m.isPermanentGas).map((m) => m.name).sort(),
-    [catalogue]);
-
-  const pairOk = carrier !== condensable
-    && !!metaByName(carrier, catalogue) && !!metaByName(condensable, catalogue);
-  const spec = useMemo<ExploreSpec | null>(() => pairOk
-    ? psychroSpec({
-        pair: [carrier, condensable], catalogue, P,
-        TminK: tFrom, TmaxK: tTo, gridN: 60,
-        rhFrom, rhTo, rhStep, wbStepC: wbStep,
-        componentFiles: Object.keys(componentFiles).length > 0 ? componentFiles : undefined,
-      })
-    : null,
-  [pairOk, carrier, condensable, catalogue, P, tFrom, tTo, rhFrom, rhTo, rhStep, wbStep, componentFiles]);
-
-  const { csv, err, busy, advisories, diags } = useEngineCsv(spec);
-
-  const alerts: React.ReactNode[] = [];
-  if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
-  if (!pairOk) alerts.push(
-    <Alert key="pair" color="yellow" variant="light" title="Pick a humid-gas pair">
-      The chart needs a carrier gas plus a different condensable with a vapour-pressure model.
-    </Alert>);
-  if (advisories.length > 0) alerts.push(
-    <Alert key="adv" color="yellow" variant="light" title="Solver advisory">
-      {advisories.map((a) => <Text key={a} size="xs">{a}</Text>)}
-    </Alert>);
-
-  const num = (v: number | string, fallback: number) => {
-    const n = typeof v === "number" ? v : parseFloat(v);
-    return Number.isFinite(n) ? n : fallback;
-  };
-
-  // ONE plot pane, wherever the page puts it — the layout moves chrome around
-  // the chart, never a second copy of it.
-  const plotPane = (
-    <Box style={{ minWidth: 0, height: 520, position: "relative" }}>
-      {csv ? (
-        <PsychroPlot csv={csv} yMax={yMax} />
-      ) : (
-        <Box style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {busy
-            ? <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing the chart…</Text></Group>
-            : <Text size="sm" c="dimmed" ta="center" maw={460}>
-                Psychrometric chart at P — humidity ratio Y vs dry-bulb T for
-                the carrier + condensable pair, fully computed by the engine.
-              </Text>}
-        </Box>
-      )}
-    </Box>
-  );
-
-  const setupRail = (
-      <>
-        <KnobField label="carrier gas">
-          <Select size="xs" searchable data={carrierNames} value={carrier} w="100%"
-            onChange={(v) => setCarrier(v ?? carrier)} allowDeselect={false} />
-        </KnobField>
-        <KnobField label="condensable">
-          <Select size="xs" searchable data={condensableNames} value={condensable} w="100%"
-            onChange={(v) => setCondensable(v ?? condensable)} allowDeselect={false} />
-        </KnobField>
-        <KnobNumber label={`T from (${temperatureLabel(Tu)})`} step={5}
-          value={Number(kToDisplay(tFrom, Tu).toFixed(1))}
-          onChange={(v) => setTFrom(parseTemperature(v, Tu))} />
-        <KnobNumber label={`T to (${temperatureLabel(Tu)})`} step={5}
-          value={Number(kToDisplay(tTo, Tu).toFixed(1))}
-          onChange={(v) => setTTo(parseTemperature(v, Tu))} />
-        <KnobNumber label={`P (${pressureLabel(Pu)})`} value={paToDisplay(P, Pu)}
-          onChange={(v) => setP(parsePressure(v, Pu))} />
-        <KnobField label="RH % — from / to / step">
-          <Group gap={4} wrap="nowrap">
-            <NumberInput size="xs" value={rhFrom} min={0} max={99} style={{ flex: 1, minWidth: 0 }}
-              onChange={(v) => setRhFrom(num(v, rhFrom))} />
-            <NumberInput size="xs" value={rhTo} min={1} max={99} style={{ flex: 1, minWidth: 0 }}
-              onChange={(v) => setRhTo(num(v, rhTo))} />
-            <NumberInput size="xs" value={rhStep} min={1} max={50} style={{ flex: 1, minWidth: 0 }}
-              onChange={(v) => setRhStep(num(v, rhStep))} />
-          </Group>
-        </KnobField>
-        <KnobNumber label="ΔT between saturation anchor lines (°C)" value={wbStep}
-          min={5} max={50} step={5} onChange={setWbStep} />
-        <KnobNumber label="Y max, kg/kg (0 = auto)" value={yMax} min={0} step={0.05}
-          decimals={3} onChange={setYMax} />
-        {busy && (
-          <Group gap={6} wrap="nowrap">
-            <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
-          </Group>
-        )}
-      </>
-  );
-
-  const step = lessonStepper(PSYCHRO_STEPS);
-
-  return (
-    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
-
-        <Box>
-          <Title order={3}>Moist gas, read as a map</Title>
-          <Text size="sm" c="dimmed" mt={4}>
-            The densest diagram you will use, and it rewards being read the
-            way a map is: every point is a state, and every process is a line
-            on it with a direction that means something.
-          </Text>
-        </Box>
-
-        {alerts}
-
-        {step(1)}
-
-        <Box>
-          <Title order={5}>Now read one</Title>
-          <Text size="sm" mt={4}>
-            The engine computes the whole chart at your pressure — the
-            saturation ceiling, the relative-humidity family, the
-            adiabatic-saturation lines and, where the transport data allow it,
-            the true wet-bulb lines beside them.  Changing the pair is part of
-            the lesson: nitrogen with water gives a chart of the printed shape
-            with every humidity ratio about 3.4 % above a printed air chart
-            (pick air to land on it), and a pair whose Lewis number is far from one pulls the
-            two families — dashed and dotted — visibly apart.
-          </Text>
-          {/*  THE NUMBER THAT SEPARATES THE TWO FAMILIES, on screen.  The
-               lesson's step 3 turns entirely on Le, says "Le ~ 1 for
-               air-water is why they are so often treated as one", and never
-               printed a value for any pair -- so a reader saw a gap between
-               the dashed and dotted lines and could not tell what produced
-               it.  The engine has always published it.  */}
-          {diags && Number.isFinite(diags["Lewis_last"]) && (
-            <Text size="sm" mt={6}>
-              For the pair on the chart right now, the engine reports{" "}
-              <Text span ff="monospace">Le = {diags["Lewis_last"]!.toFixed(4)}
-              </Text>.  Read it against the “Le ≈ 1” of the textbooks: at{" "}
-              {diags["Lewis_last"]!.toFixed(2)} the engine scales the wet-bulb
-              slope by Le^(2/3) (Chilton-Colburn), so the two slopes differ by
-              about {Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100 < 1
-                ? "less than a per cent"
-                : `${(Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100).toFixed(1)} %`}
-              {" "}— which is the whole distance between the adiabatic-saturation
-              family and the true wet-bulb family you are looking at.
-            </Text>
-          )}
-        </Box>
-
-        <Box style={{ display: "grid", gap: 14,
-          gridTemplateColumns: "minmax(220px, 260px) 1fr" }}>
-          <Stack gap={8}>
-            <OriginMark of="assumption" note="the pair, the T range and P you choose" />
-            {setupRail}
-          </Stack>
-          <Box style={{ minWidth: 0 }}>
-            <OriginMark of="engine"
-              note="every line of the chart, and Le, is a choupoProps run in this browser" />
-            {plotPane}
-          </Box>
-        </Box>
-
-        {/*  Steps 2-3 follow the figure (DEV.md 4c C277): the picture a
-             student stays for comes after ONE step, not three.  */}
-        {step(2)}
-        {step(3)}
-        {step(4)}
-        {step(5)}
-
-        <LessonQuiz title="Check your understanding" questions={PSYCHRO_QUIZ} lesson={PSYCHRO_STEPS} />
-
-        <Box>
-          <Title order={5}>What this does not model</Title>
-          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
-            {PSYCHRO_LIMITS.map((l) => (
-              <Text key={l.id} size="xs" c="dimmed">
-                <b>{l.title}</b> {l.body}
-              </Text>
-            ))}
-          </Box>
-        </Box>
-
-        <HandOffFooter spec={spec} alerts={[]} />
-
-        <LessonReferences tool="psychro" />
-      </Stack>
-    </Box>
-  );
-}
