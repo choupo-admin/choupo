@@ -87,7 +87,7 @@ def progress():
     return t
 
 
-THEME_ORDER = ["Para 2 de dezembro", "Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
+THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
                "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
 
 
