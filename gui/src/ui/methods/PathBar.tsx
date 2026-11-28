@@ -51,7 +51,7 @@ import { Box, Button, Text } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCoarsePointer } from "./methodsChrome.js";
 import {
-  METHOD_TOOLS, goToEduToolsHome, pathById, setActiveMethodTool,
+  METHOD_TOOLS, familyOf, goToEduToolsHome, pathById, setActiveMethodTool,
   useActiveMethodTool, useActivePath,
 } from "./registry.js";
 
@@ -60,7 +60,29 @@ export function PathBar(): JSX.Element | null {
   const tool = useActiveMethodTool();
   const pathId = useActivePath();
   const path = pathById(pathId);
-  if (!path || !tool) return null;
+  if (!tool) return null;
+  const family = path ? null : familyOf(tool);
+  if (family) {
+    return (
+      <Box data-method-family={family.id} style={{
+        flexShrink: 0, display: "flex", flexWrap: "wrap", alignItems: "center",
+        gap: "4px 8px", padding: "4px 12px", minWidth: 0,
+        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+      }}>
+        <Text size="xs" fw={600}>{family.title}</Text>
+        {family.steps.map((s) => (
+          <Button key={s.tool} size={coarse ? "sm" : "xs"}
+            variant={s.tool === tool ? "filled" : "subtle"}
+            data-family-chapter={s.tool}
+            aria-current={s.tool === tool ? "page" : undefined}
+            onClick={() => setActiveMethodTool(s.tool)}>
+            {s.label ?? s.tool}
+          </Button>
+        ))}
+      </Box>
+    );
+  }
+  if (!path) return null;
   const idx = path.steps.findIndex((s) => s.tool === tool);
   const labelOf = (id: string): string =>
     METHOD_TOOLS.find((m) => m.id === id)?.label ?? id;
