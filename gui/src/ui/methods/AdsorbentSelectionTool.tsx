@@ -489,7 +489,7 @@ export function AdsorbentSelectionTool(): JSX.Element {
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 1080, margin: "0 auto" }}>
         <Box>
-          <Title order={4}>Which adsorbent for which separation</Title>
+          <Title order={4}>Choosing an adsorbent</Title>
           <Text size="sm" c="dimmed" mt={4}>
             You have a separation to make: drying a gas, purifying hydrogen, splitting
             air, recovering a solvent, treating water. Which of the common industrial

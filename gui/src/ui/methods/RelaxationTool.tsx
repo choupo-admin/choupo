@@ -194,7 +194,7 @@ export function RelaxationTool(): JSX.Element {
           </Stack>
           <Stack gap={6}>
             <OriginMark of="page" note="this page's arithmetic on the toy loop" />
-            <Title order={5}>1. The cobweb: where each pass lands</Title>
+            <Title order={5}>The cobweb: where each pass lands</Title>
             <SlopeCobweb a={a} w={w} onGain={setA} />
             <Text size="xs" c="dimmed">
               Red solid line: what the plant returns, <Tex mode="inline" src="y = a\,x" />. Green dashed
@@ -213,7 +213,7 @@ export function RelaxationTool(): JSX.Element {
 
         <Stack gap={6}>
           <OriginMark of="page" note="the four iterations run on the toy loop" />
-          <Title order={5}>2. The mistake after each pass, four ways</Title>
+          <Title order={5}>The mistake after each pass, four ways</Title>
           <Group gap="xs">
             <Text size="xs" fw={600}>Wegstein clamp</Text>
             <SegmentedControl size="xs" value={clamp}
@@ -243,7 +243,7 @@ export function RelaxationTool(): JSX.Element {
 
         <Stack gap={6}>
           <OriginMark of="page" note="the convergence condition evaluated over the (a, w) plane" />
-          <Title order={5}>3. The map: which factors converge for which gain</Title>
+          <Title order={5}>The map: which factors converge for which gain</Title>
           <GainMap a={a} w={w} onPoint={(aa, ww) => { setA(aa); setW(ww); }} />
           <Text size="xs" c="dimmed">
             Green band: <Tex mode="inline" src={String.raw`\lvert 1 - w + w\,a \rvert < 1`} />, the iteration contracts. Green
@@ -289,7 +289,7 @@ export function RelaxationTool(): JSX.Element {
 
         {/* ---------------- the engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
-          <Title order={4}>4. Measured: a real recycle, relaxed in your browser</Title>
+          <Title order={4}>Measured: a real recycle, relaxed in your browser</Title>
           <Text size="sm" mt={4}>
             Everything below this line is three complete runs of{" "}
             <Text span ff="monospace" size="xs">tutorials/{RELAXATION_WITNESS}</Text>{" "}

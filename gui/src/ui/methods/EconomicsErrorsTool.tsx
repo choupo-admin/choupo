@@ -212,7 +212,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 1 */}
         {step(2)}
         <Box data-class="sold">
-          <Title order={5}>1. The sold quantity</Title>
+          <Title order={5}>The sold quantity</Title>
           <OriginMark of={["page", "assumption"]} note="computed here from the inputs; the inputs are illustrations" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Plant production Q" unit="million packs / yr" value={sold.productionM} step={1}
@@ -262,7 +262,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 2 */}
         {step(3)}
         <Box data-class="twoRevenues">
-          <Title order={5}>2. The break-even and the NPV on one revenue</Title>
+          <Title order={5}>The break-even and the NPV on one revenue</Title>
           <OriginMark of={["page", "assumption"]} note="one illustrative plant, shared with class 3 (class 6 has its own cash flow)" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Investment I" unit="M EUR" value={plant.I} onChange={(v) => setP("I", v)} />
@@ -301,7 +301,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 3 */}
         {step(4)}
         <Box data-class="taxBase">
-          <Title order={5}>3. The tax base</Title>
+          <Title order={5}>The tax base</Title>
           <OriginMark of={["page", "assumption"]} note="the same plant as above" />
           <PanTable>
             <Table.Thead><Table.Tr>
@@ -333,7 +333,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 4 */}
         {step(5)}
         <Box data-class="royalty">
-          <Title order={5}>4. The royalty window</Title>
+          <Title order={5}>The royalty window</Title>
           <OriginMark of={["page", "assumption"]} note="the rate and the window are yours to declare; nothing here is a licence term" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Royalty rate r" value={roy.rate} step={0.01} onChange={(v) => setRoy({ ...roy, rate: v })} />
@@ -366,7 +366,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 5 */}
         {step(6)}
         <Box data-class="workingCapital">
-          <Title order={5}>5. Three working capitals on one plant</Title>
+          <Title order={5}>Three working capitals on one plant</Title>
           <OriginMark of={["page", "assumption"]} note="the fractions and the days are illustrations; cite your own" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Fixed capital I" unit="M EUR" value={wc.fci} onChange={(v) => setWc({ ...wc, fci: v })} />
@@ -416,7 +416,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 6 */}
         {step(7)}
         <Box data-class="discountRate">
-          <Title order={5}>6. The discount rate and the IRR on one curve</Title>
+          <Title order={5}>The discount rate and the IRR on one curve</Title>
           <OriginMark of={["page", "assumption"]} note="an illustrative equal-yearly cash flow" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Investment" unit="M EUR" value={rt.I} onChange={(v) => setRt({ ...rt, I: v })} />
@@ -454,7 +454,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 7 */}
         {step(8)}
         <Box data-class="units">
-          <Title order={5}>7. The utility bill and its units</Title>
+          <Title order={5}>The utility bill and its units</Title>
           <OriginMark of={["page", "assumption"]} note="a units conversion through the SI base unit; the tariff is an illustration" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Quantity used" value={ub.qty} step={100} onChange={(v) => setUb({ ...ub, qty: v })} />
@@ -493,7 +493,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {/* ---------------------------------------------------------------- 8 */}
         {step(9)}
         <Box data-class="unitCost">
-          <Title order={5}>8. A declared unit cost</Title>
+          <Title order={5}>A declared unit cost</Title>
           <OriginMark of={["page", "assumption"]} note="the unit costs are placeholders to be replaced by a sourced value" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Floor area A" unit="m2" value={area} step={100} onChange={setArea} />
