@@ -295,7 +295,7 @@ describe("syngas: the lesson text", () => {
       "GibbsReactor.cpp:182-185": /lookupWordOrDefault\("mode", "isothermal"\);[\s\S]*mode != "isothermal" && mode != "adiabatic"[\s\S]*unknown mode/,
       "GibbsReactor.cpp:238-241": /lookupWordList\("elements"\);[\s\S]*lookupDictList\("species"\);/,
       "GibbsReactor.cpp:551": "return enthalpy(e, Tt) - H_in - Q_J_s;",
-      "GibbsReactor.cpp:792": 'kpis_["Q_kW"] = H_out_kW - H_in_kW;',
+      "GibbsReactor.cpp:806": 'kpis_["Q_kW"] = H_out_kW - H_in_kW;',
       "GibbsSolidPhase.cpp:102-107": /scalar lnActivity\([\s\S]*scalar a = -g_over_RT;[\s\S]*a \+= e\.pi\[k\] \* p\.A\[k\]\[s\];[\s\S]*return a;/,
       "GibbsSolidPhase.cpp:245": "if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)",
       "EquilibriumReactor.cpp:63": 'const scalar P      = feedDict->lookupScalar("P", Dims::pressure);',

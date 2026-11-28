@@ -146,7 +146,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     ],
     note: "The elements and the allowed species are read from the unit's "
       + "operation block, GibbsReactor.cpp:238-241; the pressure from the same "
-      + "block, GibbsReactor.cpp:182; the duty, GibbsReactor.cpp:792.",
+      + "block, GibbsReactor.cpp:182; the duty, GibbsReactor.cpp:806.",
     leadsTo: {
       tool: "approach-to-equilibrium",
       toolLabel: "Approach to equilibrium (Gibbs reactor)",
