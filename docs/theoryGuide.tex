@@ -23795,6 +23795,10 @@ conversion when kinetic data are unavailable.
 Every species with a non-zero feed must be listed in the unit's
 \code{operation.species}; otherwise its moles would leave the Gibbs
 inventory and the unit refuses by name, listing the missing species.
+The one exception is a fed mole fraction of at most $10^{-6}$ (a finite-difference
+probe of a zero recycle flow, not a feed): such a trace takes no part in the
+minimisation and passes through to the outlet unchanged, so the mass and
+element balances still close.
 
 This chapter derives the algorithm Choupo uses ---  Lagrangian
 multipliers on the element-balance constraints, one $\pi_j$ per
