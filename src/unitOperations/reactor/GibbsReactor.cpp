@@ -674,11 +674,25 @@ int GibbsReactor::solve(const DictPtr& dict,
     produced_.clear();
     ProcessStream gasOut;
     gasOut.name = "out";
-    gasOut.F = Ng / 1000.0;
+    //  A TRACE THE CASE DID NOT LIST PASSES THROUGH UNCHANGED (see the
+    //  kUnlistedTrace guard above): its moles go from the feed to the gas
+    //  outlet, taking no part in the minimisation, so the mass and element
+    //  balances close with it.
+    sVector nTrace(thermo.n(), 0.0);
+    scalar Ntrace = 0.0;
+    for (std::size_t k = 0; k < z.size(); ++k)
+    {
+        bool listed = false;
+        for (std::size_t i = 0; i < N; ++i) if (compIdx[i] == k) listed = true;
+        if (!listed && z[k] > 0.0) { nTrace[k] = z[k] * F_mol_s; Ntrace += nTrace[k]; }
+    }
+    gasOut.F = (Ng + Ntrace) / 1000.0;
     gasOut.T = T_final; gasOut.P = P; gasOut.vf = 1.0;
     gasOut.z.assign(thermo.n(), 0.0);
     for (std::size_t i = 0; i < N; ++i)
-        gasOut.z[compIdx[i]] = (Ng > 0.0) ? eq.nGas[i] / Ng : 0.0;
+        gasOut.z[compIdx[i]] = (Ng + Ntrace > 0.0) ? eq.nGas[i] / (Ng + Ntrace) : 0.0;
+    for (std::size_t k = 0; k < thermo.n(); ++k)
+        if (nTrace[k] > 0.0) gasOut.z[k] += nTrace[k] / (Ng + Ntrace);
     //  A PURE SOLID LEAVES IN THE SAME OUTLET, AS ITS SOLID PHASE (C14).
     //  `F`/`z` stay the fluid; `s[]` carries the deposit [kmol/s], which the
     //  energy report prices on the solid rung and the mass and element
