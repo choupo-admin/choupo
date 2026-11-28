@@ -5044,7 +5044,7 @@ The outlet pressure is a plain editable value -- tweak it in the GUI's Propertie
 
 \end{tutnarrative}
 \tutreadme{A benzene/toluene liquid (40/60 mol, 100 kmol/h) at 380 K and 3 bar is let down to 1 atm across a drum with no heat added. Nothing tells the drum what temperature to settle at. The energy balance does: the outlet comes out at 368.66 K, an 11.34 K drop, with 5.22 \% of the feed flashed to vapour (5.22 kmol/h vapour, 94.78 kmol/h liquid). Every number here is the case's own golden (expected), which bin/runTests re-checks.}
-\tutreadme{1. Q = 0 is a definition, not a setting. The dict declares only the outlet pressure (system/flowsheetDict, operation \{ P 1.01325 bar; \}). There is no T to give; an adiabatic drum has none to receive. 2. Two Newtons, one inside the other. The outer one walks T until the outlet enthalpy equals the inlet's; at every trial T the inner one solves the Rachford-Rice flash. Watch it in the Log tab --- each outer step prints its H-residual, and the last one prints H\_residual at the round-off floor (-2.2e-3 J/mol; over the whole 100 kmol/h stream that is 6.2e-5 kW against a 1091 kW throughput). 3. Where the 11 K went. Vaporising 5 \% of the feed costs latent heat, and the only place it can come from is the sensible heat of the liquid. Open Streams: the vapour is benzene-rich, the liquid barely moved in composition, and both leave at the same 368.66 K. 4. Compare with flash01\_benzene\_toluene --- the same feed held at a $\ast$fixed$\ast$ 370 K. There the temperature is an input and the drum needs a duty to hold it. The two cases are the same split asked two ways.}
+\tutreadme{1. Q = 0 is a definition, not a setting. The dict declares only the outlet pressure (system/flowsheetDict, operation \{ P 1.01325 bar; \}). There is no T to give; an adiabatic drum has none to receive. 2. A Newton in T over a flash. The unit asks the shared (P,H) flash, which walks T until the outlet enthalpy equals the inlet's; at every trial T an isothermal flash is solved. Watch it in the Log tab --- each step prints its H-residual, and the last one prints H\_residual at the round-off floor (-2.8e-7 J/mol). 3. Where the 11 K went. Vaporising 5 \% of the feed costs latent heat, and the only place it can come from is the sensible heat of the liquid. Open Streams: the vapour is benzene-rich, the liquid barely moved in composition, and both leave at the same 368.66 K. 4. Compare with flash01\_benzene\_toluene --- the same feed held at a $\ast$fixed$\ast$ 370 K. There the temperature is an input and the drum needs a duty to hold it. The two cases are the same split asked two ways.}
 \tutreadme{5. Read the caveat the engine prints --- it is about THIS case. The feed is at 380 K, and benzene's Antoine fit is declared for 287.7--354.07 K. The run says so on the console ([psat] ? OUTSIDE its declared Trange) and again in the caveat block at the end: the vapour pressure was $\ast$extrapolated$\ast$, still returned, and the answer stands with that stated. A number you were warned about is a number you can defend; one you were not is the dangerous kind.}
 \tutreadme{Click the drum and edit P in the Properties box on the right --- the Case tab is a read-only view of the files, so nothing is typed there. Set 0.5 bar and run again: a deeper let-down flashes more, and the drum ends colder. The edit is transient --- it never touches the file, the node shows it in amber until you reset it, and Reset puts the declared value back.}
 \tutreadme{Now try the other direction, because it teaches more than it looks. Raise P to 1.5 bar and nothing happens: V/F goes to 0 and the temperature does not drop at all. That is not a broken run --- this feed's bubble pressure at 380 K is 1.4088 bar, so 1.5 bar leaves it 0.09 bar subcooled and there is nothing to flash. The engine says so in as many words (Regime: subcooled liquid). The wall is much closer above than below. Then look at the stream table printed $\ast$before$\ast$ the solve --- it shows the 0/ seed values, which look like an answer and are not one; the converged table further down is the answer.}
@@ -5081,6 +5081,9 @@ The outlet pressure is a plain editable value -- tweak it in the GUI's Propertie
 Adiabatic flash of hot liquid water (IF97), 20 bar $\to$ 1 bar. The flashed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the unit's own balance H\_out = H\_in, and the mass balance.
 
 \end{tutnarrative}
+\tutreadme{Water (IAPWS-IF97), 0.02 kmol/s at 450 K and 20 bar, is let down to 1 bar in an adiabatic drum. The feed is compressed liquid. The energy balance puts the outlet on the saturation plateau: 372.76 K (a 77.24 K drop), with 14.72 \% of the feed flashed to vapour (0.00294 kmol/s vapour, 0.01706 kmol/s liquid). Both leave at the same temperature. The figures are the case's expected rows.}
+\tutreadme{1. On the plateau a pure fluid's temperature is fixed by the pressure, so (P, H) has no root in T. The vapour fraction carries the enthalpy. 2. The unit asks the shared (P,H) flash (flashState::specifiedFlash); the Log prints its bracketed Newton in T and the outlet route it took. 3. The energy closure is exact: H\_feeds = H\_products = 270.17 kW, Q = 0.}
+\tutreadme{Change P in the Properties box and watch the plateau temperature follow the saturation line. Compare adiabaticFlash03\_near\_pure\_letdown, which adds a trace of methanol, and valve02\_wet\_letdown\_water, the same letdown through a valve.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.02}
 \goldrow{stream}{feed}{T}{450}
@@ -5114,6 +5117,9 @@ Adiabatic flash of hot liquid water (IF97), 20 bar $\to$ 1 bar. The flashed enth
 The same letdown as adiabaticFlash02 with 1e-5 mole fraction of methanol: the feed is NEARLY pure, the plateau is a narrow two-phase band, and the (P, H) search must still close its balance to the unit's absolute 0.01 J/mol (a relative tolerance would stall at \textasciitilde{}1e-7 J/mol and refuse). Held: the energy balance H\_out = H\_in and the mass balance.
 
 \end{tutnarrative}
+\tutreadme{The letdown of adiabaticFlash02\_wet\_water\_letdown (450 K, 20 bar to 1 bar, adiabatic) with 1e-5 mole fraction of methanol added. A near-pure feed is the edge of the plateau case: the mixture is no longer pure, so a (P,H) root in T exists, but it lies almost flat. The outlet is 372.7554 K (drop 77.2446 K), with 14.10 \% vapour; the pure-water case gives 372.7559 K and 14.72 \%. Figures are the case's expected rows.}
+\tutreadme{1. A trace of a second component turns a plateau into a very flat curve. The solver must still find the root, and it does, with the same shared (P,H) flash. 2. The energy-balance residual is 1.5e-4 J/mol, against a feed enthalpy of -5498 kW on the elements datum; H\_feeds and H\_products agree to 3e-9 kW. 3. The two temperatures differ by 0.5 mK: the plateau of the pure case is the limit of this one.}
+\tutreadme{Raise the methanol fraction and watch the outlet temperature leave the plateau value.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.0200002}
 \goldrow{stream}{feed}{T}{450}
@@ -6468,6 +6474,9 @@ This is the state marcilla01 could not reach: there the UNIFAC (VLE) backbone ke
 Adiabatic mixing of 36 kmol/h liquid water at 300 K with 36 kmol/h steam at 450 K, both at 1 bar (IF97). The summed enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.4668), taken from the pure-fluid plateau route of flashState::specifiedFlash. Before (D9, 2026-11-28) the mixer's own inversion in T asked IF97 for 175 K and failed. Held: the energy report's mixer remainder (zero) and the mass balance.
 
 \end{tutnarrative}
+\tutreadme{An adiabatic mixer on water (IAPWS-IF97): 0.01 kmol/s of liquid at 300 K and 0.01 kmol/s of steam at 450 K, both at 1 bar. The mix ends on the saturation plateau at 372.76 K with a vapour fraction of 0.4668, outlet 0.02 kmol/s. H\_feeds = H\_products = 530.08 kW and Q = 0. Figures are the case's expected rows.}
+\tutreadme{1. The mixer fixes the outlet by an enthalpy balance at the outlet pressure, and asks the shared (P,H) flash (flashState::specifiedFlash) for the state. 2. On the plateau the temperature is the saturation temperature of 1 bar, the vapour fraction does the balancing. The same 372.76 K appears in the two letdown cases at 1 bar. 3. The case witnesses that the mixer handles an outlet inside the plateau.}
+\tutreadme{Change the liquid flow and watch the vapour fraction move while T stays put, until one phase disappears.}
 \begin{tutgolden}
 \goldrow{stream}{liquid}{F}{0.01}
 \goldrow{stream}{liquid}{T}{300}
@@ -6500,6 +6509,9 @@ Adiabatic mixing of 36 kmol/h liquid water at 300 K with 36 kmol/h steam at 450 
 Isenthalpic let-down of hot liquid water (IF97), 20 bar $\to$ 1 bar. The throttled enthalpy lies inside the saturation plateau of water at 1 bar: no temperature carries it (H jumps by the whole latent heat at Tsat), so the outlet is T = Tsat(1 bar) = 372.756 K with the vapour fraction of the lever rule on the saturated legs (0.147), taken from the pure-fluid plateau route of flashState::specifiedFlash. Held: the valve's own balance H\_out = H\_in, and the mass balance.
 
 \end{tutnarrative}
+\tutreadme{An isenthalpic valve on water (IAPWS-IF97): 0.02 kmol/s at 450 K and 20 bar to 1 bar. The outlet is a wet mixture at 372.76 K (dT = -77.24 K). The density falls from 891.05 kg/m3 in the liquid feed to 3.99 kg/m3 for the two-phase outlet, with phase densities 958.64 (liquid) and 0.590 (vapour) kg/m3. Figures are the case's expected rows.}
+\tutreadme{1. The valve now solves through the shared (P,H) flash (flashState::specifiedFlash), the same routine as the adiabatic drum: with adiabaticFlash02\_wet\_water\_letdown the outlet temperature is identical, 372.755918611 K. 2. A valve drops pressure at constant enthalpy; the temperature falls because part of the liquid vaporises. 3. The outlet is a mixture, so the printed density is the mixture's, not either phase's.}
+\tutreadme{Compare with valve\_refusal\_pressure\_raise: the same unit asked to raise the pressure refuses by name.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.02}
 \goldrow{stream}{feed}{T}{450}
@@ -7548,6 +7560,9 @@ Two-sector demo plant. UMBRELLA holding two sectors that share the plant-level c
 REFUSAL WITNESS: a valve asked to RAISE pressure (10 $\to$ 30 bar) must refuse by name (it used to warn and report w = 0, delta s < 0). Use a pump.
 
 \end{tutnarrative}
+\tutreadme{A refusal witness. A valve is given a 10 bar feed and asked for 30 bar out. An isenthalpic raise has w = 0 and a negative entropy change, which violates the second law; the unit used to warn and report it anyway.}
+\tutreadme{ERROR: Valve: outlet P (30.000000 bar) is above the inlet P (10.000000 bar). A valve only drops pressure ... use a pump (liquid) or a compressor (gas).}
+\tutreadme{The case ends with an error by design (an EXPECTED-FAIL in the suite).}
 
 \subsection{gas-solid}
 \grouptheory{gas-solid}
@@ -8311,6 +8326,10 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 REFUSAL WITNESS: the feed carries CH4 but operation.species omits it; the unit must refuse by name (it used to drop 0.25 kmol/h silently). Water-gas shift reactor at 800 K, 1 bar. CO + water <$\to$ CO2 + H2 Equimolar feed. The Gibbs-minimisation reactor gives CO conversion \textasciitilde{} 67 \% (CO 0.50 $\to$ 0.164 mole fraction at equilibrium; CO2 = H2 = 0.336), consistent with the independent K(800 K) calculation in Smith, Van Ness, Abbott (Table 13.4).
 
 \end{tutnarrative}
+\tutreadme{A refusal witness. The water-gas shift reactor at 800 K and 1 bar is fed a mixture that carries CH4, but operation.species omits it. The unit must refuse by name: before, the CH4 moles (0.25 kmol/h) were dropped from the Gibbs inventory without a word.}
+\tutreadme{ERROR: GibbsReactor: the feed carries species not listed in operation.species: CH4. Their moles would be dropped from the Gibbs inventory. Add them to operation.species, or remove them from the feed.}
+\tutreadme{The case ends with an error by design (an EXPECTED-FAIL in the suite).}
+\tutreadme{A reactor that silently ignores a species breaks the mass balance. Naming the species and the two remedies is the whole fix.}
 
 \clearpage
 \tutentry{gibbs09\_wgs\_cooled\_directmin}{tutorials/steady/gibbs/gibbs09\_wgs\_cooled\_directmin}
@@ -9913,6 +9932,9 @@ Above p\_c there is no saturation line, so the pump does not ask for T\_sat(P\_o
 Hand check: w\_real = v dP / eta with v \textasciitilde{} 1.8e-5 m3/mol, dP = 2.99e7 Pa gives \textasciitilde{} 830 J/mol; the part stored as pressure is v(1 - alpha T) dP, the rest heats the liquid by about 4-5 K (T\_out \textasciitilde{} 302.7 K, external review: 302.723 K). The run's energy balance closes: W\_shaft = F (h\_out - h\_in).
 
 \end{tutnarrative}
+\tutreadme{A water pump from 1 bar and 298.15 K to 300 bar, above the critical pressure of water, with efficiency 0.65 and flow 0.01 kmol/s. The outlet is a single-phase compressed liquid at 302.72 K (dT = 4.57 K). Head 3058 m, hydraulic work 5.40 kW, shaft work 8.31 kW. Figures are the case's expected rows.}
+\tutreadme{1. Above the critical pressure there is no saturation temperature, so a pump must not ask for T\_sat: the case witnesses that it does not. 2. The outlet is a single-phase compressed liquid; the case asks for no T\_sat. 3. The shaft work is the hydraulic work over the efficiency: 5.40 / 0.65 = 8.31 kW.}
+\tutreadme{Lower the outlet pressure below the critical pressure and compare.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.01}
 \goldrow{stream}{feed}{T}{298.15}
@@ -13535,6 +13557,9 @@ The stoichiometry lives in constant/reactions and is referenced BY NAME -- the s
 Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
 
 \end{tutnarrative}
+\tutreadme{Methane reforming and water-gas shift (SMR + WGS) to simultaneous equilibrium at 1100 K, listed ( smr wgs ). The case and its twin \_b, which lists ( wgs smr ), must give the same answer. Here the reformer takes 6 kmol/h in and gives 5.9974 kmol/h out, with Kp\_smr = 312.74 and Kp\_wgs = 0.9784, duty 6.21 kW, converged by Newton in 11 iterations. Figures are the case's expected rows.}
+\tutreadme{1. Equilibrium at fixed T and P is a property of the species set, not of the order in which the reactions are written. 2. The reaction list is an input, so a result that followed its order would be a bug. The twin case holds that. 3. The extents come out as one solution: extent\_smr -0.0013, extent\_wgs -0.6707 kmol/h.}
+\tutreadme{Compare the expected files of \_a and \_b: the stream flows and Kp agree.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.00166666666667}
 \goldrow{stream}{feed}{T}{1100}
@@ -13575,6 +13600,9 @@ The stoichiometry lives in constant/reactions and is referenced BY NAME -- the s
 Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the reforming is near-complete (Le Chatelier favours the mole-increasing SMR at low pressure); the shift then sets the CO/CO2 split. This is the classic syngas problem -- the reactor a `conversionReactor` cannot do (it needs the extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
 
 \end{tutnarrative}
+\tutreadme{Methane reforming and water-gas shift (SMR + WGS) to simultaneous equilibrium at 1100 K, listed ( wgs smr ). The case and its twin \_a, which lists ( smr wgs ), must give the same answer. Here the reformer takes 6 kmol/h in and gives 5.9974 kmol/h out, with Kp\_smr = 312.74 and Kp\_wgs = 0.9784, duty 6.21 kW, converged by Newton in 11 iterations. Figures are the case's expected rows.}
+\tutreadme{1. Equilibrium at fixed T and P is a property of the species set, not of the order in which the reactions are written. 2. The reaction list is an input, so a result that followed its order would be a bug. The twin case holds that. 3. The extents come out as one solution: extent\_smr -0.0013, extent\_wgs -0.6707 kmol/h.}
+\tutreadme{Compare the expected files of \_a and \_b: the stream flows and Kp agree.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.00166666666667}
 \goldrow{stream}{feed}{T}{1100}
@@ -14443,6 +14471,9 @@ Per the credo, P\_out is a RESULT. If the turbine must exhaust at a fixed back-p
 witness: the PUBLISHED isentropic discharge temperature satisfies S(T\_out\_isen, P\_out) = S\_in. An external review found T\_out\_isen taken at a finite-difference neighbour pressure of the outer Newton (313.1225 K against 313.2192 K); the discharge now re-solves at P\_out.
 
 \end{tutnarrative}
+\tutreadme{An adiabatic turbine on N2 with efficiency 1: 0.001 kmol/s at 600 K and 10 bar expanded to 1.188 bar (118 845.78 Pa). The outlet is at 329.02 K (dT = -270.98 K), the shaft work 8 kW generated. With eta = 1 the published T\_out\_isen equals T\_out, and the generated entropy dS\_gen is -6.8e-13, zero to round-off. Figures are the case's expected rows.}
+\tutreadme{1. The isentropic outlet is not a formula in T: it is the root of S(T\_out\_isen, P\_out) = S\_in on the package's own entropy surface. 2. With eta = 1 the real and isentropic states coincide, so the entropy generation is a direct check of that root. 3. dS\_gen at round-off is the case's witness that the root is right.}
+\tutreadme{Set eta below 1: T\_out rises above T\_out\_isen and dS\_gen becomes positive.}
 \begin{tutgolden}
 \goldrow{stream}{exhaust}{F}{0.001}
 \goldrow{stream}{exhaust}{T}{329.019573516}
