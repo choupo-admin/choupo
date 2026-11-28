@@ -166,6 +166,107 @@ def efficiency_section():
         L.append(f"  - {desc[:48]} · {model} · {len(v)} chamadas · pico {k(max(v))} · {sum(v)/1e6:.1f} M")
     return "\n".join(L)
 
+FIXRE = r"fix|repair|red\b|reds\b|correct|restore"
+LANDRE = r"^(Merge(?! branch 'main')|Landing|Batch|integrate)"
+HUBS = ("BACKLOG.tsv", "DEV.md", "PLAN.md", "BRAIN.md", "SESSIONS.md", "CHANGELOG.md")
+
+
+def _hub(f):
+    """Files every landing touches (registers, generated files, PDFs): not evidence of a patch."""
+    return f in HUBS or f.startswith("generated/") or f.endswith(".pdf") or f.startswith("docs/audits/")
+
+
+
+def _git(*a):
+    return subprocess.run(["git", "-C", str(ROOT), *a], capture_output=True, text=True).stdout
+
+
+_FIXCACHE = []
+
+
+def _fixes(after_ts, hours, files, ref="main"):
+    """Fix-looking commits on ref in (after_ts, after_ts+hours] touching one of files (one git call, cached)."""
+    import re
+    if not _FIXCACHE:
+        cur = None
+        for ln in _git("log", ref, "--no-merges", "--since=15 days ago", "--name-only", "--format=@@%H\t%ct\t%s").splitlines():
+            if ln.startswith("@@"):
+                h, ct, subj = ln[2:].split("\t", 2)
+                cur = (h, int(ct), set()) if re.search(FIXRE, subj, re.I) else None
+                if cur:
+                    _FIXCACHE.append(cur)
+            elif ln and cur:
+                if not _hub(ln):
+                    cur[2].add(ln)
+        _FIXCACHE.append(("", 0, set()))
+    return [(h, files & fs) for h, ct, fs in _FIXCACHE if after_ts < ct <= after_ts + hours * 3600 and files & fs]
+
+
+def quality_section():
+    """Quality indicators, computed from git on main and the local logs (Vitor, 2026-11-28).
+    Returns (markdown, [[light, text], ...]).  Each has a blind spot, stated here:
+    1. landings needing a correction: landings (first-parent commits on main in 7 days, subject
+       Merge/Landing/Batch/integrate) followed within 24 h by a fix commit (subject has
+       fix/repair/red/correct/restore) touching a file the landing touched.  Blind: a fix whose
+       subject lacks the words; a landing's files are its diff against first parent, so a
+       merge of a build branch into main counts once per hop.  Register files (BACKLOG, DEV, PLAN,
+       BRAIN, generated/, PDFs) are ignored as touched files.
+    2. patches after landing: such fix commits in the 7 days after each landing, per file.
+       Blind: same word list; one fix touching many files counts once per landing.
+    3. generals accepted first time: each agent-<id> log of the last 24 h tied to branch
+       worktree-agent-<id>; accepted if merged into main with no fix commit within 24 h
+       touching the files of its branch.  Blind: unmerged or deleted branches are not counted;
+       the 24 h window starts at the merge that first brought the tip into main.
+    """
+    import re, time
+    from collections import Counter
+    now = int(time.time())
+    Q = []
+    land = []
+    for ln in _git("log", "main", "--first-parent", "--since=7 days ago", "--format=%H\t%ct\t%s").splitlines():
+        h, ct, subj = ln.split("\t", 2)
+        if re.search(LANDRE, subj):
+            merge = len(_git("rev-list", "--parents", "-1", h).split()) > 2
+            f = set(_git("diff", "--name-only", h + "^1", h).split()) if merge else \
+                set(_git("diff-tree", "--no-commit-id", "--name-only", "-r", h).split())
+            land.append((h, int(ct), {x for x in f if not _hub(x)}))
+    if not land:
+        Q += [["none", "aterragens que precisaram de correção: sem dado"], ["none", "remendos depois de aterrar: sem dado"]]
+    else:
+        need = sum(1 for h, ct, f in land if _fixes(ct, 24, f))
+        r = need / len(land)
+        Q.append(["g" if need == 0 else ("y" if r <= .2 else "r"),
+                  f"aterragens que precisaram de correção (24 h): **{need} de {len(land)}** (7 dias)"])
+        cnt, fl = set(), Counter()
+        for h, ct, f in land:
+            for fh, hit in _fixes(ct, 168, f):
+                cnt.add(fh); fl.update(hit)
+        n = len(cnt)
+        top = ", ".join(f"{k} ({v})" for k, v in fl.most_common(3)) or "-"
+        Q.append(["g" if n <= 2 else ("y" if n <= 6 else "r"), f"remendos depois de aterrar: **{n}** commits; mais tocados: {top}"])
+    ids = sorted({re.search(r"agent-(\w+)\.jsonl", str(f)).group(1) for f in LOGS.glob("**/subagents/agent-*.jsonl")
+                  if now - f.stat().st_mtime < 86400})
+    ok = tot = 0
+    for i in ids:
+        tip = _git("rev-parse", "--verify", "-q", "worktree-agent-" + i).strip()
+        if not tip or subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", tip, "main"]).returncode:
+            continue
+        m = _git("log", "main", "--first-parent", "--ancestry-path", f"{tip}..main", "--format=%H\t%ct").splitlines()
+        if not m:
+            continue
+        mh, mct = m[-1].split("\t")
+        files = {x for x in _git("diff", "--name-only", _git("merge-base", tip, mh + "^1").strip(), tip).split() if not _hub(x)}
+        tot += 1
+        ok += 0 if _fixes(int(mct), 24, files) else 1
+    if tot:
+        Q.append(["g" if ok / tot >= .9 else ("y" if ok / tot >= .7 else "r"),
+                  f"generais aceites à primeira (ramo worktree-agent-<id> do registo; já no main, sem correção em 24 h): **{ok} de {tot}**"])
+    else:
+        Q.append(["none", "generais aceites à primeira: sem dado (nenhum ramo de general das últimas 24 h já está no main)"])
+    ico = {"g": "🟢", "y": "🟡", "r": "🔴", "none": "⚪"}
+    md = "### Qualidade (7 dias, calculado do git)\n\n" + "\n".join(f"- {ico[l]} {t}" for l, t in Q)
+    return md, Q
+
 
 def main():
     if len(sys.argv) != 2:
@@ -186,7 +287,7 @@ def main():
                "themes": {r["item"]: th.get(r["item"], "Outros") for r in open_},
                "themeOrder": THEME_ORDER, "progress": {r["item"]: pg[r["item"]] for r in open_ if r["item"] in pg},
                "week": week, "roadmap": count["ROADMAP"],
-               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day}
+               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day, "quality": quality_section()[1]}
         Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
         print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
         return 0
@@ -215,7 +316,7 @@ def main():
             return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} | " \
                    + (f"{pg[r['item']][0]} %" if r["item"] in pg else "") + " |"
         nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
-        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n{efficiency_section()}\n\n"
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n{efficiency_section()}\n\n{quality_section()[0]}\n\n"
               f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
               f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
               f"\n### ▶ A andar agora ({len(now)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in now) + "\n"
