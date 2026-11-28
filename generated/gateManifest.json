@@ -378,8 +378,8 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 384 gate script(s) scanned; 12 waiver table(s) all resolve to debt_registry.py, and all 36 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
-      "seconds": 0.9
+      "claim": "check_debt_registry: OK -- 399 gate script(s) scanned; 12 waiver table(s) all resolve to debt_registry.py, and all 37 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
+      "seconds": 0.8
     },
     "check_decision_index": {
       "exit": 0,
@@ -2009,7 +2009,7 @@
     "check_multicomponent": {
       "exit": 0,
       "claim": "check_multicomponent: OK -- 18 checks on synthetic two-solid and two-gas cases (order swapped, a component split in two identical halves, each specification recomputed on the published outlet); NOT checked: spray, batch and solid dryers, crystallisers",
-      "seconds": 5.6
+      "seconds": 6.1
     }
   }
 }

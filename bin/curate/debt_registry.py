@@ -1049,6 +1049,7 @@ THERMO_SUBDICT_READERS = {
 #  `# C421 exception:` comment at the copy.  Read by check_debt_registry.py,
 #  which fails a gate that copies a tree with neither the home nor an entry here.
 OWN_CASE_COPY = {
+    "check_multicomponent.py": "the copy is edited into a synthetic two-solid or two-gas case (components and feeds rewritten), not a shipped case run as it is",
     "check_audit_remaining.py": "partial copies (a donor's constant/ and system/, one record left out on purpose), not a whole case",
     "check_feed_thermal_state.py": "a donor's constant/ only, its propertyManifest removed on purpose after the copy",
     "check_seal_verdict.py": "probes edit the manifest pins and expect the unpinned-read refusal, so the copy must not materialise the catalogue records",

@@ -64,6 +64,7 @@ def make_case(name, tutorial, comps, records, files, flowsheet_extra=None):
     d = SCR / name
     if d.exists():
         shutil.rmtree(d)
+    # C421 exception: the copy is rewritten into a synthetic two-solid or two-gas case (debt_registry.OWN_CASE_COPY)
     shutil.copytree(WT / 'tutorials/steady' / tutorial, d,
                     ignore=shutil.ignore_patterns('expected', 'converged', 'reports', 'log.*', 'propertyManifest'))
     t = (d / 'constant/thermoPhysPropDict').read_text()
