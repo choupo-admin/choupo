@@ -1211,7 +1211,7 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/CosmoSacTheoryTool.tsx": 3,
     "gui/src/ui/methods/DatabaseToParametersTool.tsx": 5,
     "gui/src/ui/methods/DemandForecastTool.tsx": 1,
-    "gui/src/ui/methods/DryingCurveTool.tsx": 4,
+    "gui/src/ui/methods/DryingCurveTool.tsx": 3,
     "gui/src/ui/methods/EconomicsErrorsTool.tsx": 5,
     "gui/src/ui/methods/ElectrolyteModelsTool.tsx": 2,
     "gui/src/ui/methods/ElementPotentialTool.tsx": 5,

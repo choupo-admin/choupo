@@ -214,7 +214,10 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect((fn.match(/PSYCHRO_LIMITS/g) ?? []).length).toBeGreaterThanOrEqual(1);
 
     const i = WS.indexOf("function McCabeTool(");
-    const mccabe = WS.slice(i, WS.indexOf("// ---- Psychrometric chart ---"));
+    //  McCabe runs to the next top-level declaration (the psychrometric page
+    //  moved to methods/PsychroTool.tsx in C535 S4, taking its marker with it).
+    const next = WS.slice(i + 1).search(/\n(?:export )?(?:function|const) /);
+    const mccabe = next < 0 ? WS.slice(i) : WS.slice(i, i + 1 + next);
     expect(i).toBeGreaterThan(0);
     expect(mccabe, "the psychrometric lesson leaked into McCabe-Thiele")
       .not.toContain("PSYCHRO_");
