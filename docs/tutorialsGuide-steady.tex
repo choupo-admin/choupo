@@ -11416,7 +11416,7 @@ The heater runs at a FIXED partial duty, so the downstream flash SPLITS the reac
 
 V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
 
-T\_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
+T\_feed (feed temperature, the channel streams.feed.T) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
 
 We deliberately set the size cap TIGHTER than where the NPV-greedy design would otherwise stop, so at the optimum the reactor-size constraint BINDS.
 
@@ -11444,7 +11444,7 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \tutreadme{The heater runs at a fixed partial duty, so the flash $\ast$splits$\ast$ the reactor effluent into a light ethyl-acetate-rich vapour overhead (the prime product at 1.55 ?/kg) and a heavy water/acid-rich liquid bottoms (a low-value byproduct at 0.30 ?/kg). Esterification conserves total mass; what conversion buys you is the reshuffling of that mass toward the valuable overhead.}
 \tutreadme{$\ast$ V\_R --- a bigger reactor raises the residence time $\tau$ = V\_R/Q, so the isothermal-CSTR conversion X = k$\cdot$$\tau$/(1+k$\cdot$$\tau$) climbs and the priced overhead grows. But a bigger vessel costs more steel --- the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) up. Revenue rises with diminishing returns (X saturates toward 1) while CAPEX keeps climbing $\to$ an NPV maximum exists. $\ast$ T\_feed --- a higher feed temperature raises the Arrhenius rate k = A$\cdot$exp(-E?/RT), the cheap conversion $\ast$accelerator$\ast$. Its bounds stay inside the window where the flash splits cleanly (below the \textasciitilde{}353 K edge that boils the bottoms dry).}
 \tutreadme{We deliberately set the size cap tighter than where the NPV-greedy design would otherwise stop, so the reactor-size constraint binds at the optimum.}
-\tutreadme{The optimiser drives the money-losing initial design (V\_R = 4 m$^3$, T\_feed = 350 K $\to$ NPV $\approx$ -164 M?) to a profitable, certified optimum:}
+\tutreadme{The project loses money at every design (see the flowsheetDict header); the optimiser drives the initial design (V\_R = 4 m$^3$, T\_feed = 350 K $\to$ NPV $\approx$ -769 M?) to the least-bad, certified optimum. T\_feed is the feed inlet temperature, varied as the stream channel streams.feed.T (until 2026-11-28 it was declared as variables.T\_feed, which nothing read, so the optimiser moved an inert variable):}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.138888888889}
 \goldrow{stream}{hotStream}{F}{0.138888888889}
