@@ -5756,8 +5756,8 @@ accepts today, and that is a policy call.
 > skeleton and seen the pilot.
 > FIRST WORK OF SATURDAY 28 NOVEMBER, WITH HIM: the architecture once and for all, and the NAME is open too (Vitor,
 > 2026-11-25: "simples que funciona muito bem e que depois possa escalar sem remendos").
-> DECIDED 2026-11-28 (architect; Vitor: for the student alone, and he does not decide how it is built): the pages are
-> called LESSONS (old links alias); a lesson is a DOCUMENT on one fixed skeleton (the question, try it with the engine,
+> DECIDED 2026-11-28 (architect; Vitor: for the student alone, and he does not decide how it is built): the NAME
+> STAYS EduTools (Vitor, the same hour: "Eu gosto de EduTools!"; the architect had proposed Lessons); each page is a DOCUMENT on one fixed skeleton (the question, try it with the engine,
 > what you see, why it goes wrong, check yourself, limits and sources) drawn by one renderer from a small fixed set of
 > interactive pieces; a family per operation with one door.  PILOT: Drying (choose, curve, diagnose, chart).  He judges
 > the pilot on screen as a teacher; only then the other families, one at a time, the old pages working meanwhile.
