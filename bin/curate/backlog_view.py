@@ -146,7 +146,7 @@ def main():
               f"\n### A seguir, por prioridade ({len(nxt10)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
               f"\n### O resto, por tema\n")
         rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
-        for t in THEME_ORDER + ["Outros"]:
+        for t in THEME_ORDER + ([] if "Outros" in THEME_ORDER else ["Outros"]):
             lst = [r for r in rest if (th.get(r["item"], "Outros") if th.get(r["item"]) in THEME_ORDER else "Outros") == t]
             if lst:
                 md += f"\n**{t}** ({len(lst)})\n\n| | Item | Feito |\n|---|---|---:|\n" + "\n".join(mdrow(r) for r in lst) + "\n"
