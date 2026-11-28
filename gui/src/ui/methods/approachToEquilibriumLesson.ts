@@ -472,7 +472,7 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "the engine does with a declared approach is to solve the equilibrium "
       + "on the shifted Kp and then price the outlet at the physical "
       + "temperature with that shifted composition: Q = H_out(T, shifted "
-      + "composition) − H_in (EquilibriumReactor.cpp:894, 957–961, 968; for "
+      + "composition) − H_in (EquilibriumReactor.cpp:914, 977–981, 988; for "
       + "the isothermal gibbsReactor, GibbsReactor.cpp:800–806).  So carry "
       + "from the shifted run the composition and whatever depends on "
       + "composition alone (conversion, selectivity); carry from the "
