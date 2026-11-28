@@ -1,6 +1,1 @@
 # tool	rule	why it fails today (a rename, not a reordering; the row goes when the page is fixed)
-economics-errors	R3	each step is titled "n · k. title" and its card "k. title": two numberings in one menu
-adsorbent-selection	R2	the part heading and step 4 are both "Which adsorbent for which separation"
-relaxation	R3	steps "n · title" and figure cards "k. title" are two numberings interleaved
-how-many-phases	R2	two chapters share a title (C528, from the cloud; fixed with the EduTools consolidation, C535)
-how-many-phases	R3	its step numbers do not ascend in menu order (C528; C535)
