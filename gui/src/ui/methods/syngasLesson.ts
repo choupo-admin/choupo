@@ -146,7 +146,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     ],
     note: "The elements and the allowed species are read from the unit's "
       + "operation block, GibbsReactor.cpp:238-241; the pressure from the same "
-      + "block, GibbsReactor.cpp:182; the duty, GibbsReactor.cpp:769.",
+      + "block, GibbsReactor.cpp:182; the duty, GibbsReactor.cpp:788.",
     leadsTo: {
       tool: "approach-to-equilibrium",
       toolLabel: "Approach to equilibrium (Gibbs reactor)",
@@ -179,7 +179,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
         + "the engine solves for", unit: "K" },
     ],
     note: "The adiabatic mode and its residual: GibbsReactor.cpp:182-185 (the "
-      + "mode word) and GibbsReactor.cpp:528 (enthalpy out minus enthalpy in, "
+      + "mode word) and GibbsReactor.cpp:547 (enthalpy out minus enthalpy in, "
       + "driven to zero by a Newton on T).  An adiabatic reactor publishes no "
       + "duty, so the Q column reads a dash.",
   },
@@ -368,7 +368,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "heat that holding costs is the negative duty each one publishes.",
     note: "The equilibrium reactor is isothermal: its temperature defaults to "
       + "the feed's and is otherwise the declared one, "
-      + "EquilibriumReactor.cpp:64; its duty, EquilibriumReactor.cpp:1062.",
+      + "EquilibriumReactor.cpp:64; its duty, EquilibriumReactor.cpp:1079.",
   },
 
   // ---- Part 5: each destination asks its own ratio ---------------------------------
