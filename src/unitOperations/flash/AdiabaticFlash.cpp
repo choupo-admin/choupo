@@ -174,12 +174,21 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  No private search remains: a refusal of the home (an unanswerable
     //  package trial included) is reported NOT converged with its reason,
     //  as the valve does.
+    //  THE (P, H) SEARCH WALKS, AND SAYS SO.  Every trial temperature the home
+    //  evaluates is a full flash at a state this unit invented, and all but the
+    //  last are discarded; on an electrolyte feed each raises its own advisory,
+    //  so an unframed search buries the few that describe the CONVERGED outlet
+    //  (measured on column13 before the migration: 96 of 103).  The frame
+    //  closes right after the search; what is priced below it is the answer.
+    AdvisoryFrame walk("adiabaticFlash outlet-T search");
     try
     {
         st = flashState::specifiedFlash(thermo, z, spec, verbosity, false);
+        walk.close();
     }
     catch (const std::exception& e)
     {
+        walk.close();
         rethrowHardRefusal();
         searchOk = false;
         searchWhy = e.what();
