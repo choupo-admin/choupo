@@ -282,6 +282,25 @@ int GibbsReactor::solve(const DictPtr& dict,
     }
     for (auto& v : z) v /= zsum;
 
+    //  A fed species the case leaves out of `operation.species` would vanish
+    //  from the minimisation inventory: refuse by name (both Gibbs methods
+    //  read nIn from here).
+    {
+        std::string missing;
+        for (std::size_t k = 0; k < z.size(); ++k)
+        {
+            if (z[k] <= 0.0) continue;
+            bool listed = false;
+            for (std::size_t i = 0; i < N; ++i) if (compIdx[i] == k) listed = true;
+            if (!listed) missing += (missing.empty() ? "" : ", ") + thermo.comp(k).name();
+        }
+        if (!missing.empty())
+            throw std::runtime_error(
+                "GibbsReactor: the feed carries species not listed in"
+                " operation.species: " + missing + ".  Their moles would be"
+                " dropped from the Gibbs inventory.  Add them to"
+                " operation.species, or remove them from the feed.");
+    }
     sVector nIn(N, 0.0);
     for (std::size_t i = 0; i < N; ++i) nIn[i] = z[compIdx[i]] * F_mol_s;
 

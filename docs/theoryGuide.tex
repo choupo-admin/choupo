@@ -23792,6 +23792,10 @@ is much shorter than the residence time (reforming, high-temperature
 combustion, ammonia synthesis at scale), or as an upper bound on
 conversion when kinetic data are unavailable.
 
+Every species with a non-zero feed must be listed in the unit's
+\code{operation.species}; otherwise its moles would leave the Gibbs
+inventory and the unit refuses by name, listing the missing species.
+
 This chapter derives the algorithm Choupo uses ---  Lagrangian
 multipliers on the element-balance constraints, one $\pi_j$ per
 element --- and walks through the water-gas-shift tutorial
@@ -37210,7 +37214,10 @@ specification) is not where the modelling effort goes.
         \code{adiabaticFlash} of the inlet at that lower $P$, holding
         $H_{\text{out}}=H_{\text{in}}$.  A throttle that may flash part
         of the stream to vapour --- the Joule--Thomson valve of the item
-        above, exposed as a unit of its own.
+        above, exposed as a unit of its own.  A valve only drops
+        pressure: a requested $P_{\text{out}}>P_{\text{in}}$ would give
+        $w=0$ and $\Delta s<0$ (second law), so the unit refuses by name and
+        points to a pump or compressor.
   \item[ElectricLoad] A passive shaft sink: the electric generator (or
         any mechanical brake) wired to a turbine's shaft.  It carries no
         process stream --- the only thing crossing its boundary is the

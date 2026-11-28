@@ -668,6 +668,7 @@ Refused by name: two solids supersaturated at once, a solid in the feed.  The sa
 rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 
 ### `gibbsReactor`
+A feed species with non-zero flow that is missing from `operation.species` is REFUSED by name (it would silently leave the Gibbs inventory).
 Equilibrium by direct Gibbs minimisation with atom-balance
 constraints.  Four selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
@@ -3287,7 +3288,7 @@ operation { fractions ( 0.6  0.4 ); }
 ### `valve`
 Isenthalpic throttle: drops pressure to `P` at constant enthalpy; `T_out`
 and the vapour fraction are RESULTS (a real-gas EoS flashes the let-down).
-Use it upstream of a flash to set the drum pressure.  Warns if `P >= P_in`.
+Use it upstream of a flash to set the drum pressure.  REFUSES by name if `P > P_in` (a raise has w = 0 and delta s < 0; use a `pump` or `compressor`).
 ```
 in  feed;  outputs (throttled );
 operation { P  1.0 bar; }          // the downstream pressure (the only knob)

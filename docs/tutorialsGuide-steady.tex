@@ -7403,6 +7403,21 @@ Two-sector demo plant. UMBRELLA holding two sectors that share the plant-level c
 \tutreadme{Zip the folder (the compiled code/.build/ and any logs are NOT needed --- the collaborator rebuilds with buildCode):}
 \tutreadme{- The chemistry is synthetic (a structure demo, not a validated process). - compA/compB/compC happen to share names with the standard VLLE-audit components, so the engine prints a [overlay] notice when this case shadows them --- that is the no-silent-crutch honesty working, not an error. - The custom ops are black-box (algebraic), so they run regardless of the thermo; the 10 pairs are curated data for the props bench / activity-using ops, not evaluated by these two ops.}
 
+\clearpage
+\tutentry{valve\_refusal\_pressure\_raise}{tutorials/steady/flowsheets/valve\_refusal\_pressure\_raise}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (V1) at (0.0,-0.0) {\textbf{V1}\\[-1pt]{\tiny valve}};
+  \draw[->] ($(V1.west)+(-1.05,0.00)$) -- ($(V1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(V1.east)+(0,0.00)$) -- ($(V1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSAL WITNESS: valve asked to raise pressure}
+\begin{tutnarrative}
+REFUSAL WITNESS: a valve asked to RAISE pressure (10 $\to$ 30 bar) must refuse by name (it used to warn and report w = 0, delta s < 0). Use a pump.
+
+\end{tutnarrative}
+
 \subsection{gas-solid}
 \grouptheory{gas-solid}
 \clearpage
@@ -8150,6 +8165,21 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \goldrow{kpi}{wgs}{lambda\_H}{-24724.0041247}
 \goldmore{20}
 \end{tutgolden}
+
+\clearpage
+\tutentry{gibbs09\_refusal\_unlisted\_feed\_species}{tutorials/steady/gibbs/gibbs09\_refusal\_unlisted\_feed\_species}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(wgs.east)+(0,0.00)$) -- ($(wgs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {products};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSAL WITNESS: gibbsReactor feed species missing from operation.species}
+\begin{tutnarrative}
+REFUSAL WITNESS: the feed carries CH4 but operation.species omits it; the unit must refuse by name (it used to drop 0.25 kmol/h silently). Water-gas shift reactor at 800 K, 1 bar. CO + water <$\to$ CO2 + H2 Equimolar feed. The Gibbs-minimisation reactor gives CO conversion \textasciitilde{} 67 \% (CO 0.50 $\to$ 0.164 mole fraction at equilibrium; CO2 = H2 = 0.336), consistent with the independent K(800 K) calculation in Smith, Van Ness, Abbott (Table 13.4).
+
+\end{tutnarrative}
 
 \clearpage
 \tutentry{gibbs09\_wgs\_cooled\_directmin}{tutorials/steady/gibbs/gibbs09\_wgs\_cooled\_directmin}

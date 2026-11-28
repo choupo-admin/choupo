@@ -59,6 +59,14 @@
 #       lesson (e.g. an explicit RK4 integrator blowing up on stiff chemistry,
 #       ignition01_h2o2_rk4).  Counted as EXPECTED-FAIL.
 #
+#    * `.expect-refusal` -- a case whose engine REFUSES by name (exit non-zero
+#       with a message).  Its first non-comment line is a substring that MUST
+#       appear in the run's output; the case is RUN and is PASS only if the exit
+#       code is non-zero AND the text is present (FAIL: it converged, or the
+#       text is missing).  Defect it catches: under `.expect-nonconvergence` a
+#       refusal deleted from the engine stays green, because that marker skips
+#       the run.
+#
 #    * `.known-broken` -- a case that is genuinely BROKEN (a bug awaiting a
 #       fix: a crash, a stale/failing golden).  The file's first line is a
 #       one-line reason + a pointer to the QA report.  Counted as
@@ -2795,7 +2803,7 @@ if [ -n "$RECORD" ]; then
     for case_dir in "${CASES[@]}"; do
         # Never auto-record a golden from a DELIBERATELY-failing or KNOWN-BROKEN
         # run -- that would pin broken physics as the reference.
-        if [ -f "$case_dir/.expect-nonconvergence" ] || [ -f "$case_dir/.known-broken" ]; then
+        if [ -f "$case_dir/.expect-nonconvergence" ] || [ -f "$case_dir/.known-broken" ] || [ -f "$case_dir/.expect-refusal" ]; then
             echo "skip (marked: not recordable): $case_dir"; continue
         fi
         #  ONE CASE, TWO MODES (C152): the default mode records `expected`,
@@ -9258,6 +9266,25 @@ for case_dir in "$1"; do
                  | grep -m1 -vE '^[[:space:]]*$')
         printf "EXPECTED-FAIL %-32s  (%s)\n" "$name_short" "${reason:-deliberate teaching non-convergence}"
         expected_fail=$((expected_fail+1)); EF_NAMES+=("$name_short"); continue
+    fi
+
+    #  `.expect-refusal`: RUN the case; PASS only on a non-zero exit AND the
+    #  marker's substring in the output (a refusal deleted from the engine fails).
+    if [ -f "$case_dir/.expect-refusal" ]; then
+        want=$(grep -vE '^[[:space:]]*#' "$case_dir/.expect-refusal" 2>/dev/null \
+               | grep -m1 -vE '^[[:space:]]*$')
+        rout=$(run_case_raw "$case_dir" "$(binary_for "$case_dir")"); rrc=$?
+        if [ "$rrc" -eq 0 ]; then
+            printf "FAIL  %-40s  (expected a refusal but the run converged, exit 0)\n" "$name_short"
+            fail=$((fail+1))
+        elif [ -z "$want" ] || ! printf '%s' "$rout" | grep -qF -- "$want"; then
+            printf "FAIL  %-40s  (refused with exit %s but the output lacks: %s)\n" "$name_short" "$rrc" "${want:-<empty marker>}"
+            fail=$((fail+1))
+        else
+            printf "PASS  %-40s  (refused by name, exit %s: %s)\n" "$name_short" "$rrc" "$want"
+            pass=$((pass+1))
+        fi
+        continue
     fi
 
     #  A CASE WHOSE MEASURED SERIES ARE NOT IN THE TREE (C282, 2026-11-10,

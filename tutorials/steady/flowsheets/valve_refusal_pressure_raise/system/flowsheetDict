@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  REFUSAL WITNESS: a valve asked to RAISE pressure (10 -> 30 bar) must refuse
+  by name (it used to warn and report w = 0, delta s < 0).  Use a pump.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        V1;
+        type        valve;
+        in          feed;
+        outputs     ( out );
+        operation   { P 30 bar; }
+    }
+);
