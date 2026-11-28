@@ -14470,7 +14470,6 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/iapws/IF97.H",
-   "src/thermo/pureFluid/IF97WaterFluid.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -28427,8 +28426,7 @@
    "src/thermo/phase/VaporPhase.cpp"
   ],
   "src/thermo/pureFluid/IF97WaterFluid.H": [
-   "src/thermo/pureFluid/PureFluidModel.cpp",
-   "src/unitOperations/flash/SpecifiedFlash.cpp"
+   "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
   "src/thermo/pureFluid/PureFluidModel.H": [
    "src/applications/choupoBatch/main.cpp",

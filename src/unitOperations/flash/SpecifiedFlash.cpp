@@ -33,7 +33,6 @@ License
 #include "solver/NewtonRaphson.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
-#include "thermo/pureFluid/IF97WaterFluid.H"
 #include "thermo/iapws/IF97.H"
 
 #include <algorithm>
@@ -377,8 +376,9 @@ SpecifiedState stateAtTP(const ThermoPackage& thermo, const sVector& z,
 }
 
 //  The temperature range the package can answer in, for the components the
-//  stream carries: IF97 water is defined on [273.15, 1073.15] K (region 5
-//  is not implemented); every other model is not bounded here.
+//  stream carries: the intersection of what each pure-fluid model DECLARES
+//  (`PureFluidModel::temperatureDomain`; IF97 water [273.15, 1073.15] K,
+//  region 5 not implemented); a model that declares nothing is unbounded.
 static std::pair<scalar, scalar> packageTemperatureDomain(
     const ThermoPackage& thermo, const sVector& z)
 {
@@ -386,11 +386,9 @@ static std::pair<scalar, scalar> packageTemperatureDomain(
     for (std::size_t i = 0; i < z.size(); ++i)
     {
         if (!(z[i] > 0.0) || !thermo.hasPureFluid(i)) continue;
-        if (dynamic_cast<const IF97WaterFluid*>(&thermo.pureFluid(i)))
-        {
-            lo = std::max(lo, IF97::Tmin);
-            hi = std::min(hi, IF97::Tmax12);
-        }
+        const auto d = thermo.pureFluid(i).temperatureDomain();
+        lo = std::max(lo, d.first);
+        hi = std::min(hi, d.second);
     }
     return {lo, hi};
 }
@@ -426,9 +424,9 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
     //  The window is cut to the package's own temperature domain, so a trial
     //  state is never priced where the package refuses (a default window of
     //  [50, 1500] K is wider than IF97's [273.15, 1073.15] K).
+    const auto dom = packageTemperatureDomain(thermo, z);
     if (heldP)
     {
-        const auto dom = packageTemperatureDomain(thermo, z);
         spec.Tmin = std::max(spec.Tmin, dom.first);
         spec.Tmax = std::min(spec.Tmax, dom.second);
         if (!(spec.Tmax >= spec.Tmin))
@@ -437,6 +435,10 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
                 " temperature domain [" + num(dom.first) + ", "
                 + num(dom.second) + "] K.");
     }
+    else if (spec.T < dom.first || spec.T > dom.second)
+        refuse(pair, "the specified T = " + num(spec.T) + " K lies outside"
+            " the package's temperature domain [" + num(dom.first) + ", "
+            + num(dom.second) + "] K.");
     const bool needS = wantS || pair == SpecPair::PS;
 
     Searcher srch{ thermo, z, spec, verbosity };
@@ -639,6 +641,9 @@ SpecifiedState specifiedFlash(const ThermoPackage&      thermo,
                 auto dg = [&](scalar x)
                 {
                     const scalar h = inT ? std::max(1.0e-5, 1.0e-7 * x) : 1.0e-7;
+                    //  one-sided near a bound: the package refuses beyond its domain
+                    if (x + h > xmax) return (g(x) - g(x - h)) / h;
+                    if (x - h < xmin) return (g(x + h) - g(x)) / h;
                     return (g(x + h) - g(x - h)) / (2.0 * h);
                 };
                 solver::NROptions o;

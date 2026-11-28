@@ -19977,6 +19977,13 @@ exactly on a window edge (or on a step of the bracketing walk) is accepted as
 a zero-width bracket; and near a bound the Newton derivative is a one-sided
 difference inside the window (case
 \code{tutorials/props/thermo/flashSpec02\_window\_edges}).
+The temperature domain is DECLARED by the pure-fluid model
+(\code{PureFluidModel::temperatureDomain}, unbounded by default, IF97 its own
+constants) and read through the package, not guessed by the search; the
+vapour-fraction pairs obey the same rule: the (P,VF) window is cut to it, its
+derivative is one-sided near a bound, and a (T,VF) flash held at a
+temperature outside it is refused naming the domain (case
+\code{tutorials/props/thermo/flashSpec03\_vapour\_fraction\_edges}).
 
 \begin{figure}[ht]
 \centering

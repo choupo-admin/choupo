@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1965,
+  "cases": 1966,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -25154,6 +25154,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/flashSpec03_vapour_fraction_edges": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/heavyWater01_isotope_effect": {
    "application": "choupoProps",
    "ops": [
@@ -33032,6 +33043,7 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/flashSpec02_window_edges",
+    "tutorials/props/thermo/flashSpec03_vapour_fraction_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
@@ -36754,6 +36766,7 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/flashSpec02_window_edges",
+    "tutorials/props/thermo/flashSpec03_vapour_fraction_edges",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/refEoS01_iapws95_verification",
