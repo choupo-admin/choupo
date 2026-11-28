@@ -413,7 +413,7 @@ export function DemandForecastTool(): JSX.Element {
 
             {step(7)}
             <Box data-panel="paste">
-              <Title order={5}>What the case&apos;s economics reads</Title>
+              <Title order={5}>The numbers the economics takes</Title>
               <OriginMark of={["page", "assumption"]} note="rampUp and the design production, for the method you pick" />
               <Group mt={6} gap="sm" align="center">
                 <Text size="sm">From</Text>
